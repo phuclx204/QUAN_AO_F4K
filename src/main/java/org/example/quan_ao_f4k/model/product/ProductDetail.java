@@ -1,0 +1,45 @@
+package org.example.quan_ao_f4k.model.product;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.example.quan_ao_f4k.model.BaseEntity;
+
+import java.math.BigDecimal;
+
+@Entity
+@Table(name = "product_detail")
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
+public class ProductDetail extends BaseEntity {
+    @Column(name = "name", nullable = false)
+    private String name;
+
+    @Column(name = "price", precision = 10, scale = 2)
+    private BigDecimal price;
+
+    @ManyToOne
+    @JoinColumn(name = "color_id",nullable = false)
+    private Color color;
+
+    @JoinColumn(name = "size_id",nullable = false)
+    private Long sizeId;
+
+    @JoinColumn(name = "guarantee_id",nullable = false)
+    private Long guaranteeId;
+
+    @JoinColumn(name = "quantity",nullable = false)
+    private Integer quantity;
+
+    @JoinColumn(name = "status",nullable = false)
+    private Integer status;
+
+}
