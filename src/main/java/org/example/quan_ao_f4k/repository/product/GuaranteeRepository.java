@@ -4,6 +4,6 @@ import org.example.quan_ao_f4k.model.product.Guarantee;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
-public interface GuaranteeRepository extends JpaRepository<Guarantee, Integer>,
+public interface GuaranteeRepository extends JpaRepository<Guarantee, Long>,
 		JpaSpecificationExecutor<Guarantee> {
 }
