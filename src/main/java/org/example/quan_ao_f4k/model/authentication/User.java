@@ -38,4 +38,8 @@ public class User extends BaseEntity {
 
     @Column(name = "status")
     private Integer status;
+
+    @ManyToOne
+    @JoinColumn(name = "role_id", nullable = false)
+    private Role role;
 }

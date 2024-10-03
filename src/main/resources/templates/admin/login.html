@@ -1,13 +1,81 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
-</head>
-<body>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>F4K SHOP | Log in</title>
+    <!-- Tell the browser to be responsive to screen width -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
+    <link rel="stylesheet" th:href="@{/admin/dist/css/login.css}">
+
+    <link rel="stylesheet" th:href="@{/admin/dist/css/style.css}">
+    <style>
+
+
+        #particles {
+            background-color: #F7FAFC;
+            position: absolute;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+    </style>
+</head>
+<body class="hold-transition login-page">
+<div id="particles">
+</div>
+<div class="login-box">
+    <div class="login-logo" style="color: #007bff;">
+        <h1>F4K SHOP</h1>
+    </div>
+    <!-- /.login-logo -->
+    <div class="card">
+        <div class="card-body login-card-body">
+            <p class="login-box-msg">Nhập thông tin đăng nhập</p>
+            <form th:action="@{/admin/login}" method="post">
+                <div th:if="${not #strings.isEmpty(session.errorMsg)}" class="form-group">
+                    <div class="alert alert-danger" th:text="${session.errorMsg}"></div>
+                </div>
+                <div class="form-group has-feedback">
+                    <span class="fa fa-user form-control-feedback"></span>
+                    <input type="text" id="userName" name="userName" class="form-control" placeholder="Username"
+                           required="true">
+                </div>
+                <div class="form-group has-feedback">
+                    <span class="fa fa-lock form-control-feedback"></span>
+                    <input type="password" id="password" name="password" class="form-control" placeholder="Password"
+                           required="true">
+                </div>
+<!--                <div class="row">-->
+<!--                    <div class="col-6">-->
+<!--                        <input type="text" class="form-control" name="verifyCode" placeholder="Captcha" required="true">-->
+<!--                    </div>-->
+<!--                    <div class="col-6">-->
+<!--                        <img alt="CaptchaImg" class="pointer" th:src="@{/common/kaptcha}"-->
+<!--                             onclick="this.src='/common/kaptcha?d='+new Date()*1">-->
+<!--                    </div>-->
+<!--                </div>-->
+                <div class="form-group has-feedback"></div>
+                <div class="row">
+                    <div class="col-8">
+                    </div>
+                    <div class="col-4">
+                        <button type="submit" class="btn btn-primary btn-block btn-flat">Đăng nhập</button>
+                    </div>
+                </div>
+            </form>
+
+        </div>
+        <!-- /.login-card-body -->
+    </div>
+</div>
+<!-- /.login-box -->
+
+<!-- jQuery -->
+<script th:src="@{/admin/plugins/jquery/jquery.min.js}"></script>
+<!-- Bootstrap 4 -->
+<script th:src="@{/admin/plugins/bootstrap/js/bootstrap.bundle.min.js}"></script>
 </body>
 </html>
