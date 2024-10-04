@@ -1,11 +1,10 @@
-package org.example.quan_ao_f4k.service;
+package org.example.quan_ao_f4k.service.product;
 
 import lombok.AllArgsConstructor;
 import org.example.quan_ao_f4k.dto.request.product.BrandRequest;
 import org.example.quan_ao_f4k.dto.response.product.BrandResponse;
 import org.example.quan_ao_f4k.list.ListResponse;
 import org.example.quan_ao_f4k.mapper.product.BrandMapper;
-import org.example.quan_ao_f4k.model.product.Brand;
 import org.example.quan_ao_f4k.repository.product.BrandRepository;
 import org.example.quan_ao_f4k.util.SearchFields;
 import org.springframework.stereotype.Service;

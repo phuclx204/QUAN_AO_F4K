@@ -6,5 +6,7 @@ public interface SearchFields {
     List<String> BRAND = List.of(
             "name"
     );
+
+    List<String> CATEGORY = List.of("name");
 }
 

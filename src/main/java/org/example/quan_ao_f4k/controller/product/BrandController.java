@@ -3,19 +3,12 @@ package org.example.quan_ao_f4k.controller.product;
 import jakarta.annotation.Nullable;
 import lombok.AllArgsConstructor;
 import org.example.quan_ao_f4k.dto.request.product.BrandRequest;
-import org.example.quan_ao_f4k.model.product.Brand;
-import org.example.quan_ao_f4k.service.BrandServiceImpl;
+import org.example.quan_ao_f4k.service.product.BrandServiceImpl;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-@RestController
+@RequestMapping(value = "brand")
+@RestController()
 @AllArgsConstructor
 public class BrandController {
     private BrandServiceImpl brandService;
