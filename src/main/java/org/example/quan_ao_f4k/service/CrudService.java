@@ -58,8 +58,8 @@ public interface CrudService<ID, I, O> {
 
     default <E> O defaultSave(ID id, I request,
                               JpaRepository<E, ID> repository,
-                              GennericMapper<E, I, O> mapper
-                              ) {
+                              GennericMapper<E, I, O> mapper,
+                              String resourceName) {
         return repository.findById(id)
                 .map(existingEntity -> mapper.partialUpdate(existingEntity, request))
                 .map(repository::save)
@@ -77,7 +77,6 @@ public interface CrudService<ID, I, O> {
                 .orElseThrow(() -> new RuntimeException("Loi defaufinall"));
     }
 
-
     default O save(JsonNode request, Class<I> requestType) {
         ObjectMapper mapper = new ObjectMapper();
         I typedRequest = mapper.convertValue(request, requestType);
@@ -91,3 +90,4 @@ public interface CrudService<ID, I, O> {
     }
 
 }
+
