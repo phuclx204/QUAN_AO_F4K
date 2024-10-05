@@ -3,8 +3,8 @@ package org.example.quan_ao_f4k.controller.product;
 import jakarta.annotation.Nullable;
 import lombok.AllArgsConstructor;
 import org.example.quan_ao_f4k.dto.request.product.BrandRequest;
-import org.example.quan_ao_f4k.model.product.Brand;
-import org.example.quan_ao_f4k.service.BrandServiceImpl;
+
+import org.example.quan_ao_f4k.service.product.BrandServiceImpl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
