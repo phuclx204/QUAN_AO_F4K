@@ -30,6 +30,4 @@ public class Category {
     @Column(name = "description")
     private String description;
 
-    @Column(name = "status")
-    private Integer status;
 }
