@@ -7,30 +7,15 @@ import org.example.quan_ao_f4k.dto.request.address.AddressRequest;
 import org.example.quan_ao_f4k.dto.request.address.DistrictRequest;
 import org.example.quan_ao_f4k.dto.request.address.ProvinceRequest;
 import org.example.quan_ao_f4k.dto.request.address.WardRequest;
-import org.example.quan_ao_f4k.dto.request.product.BrandRequest;
-import org.example.quan_ao_f4k.dto.request.product.CategoryRequest;
-import org.example.quan_ao_f4k.dto.request.product.ColorRequest;
-import org.example.quan_ao_f4k.dto.request.product.SizeRequest;
+import org.example.quan_ao_f4k.dto.request.product.*;
 import org.example.quan_ao_f4k.dto.response.address.AddressResponse;
 import org.example.quan_ao_f4k.dto.response.address.DistrictResponse;
 import org.example.quan_ao_f4k.dto.response.address.ProvinceResponse;
 import org.example.quan_ao_f4k.dto.response.address.WardResponse;
-import org.example.quan_ao_f4k.dto.response.product.BrandResponse;
-import org.example.quan_ao_f4k.dto.response.product.CategoryResponse;
-import org.example.quan_ao_f4k.dto.response.product.ColorResponse;
-import org.example.quan_ao_f4k.dto.response.product.SizeResponse;
-import org.example.quan_ao_f4k.mapper.product.BrandMapper;
-import org.example.quan_ao_f4k.mapper.product.CategoryMapper;
-import org.example.quan_ao_f4k.mapper.product.ColorMapper;
-import org.example.quan_ao_f4k.mapper.product.SizeMapper;
-import org.example.quan_ao_f4k.model.product.Brand;
-import org.example.quan_ao_f4k.model.product.Category;
-import org.example.quan_ao_f4k.model.product.Color;
-import org.example.quan_ao_f4k.model.product.Size;
-import org.example.quan_ao_f4k.repository.product.BrandRepository;
-import org.example.quan_ao_f4k.repository.product.CategoryRepository;
-import org.example.quan_ao_f4k.repository.product.ColorRepository;
-import org.example.quan_ao_f4k.repository.product.SizeRepository;
+import org.example.quan_ao_f4k.dto.response.product.*;
+import org.example.quan_ao_f4k.mapper.product.*;
+import org.example.quan_ao_f4k.model.product.*;
+import org.example.quan_ao_f4k.repository.product.*;
 import org.example.quan_ao_f4k.service.CrudService;
 import org.example.quan_ao_f4k.service.GenericService;
 import org.example.quan_ao_f4k.service.address.AddressServiceImpl;
@@ -61,6 +46,7 @@ public class GennericMappingRegister {
     private GenericController<CategoryRequest, CategoryResponse> categoryController;
     private GenericController<SizeRequest, SizeResponse> sizeController;
     private GenericController<ColorRequest, ColorResponse> colorController;
+    private GenericController<ProductRequest, ProductResponse> productController;
 
     private GenericController<ProvinceRequest, ProvinceResponse> provinceController;
     private GenericController<DistrictRequest, DistrictResponse> districtController;
@@ -68,6 +54,7 @@ public class GennericMappingRegister {
     private GenericController<AddressRequest, AddressResponse> addressController;
 
     private GenericService<Brand, BrandRequest, BrandResponse> brandService;
+    private GenericService<Product, ProductRequest, ProductResponse> productService;
 
     @PostConstruct
     public void registerControllers() throws NoSuchMethodException {
@@ -82,12 +69,21 @@ public class GennericMappingRegister {
         register("color", colorController,context.getBean(ColorServiceImpl.class)
                 , ColorRequest.class);
 
+        register("product", productController, productService.init(
+                context.getBean(ProductRepository.class),
+                context.getBean(ProductMapper.class),
+                SearchFields.PRODUCT,"products"
+
+        ), ProductRequest.class);
+
         register("brand", brandController, brandService.init(
                 context.getBean(BrandRepository.class),
                 context.getBean(BrandMapper.class),
                 SearchFields.BRAND,"brands"
 
         ), BrandRequest.class);
+
+
 
         // address
         register("province", provinceController,context.getBean(ProvinceServiceImpl.class)
