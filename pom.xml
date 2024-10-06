@@ -33,8 +33,6 @@
         <lombok-mapstruct-binding.version>0.2.0</lombok-mapstruct-binding.version>
     </properties>
     <dependencies>
-        <!-- https://mvnrepository.com/artifact/cz.jirutka.rsql/rsql-parser -->
-
 
         <dependency>
             <groupId>io.github.perplexhub</groupId>

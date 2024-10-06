@@ -8,5 +8,17 @@ public interface SearchFields {
     );
 
     List<String> CATEGORY = List.of("name");
+
+    List<String> GUARANTEE = List.of("" +
+            "name",
+            "status"
+    );
+    List<String> PRODUCT = List.of(
+            "name",
+            "category.name",
+            "brand.name",
+            "description",
+            "status"
+    );
 }
 
