@@ -35,12 +35,8 @@ public class CategoryServiceImpl implements CategoryService{
 
 	@Override
 	public CategoryResponse save(Long aLong, CategoryRequest request) {
-<<<<<<< HEAD
-//		return defaultSave(aLong,request,categoryRepository,categoryMapper);
-		return null;
-=======
-		return defaultSave(aLong,request,categoryRepository,categoryMapper);
->>>>>>> 36b50492ee5e6970648526e041b61f0ee416a190
+		return defaultSave(aLong,request,categoryRepository,categoryMapper,"");
+
 	}
 
 	@Override

@@ -22,6 +22,9 @@ public class District extends BaseEntity {
     @Column(name = "name")
     private String name;
 
+    @Column(name = "code")
+    private int code;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "province_id", nullable = false)
     private Province province;

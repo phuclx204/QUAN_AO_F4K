@@ -35,7 +35,7 @@ public class BrandServiceImpl implements BrandService{
 
     @Override
     public BrandResponse save(Long aLong, BrandRequest request) {
-        return defaultSave(aLong,request,brandRepository,brandMapper);
+        return defaultSave(aLong,request,brandRepository,brandMapper,"");
     }
 
     @Override

@@ -18,4 +18,7 @@ import org.example.quan_ao_f4k.model.BaseEntity;
 public class Province extends BaseEntity {
     @Column(name = "name")
     private String name;
+
+    @Column(name = "code")
+    private int code;
 }

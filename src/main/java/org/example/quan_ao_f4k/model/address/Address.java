@@ -19,8 +19,8 @@ import org.example.quan_ao_f4k.model.BaseEntity;
 @Setter
 @Table(name = "address")
 public class Address extends BaseEntity {
-    @Column(name = "name")
-    private String name;
+    @Column(name = "line")
+    private String line;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "province_id", nullable = false)
@@ -29,6 +29,7 @@ public class Address extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "district_id", nullable = false)
     private District district;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ward_id", nullable = false)
     private Ward ward;

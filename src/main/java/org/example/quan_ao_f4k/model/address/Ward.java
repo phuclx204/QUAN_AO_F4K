@@ -23,7 +23,10 @@ public class Ward extends BaseEntity {
     @Column(name = "name")
     private String name;
 
+    @Column(name = "code")
+    private int code;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "district_id", nullable = false)
-    private District district   ;
+    private District district;
 }
