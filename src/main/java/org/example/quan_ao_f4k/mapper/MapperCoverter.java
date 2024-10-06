@@ -1,12 +1,7 @@
 package org.example.quan_ao_f4k.mapper;
 
-import org.example.quan_ao_f4k.model.product.Brand;
-import org.example.quan_ao_f4k.model.product.Category;
-import org.example.quan_ao_f4k.model.product.ProductDetail;
-import org.example.quan_ao_f4k.repository.product.BrandRepository;
-import org.example.quan_ao_f4k.repository.product.CategoryRepository;
-import org.example.quan_ao_f4k.repository.product.ProductDetailRepository;
-import org.example.quan_ao_f4k.repository.product.ProductRepository;
+import org.example.quan_ao_f4k.model.product.*;
+import org.example.quan_ao_f4k.repository.product.*;
 import org.mapstruct.Mapper;
 import org.mapstruct.Named;
 import org.mapstruct.ReportingPolicy;
@@ -17,10 +12,24 @@ public abstract class MapperCoverter {
 
     @Autowired
     private BrandRepository brandRepository;
+
     @Autowired
     private CategoryRepository categoryRepository;
+
     @Autowired
     private ProductDetailRepository productDetailRepository;
+
+    @Autowired
+    private SizeRepository sizeRepository;
+
+    @Autowired
+    private ColorRepository colorRepository;
+
+    @Autowired
+    private ProductRepository productRepository;
+
+    @Autowired
+    private GuaranteeRepository guaranteeRepository;
 
     @Named("convertToBrand")
     public Brand convertToBrand(Long id){
@@ -35,6 +44,30 @@ public abstract class MapperCoverter {
     @Named("convertToProductDetail")
     public ProductDetail convertToProductDetail(Long id){
         return productDetailRepository.findById(id).orElseThrow(()
+                -> new RuntimeException("Loi tim cate"));
+    }
+
+    @Named("convertToSize")
+    public Size convertToSize(Long id){
+        return sizeRepository.findById(id).orElseThrow(()
+                -> new RuntimeException("Loi tim cate"));
+    }
+
+    @Named("convertToColor")
+    public Color convertToColor(Long id){
+        return colorRepository.findById(id).orElseThrow(()
+                -> new RuntimeException("Loi tim cate"));
+    }
+
+    @Named("convertToProduct")
+    public Product convertToProduct(Long id){
+        return productRepository.findById(id).orElseThrow(()
+                -> new RuntimeException("Loi tim cate"));
+    }
+
+    @Named("convertToGuarantee")
+    public Guarantee convertToGuarantee(Long id){
+        return guaranteeRepository.findById(id).orElseThrow(()
                 -> new RuntimeException("Loi tim cate"));
     }
 

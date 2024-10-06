@@ -23,5 +23,9 @@ public interface SearchFields {
             "description",
             "status"
     );
+
+    List<String> PRODUCT_DETAIL = List.of(
+            "product.name"
+    );
 }
 
