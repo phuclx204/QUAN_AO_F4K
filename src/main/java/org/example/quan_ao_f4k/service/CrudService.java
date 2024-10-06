@@ -60,6 +60,7 @@ public interface CrudService<ID, I, O> {
                               JpaRepository<E, ID> repository,
                               GennericMapper<E, I, O> mapper,
                               String resourceName) {
+
         return repository.findById(id)
                 .map(existingEntity -> mapper.partialUpdate(existingEntity, request))
                 .map(repository::save)

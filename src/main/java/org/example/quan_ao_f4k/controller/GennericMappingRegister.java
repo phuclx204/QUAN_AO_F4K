@@ -52,9 +52,11 @@ public class GennericMappingRegister {
     private GenericController<DistrictRequest, DistrictResponse> districtController;
     private GenericController<WardRequest, WardResponse> wardController;
     private GenericController<AddressRequest, AddressResponse> addressController;
+    private GenericController<ProductDetailRequest, ProductDetailResponse> productDetailController;
 
     private GenericService<Brand, BrandRequest, BrandResponse> brandService;
     private GenericService<Product, ProductRequest, ProductResponse> productService;
+    private GenericService<ProductDetail, ProductDetailRequest, ProductDetailResponse> productDetailService;
 
     @PostConstruct
     public void registerControllers() throws NoSuchMethodException {
@@ -83,6 +85,12 @@ public class GennericMappingRegister {
 
         ), BrandRequest.class);
 
+        // product detail
+        register("product-detail", productDetailController, productDetailService.init(
+                context.getBean(ProductDetailRepository.class),
+                context.getBean(ProductDetailMapper.class),
+                SearchFields.PRODUCT_DETAIL,"productDetails"
+        ), ProductDetailRequest.class);
 
 
         // address
