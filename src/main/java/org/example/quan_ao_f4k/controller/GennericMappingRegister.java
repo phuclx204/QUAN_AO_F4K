@@ -4,10 +4,15 @@ import com.fasterxml.jackson.databind.JsonNode;
 import jakarta.annotation.PostConstruct;
 import lombok.AllArgsConstructor;
 import org.example.quan_ao_f4k.dto.request.product.BrandRequest;
+import org.example.quan_ao_f4k.dto.request.product.ProductRequest;
 import org.example.quan_ao_f4k.dto.response.product.BrandResponse;
+import org.example.quan_ao_f4k.dto.response.product.ProductResponse;
 import org.example.quan_ao_f4k.mapper.product.BrandMapper;
+import org.example.quan_ao_f4k.mapper.product.ProductMapper;
 import org.example.quan_ao_f4k.model.product.Brand;
+import org.example.quan_ao_f4k.model.product.Product;
 import org.example.quan_ao_f4k.repository.product.BrandRepository;
+import org.example.quan_ao_f4k.repository.product.ProductRepository;
 import org.example.quan_ao_f4k.service.CrudService;
 import org.example.quan_ao_f4k.service.GenericService;
 import org.example.quan_ao_f4k.util.SearchFields;
@@ -28,19 +33,29 @@ public class GennericMappingRegister {
     private RequestMappingHandlerMapping handlerMapping;
 
     private GenericController<BrandRequest, BrandResponse> brandController;
+    private GenericController<ProductRequest, ProductResponse> productController;
 
     private GenericService<Brand, BrandRequest, BrandResponse> brandService;
+    private GenericService<Product, ProductRequest, ProductResponse> productService;
 
     @PostConstruct
     public void registerControllers() throws NoSuchMethodException {
 
 
-        register("brand", brandController, brandService.init(
+        register("products", productController, productService.init(
+                context.getBean(ProductRepository.class),
+                context.getBean(ProductMapper.class),
+                SearchFields.PRODUCT,"Products"
+
+        ), ProductRequest.class);
+
+        register("brands", brandController, brandService.init(
                 context.getBean(BrandRepository.class),
                 context.getBean(BrandMapper.class),
                 SearchFields.BRAND,"brands"
 
         ), BrandRequest.class);
+
     }
 
     private <I, O> void register(String resource,
