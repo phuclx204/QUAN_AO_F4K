@@ -30,13 +30,6 @@ import org.example.quan_ao_f4k.repository.address.WardRepository;
 import org.example.quan_ao_f4k.repository.product.*;
 import org.example.quan_ao_f4k.service.CrudService;
 import org.example.quan_ao_f4k.service.GenericService;
-import org.example.quan_ao_f4k.service.address.AddressServiceImpl;
-import org.example.quan_ao_f4k.service.address.DistrictServiceImpl;
-import org.example.quan_ao_f4k.service.address.ProvinceServiceImpl;
-import org.example.quan_ao_f4k.service.address.WardServiceImpl;
-import org.example.quan_ao_f4k.service.product.CategoryServiceImpl;
-import org.example.quan_ao_f4k.service.product.ColorServiceImpl;
-import org.example.quan_ao_f4k.service.product.SizeServiceImpl;
 import org.example.quan_ao_f4k.util.SearchFields;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.MediaType;
@@ -59,17 +52,22 @@ public class GennericMappingRegister {
     private GenericController<SizeRequest, SizeResponse> sizeController;
     private GenericController<ColorRequest, ColorResponse> colorController;
     private GenericController<ProductRequest, ProductResponse> productController;
+    private GenericController<ProductDetailRequest, ProductDetailResponse> productDetailController;
 
     private GenericController<ProvinceRequest, ProvinceResponse> provinceController;
     private GenericController<DistrictRequest, DistrictResponse> districtController;
     private GenericController<WardRequest, WardResponse> wardController;
     private GenericController<AddressRequest, AddressResponse> addressController;
+    private GenericController<GuaranteeRequest, GuaranteeResponse> guaranteeController;
+
 
     private GenericService<Brand, BrandRequest, BrandResponse> brandService;
     private GenericService<Category, CategoryRequest, CategoryResponse> categoryService;
     private GenericService<Size, SizeRequest, SizeResponse> sizeService;
     private GenericService<Color, ColorRequest, ColorResponse> colorService;
     private GenericService<Product, ProductRequest, ProductResponse> productService;
+    private GenericService<ProductDetail, ProductDetailRequest, ProductDetailResponse> productDetailService;
+    private GenericService<Guarantee, GuaranteeRequest, GuaranteeResponse> guaranteeService;
 
     private GenericService<Province, ProvinceRequest, ProvinceResponse> provinceService;
     private GenericService<District, DistrictRequest, DistrictResponse> districtService;
@@ -116,6 +114,21 @@ public class GennericMappingRegister {
                 SearchFields.COLOR,"colors"
 
         ), ColorRequest.class);
+
+        //guarantee
+        register("guarantee", guaranteeController, guaranteeService.init(
+                context.getBean(GuaranteeRepository.class),
+                context.getBean(GuaranteeMapper.class),
+                SearchFields.GUARANTEE,"guarantees"
+
+        ), GuaranteeRequest.class);
+
+        // product detail
+        register("product-detail", productDetailController, productDetailService.init(
+                context.getBean(ProductDetailRepository.class),
+                context.getBean(ProductDetailMapper.class),
+                SearchFields.PRODUCT_DETAIL,"productDetails"
+        ), ProductDetailRequest.class);
 
         // address
         register("province", provinceController, provinceService.init(

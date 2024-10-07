@@ -13,7 +13,7 @@ public interface SearchFields {
     List<String> ADDRESS = List.of("name");
 
     List<String> GUARANTEE = List.of("" +
-                    "name",
+                    "description",
             "status"
     );
     List<String> PRODUCT = List.of(

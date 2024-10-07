@@ -6,11 +6,12 @@ import java.math.BigDecimal;
 
 @Data
 public class ProductDetailRequest {
-
-    private Long colorId;
     private Long productId;
-    private Long guaranteeId;
     private Long sizeId;
+    private Long colorId;
     private BigDecimal price;
+    private Long guaranteeId;
     private Integer quantity;
+    private String thumbnail;
+    private Integer status;
 }

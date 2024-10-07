@@ -64,10 +64,10 @@ public abstract class MapperCoverter {
                 -> new RuntimeException("Loi tim cate"));
     }
     @Named("convertToProductDetail")
-    public ProductDetail convertToProductDetail(Long id){
-        return productDetailRepository.findById(id).orElseThrow(()
-                -> new RuntimeException("Loi tim cate"));
+    public ProductDetail convertToProductDetail(Long id) {
+        return productDetailRepository.findById(id).orElseThrow(() -> new RuntimeException("Loi tim product detail"));
     }
+
 
     @Named("convertToSize")
     public Size convertToSize(Long id){

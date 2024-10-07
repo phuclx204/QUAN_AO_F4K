@@ -1,245 +1,291 @@
-<!doctype html>
-<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:th="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 
-<html lang="en">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>Star Admin</title>
-    <link rel="stylesheet" th:href="@{/admin/vendors/iconfonts/mdi/css/materialdesignicons.min.css}">
-    <link rel="stylesheet" th:href="@{/admin/vendors/css/vendor.bundle.base.css}">
-    <link rel="stylesheet" th:href="@{/admin/vendors/css/vendor.bundle.addons.css}">
-    <link rel="stylesheet" th:href="@{/admin/dist/css/style.css}">
-    <link rel="shortcut icon" th:href="@{/images/favicon.png}" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Boxicons -->
+    <link href='https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css' rel='stylesheet'>
+    <!-- My CSS -->
+    <link rel="stylesheet" href="/admin/style.css">
+    <title>F4K Store</title>
 </head>
 
 <body>
-<div class="container-scroller">
 
-    <!-- partial:partials/_navbar.html -->
-    <nav class="navbar default-layout col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
-        <div class="text-center navbar-brand-wrapper d-flex align-items-top justify-content-center">
-            <a class="navbar-brand brand-logo" href="index.html">
-                <img th:src="@{/images/logo.svg}" alt="logo" />
+<!-- SIDEBAR -->
+<section id="sidebar">
+    <a href="#" class="brand">
+        <!-- Logo -->
+        <i class='bx bxs-smile'></i>
+        <span class="text">F4K Store</span>
+    </a>
+    <ul class="side-menu top">
+        <li class="active">
+            <a href="#">
+                <i class='bx bxs-dashboard'></i>
+                <span class="text">Thống kê</span>
             </a>
-            <a class="navbar-brand brand-logo-mini" href="index.html">
-                <img th:src="@{/images/logo-mini.svg}" alt="logo" />
+        </li>
+        <li>
+            <a href="#">
+                <i class='bx bxs-shopping-bag-alt'></i>
+                <span class="text">Bán tại quầy</span>
             </a>
-        </div>
-        <div class="navbar-menu-wrapper d-flex align-items-center">
-            <button class="navbar-toggler navbar-toggler d-none d-lg-block navbar-dark align-self-center mr-3" type="button" data-toggle="minimize">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <ul class="navbar-nav navbar-nav-right">
-                <li class="nav-item dropdown d-none d-xl-inline-block">
-                    <a class="nav-link dropdown-toggle" id="UserDropdown" href="#" data-toggle="dropdown" aria-expanded="false">
-                        <span class="profile-text">Hello, Richard V.Welsh !</span>
-                        <img class="img-xs rounded-circle" th:src="@{/images/faces/face1.jpg}" alt="Profile image">
-                    </a>
-                    <div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="UserDropdown">
-                        <a class="dropdown-item mt-2">
-                            Manage Accounts
-                        </a>
-                        <a class="dropdown-item">
-                            Change Password
-                        </a>
-                        <a class="dropdown-item">
-                            Sign Out
-                        </a>
-                    </div>
-                </li>
-            </ul>
-            <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button" data-toggle="offcanvas">
-                <span class="icon-menu"></span>
-            </button>
-        </div>
-    </nav>
+        </li>
+<!--        product -->
+        <li>
+            <a href="#">
+                <i class='bx bxs-doughnut-chart'></i>
+                <span class="text">Product</span>
+            </a>
+        </li>
+        <li>
+            <a href="#" >
+                <i class='bx'></i>
+                <span class="text">Product detail</span>
+            </a>
+        </li>
+        <li>
+            <a href="#" onclick="loadContent('brand')">
+                <i class='bx'></i>
+                <span class="text">Brand</span>
+            </a>
+        </li>
+        <li>
+            <a href="#">
+                <i class='bx'></i>
+                <span class="text">Category</span>
+            </a>
+        </li>
+        <li>
+            <a href="#">
+                <i class='bx'></i>
+                <span class="text">Size</span>
+            </a>
+        </li>
+        <li>
+            <a href="#">
+                <i class='bx'></i>
+                <span class="text">Color</span>
+            </a>
+        </li>
+        <li>
+            <a href="#">
+                <i class='bx'></i>
+                <span class="text">Guarantee</span>
+            </a>
+        </li>
+<!--        Hóa đơn-->
+        <li>
+            <a href="#">
+                <i class='bx bxs-message-dots'></i>
+                <span class="text">Hóa đơn</span>
+            </a>
+        </li>
+        <li>
+            <a href="#">
+                <i class='bx bxs-group'></i>
+                <span class="text">Khách hàng</span>
+            </a>
+        </li>
+        <li>
+            <a href="#">
+                <i class='bx bxs-group'></i>
+                <span class="text">Nhân viên</span>
+            </a>
+        </li>
+    </ul>
+    <ul class="side-menu">
+        <li>
+            <a href="#">
+                <i class='bx bxs-cog'></i>
+                <span class="text">Cài đặt</span>
+            </a>
+        </li>
+        <li>
+            <a href="#" class="logout">
+                <i class='bx bxs-log-out-circle'></i>
+                <span class="text">Đăng xuất</span>
+            </a>
+        </li>
+    </ul>
+</section>
+<!-- SIDEBAR -->
 
-    <!-- partial -->
-    <div class="container-fluid page-body-wrapper">
-        <!-- partial:partials/_sidebar.html -->
-        <nav class="sidebar sidebar-offcanvas" id="sidebar">
-            <ul class="nav">
-                <li class="nav-item nav-profile">
-                    <div class="nav-link">
-                        <div class="user-wrapper">
-                            <div class="profile-image">
-                                <img th:src="@{/images/faces/face1.jpg}" alt="profile image">
-                            </div>
-                            <div class="text-wrapper">
-                                <p class="profile-name">Richard V.Welsh</p>
-                                <div>
-                                    <small class="designation text-muted">Manager</small>
-                                    <span class="status-indicator online"></span>
-                                </div>
-                            </div>
-                        </div>
-                        <button class="btn btn-success btn-block">New Project
-                            <i class="mdi mdi-plus"></i>
-                        </button>
-                    </div>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" th:href="@{dashboard}">
-                        <i class="menu-icon mdi mdi-television"></i>
-                        <span class="menu-title">Dashboard</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" data-toggle="collapse" href="#ui-basic" aria-expanded="false" aria-controls="ui-basic">
-                        <i class="menu-icon mdi mdi-content-copy"></i>
-                        <span class="menu-title">Basic UI Elements</span>
-                        <i class="menu-arrow"></i>
-                    </a>
-                    <div class="collapse" id="ui-basic">
-                        <ul class="nav flex-column sub-menu">
-                            <li class="nav-item">
-                                <a class="nav-link" href="#">Buttons</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="#">Typography</a>
-                            </li>
-                        </ul>
-                    </div>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" th:href="@{form-elements}">
-                        <i class="menu-icon mdi mdi-backup-restore"></i>
-                        <span class="menu-title">Form elements</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">
-                        <i class="menu-icon mdi mdi-chart-line"></i>
-                        <span class="menu-title">Charts</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" th:href="@{table-elements}">
-                        <i class="menu-icon mdi mdi-table"></i>
-                        <span class="menu-title">Tables</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">
-                        <i class="menu-icon mdi mdi-sticker"></i>
-                        <span class="menu-title">Icons</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" data-toggle="collapse" href="#auth" aria-expanded="false" aria-controls="auth">
-                        <i class="menu-icon mdi mdi-restart"></i>
-                        <span class="menu-title">User Pages</span>
-                        <i class="menu-arrow"></i>
-                    </a>
-                    <div class="collapse" id="auth">
-                        <ul class="nav flex-column sub-menu">
-                            <li class="nav-item">
-                                <a class="nav-link" href="#"> Blank Page </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="#"> Login </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="#"> Register </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="#"> 404 </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="#"> 500 </a>
-                            </li>
-                        </ul>
-                    </div>
-                </li>
-            </ul>
-        </nav>
-
-        <!-- partial -->
-        <div class="main-panel">
-            <div class="content-wrapper" layout:fragment="content">
-                Content is Here!
+<!-- CONTENT -->
+<section id="content">
+    <!-- NAVBAR -->
+    <nav>
+        <i class='bx bx-menu'></i>
+        <a href="#" class="nav-link">Kho</a>
+        <form action="#" method="get">
+            <div class="form-input">
+                <input type="search" placeholder="Tìm kiếm...">
+                <button type="submit" class="search-btn"><i class='bx bx-search'></i></button>
             </div>
-            <!-- content-wrapper ends -->
+        </form>
+        <label class="uiHover">
+            <i class='bx bxs-sun'></i>
+            <i class='bx bx-moon'></i>
+        </label>
+        <input type="checkbox" id="switch-mode" hidden>
+        <label for="switch-mode" class="switch-mode"></label>
+        <a href="#" class="notification">
+            <i class='bx bxs-bell'></i>
+            <span class="num">8</span>
+        </a>
+        <a href="#" class="profile">
+            <img src="/admin/img/people.png" alt="Profile">
+        </a>
+    </nav>
+    <!-- NAVBAR -->
 
-            <!-- partial:partials/_footer.html -->
-            <footer class="footer">
-                <div class="container-fluid clearfix">
-            <span class="text-muted d-block text-center text-sm-left d-sm-inline-block">Copyright © 2018
-              <a href="http://www.bootstrapdash.com/" target="_blank">Bootstrapdash</a>. All rights reserved.</span>
-                    <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center">Hand-crafted & made with
-              <i class="mdi mdi-heart text-danger"></i>
-            </span>
+    <!-- MAIN -->
+    <main>
+<!--        chuyển đổi tab-->
+        <main>
+            <div class="head-title">
+                <div class="left">
+                    <h1>Thống kê</h1>
+                    <ul class="breadcrumb">
+                        <li>
+                            <a href="#">Thống kê</a>
+                        </li>
+                        <li><i class='bx bx-chevron-right'></i></li>
+                        <li>
+                            <a class="active" href="#">Trang chủ</a>
+                        </li>
+                    </ul>
                 </div>
-            </footer>
-            <!-- partial -->
-        </div>
-        <!-- main-panel ends -->
+                <a href="#" class="btn-download">
+                    <i class='bx bxs-cloud-download'></i>
+                    <span class="text">Tải xuống PDF</span>
+                </a>
+            </div>
 
-    </div>
+            <ul class="box-info">
+                <li>
+                    <i class='bx bxs-calendar-check'></i>
+                    <span class="text">
+                        <h3>0027</h3>
+                        <p>Đơn đặt hàng</p>
+                    </span>
+                </li>
+                <li>
+                    <i class='bx bxs-group'></i>
+                    <span class="text">
+                        <h3>0010</h3>
+                        <p>Lượt truy cập</p>
+                    </span>
+                </li>
+                <li>
+                    <i class='bx bxs-dollar-circle'></i>
+                    <span class="text">
+                        <h3>$2004</h3>
+                        <p>Tổng doanh thu</p>
+                    </span>
+                </li>
+            </ul>
 
-    <!-- page-body-wrapper ends -->
-</div>
-<!-- container-scroller -->
+            <div class="table-data">
+                <div class="order">
+                    <div class="head">
+                        <h3>Đơn hàng gần đây</h3>
+                        <i class='bx bx-search'></i>
+                        <i class='bx bx-filter'></i>
+                    </div>
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>Khách hàng</th>
+                            <th>Ngày đặt hàng</th>
+                            <th>Trạng thái</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>
+                                <img src="/admin/img/people.png" alt="Customer">
+                                <p>Lê Xuân Phúc</p>
+                            </td>
+                            <td>27-10-2004</td>
+                            <td><span class="status completed">Hoàn thành</span></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <img src="/admin/img/people.png" alt="Customer">
+                                <p>Lê Xuân Quyền</p>
+                            </td>
+                            <td>27-10-2004</td>
+                            <td><span class="status pending">Chưa thanh toán</span></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <img src="/admin/img/people.png" alt="Customer">
+                                <p>Nguyễn Giang Sơn</p>
+                            </td>
+                            <td>27-10-2004</td>
+                            <td><span class="status process">Chờ thanh toán</span></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <img src="/admin/img/people.png" alt="Customer">
+                                <p>Nguyễn Văn Việt</p>
+                            </td>
+                            <td>27-10-2004</td>
+                            <td><span class="status pending">Chưa thanh toán</span></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <img src="/admin/img/people.png" alt="Customer">
+                                <p>Nguyễn Bá Thức</p>
+                            </td>
+                            <td>27-10-2004</td>
+                            <td><span class="status completed">Hoàn thành</span></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="todo">
+                    <div class="head">
+                        <h3>Tiến độ</h3>
+                        <i class='bx bx-plus'></i>
+                        <i class='bx bx-filter'></i>
+                    </div>
+                    <ul class="todo-list">
+                        <li class="completed">
+                            <p>Hoàn thành</p>
+                            <i class='bx bx-dots-vertical-rounded'></i>
+                        </li>
+                        <li class="not-completed">
+                            <p>Chưa thanh toán</p>
+                            <i class='bx bx-dots-vertical-rounded'></i>
+                        </li>
+                        <li class="process">
+                            <p>Chờ thanh toán</p>
+                            <i class='bx bx-dots-vertical-rounded'></i>
+                        </li>
+                        <li class="completed">
+                            <p>Hoàn thành</p>
+                            <i class='bx bx-dots-vertical-rounded'></i>
+                        </li>
+                        <li class="not-completed">
+                            <p>Hoàn thành</p>
+                            <i class='bx bx-dots-vertical-rounded'></i>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </main>
+    </main>
+    <!-- MAIN -->
+</section>
+<!-- CONTENT -->
 
-<!-- plugins:js -->
-<script th:src="@{/vendors/js/vendor.bundle.base.js}"></script>
-<script th:src="@{/vendors/js/vendor.bundle.addons.js}"></script>
-<script th:src="@{/js/off-canvas.js}"></script>
-<script th:src="@{/js/misc.js}"></script>
-<script th:src="@{/js/dashboard.js}"></script>
-<script type="text/javascript">
-
-    $(document).ready(function() {
-
-        funApplicationDisabled();
-
-        funContactDisabled();
-
-        funProductDisabled();
-
-    });
-
-    function funApplicationDisabled() {
-        $('#app-input-service-id').prop('readOnly', true);
-        $('#app-input-name').prop('disabled', true);
-        $('#app-input-icon').prop('disabled', true);
-        $('#app-input-meta-desc').prop('disabled', true);
-        $('#app-input-meta-key').prop('disabled', true);
-        $('#app-input-meta-google-site').prop('disabled', true);
-        $('#app-btn-cancel').prop('disabled', true);
-        $('#app-btn-save').prop('disabled', true);
-        $('#app-btn-edit').prop('disabled', false);
-    }
-
-    function funContactDisabled() {
-        $('#contact-input-service-id').prop('readOnly', true);
-        $('#contact-name').prop('disabled', true);
-        $('#contact-phone').prop('disabled', true);
-        $('#contact-sms').prop('disabled', true);
-        $('#contact-hiMessage').prop('disabled', true);
-        $('#contact-address').prop('disabled', true);
-        $('#contact-email').prop('disabled', true);
-        $('#contact-btn-cancel').prop('disabled', true);
-        $('#contact-btn-save').prop('disabled', true);
-        $('#contact-btn-edit').prop('disabled', false);
-    }
-
-    function funProductDisabled() {
-        $('#product-input-uuid').prop('readOnly', true);
-        $('#product-input-name').prop('disabled', true);
-        $('#product-input-img-src').prop('disabled', true);
-        $('#product-input-img-alt').prop('disabled', true);
-        $('#product-input-href').prop('disabled', true);
-        $('#product-input-price').prop('disabled', true);
-        $('#product-input-brochure').prop('disabled', true);
-        $('#product-btn-cancel').prop('disabled', true);
-        $('#product-btn-save').prop('disabled', true);
-        $('#product-btn-edit').prop('disabled', false);
-    }
-
-</script>
-
+<script src="/admin/script.js"></script>
 
 </body>
+
 </html>

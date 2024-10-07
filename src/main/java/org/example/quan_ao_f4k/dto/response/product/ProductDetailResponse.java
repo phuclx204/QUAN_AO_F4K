@@ -10,11 +10,12 @@ import java.math.BigDecimal;
 
 @Data
 public class ProductDetailResponse {
-
-    private Color color;
-    private BigDecimal price;
     private Product product;
     private Size size;
+    private Color color;
+    private BigDecimal price;
     private Guarantee guarantee;
     private Integer quantity;
+    private String thumbnail;
+    private Integer status;
 }

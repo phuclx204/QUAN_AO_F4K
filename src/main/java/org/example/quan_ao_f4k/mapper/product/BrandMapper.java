@@ -9,4 +9,5 @@ import org.mapstruct.ReportingPolicy;
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface BrandMapper extends GennericMapper<Brand, BrandRequest, BrandResponse> {
+
 }
