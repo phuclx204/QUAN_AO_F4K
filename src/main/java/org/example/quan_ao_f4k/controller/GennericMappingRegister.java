@@ -13,8 +13,20 @@ import org.example.quan_ao_f4k.dto.response.address.DistrictResponse;
 import org.example.quan_ao_f4k.dto.response.address.ProvinceResponse;
 import org.example.quan_ao_f4k.dto.response.address.WardResponse;
 import org.example.quan_ao_f4k.dto.response.product.*;
+import org.example.quan_ao_f4k.mapper.address.AddressMapper;
+import org.example.quan_ao_f4k.mapper.address.DistrictMapper;
+import org.example.quan_ao_f4k.mapper.address.ProvinceMapper;
+import org.example.quan_ao_f4k.mapper.address.WardMapper;
 import org.example.quan_ao_f4k.mapper.product.*;
+import org.example.quan_ao_f4k.model.address.Address;
+import org.example.quan_ao_f4k.model.address.District;
+import org.example.quan_ao_f4k.model.address.Province;
+import org.example.quan_ao_f4k.model.address.Ward;
 import org.example.quan_ao_f4k.model.product.*;
+import org.example.quan_ao_f4k.repository.address.AddressRepository;
+import org.example.quan_ao_f4k.repository.address.DistrictRepository;
+import org.example.quan_ao_f4k.repository.address.ProvinceRepository;
+import org.example.quan_ao_f4k.repository.address.WardRepository;
 import org.example.quan_ao_f4k.repository.product.*;
 import org.example.quan_ao_f4k.service.CrudService;
 import org.example.quan_ao_f4k.service.GenericService;
@@ -54,20 +66,21 @@ public class GennericMappingRegister {
     private GenericController<AddressRequest, AddressResponse> addressController;
 
     private GenericService<Brand, BrandRequest, BrandResponse> brandService;
+    private GenericService<Category, CategoryRequest, CategoryResponse> categoryService;
+    private GenericService<Size, SizeRequest, SizeResponse> sizeService;
+    private GenericService<Color, ColorRequest, ColorResponse> colorService;
     private GenericService<Product, ProductRequest, ProductResponse> productService;
+
+    private GenericService<Province, ProvinceRequest, ProvinceResponse> provinceService;
+    private GenericService<District, DistrictRequest, DistrictResponse> districtService;
+    private GenericService<Ward, WardRequest, WardResponse> wardService;
+    private GenericService<Address, AddressRequest, AddressResponse> addressService;
+
 
     @PostConstruct
     public void registerControllers() throws NoSuchMethodException {
 
         // product
-        register("category", categoryController,context.getBean(CategoryServiceImpl.class)
-                , CategoryRequest.class);
-
-        register("size", sizeController,context.getBean(SizeServiceImpl.class)
-                , SizeRequest.class);
-
-        register("color", colorController,context.getBean(ColorServiceImpl.class)
-                , ColorRequest.class);
 
         register("product", productController, productService.init(
                 context.getBean(ProductRepository.class),
@@ -83,18 +96,52 @@ public class GennericMappingRegister {
 
         ), BrandRequest.class);
 
+        register("category", categoryController, categoryService.init(
+                context.getBean(CategoryRepository.class),
+                context.getBean(CategoryMapper.class),
+                SearchFields.CATEGORY,"categorys"
 
+        ), CategoryRequest.class);
+
+        register("size", sizeController, sizeService.init(
+                context.getBean(SizeRepository.class),
+                context.getBean(SizeMapper.class),
+                SearchFields.SIZE,"sizes"
+
+        ), SizeRequest.class);
+
+        register("color", colorController, colorService.init(
+                context.getBean(ColorRepository.class),
+                context.getBean(ColorMapper.class),
+                SearchFields.COLOR,"colors"
+
+        ), ColorRequest.class);
 
         // address
-        register("province", provinceController,context.getBean(ProvinceServiceImpl.class)
-                , ProvinceRequest.class);
-        register("district", districtController,context.getBean(DistrictServiceImpl.class)
-                , DistrictRequest.class);
-        register("ward", wardController,context.getBean(WardServiceImpl.class)
-                , WardRequest.class);
-        register("address", addressController,context.getBean(AddressServiceImpl.class)
-                , AddressRequest.class);
+        register("province", provinceController, provinceService.init(
+                context.getBean(ProvinceRepository.class),
+                context.getBean(ProvinceMapper.class),
+                SearchFields.PROVINCE,"provinces"
+        ), ProvinceRequest.class);
 
+        register("district", districtController, districtService.init(
+                context.getBean(DistrictRepository.class),
+                context.getBean(DistrictMapper.class),
+                SearchFields.DISTRICT,"districts"
+        ), DistrictRequest.class);
+
+        register("ward", wardController, wardService.init(
+                context.getBean(WardRepository.class),
+                context.getBean(WardMapper.class),
+                SearchFields.WARD,"wards"
+
+        ), WardRequest.class);
+
+        register("address", addressController, addressService.init(
+                context.getBean(AddressRepository.class),
+                context.getBean(AddressMapper.class),
+                SearchFields.WARD,"address"
+        ), AddressRequest.class);
     }
 
     private <I, O> void register(String resource,

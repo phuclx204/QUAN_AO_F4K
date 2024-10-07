@@ -30,11 +30,17 @@ public class ProductDetail extends BaseEntity {
     @JoinColumn(name = "color_id",nullable = false)
     private Color color;
 
+    @ManyToOne
     @JoinColumn(name = "size_id",nullable = false)
-    private Long sizeId;
+    private Size size;
 
+    @ManyToOne
     @JoinColumn(name = "guarantee_id",nullable = false)
-    private Long guaranteeId;
+    private Guarantee guarantee;
+
+    @ManyToOne
+    @JoinColumn(name = "product_id",nullable = false)
+    private Product product;
 
     @JoinColumn(name = "quantity",nullable = false)
     private Integer quantity;
