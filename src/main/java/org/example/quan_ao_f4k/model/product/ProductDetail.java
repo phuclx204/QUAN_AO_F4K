@@ -20,27 +20,33 @@ import java.math.BigDecimal;
 @Getter
 @Setter
 public class ProductDetail extends BaseEntity {
+	@Column(name = "name", nullable = false)
+	private String name;
 
-    @ManyToOne
-    @JoinColumn(name = "color_id",nullable = false)
-    private Color color;
+	@Column(name = "price", precision = 10, scale = 2)
+	private BigDecimal price;
 
-    @Column(name = "price", precision = 10, scale = 2)
-    private BigDecimal price;
+	@ManyToOne
+	@JoinColumn(name = "color_id",nullable = false)
+	private Color color;
 
-    @ManyToOne
-    @JoinColumn(name = "product_id", nullable = false)
-    private Product product;
+	@ManyToOne
+	@JoinColumn(name = "size_id",nullable = false)
+	private Size size;
 
-    @ManyToOne
-    @JoinColumn(name = "size_id", nullable = false)
-    private Size size;
+	@ManyToOne
+	@JoinColumn(name = "guarantee_id",nullable = false)
+	private Guarantee guarantee;
 
-    @ManyToOne
-    @JoinColumn(name = "guarantee_id",nullable = false)
-    private Guarantee guarantee;
+	@ManyToOne
+	@JoinColumn(name = "product_id",nullable = false)
+	private Product product;
 
-    @JoinColumn(name = "quantity",nullable = false)
-    private Integer quantity;
+	@JoinColumn(name = "quantity",nullable = false)
+	private Integer quantity;
+
+	@JoinColumn(name = "status",nullable = false)
+	private Integer status;
+
 
 }
