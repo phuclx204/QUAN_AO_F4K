@@ -7,18 +7,18 @@
 <div th:replace="admin/fragments/sidebar::sidebar"></div>
 
 <section id="content" >
-<div th:replace="admin/fragments/content::content"></div>
+    <div th:replace="admin/fragments/content::content"></div>
     <main >
         <div class="head-title">
             <div class="left">
-                <h1>Thống kê</h1>
+                <h1>Kích thước</h1>
                 <ul class="breadcrumb">
                     <li>
-                        <a href="#">Trang chủ</a>
+                        <a th:href="@{statistical}">Trang chủ</a>
                     </li>
                     <li><i class='bx bx-chevron-right'></i></li>
                     <li>
-                        <a class="active" href="#">Thống kê</a>
+                        <a class="active" th:href="@{brand}">Kích thước</a>
                     </li>
                 </ul>
             </div>

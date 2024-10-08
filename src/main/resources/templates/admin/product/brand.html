@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="admin/fragments/head::head"></head>
+
+<body>
+<div th:replace="admin/fragments/sidebar::sidebar"></div>
+
+<section id="content" >
+    <div th:replace="admin/fragments/content::content"></div>
+    <main >
+        <div class="head-title">
+            <div class="left">
+                <h1>Thương hiệu</h1>
+                <ul class="breadcrumb">
+                    <li>
+                        <a th:href="@{statistical}">Trang chủ</a>
+                    </li>
+                    <li><i class='bx bx-chevron-right'></i></li>
+                    <li>
+                        <a class="active" th:href="@{brand}">Thương hiệu</a>
+                    </li>
+                </ul>
+            </div>
+            <a href="#" class="btn-download">
+                <i class='bx bxs-cloud-download'></i>
+                <span class="text">Tải xuống PDF</span>
+            </a>
+        </div>
+
+        <div class="table-data">
+            <div class="order">
+                <div class="head">
+                    <a href="javascript:void(0);" class="btn-add-form">
+                        <i class='bx bx-plus'></i>
+                    </a>
+
+                    <h3>Danh sách thương hiệu</h3>
+                    <i class='bx bx-search'></i>
+                    <i class='bx bx-filter'></i>
+                </div>
+                <table>
+                    <thead>
+                    <tr>
+                        <th>STT</th>
+                        <th>Tên thương hiệu</th>
+                        <th>Edit</th>
+                        <th>#</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="brand, i : ${brands}">
+                        <td th:text="${i.index + 1}">1</td>
+                        <td th:text="${brand.name}">Name</td>
+                        <td>
+                            <a href="javascript:void(0);" class="bx bx-edit"
+                               data-id="${brand.id}"
+                               data-name="${brand.name}">
+                            </a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+</section>
+<!-- Modal add-->
+<div id="addModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <form id="addForm" th:action="@{/admin/brand/add}" method="post">
+            <label for="brandName">Tên Thương Hiệu:</label>
+            <input type="text" id="brandName" name="name">
+            <button type="submit">Thêm</button>
+        </form>
+    </div>
+</div>
+
+<!-- Modal for editing -->
+<div id="editModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <form id="editForm" th:action="@{/admin/brand/update}" method="post">
+            <input type="hidden" id="editBrandId" name="id">
+            <label for="editBrandName">Tên Thương Hiệu:</label>
+            <input type="text" id="editBrandName" name="name" >
+            <!-- Xử lý thông báo lỗi -->
+            <div th:if="${param.error == 'nameExists'}" class="error">
+                Tên thương hiệu đã tồn tại!
+            </div>
+            <button type="submit">Cập nhật</button>
+        </form>
+    </div>
+</div>
+
+<script th:src="@{/admin/script.js}"></script>
+<script th:src="@{/admin/product/brandjs.js}"></script>
+</body>
+</html>

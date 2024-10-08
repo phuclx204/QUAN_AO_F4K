@@ -5,10 +5,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
-@RequestMapping(value = "api")
+@RequestMapping(value = "admin")
 public class DemoController {
 
-    @GetMapping(value = "dashboard")
+    @GetMapping(value = "statistical")
     public String mmDashboard() {
         return "admin/index";
     }

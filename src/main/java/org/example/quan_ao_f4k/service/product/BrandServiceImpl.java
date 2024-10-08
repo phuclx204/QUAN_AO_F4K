@@ -49,4 +49,9 @@ public class BrandServiceImpl implements BrandService{
         brandRepository.deleteAllById(longs);
 
     }
+
+    @Override
+    public BrandResponse findByName(String name) {
+        return findByName(name);
+    }
 }
