@@ -57,8 +57,8 @@ public class Order extends BaseEntity {
     @Column(name = "code", length = 20, nullable = false,unique = true)
     private String code;
 
-    @Column(name = "status")
-    private Integer status;
+    @Column(name = "status", nullable = false)
+    private Integer status =1;
 
 
 }

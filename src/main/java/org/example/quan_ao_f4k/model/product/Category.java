@@ -31,6 +31,6 @@ public class Category {
     private String description;
 
     @Column(name = "status", nullable = false)
-    private String status;
+    private Integer status =1;
 
 }

@@ -26,5 +26,5 @@ public class Size {
     private String name;
 
     @Column(name = "status", nullable = false)
-    private String status;
+    private Integer status =1;
 }

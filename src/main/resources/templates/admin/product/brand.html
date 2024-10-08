@@ -58,13 +58,37 @@
                                th:data-name="${brand.name}">
                             </a>
                         </td>
+                        <td>
+                            <input type="checkbox" th:id="'brand_' + ${brand.id}" th:value="${brand.id}"
+                                   th:checked="${brand.status == 1}" onchange="submitStatusForm(this)">
+                        </td>
                     </tr>
                     </tbody>
                 </table>
+
+                <!-- Form ẩn để cập nhật trạng thái -->
+                <form id="statusForm" method="post" style="display:none;">
+                    <input type="hidden" name="status" id="statusInput">
+                    <input type="hidden" name="brandId" id="brandIdInput">
+                    <input type="hidden" name="name" id="nameInput">
+                </form>
+
+
             </div>
         </div>
     </main>
 </section>
+<!-- Modal xác nhận -->
+<div id="confirmStatusModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <p id="confirmMessage">Bạn có chắc chắn muốn ngừng hoạt động thương hiệu này không?</p>
+        <button onclick="confirmStatusChange()">Xác nhận</button>
+        <button onclick="cancelStatusChange()">Hủy</button>
+    </div>
+</div>
+
+
 <!-- Modal add-->
 <div id="addModal" class="modal">
     <div class="modal-content">

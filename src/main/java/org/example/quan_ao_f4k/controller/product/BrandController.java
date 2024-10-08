@@ -7,6 +7,7 @@ import org.example.quan_ao_f4k.list.ListResponse;
 import org.example.quan_ao_f4k.service.CrudService;
 import org.example.quan_ao_f4k.service.product.BrandServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -48,4 +49,19 @@ public class BrandController extends GenericController<BrandRequest, BrandRespon
 		model.addAttribute("brand", brand);
 		return "admin/product/brand";
 	}
+
+	@PostMapping("/update-status/{id}")
+	public String updateBrandStatus(@PathVariable("id") Long id,
+	                                                @RequestParam("status") int status,
+	                                                @RequestParam("name") String name
+	                                                ) {
+		BrandRequest brandRequest = new BrandRequest();
+		brandRequest.setId(id);
+		brandRequest.setName(name);
+		brandRequest.setStatus(status);
+		crudService.save(id, brandRequest);
+		return "redirect:/admin/brand";
+	}
+
+
 }

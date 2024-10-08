@@ -20,9 +20,6 @@ import org.example.quan_ao_f4k.model.authentication.User;
 @Table(name = "employee")
 public class Employee extends BaseEntity {
 
-    @Column(name = "user_id")
-    private Long userId;
-
     @ManyToOne
     @JoinColumn(name = "user_id", insertable = false, updatable = false)
     private User user;

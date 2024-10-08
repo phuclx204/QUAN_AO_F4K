@@ -23,6 +23,6 @@ public class Cart extends BaseEntity {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @Column(name = "status")
-    private Integer status;
+    @Column(name = "status", nullable = false)
+    private Integer status =1;
 }

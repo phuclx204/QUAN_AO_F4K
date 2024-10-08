@@ -43,7 +43,7 @@ public class ProductDetail extends BaseEntity {
 	@Column(name = "quantity",nullable = false)
 	private Integer quantity;
 
-	@Column(name = "status",nullable = false)
-	private Integer status;
+	@Column(name = "status", nullable = false)
+	private Integer status =1;
 
 }

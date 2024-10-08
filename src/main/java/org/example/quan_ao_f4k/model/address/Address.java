@@ -35,5 +35,5 @@ public class Address extends BaseEntity {
     private Ward ward;
 
     @Column(name = "status", nullable = false)
-    private String status;
+    private Integer status =1;
 }

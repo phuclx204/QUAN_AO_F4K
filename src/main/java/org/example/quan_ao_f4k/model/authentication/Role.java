@@ -20,5 +20,5 @@ public class Role extends BaseEntity {
     private String name;
 
     @Column(name = "status")
-    private Integer status;
+    private Integer status=1;
 }

@@ -37,5 +37,5 @@ public class User extends BaseEntity {
     private String numberPhone;
 
     @Column(name = "status")
-    private Integer status;
+    private Integer status=1;
 }

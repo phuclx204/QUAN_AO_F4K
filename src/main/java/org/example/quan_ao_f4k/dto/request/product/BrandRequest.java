@@ -7,6 +7,6 @@ public class BrandRequest {
 
     private Long id;
     private String name;
-    private Integer status;
+    private Integer status=1;
 
 }

@@ -22,7 +22,7 @@ import org.example.quan_ao_f4k.model.product.ProductDetail;
 @Setter
 public class Image {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY) // Tùy chọn nếu cần tự động tăng
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "name_file")
@@ -31,7 +31,15 @@ public class Image {
     @Column(name = "path")
     private String path;
 
+
+    @Column(name = "size", nullable = false)
+    private Long size;
+
     @ManyToOne
     @JoinColumn(name = "product_detail_id", nullable = false)
     private ProductDetail productDetail;
+
+
+    @Column(name = "status", nullable = false)
+    private Integer status =1;
 }

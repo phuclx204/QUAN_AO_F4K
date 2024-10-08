@@ -31,5 +31,5 @@ public class Notification extends BaseEntity {
     private String message;
 
     @Column(name = "status")
-    private Integer status;
+    private Integer status=1;
 }

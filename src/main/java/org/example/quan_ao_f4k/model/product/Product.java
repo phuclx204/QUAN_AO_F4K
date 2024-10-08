@@ -36,6 +36,6 @@ public class Product extends BaseEntity {
     @Column(name = "description")
     private String description;
 
-    @Column(name = "status")
-    private Integer status;
+    @Column(name = "status", nullable = false)
+    private Integer status =1;
 }

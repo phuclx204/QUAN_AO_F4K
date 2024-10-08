@@ -30,6 +30,6 @@ public class Promotion extends BaseEntity {
     @Column(name = "type")
     private Integer type;
 
-    @Column(name = "status")
-    private Integer status;
+    @Column(name = "status", nullable = false)
+    private Integer status =1;
 }
