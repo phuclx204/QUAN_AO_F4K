@@ -16,6 +16,5 @@ public class ProductDetailResponse {
     private BigDecimal price;
     private Guarantee guarantee;
     private Integer quantity;
-    private String thumbnail;
     private Integer status;
 }

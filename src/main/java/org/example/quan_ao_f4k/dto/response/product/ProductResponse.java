@@ -8,6 +8,7 @@ public class ProductResponse {
     private String name;
     private CategoryResponse category;
     private BrandResponse brand;
+    private String thumbnail;
     private String description;
     private Integer status;
     @Data

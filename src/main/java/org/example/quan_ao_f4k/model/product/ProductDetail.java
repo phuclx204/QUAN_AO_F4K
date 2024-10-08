@@ -43,9 +43,6 @@ public class ProductDetail extends BaseEntity {
 	@Column(name = "quantity",nullable = false)
 	private Integer quantity;
 
-	@Column(name = "thumbnail",nullable = true)
-	private String thumbnail;
-
 	@Column(name = "status",nullable = false)
 	private Integer status;
 

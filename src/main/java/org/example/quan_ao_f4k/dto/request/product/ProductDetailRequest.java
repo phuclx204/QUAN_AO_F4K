@@ -12,6 +12,5 @@ public class ProductDetailRequest {
     private BigDecimal price;
     private Long guaranteeId;
     private Integer quantity;
-    private String thumbnail;
     private Integer status;
 }
