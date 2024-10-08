@@ -6,4 +6,5 @@ import lombok.Data;
 public class GuaranteeRequest {
     private String name;
     private Integer status;
+
 }

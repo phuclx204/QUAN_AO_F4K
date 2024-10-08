@@ -35,15 +35,10 @@ public class BrandController extends GenericController<BrandRequest, BrandRespon
 		return "redirect:/admin/brand";
 	}
 
-	@PostMapping("/update")
-	public String updateBrand(@ModelAttribute BrandRequest brandRequest) {
-		BrandResponse existingBrand = brandService.findByName(brandRequest.getName());
-
-		if (existingBrand != null && !existingBrand.getId().equals(brandRequest.getId())) {
-			return "redirect:/admin/brand?error=nameExists";  // Chuyển hướng với lỗi nếu tên đã tồn tại
-		}
-
-		crudService.save(brandRequest);
+	@PostMapping("/update/{id}")
+	public String updateBrand(@PathVariable("id") Long id,@ModelAttribute BrandRequest brandRequest) {
+		brandRequest.setId(id);
+		crudService.save(id, brandRequest);
 		return "redirect:/admin/brand";
 	}
 

@@ -22,10 +22,16 @@ document.addEventListener("DOMContentLoaded", function () {
             const brandId = this.getAttribute("data-id");
             const brandName = this.getAttribute("data-name");
 
+            // Cập nhật giá trị cho trường ẩn
             document.getElementById("editBrandId").value = brandId;
             document.getElementById("editBrandName").value = brandName;
+
+            // Cập nhật action của form với ID
+            const editForm = document.getElementById("editForm");
+            editForm.setAttribute("action", `/admin/brand/update/${brandId}`);
 
             openModal('editModal');
         });
     });
 });
+

@@ -33,4 +33,7 @@ public class Address extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ward_id", nullable = false)
     private Ward ward;
+
+    @Column(name = "status", nullable = false)
+    private String status;
 }

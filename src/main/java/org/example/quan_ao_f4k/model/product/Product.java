@@ -34,7 +34,6 @@ public class Product extends BaseEntity {
     private String thumbnail;
 
     @Column(name = "description")
-
     private String description;
 
     @Column(name = "status")

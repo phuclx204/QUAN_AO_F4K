@@ -30,4 +30,7 @@ public class Category {
     @Column(name = "description")
     private String description;
 
+    @Column(name = "status", nullable = false)
+    private String status;
+
 }

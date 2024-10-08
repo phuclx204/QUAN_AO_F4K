@@ -6,5 +6,6 @@ import lombok.Data;
 public class ColorRequest {
 
     private String name;
+    private Integer status;
 
 }

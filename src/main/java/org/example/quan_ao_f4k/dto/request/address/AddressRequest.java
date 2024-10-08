@@ -8,4 +8,5 @@ public class AddressRequest {
 	private Long provinceId;
 	private Long districtId;
 	private Long wardId;
+	private Integer status;
 }

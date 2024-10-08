@@ -54,8 +54,8 @@
                         <td th:text="${brand.name}">Name</td>
                         <td>
                             <a href="javascript:void(0);" class="bx bx-edit"
-                               data-id="${brand.id}"
-                               data-name="${brand.name}">
+                               th:data-id="${brand.id}"
+                               th:data-name="${brand.name}">
                             </a>
                         </td>
                     </tr>
@@ -81,14 +81,10 @@
 <div id="editModal" class="modal">
     <div class="modal-content">
         <span class="close" onclick="closeModal()">&times;</span>
-        <form id="editForm" th:action="@{/admin/brand/update}" method="post">
+        <form id="editForm" th:action="@{/admin/brand/update/{id}(id=${editBrandId})}" method="post">
             <input type="hidden" id="editBrandId" name="id">
             <label for="editBrandName">Tên Thương Hiệu:</label>
             <input type="text" id="editBrandName" name="name" >
-            <!-- Xử lý thông báo lỗi -->
-            <div th:if="${param.error == 'nameExists'}" class="error">
-                Tên thương hiệu đã tồn tại!
-            </div>
             <button type="submit">Cập nhật</button>
         </form>
     </div>

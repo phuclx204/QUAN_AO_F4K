@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.example.quan_ao_f4k.model.BaseEntity;
 import org.example.quan_ao_f4k.model.address.Address;
+import org.example.quan_ao_f4k.model.authentication.User;
 
 import java.math.BigDecimal;
 
@@ -21,8 +22,13 @@ import java.math.BigDecimal;
 @Getter
 @Setter
 public class Order extends BaseEntity {
-    @Column(name = "code", nullable = false)
-    private String code;
+    @ManyToOne
+    @JoinColumn(name = "address_id")
+    private Address address;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
     @Column(name = "to_name", nullable = false)
     private String toName;
@@ -48,10 +54,11 @@ public class Order extends BaseEntity {
     @Column(name = "tax", precision = 10, scale = 2)
     private BigDecimal tax;
 
+    @Column(name = "code", length = 20, nullable = false,unique = true)
+    private String code;
+
     @Column(name = "status")
     private Integer status;
 
-    @ManyToOne
-    @JoinColumn(name = "address_id")
-    private Address address;
+
 }

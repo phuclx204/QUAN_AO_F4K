@@ -9,6 +9,8 @@ public class AddressResponse {
 	private ProvinceResponse province;
 	private DistrictResponse district;
 	private WardResponse ward;
+	private Integer status;
+
 }
 
 

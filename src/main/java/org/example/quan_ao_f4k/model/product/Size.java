@@ -24,4 +24,7 @@ public class Size {
 
     @Column(name = "name", nullable = false)
     private String name;
+
+    @Column(name = "status", nullable = false)
+    private String status;
 }

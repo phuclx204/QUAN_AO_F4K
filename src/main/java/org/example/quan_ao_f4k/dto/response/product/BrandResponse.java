@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 public class BrandResponse {
     private Long id;
     private String name;
+    private Integer status;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

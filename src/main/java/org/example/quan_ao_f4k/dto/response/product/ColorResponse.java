@@ -6,5 +6,6 @@ import lombok.Data;
 public class ColorResponse {
     private Long id;
     private String name;
+    private Integer status;
 
 }
