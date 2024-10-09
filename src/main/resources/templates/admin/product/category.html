@@ -1,14 +1,21 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 
-<head th:replace="admin/fragments/head::head"></head>
+<head>
+    <th:block th:insert="admin/fragments/head :: head"></th:block>
+    <link rel="stylesheet" th:href="@{/admin/plugins/bootstrap4/mine.css}"/>
+    <link rel="stylesheet" th:href="@{/admin/dist/css/common.css}"/>
+
+    <link rel="stylesheet" th:href="@{/admin/plugins/jqgrid-5.7.0/ui.jqgrid-bootstrap4.css}"/>
+    <link rel="stylesheet" th:href="@{/admin/plugins/sweetalert/sweetalert2.min.css}"/>
+</head>
 
 <body>
 <div th:replace="admin/fragments/sidebar::sidebar"></div>
 
-<section id="content" >
+<section id="content">
     <div th:replace="admin/fragments/content::content"></div>
-    <main >
+    <main>
         <div class="head-title">
             <div class="left">
                 <h1>Danh mục</h1>
@@ -18,18 +25,157 @@
                     </li>
                     <li><i class='bx bx-chevron-right'></i></li>
                     <li>
-                        <a class="active" th:href="@{brand}">Danh mục</a>
+                        <a class="active" th:href="@{category}">Danh mục</a>
                     </li>
                 </ul>
             </div>
-            <a href="#" class="btn-download">
-                <i class='bx bxs-cloud-download'></i>
-                <span class="text">Tải xuống PDF</span>
-            </a>
+            <!--            <a href="#" class="btn-download">-->
+            <!--                <i class='bx bxs-cloud-download'></i>-->
+            <!--                <span class="text">Tải xuống PDF</span>-->
+            <!--            </a>-->
+        </div>
+
+        <!--        content-->
+        <div class="main-pane">
+            <!--            <section class="content-wrapper">-->
+            <section>
+                <div class="row">
+                    <div class="col-md-12 align-items-stretch grid-margin div-search">
+                        <div class="card">
+                            <div class="card-body">
+                                <h4 class="card-title">Danh sách danh mục</h4>
+                                <form class="forms-sample" id="searchForm">
+                                    <div class="row d-flex justify-content-between">
+                                        <div class="col-6">
+                                            <div class="input-group mb-3">
+                                                <div class="input-group-prepend">
+                                                    <button class="btn btn-outline-secondary" type="submit"
+                                                            id="button-addon1">
+                                                        <i class="menu-icon mdi mdi-magnify"></i>
+                                                    </button>
+                                                </div>
+                                                <input id="searchInput" name="searchInput" type="text"
+                                                       class="form-control"
+                                                       placeholder="Tìm theo mã, tên">
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="d-flex justify-content-end">
+                                                <button class="btn-custom btn btn-success" data-toggle="modal"
+                                                        data-target="#staticBackdrop">
+                                                    <i class="button-icon mdi mdi-plus"></i>
+                                                    Thêm mới
+                                                </button>
+                                                <button class="btn-custom btn btn-success">
+                                                    <i class="button-icon mdi mdi-import"></i>
+                                                    Nhập file
+                                                </button>
+                                                <button class="btn-custom btn btn-success">
+                                                    <i class="button-icon mdi mdi-export"></i>
+                                                    Xuất file
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                                <div class="mt-2">
+                                    <table id="jqGrid" class="table table-bordered">
+                                    </table>
+                                    <div id="jqGridPager"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
         </div>
     </main>
 </section>
+<!--dialog area-->
+<div>
+    <!--    dialog create-->
+    <!--    style="z-index: 30000"-->
+    <div  class="modal fade" id="staticBackdrop" data-backdrop="static" data-keyboard="false"
+          tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content" style="top: 250px">
+                <form  class="needs-validation" novalidate>
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="staticBackdropLabel">Thêm danh mục</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <!--                        <div class="form-group">-->
+                        <!--                            <label>Tên danh mục</label>-->
+                        <!--                            <input type="text" class="form-control">-->
+                        <!--                        </div>-->
+                        <div class="form-group">
+                            <label>Tên danh mục</label>
+                            <input type="text" class="form-control" id="validationCustom03" required>
+                            <div class="invalid-feedback">
+                                Không được để trống
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-create btn-primary">Lưu</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Bỏ qua</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div style="z-index: 30000" class="modal fade" id="staticBackdrop2" data-backdrop="static" data-keyboard="false"
+         tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content" style="top: 250px">
+                <form class="needs-validation" novalidate>
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="staticBackdropLabel2">Thêm danh mục</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <!--                        <div class="form-group">-->
+                        <!--                            <label>Tên danh mục</label>-->
+                        <!--                            <input type="text" class="form-control">-->
+                        <!--                        </div>-->
+                        <div class="form-group">
+                            <label>Tên danh mục</label>
+                            <input type="text" class="form-control" id="validationCustom" required>
+                            <div class="invalid-feedback">
+                                Không được để trống
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-create btn-primary">Lưu</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Bỏ qua</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 
+<!--default script-->
 <script th:src="@{/admin/script.js}"></script>
+
+<!--jquery-->
+<script th:src="@{/admin/plugins/jquery/jquery.min.js}"></script>
+<!--plugin table-->
+<script th:src="@{/admin/plugins/jqgrid-5.7.0/common.js}"></script>
+<script th:src="@{/admin/plugins/jqgrid-5.7.0/jquery.jqGrid.min.js}"></script>
+<script th:src="@{/admin/plugins/jqgrid-5.7.0/grid.locale-vn.js}"></script>
+<!--alter-->
+<script th:src="@{/admin/plugins/sweetalert/common.js}"></script>
+<script th:src="@{/admin/plugins/sweetalert/sweetalert2.min.js}"></script>
+<!--bootstrap-->
+<script th:src="@{/admin/plugins/bootstrap4/bootstrap.bundle.js}"></script>
+<!--custom script-->
+<script th:src="@{/admin/product/category.js}"></script>
 </body>
 </html>
