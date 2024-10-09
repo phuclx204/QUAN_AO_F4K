@@ -479,6 +479,10 @@ body {
     grid-gap: 10px;
     font-weight: 500;
 }
+.btn-container {
+    display: flex; /* Sử dụng Flexbox để căn chỉnh */
+    gap: 10px; /* Khoảng cách giữa hai nút */
+}
 
 
 

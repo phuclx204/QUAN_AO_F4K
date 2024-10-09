@@ -73,3 +73,19 @@ function cancelStatusChange() {
     }
     closeModal(); // Đóng modal
 }
+function toggleSearchInput() {
+    const input = document.getElementById('searchInput');
+    const searchIcon = document.getElementById('searchIcon');
+
+    // Nếu ô input đang ẩn thì hiển thị
+    if (input.style.display === 'none' || input.style.display === '') {
+        input.style.display = 'block'; // Hiện ô input
+        searchIcon.style.display = 'none'; // Ẩn biểu tượng tìm kiếm
+        input.focus(); // Đưa con trỏ vào ô input
+    } else {
+        input.style.display = 'none'; // Ẩn ô input
+        searchIcon.style.display = 'block'; // Hiện biểu tượng tìm kiếm
+    }
+}
+
+

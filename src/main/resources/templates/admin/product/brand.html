@@ -2,13 +2,14 @@
 <html xmlns:th="http://www.thymeleaf.org">
 
 <head th:replace="admin/fragments/head::head"></head>
+<link rel="stylesheet" th:href="@{/admin/product/brand.css}">
 
 <body>
 <div th:replace="admin/fragments/sidebar::sidebar"></div>
 
-<section id="content" >
+<section id="content">
     <div th:replace="admin/fragments/content::content"></div>
-    <main >
+    <main>
         <div class="head-title">
             <div class="left">
                 <h1>Thương hiệu</h1>
@@ -22,10 +23,16 @@
                     </li>
                 </ul>
             </div>
-            <a href="#" class="btn-download">
-                <i class='bx bxs-cloud-download'></i>
-                <span class="text">Tải xuống PDF</span>
-            </a>
+            <div class="btn-container">
+                <a th:href="@{/admin/brand/exportExcel}" class="btn-download">
+                    <i class='bx bxs-cloud-download'></i>
+                    <span class="text">Tải xuống Excel</span>
+                </a>
+                <a th:href="@{/admin/brand/exportPdf}" class="btn-download">
+                    <i class='bx bxs-cloud-download'></i>
+                    <span class="text">Tải xuống PDF</span>
+                </a>
+            </div>
         </div>
 
         <div class="table-data">
@@ -36,8 +43,16 @@
                     </a>
 
                     <h3>Danh sách thương hiệu</h3>
-                    <i class='bx bx-search'></i>
-                    <i class='bx bx-filter'></i>
+                    <form th:action="@{/admin/brand}" method="get" class="search-form">
+                        <div class="search-container">
+                            <i class='bx bx-search' id="searchIcon" onclick="toggleSearchInput()"></i>
+                            <input type="text" name="search" placeholder="Tìm kiếm thương hiệu..."
+                                   th:value="${param.search}" style="display: none;" id="searchInput"/>
+                        </div>
+                    </form>
+
+
+                    <!--                    <i class='bx bx-filter'></i>-->
                 </div>
                 <table>
                     <thead>
@@ -108,7 +123,7 @@
         <form id="editForm" th:action="@{/admin/brand/update/{id}(id=${editBrandId})}" method="post">
             <input type="hidden" id="editBrandId" name="id">
             <label for="editBrandName">Tên Thương Hiệu:</label>
-            <input type="text" id="editBrandName" name="name" >
+            <input type="text" id="editBrandName" name="name">
             <button type="submit">Cập nhật</button>
         </form>
     </div>
