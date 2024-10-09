@@ -1,5 +1,6 @@
 package org.example.quan_ao_f4k.controller.product;
 
+import jakarta.servlet.http.HttpServletResponse;
 import org.example.quan_ao_f4k.controller.GenericController;
 import org.example.quan_ao_f4k.dto.request.product.BrandRequest;
 import org.example.quan_ao_f4k.dto.response.product.BrandResponse;
@@ -18,17 +19,19 @@ import java.util.List;
 @RequestMapping(value = "/admin/brand")
 public class BrandController extends GenericController<BrandRequest, BrandResponse> {
 	@Autowired
-	private CrudService<Long,BrandRequest,BrandResponse> crudService;
+	private CrudService<Long, BrandRequest, BrandResponse> crudService;
 
 	@Autowired
 	private BrandServiceImpl brandService;
 
+
 	@GetMapping
-	public String getAllBrands(Model model) {
-		ListResponse<BrandResponse> brands = crudService.findAll(1, 20, "id,desc", null, null, false);
+	public String getAllBrands(@RequestParam(required = false) String search, Model model) {
+		ListResponse<BrandResponse> brands = crudService.findAll(1, 20, "id,desc", null, search, false);
 		model.addAttribute("brands", brands.getContent());
 		return "admin/product/brand";
 	}
+
 
 	@PostMapping("/add")
 	public String createBrand(@ModelAttribute BrandRequest brandRequest) {
@@ -37,7 +40,7 @@ public class BrandController extends GenericController<BrandRequest, BrandRespon
 	}
 
 	@PostMapping("/update/{id}")
-	public String updateBrand(@PathVariable("id") Long id,@ModelAttribute BrandRequest brandRequest) {
+	public String updateBrand(@PathVariable("id") Long id, @ModelAttribute BrandRequest brandRequest) {
 		brandRequest.setId(id);
 		crudService.save(id, brandRequest);
 		return "redirect:/admin/brand";
@@ -52,9 +55,9 @@ public class BrandController extends GenericController<BrandRequest, BrandRespon
 
 	@PostMapping("/update-status/{id}")
 	public String updateBrandStatus(@PathVariable("id") Long id,
-	                                                @RequestParam("status") int status,
-	                                                @RequestParam("name") String name
-	                                                ) {
+	                                @RequestParam("status") int status,
+	                                @RequestParam("name") String name
+	) {
 		BrandRequest brandRequest = new BrandRequest();
 		brandRequest.setId(id);
 		brandRequest.setName(name);
@@ -62,6 +65,21 @@ public class BrandController extends GenericController<BrandRequest, BrandRespon
 		crudService.save(id, brandRequest);
 		return "redirect:/admin/brand";
 	}
+
+	@GetMapping("/exportExcel")
+	public void exportExcel(HttpServletResponse response) throws Exception {
+		// Đặt loại nội dung và tiêu đề cho response
+		response.setContentType("application/vnd.ms-excel");
+		response.setHeader("Content-Disposition", "attachment; filename=DanhSachThuongHieu.xls");
+
+		// Gọi phương thức exportExcel từ service để tạo file
+		brandService.exportExcel(response);
+	}
+	@GetMapping("/exportPdf")
+	public void exportPdf(HttpServletResponse response) throws Exception {
+		brandService.exportPdf(response);
+	}
+
 
 
 }
