@@ -5,7 +5,7 @@ public class BadRequestException extends RuntimeException {
         super(message);
     }
 
-    public BadRequestException(String message, String ...params) {
-        super(String.format(message, (Object[]) params));
+    public BadRequestException(String message, Object ...params) {
+        super(String.format(message, params));
     }
 }
