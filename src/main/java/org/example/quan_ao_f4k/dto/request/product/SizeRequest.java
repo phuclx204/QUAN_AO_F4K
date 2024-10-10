@@ -5,6 +5,7 @@ import lombok.Data;
 @Data
 public class SizeRequest {
 
+    private Long id;
     private String name;
     private Integer status;
 

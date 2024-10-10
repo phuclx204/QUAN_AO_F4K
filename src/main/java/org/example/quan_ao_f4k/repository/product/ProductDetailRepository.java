@@ -12,4 +12,7 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, Lo
 
 	@Query("SELECT p from ProductDetail p where p.color.id = ?1")
 	List<ProductDetail> findByColorId(Long id);
+
+	@Query("SELECT p from ProductDetail p where p.size.id = ?1")
+	List<ProductDetail> findBySizeId(Long id);
 }
