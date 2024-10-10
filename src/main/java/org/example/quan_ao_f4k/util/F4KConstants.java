@@ -18,6 +18,7 @@ public class F4KConstants {
         private TableCode() {};
 
         public static final String CATEGORY = "category";
+        public static final String COLOR = "color";
         public static final String PRODUCT_DETAIL = "ProductDetail";
     }
 }
