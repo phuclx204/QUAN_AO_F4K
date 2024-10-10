@@ -26,7 +26,7 @@ function $alter(type, title, text) {
     });
 }
 
-function $confirm(type, title, text) {
+function $confirm(type, text, title = 'Nhắc nhở') {
     return Swal.fire({
         title: title,
         text: text,
