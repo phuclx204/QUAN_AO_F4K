@@ -41,12 +41,14 @@ $(function () {
 
                 $confirm('warning', 'Bạn có chắc chắn muốn xóa?')
                     .then(async rs => {
-                        try {
-                            await callApi(URL + '?id=' + rowId, DELETE)
-                            $alterTop('success', 'Xóa bản ghi thành công');
-                            reload();
-                        } catch (err) {
-                            console.log(err)
+                        if (rs.isConfirmed) {
+                            try {
+                                await callApi(URL + '?id=' + rowId, DELETE)
+                                $alterTop('success', 'Xóa bản ghi thành công');
+                                reload();
+                            } catch (err) {
+                                console.log(err)
+                            }
                         }
                     }).catch(err => {
                     console.log(err)
@@ -66,7 +68,7 @@ $(function () {
 
 const openModalUpdate = (id) => {
     // get row data
-    const ret = queryTable.jqGrid('getRowData',id);
+    const ret = queryTable.jqGrid('getRowData', id);
 
     //overriding in modal
     const form = $('.form-update-insert');
@@ -79,7 +81,7 @@ const openModalUpdate = (id) => {
     queryModal.modal('show')
 }
 
-const closeModal= ($this) => {
+const closeModal = ($this) => {
     $this.modal('hide')
 }
 

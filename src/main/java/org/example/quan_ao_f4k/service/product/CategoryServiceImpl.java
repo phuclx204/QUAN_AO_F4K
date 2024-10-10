@@ -6,6 +6,7 @@ import org.example.quan_ao_f4k.dto.response.product.CategoryResponse;
 import org.example.quan_ao_f4k.exception.BadRequestException;
 import org.example.quan_ao_f4k.list.ListResponse;
 import org.example.quan_ao_f4k.mapper.product.CategoryMapper;
+import org.example.quan_ao_f4k.model.product.Category;
 import org.example.quan_ao_f4k.repository.product.CategoryRepository;
 import org.example.quan_ao_f4k.repository.product.ProductRepository;
 import org.example.quan_ao_f4k.util.F4KConstants;
@@ -13,6 +14,7 @@ import org.example.quan_ao_f4k.util.SearchFields;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @AllArgsConstructor
@@ -49,12 +51,25 @@ public class CategoryServiceImpl implements CategoryService {
     public CategoryResponse save(Long aLong, CategoryRequest request) {
         request.setStatus(0);
         categoryRepository.findById(aLong).orElseThrow(
-                () -> new BadRequestException(String.format(
+                () -> new BadRequestException(
                         F4KConstants.ErrCode.NOT_FOUND.getDescription()
-                        , aLong, F4KConstants.TableCode.CATEGORY
-                ))
+                        , aLong
+                        , F4KConstants.TableCode.CATEGORY)
         );
-        return defaultSave(aLong, request, categoryRepository, categoryMapper, "");
+        Category category = categoryRepository.findByName(request.getName());
+        if (category == null) {
+            return defaultSave(aLong, request, categoryRepository, categoryMapper, "");
+        } else {
+            if (Objects.equals(category.getId(), aLong) && category.getName().equals(request.getName())) {
+                return defaultSave(aLong, request, categoryRepository, categoryMapper, "");
+            } else {
+                throw new BadRequestException(
+                        F4KConstants.ErrCode.IS_EXITS.getDescription(),
+                        request.getName(),
+                        F4KConstants.TableCode.CATEGORY
+                );
+            }
+        }
     }
 
     @Override
