@@ -11,6 +11,7 @@ import org.example.quan_ao_f4k.repository.product.CategoryRepository;
 import org.example.quan_ao_f4k.repository.product.ProductRepository;
 import org.example.quan_ao_f4k.util.F4KConstants;
 import org.example.quan_ao_f4k.util.SearchFields;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,7 +21,11 @@ import java.util.Objects;
 @AllArgsConstructor
 public class CategoryServiceImpl implements CategoryService {
     private CategoryMapper categoryMapper;
+
+    @Autowired
     private CategoryRepository categoryRepository;
+
+    @Autowired
     private ProductRepository productRepository;
 
 
