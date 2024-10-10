@@ -1,7 +1,9 @@
 const URL_SEARCH = '/api/category';
+const URL = '/admin/category';
 const idTbl = '#jqGrid';
 const queryTable = $('#jqGrid');
 const querySearch = $('#searchForm');
+const queryModal = $('#staticBackdrop');
 
 $(function () {
     queryTable.jqGrid({
@@ -31,36 +33,55 @@ $(function () {
         gridComplete: () => {
             initCss(queryTable, 'table-sm')
 
-            $(BTN.CREATE).click(function (e) {
-                onCreate()
-            });
-
+            // vì trong cột phải khai báo tại đây
             // onDelete();
             $(BTN.DELETE).click(function (e) {
                 e.preventDefault();
-                var selectedRow = queryTable.find(".jqgrow.active");
-                console.log(selectedRow)
-                var rowId = $(this).data("id");
-                console.log(rowId)
-                onDelete(rowId);
+                const rowId = $(this).data("id");
+
+                $confirm('warning', 'Bạn có chắc chắn muốn xóa?')
+                    .then(async rs => {
+                        try {
+                            await callApi(URL + '?id=' + rowId, DELETE)
+                            $alterTop('success', 'Xóa bản ghi thành công');
+                            reload();
+                        } catch (err) {
+                            console.log(err)
+                        }
+                    }).catch(err => {
+                    console.log(err)
+                })
+            });
+
+            // onUpdate();
+            $(BTN.UPDATE).click(function (e) {
+                e.preventDefault();
+                const rowId = $(this).data("id");
+
+                openModalUpdate(rowId);
             });
         }
     });
 });
 
-// Lắng nghe sự kiện submit của form tìm kiếm
-querySearch.on('submit', function (e) {
-    // Chặn submit
-    e.preventDefault();
+const openModalUpdate = (id) => {
+    // get row data
+    const ret = queryTable.jqGrid('getRowData',id);
 
-    const searchValue = $('#searchInput').val();
-    console.log(searchValue, ' searchValue')
+    //overriding in modal
+    const form = $('.form-update-insert');
+    form.removeClass('was-validated');
+    form.find('#model_id').val(ret.id);
+    form.find('#model_name').val(ret.name);
+    form.find('#model_description').val(ret.description);
 
-    // set url and reload
-    queryTable.jqGrid('setGridParam', {
-        url: URL_SEARCH + '?search=' + encodeURIComponent(searchValue),
-    }).trigger('reloadGrid');
-});
+    // open modal
+    queryModal.modal('show')
+}
+
+const closeModal= ($this) => {
+    $this.modal('hide')
+}
 
 function reload() {
     const page = queryTable.jqGrid('getGridParam', 'page');
@@ -69,110 +90,47 @@ function reload() {
     }).trigger("reloadGrid");
 }
 
-function onDelete(id) {
-    $alterTop('success', 'Đã xóa thành công')
-    // $confirm('warning', 'question', 'banana')
-    //     .then(rs => {
-    //         console.log(rs.isConfirmed)
-    //     })
-
-    // const ids = getSelectedRows();
-    // console.log(ids)
-    // if (ids == null) {
-    //     return;
-    // }
-    // swal({
-    //     title: "Cảnh báo",
-    //     text: "Có chắc chắn muốn xóa danh mục không?",
-    //     icon: "warning",
-    //     buttons: true,
-    //     dangerMode: true,
-    // }).then((flag) => {
-    //     swal("Xóa thành công", {
-    //         icon: "success",
-    //     });
-    //     console.log(flag)
-    //         // if (flag) {
-    //         //     $.ajax({
-    //         //         type: "POST",
-    //         //         url: "/admin/categories/delete",
-    //         //         contentType: "application/json",
-    //         //         data: JSON.stringify(ids),
-    //         //         success: function (r) {
-    //         //             if (r.resultCode == 200) {
-    //         //                 swal("删除成功", {
-    //         //                     icon: "success",
-    //         //                 });
-    //         //                 $("#jqGrid").trigger("reloadGrid");
-    //         //             } else {
-    //         //                 swal(r.message, {
-    //         //                     icon: "error",
-    //         //                 });
-    //         //             }
-    //         //         }
-    //         //     });
-    //         // }
-    //     }
-    // );
-}
-
-function onCreate() {
-    console.log('vao')
-    var forms = document.getElementsByClassName('needs-validation');
-    var validation = Array.prototype.filter.call(forms, function (form) {
-        form.addEventListener('submit', function (event) {
-            if (form.checkValidity() === false) {
-                event.preventDefault();
-                event.stopPropagation();
+// on create
+$(BTN.CREATE).click(() => {
+    validate('needs-validation form-update-insert')
+        .then(async () => {
+            const form = $('.form-update-insert');
+            const data = {};
+            const id = form.find('#model_id').val();
+            const method = id ? PUT : POST;
+            if (id) {
+                data.id = id;
             }
-            form.classList.add('was-validated');
-        }, false);
-    });
-    console.log(validation, ' - validation')
-    $.ajax({
-        type: "POST",
-        url: "/admin/category",
-        contentType: "application/json",
-        data: JSON.stringify(''),
-        success: function (r) {
-            console.log(r)
-            // if (r.resultCode == 200) {
-            //     swal("删除成功", {
-            //         icon: "success",
-            //     });
-            //     $("#jqGrid").trigger("reloadGrid");
-            // } else {
-            //     swal(r.message, {
-            //         icon: "error",
-            //     });
-            // }
-        },
-        error: function (xhr, status, error) {
-            // Xử lý lỗi từ phía server
-            const objectError = xhr.responseJSON
+            data.name = form.find('#model_name').val();
+            data.description = form.find('#model_description').val();
+            try {
+                await callApi(URL, method, data);
+                $alterTop('success', id ? 'Cập nhật thành công' : 'Thêm mới thành công');
+                closeModal(queryModal);
+                reload();
+            } catch (err) {
+                console.log(err)
+            }
+        })
+})
 
-            $alterTop('error', objectError.message)
-            // swal("Error: " + xhr.responseText, {
-            //     icon: "error",
-            // });
-        }
-    });
-}
+// btn search - Lắng nghe sự kiện submit của form tìm kiếm
+querySearch.on('submit', function (e) {
+    // Chặn submit
+    e.preventDefault();
+    const searchValue = $('#searchInput').val();
+    console.log(searchValue, ' searchValue')
+    // set url and reload
+    queryTable.jqGrid('setGridParam', {
+        url: URL_SEARCH + '?search=' + encodeURIComponent(searchValue),
+    }).trigger('reloadGrid');
+});
 
-// (function() {
-//     'use strict';
-//     window.addEventListener('load', function() {
-//         // Fetch all the forms we want to apply custom Bootstrap validation styles to
-//         var forms = document.getElementsByClassName('needs-validation');
-//         // Loop over them and prevent submission
-//         var validation = Array.prototype.filter.call(forms, function(form) {
-//             form.addEventListener('submit', function(event) {
-//                 if (form.checkValidity() === false) {
-//                     event.preventDefault();
-//                     event.stopPropagation();
-//                 }
-//                 form.classList.add('was-validated');
-//             }, false);
-//         });
-//     }, false);
-// })();
+// refresh when modal close
+queryModal.on('hidden.bs.modal', function (event) {
+    const form = $('.form-update-insert');
+    form.removeClass('was-validated');
+    form.find('#model_id').val('');
+    form.find('#model_name').val('');
+    form.find('#model_description').val('');
+})

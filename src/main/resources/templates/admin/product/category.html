@@ -99,7 +99,7 @@
           tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content" style="top: 250px">
-                <form  class="needs-validation" novalidate>
+                <form  class="needs-validation form-update-insert" novalidate>
                     <div class="modal-header">
                         <h5 class="modal-title" id="staticBackdropLabel">Thêm danh mục</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -107,45 +107,20 @@
                         </button>
                     </div>
                     <div class="modal-body">
-                        <!--                        <div class="form-group">-->
-                        <!--                            <label>Tên danh mục</label>-->
-                        <!--                            <input type="text" class="form-control">-->
-                        <!--                        </div>-->
+                        <div class="form-group d-none">
+                            <label>ID</label>
+                            <input type="text" class="form-control" id="model_id">
+                        </div>
                         <div class="form-group">
                             <label>Tên danh mục</label>
-                            <input type="text" class="form-control" id="validationCustom03" required>
+                            <input type="text" class="form-control" id="model_name" required>
                             <div class="invalid-feedback">
                                 Không được để trống
                             </div>
                         </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="submit" class="btn btn-create btn-primary">Lưu</button>
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Bỏ qua</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-    <div style="z-index: 30000" class="modal fade" id="staticBackdrop2" data-backdrop="static" data-keyboard="false"
-         tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content" style="top: 250px">
-                <form class="needs-validation" novalidate>
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="staticBackdropLabel2">Thêm danh mục</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <!--                        <div class="form-group">-->
-                        <!--                            <label>Tên danh mục</label>-->
-                        <!--                            <input type="text" class="form-control">-->
-                        <!--                        </div>-->
                         <div class="form-group">
-                            <label>Tên danh mục</label>
-                            <input type="text" class="form-control" id="validationCustom" required>
+                            <label>Mô tả</label>
+                            <input type="text" class="form-control" id="model_description" required>
                             <div class="invalid-feedback">
                                 Không được để trống
                             </div>
@@ -176,6 +151,7 @@
 <!--bootstrap-->
 <script th:src="@{/admin/plugins/bootstrap4/bootstrap.bundle.js}"></script>
 <!--custom script-->
+<script th:src="@{/admin/dist/js/public.js}"></script>
 <script th:src="@{/admin/product/category.js}"></script>
 </body>
 </html>
