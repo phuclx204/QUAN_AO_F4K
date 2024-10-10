@@ -18,9 +18,6 @@ public class ColorController {
     @Autowired
     private ColorServiceImpl colorService;
 
-    @Autowired
-    private GenericController<ColorResponse, ColorRequest> controller;
-
 
     @GetMapping
     public String getColor() {
