@@ -3,6 +3,19 @@ const GET = 'GET';
 const PUT = 'PUT';
 const DELETE = 'DELETE';
 
+const createUrl = (action, controller, params = {}) => {
+    const baseUrl = window.location.origin;
+
+    let url = `${baseUrl}/${controller}/${action}`;
+
+    const queryString = new URLSearchParams(params).toString();
+    if (queryString) {
+        url += `?${queryString}`;
+    }
+
+    return url;
+}
+
 function validate(formClass) {
     return new Promise((resolve, reject) => {
         const forms = document.getElementsByClassName(formClass);
