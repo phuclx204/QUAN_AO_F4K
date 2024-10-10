@@ -26,13 +26,16 @@ const girdOptionDefault = {
     loadonce: false,
 }
 
-function initCss($this, tableSize = 'table-md') {
-    $this.closest(".ui-jqgrid-bdiv").css({"overflow-x": "hidden"});
-    $this.closest(".ui-jqgrid").find('.ui-jqgrid-hbox').css({
+function initCss($this, tableSize = 'table-md', haveBorder = false) {
+    // $this.closest(".ui-jqgrid-bdiv").css({"overflow-x": "hidden"});
+
+    $this.closest(".ui-jqgrid").find('.ui-jqgrid-hdiv').css({
         background: '#e9ecef'
     });
     $this.closest('.ui-jqgrid').find('thead').addClass('thead-light');
-    $this.closest('.ui-jqgrid').find('.ui-jqgrid-btable').addClass('table table-hover ' + tableSize).removeClass('table-bordered');
+    const table = $this.closest('.ui-jqgrid').find('.ui-jqgrid-btable')
+    table.addClass('table-hover ' + tableSize)
+    if (!haveBorder) table.removeClass('table-bordered');
 }
 
 function addStt(data) {
@@ -53,4 +56,36 @@ function addButtonIcon(rowObject = {}, hasDelete = true) {
     const btnDelete = '<a class="btn-delete btn btn-icon text-danger" data-id="' + rowObject.id + '"><i class="icon-sm menu-icon ti-trash"></i></a>'
 
     return divStart + btnUpdate + (hasDelete ? btnDelete : '') + divEnd
+}
+
+class ResizeObserverManager {
+    constructor($selector, $gird) {
+        const updateGridWidth = () => {
+            const newWidth = this.selector.width();
+            this.gird.jqGrid('setGridWidth', newWidth - 55, true);
+        }
+
+        this.selector = $selector
+        this.gird = $gird
+
+        const resizeObserver = new ResizeObserver(function (entries) {
+            for (let entry of entries) {
+                if (entry.contentBoxSize) {
+                    updateGridWidth(); // Khi thẻ card thay đổi kích thước, cập nhật jqGrid
+                }
+            }
+        });
+
+        // Bắt đầu theo dõi thẻ card
+        if (this.selector) {
+            resizeObserver.observe(document.querySelector('.card'));
+        }
+
+        updateGridWidth();
+    }
+
+    disconnect() {
+        // Dừng theo dõi nếu cần
+        resizeObserver.unobserve(this.selector);
+    }
 }

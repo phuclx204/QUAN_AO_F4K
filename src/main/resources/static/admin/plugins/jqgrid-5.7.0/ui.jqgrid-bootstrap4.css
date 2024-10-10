@@ -4,9 +4,13 @@
 /*	padding-bottom: 9px;*/
 /*}*/
 
+.ui-th-column {
+	border-right: 1px solid #ffffff!important;
+}
+
 #jqGrid__stt {
 	text-align: center!important;
-	/*padding-left: 2px;*/
+	padding-left: 2px;
 }
 
 .ui-jqgrid-pager {

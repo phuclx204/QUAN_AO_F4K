@@ -13,9 +13,11 @@ $(function () {
         autowidth: true,
         // multiselect: true,
         loadonce: false,
+        // shrinkToFit: false,
+        // forceFit: true,
         colModel: [
             {label: 'ID', name: 'id', index: 'id', width: 50, key: true, hidden: true},
-            {label: 'STT', name: '_stt', index: 'stt', width: 25, align: 'center'},
+            {label: 'STT', name: '_stt', index: 'stt', width: 25, resizable: false, align: 'center'},
             {label: 'Tên', name: 'name', index: 'name'},
             {label: 'Mô tả', name: 'description', index: 'description'},
             {
@@ -24,15 +26,17 @@ $(function () {
                 width: 100,
                 align: 'center',
                 sortable: false,
+                resizable: false,
                 formatter: (c, o, r) => addButtonIcon(r)
             }
         ],
         // thêm số thứ tự cho bản ghi trả về
         beforeProcessing: (data) => addStt(data),
-        // initCss from common.js
         gridComplete: () => {
-            initCss(queryTable, 'table-sm')
-
+            // initCss from common.js
+            initCss(queryTable, 'table-sm', false)
+            // resize
+            new ResizeObserverManager($(".card"), queryTable);
             // vì trong cột phải khai báo tại đây
             // onDelete();
             $(BTN.DELETE).click(function (e) {
@@ -64,7 +68,9 @@ $(function () {
             });
         }
     });
+
 });
+
 
 const openModalUpdate = (id) => {
     // get row data
