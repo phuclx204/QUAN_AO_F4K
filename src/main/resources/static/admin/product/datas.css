@@ -1,0 +1,153 @@
+.search-container {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Khoảng cách giữa ô nhập và nút */
+}
+
+.search-container input[type="text"] {
+    width: 250px; /* Chiều rộng của ô nhập */
+    padding: 10px; /* Đệm bên trong ô nhập */
+    border: 1px solid #ccc; /* Màu viền */
+    border-radius: 4px; /* Bo góc ô nhập */
+    font-size: 14px; /* Kích thước phông chữ */
+}
+
+.search-container .search-btn {
+    padding: 10px; /* Đệm cho nút */
+    background-color: var(--blue); /* Màu nền nút */
+    color: var(--light); /* Màu chữ nút */
+    border: none; /* Không có viền */
+    border-radius: 4px; /* Bo góc nút */
+    cursor: pointer; /* Hiển thị con trỏ khi di chuột */
+    font-size: 14px; /* Kích thước phông chữ */
+}
+
+.search-container .search-btn i {
+    margin: 0; /* Đặt lại lề cho biểu tượng */
+}
+
+/* Modal Container */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgba(0, 0, 0, 0.4); /* Black with opacity */
+    transition: all 0.3s ease-in-out; /* Smooth transition for resize */
+}
+
+/* Modal Content */
+.modal-content {
+    background-color: #fefefe;
+    margin: auto; /* Center horizontally */
+    margin-top: 5%; /* Adjust top margin for responsiveness */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 90%; /* Default width */
+    max-width: 500px; /* Max width for larger screens */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Add shadow for better visibility */
+    border-radius: 8px; /* Rounded corners */
+    position: relative;
+    transition: all 0.3s ease-in-out; /* Smooth transition for resize */
+}
+
+/* Close Button */
+.close {
+    color: #aaa;
+    position: absolute;
+    right: 20px;
+    top: 15px;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+/* Form Styling */
+form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Input Fields */
+input[type="text"] {
+    width: 100%; /* Full width inside modal */
+    padding: 10px;
+    margin: 10px 0;
+    box-sizing: border-box;
+    border: 1px solid #888;
+    border-radius: 4px;
+    transition: all 0.3s ease-in-out;
+}
+
+/* Button Styling */
+button {
+    padding: 10px 20px;
+    background-color: var(--blue); /* Match color with search button */
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+    border-radius: 30px;
+}
+
+button:hover {
+    background-color:var(--cyan);
+    border-radius: 50px;
+}
+
+/* Media Query for Smaller Screens */
+@media (max-width: 600px) {
+    .modal-content {
+        width: 95%; /* Increase width for smaller screens */
+        padding: 15px; /* Adjust padding */
+    }
+
+    input[type="text"] {
+        font-size: 14px; /* Adjust font size for input fields */
+    }
+
+    button {
+        width: 100%; /* Button takes full width on smaller screens */
+    }
+}
+
+.page-button {
+    padding: 10px 15px; /* Thêm khoảng cách cho nút */
+    border: none; /* Xóa đường viền mặc định */
+    background-color: #007bff; /* Màu nền mặc định */
+    cursor: pointer; /* Hiển thị con trỏ chuột khi di chuột qua */
+    border-radius: 50px; /* Thêm border-radius */
+    margin: 0 5px; /* Thêm khoảng cách giữa các nút */
+    transition: background-color 0.3s; /* Hiệu ứng chuyển màu mượt mà */
+}
+
+.page-button:hover {
+    background-color: var(--cyan); /* Màu nền khi hover */
+    border-radius: 50px;
+}
+
+.page-button.active {
+    background-color: #9df3e8; /* Màu nền cho nút đang được chọn */
+    color: #626ef3; /* Đổi màu chữ cho nút đang được chọn */
+    border-radius: 50px;
+
+}
+.page-button.disabled {
+    background-color: #e0e0e0; /* Màu nền cho nút bị vô hiệu hóa */
+    color: #3d3d3d; /* Màu chữ cho nút bị vô hiệu hóa */
+    cursor: not-allowed; /* Con trỏ không cho phép */
+    pointer-events: none; /* Vô hiệu hóa sự kiện chuột */
+}
+

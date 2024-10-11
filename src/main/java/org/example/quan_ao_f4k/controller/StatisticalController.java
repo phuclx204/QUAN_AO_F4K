@@ -5,11 +5,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
-@RequestMapping(value = "admin")
-public class DemoController {
+@RequestMapping(value = "/admin/statistical")
+public class StatisticalController {
 
-    @GetMapping(value = "statistical")
-    public String mmDashboard() {
-        return "admin/index";
-    }
+	@GetMapping
+	public String mmDashboard() {
+		return "admin/statistical";
+	}
 }
