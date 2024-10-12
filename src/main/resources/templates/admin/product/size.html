@@ -3,6 +3,7 @@
 
 <head>
     <th:block th:insert="admin/fragments/head :: head"></th:block>
+    <link rel="stylesheet" th:href="@{/admin/product/datas.css}">
     <link rel="stylesheet" th:href="@{/admin/plugins/bootstrap4/mine.css}"/>
     <link rel="stylesheet" th:href="@{/admin/dist/css/common.css}"/>
 
@@ -18,114 +19,86 @@
     <main>
         <div class="head-title">
             <div class="left">
-                <h1>Kích thước</h1>
+                <h1>Quản lý kích thước</h1>
                 <ul class="breadcrumb">
                     <li>
                         <a th:href="@{statistical}">Trang chủ</a>
                     </li>
                     <li><i class='bx bx-chevron-right'></i></li>
                     <li>
-                        <a class="active" th:href="@{color}">Kích thước</a>
+                        <a class="active" th:href="@{size}">Kích thước</a>
                     </li>
                 </ul>
             </div>
-            <!--            <a href="#" class="btn-download">-->
-            <!--                <i class='bx bxs-cloud-download'></i>-->
-            <!--                <span class="text">Tải xuống PDF</span>-->
-            <!--            </a>-->
+            <div class="btn-container">
+                <a th:href="@{/admin/size/export/excel}" class="btn-download">
+                    <i class='bx bxs-cloud-download'></i>
+                    <span class="text">Tải xuống Excel</span>
+                </a>
+                <a th:href="@{/admin/size/export/pdf}" class="btn-download">
+                    <i class='bx bxs-cloud-download'></i>
+                    <span class="text">Tải xuống PDF</span>
+                </a>
+            </div>
         </div>
 
-        <!--        content-->
-        <div class="main-pane">
-            <!--            <section class="content-wrapper">-->
-            <section>
-                <div class="row">
-                    <div class="col-md-12 align-items-stretch grid-margin div-search">
-                        <div class="card">
-                            <div class="card-body">
-                                <h4 class="card-title">Danh sách kích thước</h4>
-                                <form class="forms-sample" id="searchForm">
-                                    <div class="row d-flex justify-content-between">
-                                        <div class="col-6">
-                                            <div class="input-group mb-3">
-                                                <div class="input-group-prepend">
-                                                    <button class="btn btn-outline-secondary" type="submit"
-                                                            id="button-addon1">
-                                                        <i class="menu-icon mdi mdi-magnify"></i>
-                                                    </button>
-                                                </div>
-                                                <input id="searchInput" name="searchInput" type="text"
-                                                       class="form-control"
-                                                       placeholder="Tìm theo mã, tên">
-                                            </div>
-                                        </div>
-                                        <div class="col-6">
-                                            <div class="d-flex justify-content-end">
-                                                <button class="btn-custom btn btn-success" data-toggle="modal"
-                                                        data-target="#staticBackdrop">
-                                                    <i class="button-icon mdi mdi-plus"></i>
-                                                    Thêm mới
-                                                </button>
-                                                <!--                                                <button class="btn-custom btn btn-success">-->
-                                                <!--                                                    <i class="button-icon mdi mdi-import"></i>-->
-                                                <!--                                                    Nhập file-->
-                                                <!--                                                </button>-->
-                                                <!--                                                <button class="btn-custom btn btn-success">-->
-                                                <!--                                                    <i class="button-icon mdi mdi-export"></i>-->
-                                                <!--                                                    Xuất file-->
-                                                <!--                                                </button>-->
-                                            </div>
-                                        </div>
-                                    </div>
-                                </form>
-                                <div class="mt-2">
-                                    <table id="jqGrid" class="table table-bordered">
-                                    </table>
-                                    <div id="jqGridPager"></div>
-                                </div>
-                            </div>
+        <div class="table-data">
+            <div class="order">
+                <div class="head">
+                    <a href="javascript:void(0);" class="btn-add-form" onclick="openAddModal()">
+                        <i class='bx bx-plus'></i>
+                    </a>
+
+                    <h3>Danh sách</h3>
+                    <form th:action="@{/admin/size}" method="get" class="search-form" id="searchForm">
+                        <div class="search-container">
+                            <input type="text" name="search" placeholder="Tìm kiếm tên..."
+                                   th:value="${param.search}" id="searchInput"/>
+                            <button type="submit" class="search-btn"><i class='bx bx-search'></i></button>
                         </div>
-                    </div>
+                    </form>
                 </div>
-            </section>
+                <table>
+                    <thead>
+                    <tr>
+                        <th>STT</th>
+                        <th>Tên</th>
+                        <th>Edit</th>
+                        <th>#</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+
+                    </tbody>
+                </table>
+                <span id="totalData"></span>
+                <div id="pagination" style="text-align: center;"></div>
+            </div>
         </div>
     </main>
 </section>
-<!--dialog area-->
-<div>
-    <!--    dialog create-->
-    <!--    style="z-index: 30000"-->
-    <div  class="modal fade" id="staticBackdrop" data-backdrop="static" data-keyboard="false"
-          tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content" style="top: 250px">
-                <form  class="needs-validation form-update-insert" novalidate>
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="staticBackdropLabel">Thêm kích thước</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="form-group d-none">
-                            <label>ID</label>
-                            <input type="text" class="form-control" id="model_id">
-                        </div>
-                        <div class="form-group">
-                            <label>Tên kích thước</label>
-                            <input type="text" class="form-control" id="model_name" required>
-                            <div class="invalid-feedback">
-                                Không được để trống
-                            </div>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="submit" class="btn btn-create btn-primary">Lưu</button>
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Bỏ qua</button>
-                    </div>
-                </form>
-            </div>
-        </div>
+
+<div id="addModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <form id="addForm">
+            <label for="addName">Nhập tên:</label>
+            <input type="text" id="addName" name="name">
+            <button type="submit">Thêm</button>
+        </form>
+    </div>
+</div>
+
+<!-- Modal for editing -->
+<div id="editModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <form id="editForm">
+            <input type="hidden" id="editId" name="id">
+            <label for="editName">Nhập tên:</label>
+            <input type="text" id="editName" name="name">
+            <button type="submit">Cập nhật</button>
+        </form>
     </div>
 </div>
 
@@ -144,7 +117,7 @@
 <!--bootstrap-->
 <script th:src="@{/admin/plugins/bootstrap4/bootstrap.bundle.js}"></script>
 <!--custom script-->
-<script th:src="@{/admin/dist/js/public.js}"></script>
-<script th:src="@{/admin/product/size.js}"></script>
+<script th:src="@{/admin/product/sizejs.js}"></script>
+
 </body>
 </html>

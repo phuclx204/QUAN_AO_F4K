@@ -1,45 +1,45 @@
 // Đóng tất cả các modal
 function closeModal() {
-    $('.modal').hide(); // Ẩn tất cả các modal
+    $('.modal').hide();
 }
 
 // Mở modal thêm
 function openAddModal() {
-    $('#addModal').show(); // Hiển thị modal thêm
+    $('#addModal').show();
 }
 
 // Hiển thị modal chỉnh sửa và điền dữ liệu
 function showEditModal(id, name) {
-    $('#editId').val(id); // Đặt ID
-    $('#editName').val(name); // Đặt tên
-    $('#editModal').show(); // Hiển thị modal chỉnh sửa
+    $('#editId').val(id);
+    $('#editName').val(name);
+    $('#editModal').show();
 }
 
 
 // Tải danh sách và xử lý tìm kiếm
 $(document).ready(function () {
-    loadDatas(); // Tải danh sách  khi trang được tải
+    loadDatas();
 
     $('.search-form').on('submit', function (event) {
-        event.preventDefault(); // Ngăn chặn hành vi mặc định của biểu mẫu
-        const search = $('input[name="search"]').val(); // Lấy từ tìm kiếm
-        loadDatas(1, 10, 'id,dsc', search); // Tải dữ liệu với từ tìm kiếm
+        event.preventDefault();
+        const search = $('input[name="search"]').val();
+        loadDatas(1, 10, 'id,dsc', search); x
     });
 
     // Hàm tải thương hiệu
     function loadDatas(page = 1, size = 10, sort = 'id,dsc', search = '') {
         $.ajax({
-            url: '/admin/guarantee/list', // URL để lấy danh sách thương hiệu
-            method: 'GET', // Phương thức HTTP
-            data: {page: page, size: size, sort: sort, search: search}, // Tham số truy vấn
+            url: '/admin/guarantee/list',
+            method: 'GET',
+            data: {page: page, size: size, sort: sort, search: search},
             success: function (response) {
-                renderDatas(response.content); // Hiển thị danh sách
-                setupPagination(response.totalPages, page); // Thiết lập phân trang
+                renderDatas(response.content);
+                setupPagination(response.totalPages, page);
                 // Hiển thị tổng số thương hiệu
                 $('#totalData').text(`Tổng  ${response.totalElements}` + ' bản ghi');
             },
             error: function (error) {
-                console.error('Không thể tải dữ liệu:', error); // Ghi lại lỗi
+                console.error('Không thể tải dữ liệu:', error);
             }
         });
     }
@@ -112,32 +112,32 @@ $(document).ready(function () {
         // Thêm sự kiện lắng nghe cho các nút phân trang
         $('.page-button:not(.disabled)').on('click', function () {
             const page = $(this).data('page');
-            loadDatas(page, 10, 'id,dsc', ''); // Gọi lại hàm loadBrands với page mới
+            loadDatas(page, 10, 'id,dsc', '');
         });
     }
 
 
     // Thêm
     $('#addForm').on('submit', function (event) {
-        event.preventDefault(); // Ngăn chặn hành vi mặc định của biểu mẫu
+        event.preventDefault();
 
-        const dataName = $('#addName').val(); // Lấy tên thương hiệu
+        const dataName = $('#addName').val();
         $.ajax({
-            url: '/admin/guarantee', // URL để thêm thương hiệu mới
-            method: 'POST', // Phương thức HTTP
-            contentType: 'application/json', // Đặt loại nội dung
-            data: JSON.stringify({name: dataName}), // Chuyển đổi dữ liệu thành JSON
+            url: '/admin/guarantee',
+            method: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({name: dataName}),
             success: function (response) {
-                $('#addModal').hide(); // Đóng modal
-                loadDatas(); // Làm mới danh sách thương hiệu
-                Swal.fire('Success', 'Thêm mới thành công', 'success'); // Thông báo thành công
+                $('#addModal').hide();
+                loadDatas();
+                Swal.fire('Success', 'Thêm mới thành công', 'success');
             },
             error: function (xhr) {
                 if (xhr.status === 409) {
-                    Swal.fire('Error', xhr.responseText, 'error'); // Hiển thị thông báo lỗi cụ thể
+                    Swal.fire('Error', xhr.responseText, 'error');
                 } else {
-                    console.error('Error adding:', xhr); // Ghi lại các lỗi không mong muốn
-                    Swal.fire('Error', 'Không thể thêm mới', 'error'); // Thông báo lỗi chung
+                    console.error('Error adding:', xhr);
+                    Swal.fire('Error', 'Không thể thêm mới', 'error');
                 }
             }
         });
@@ -145,25 +145,25 @@ $(document).ready(function () {
 
 /// Update
     $('#editForm').on('submit', function (event) {
-        event.preventDefault(); // Ngăn chặn hành vi mặc định của biểu mẫu
+        event.preventDefault();
 
-        const id = $('#editId').val(); // Lấy ID thương hiệu
-        const dataName = $('#editName').val(); // Lấy tên thương hiệu
+        const id = $('#editId').val();
+        const dataName = $('#editName').val();
         $.ajax({
-            url: `/admin/guarantee/${id}`, // URL để cập nhật thương hiệu
+            url: `/admin/guarantee/${id}`,
             method: 'PUT', // Phương thức HTTP
-            contentType: 'application/json', // Đặt loại nội dung
-            data: JSON.stringify({name: dataName}), // Chuyển đổi dữ liệu thành JSON
+            contentType: 'application/json',
+            data: JSON.stringify({name: dataName}),
             success: function (response) {
-                $('#editModal').hide(); // Đóng modal
-                loadDatas(); // Làm mới danh sách thương hiệu
-                Swal.fire('Success', 'Cập nhật thành công!', 'success'); // Thông báo thành công
+                $('#editModal').hide();
+                loadDatas();
+                Swal.fire('Success', 'Cập nhật thành công!', 'success');
             },
             error: function (xhr) {
                 if (xhr.status === 409) {
-                    Swal.fire('Error', 'Tên đã tồn tại!', 'error'); // Thông báo tên đã tồn tại
+                    Swal.fire('Error', 'Tên đã tồn tại!', 'error');
                 } else {
-                    Swal.fire('Error', 'Cập nhật thất bại', 'error'); // Thông báo lỗi khác
+                    Swal.fire('Error', 'Cập nhật thất bại', 'error');
                 }
             }
         });
@@ -174,19 +174,19 @@ $(document).ready(function () {
 
 // Cập nhật trạng thái thương hiệu
 function submitStatusForm(checkbox) {
-    const id = checkbox.value; // Lấy ID thương hiệu từ checkbox
-    const status = checkbox.checked ? 1 : 0; // Đặt trạng thái dựa trên trạng thái checkbox
+    const id = checkbox.value;
+    const status = checkbox.checked ? 1 : 0;
 
     $.ajax({
-        url: `/admin/guarantee/${id}`, // URL để cập nhật trạng thái thương hiệu
-        method: 'PATCH', // Phương thức HTTP
-        contentType: 'application/json', // Đặt loại nội dung
-        data: JSON.stringify({status: status}), // Chuyển đổi dữ liệu thành JSON
+        url: `/admin/guarantee/${id}`,
+        method: 'PATCH',
+        contentType: 'application/json',
+        data: JSON.stringify({status: status}),
         success: function () {
-            Swal.fire('Success', 'Cập nhật trạng thái thành công', 'success'); // Thông báo thành công
+            Swal.fire('Success', 'Cập nhật trạng thái thành công', 'success');
         },
         error: function () {
-            Swal.fire('Error', 'Cập nhật trạng thái thất bại', 'error'); // Thông báo lỗi khác
+            Swal.fire('Error', 'Cập nhật trạng thái thất bại', 'error');
         }
     });
 }

@@ -10,12 +10,12 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.xssf.usermodel.*;
-import org.example.quan_ao_f4k.dto.request.product.GuaranteeRequest;
-import org.example.quan_ao_f4k.dto.response.product.GuaranteeResponse;
+import org.example.quan_ao_f4k.dto.request.product.ProductRequest;
+import org.example.quan_ao_f4k.dto.response.product.ProductResponse;
 import org.example.quan_ao_f4k.list.ListResponse;
-import org.example.quan_ao_f4k.mapper.product.GuaranteeMapper;
-import org.example.quan_ao_f4k.model.product.Guarantee;
-import org.example.quan_ao_f4k.repository.product.GuaranteeRepository;
+import org.example.quan_ao_f4k.mapper.product.ProductMapper;
+import org.example.quan_ao_f4k.model.product.Product;
+import org.example.quan_ao_f4k.repository.product.ProductRepository;
 import org.example.quan_ao_f4k.util.SearchFields;
 import org.springframework.stereotype.Service;
 
@@ -23,67 +23,67 @@ import java.util.List;
 
 @Service
 @AllArgsConstructor
-public class GuaranteeServiceImpl implements GuaranteeService{
-    private GuaranteeMapper brandMapper;
-    private GuaranteeRepository brandRepository;
+public class ProductServiceImpl implements ProductService{
+    private ProductMapper productMapper;
+    private ProductRepository productRepository;
 
     @Override
-    public ListResponse<GuaranteeResponse> findAll(int page, int size, String sort, String filter, String search, boolean all) {
-        return defaultFindAll(page, size, sort, filter, search, all, SearchFields.GUARANTEE, brandRepository, brandMapper);
+    public ListResponse<ProductResponse> findAll(int page, int size, String sort, String filter, String search, boolean all) {
+        return defaultFindAll(page, size, sort, filter, search, all, SearchFields.PRODUCT, productRepository, productMapper);
 
     }
 
     @Override
-    public GuaranteeResponse findById(Long aLong) {
-        return defaultFindById(aLong,brandRepository, brandMapper,"");
+    public ProductResponse findById(Long aLong) {
+        return defaultFindById(aLong,productRepository, productMapper,"");
     }
 
     @Override
-    public GuaranteeResponse save(GuaranteeRequest request) {
-        return defaultSave(request, brandRepository, brandMapper);
+    public ProductResponse save(ProductRequest request) {
+        return defaultSave(request, productRepository, productMapper);
     }
 
     @Override
-    public GuaranteeResponse save(Long aLong, GuaranteeRequest request) {
-        return defaultSave(aLong,request,brandRepository,brandMapper,"");
+    public ProductResponse save(Long aLong, ProductRequest request) {
+        return defaultSave(aLong,request,productRepository,productMapper,"");
     }
 
     @Override
     public void delete(Long aLong) {
-        brandRepository.deleteById(aLong);
+        productRepository.deleteById(aLong);
 
     }
 
     @Override
     public void delete(List<Long> longs) {
-        brandRepository.deleteAllById(longs);
+        productRepository.deleteAllById(longs);
 
     }
 
     @Override
-    public GuaranteeResponse findByName(String name) {
+    public ProductResponse findByName(String name) {
         return findByName(name);
     }
 
     @Override
     public void updateStatus(Long id, int status) {
-        Guarantee brand = brandRepository.findById(id)
+        Product product = productRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Không tồn tại đối tượng"));
-        brand.setStatus(status);
-        brandRepository.save(brand);
+        product.setStatus(status);
+        productRepository.save(product);
     }
 
     @Override
     public void exportExcel(HttpServletResponse response) throws Exception {
-        List<Guarantee> brands = brandRepository.findAll();
+        List<Product> products = productRepository.findAll();
 
         // Đặt loại nội dung và tiêu đề cho response
         response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-        response.setHeader("Content-Disposition", "attachment; filename=DanhSach.xlsx");
+        response.setHeader("Content-Disposition", "attachment; filename=DanhSachSanPham.xlsx");
 
         // Tạo workbook và sheet
         XSSFWorkbook workbook = new XSSFWorkbook();
-        XSSFSheet sheet = workbook.createSheet("Danh sách");
+        XSSFSheet sheet = workbook.createSheet("Danh sách sản phẩm");
 
         // Tạo font hỗ trợ tiếng Việt (sử dụng font Arial Unicode MS)
         XSSFFont font = workbook.createFont();
@@ -112,11 +112,28 @@ public class GuaranteeServiceImpl implements GuaranteeService{
         cell.setCellValue("Tên");
         cell.setCellStyle(headerStyle);
 
+        cell = headerRow.createCell(2);
+        cell.setCellValue("Danh mục");
+        cell.setCellStyle(headerStyle);
+
+        cell = headerRow.createCell(3);
+        cell.setCellValue("Thương hiệu");
+        cell.setCellStyle(headerStyle);
+
+        cell = headerRow.createCell(4);
+        cell.setCellValue("Hình ảnh");
+        cell.setCellStyle(headerStyle);
+
+        cell = headerRow.createCell(5);
+        cell.setCellValue("Mô tả");
+        cell.setCellStyle(headerStyle);
+
+
         // Bắt đầu thêm dữ liệu từ dòng thứ 3
         int dataRowIndex = 4;
         int stt = 1;
 
-        for (Guarantee brand : brands) {
+        for (Product product : products) {
             XSSFRow dataRow = sheet.createRow(dataRowIndex++);
 
             // Ô STT
@@ -124,9 +141,29 @@ public class GuaranteeServiceImpl implements GuaranteeService{
             cell.setCellValue(stt++);
             cell.setCellStyle(dataStyle);
 
-            // Ô Tên thương hiệu
+            // Ô Tên sản phẩm
             cell = dataRow.createCell(1);
-            cell.setCellValue(brand.getName());
+            cell.setCellValue(product.getName());
+            cell.setCellStyle(dataStyle);
+
+            // Ô tên danh mục
+            cell = dataRow.createCell(2);
+            cell.setCellValue(product.getCategory().getName());
+            cell.setCellStyle(dataStyle);
+
+            // Ô tên thương hiệu
+            cell = dataRow.createCell(3);
+            cell.setCellValue(product.getBrand().getName());
+            cell.setCellStyle(dataStyle);
+
+            // Ô hình ảnh
+            cell = dataRow.createCell(4);
+            cell.setCellValue(product.getThumbnail());
+            cell.setCellStyle(dataStyle);
+
+            // Ô mô tả
+            cell = dataRow.createCell(5);
+            cell.setCellValue(product.getDescription());
             cell.setCellStyle(dataStyle);
         }
 
@@ -144,7 +181,7 @@ public class GuaranteeServiceImpl implements GuaranteeService{
 
     @Override
     public void exportPdf(HttpServletResponse response) throws Exception {
-        List<Guarantee> brands = brandRepository.findAll();
+        List<Product> products = productRepository.findAll();
 
         // Thiết lập loại nội dung cho response là PDF
         response.setContentType("application/pdf");
@@ -173,13 +210,13 @@ public class GuaranteeServiceImpl implements GuaranteeService{
         // Thêm khoảng cách sau tiêu đề
         document.add(new Paragraph(" "));
 
-        // Tạo bảng với 2 cột (STT và Tên thương hiệu)
-        PdfPTable table = new PdfPTable(2);
+        // Tạo bảng với 6 cột
+        PdfPTable table = new PdfPTable(6);
         table.setWidthPercentage(100);
         table.setSpacingBefore(10f);
 
         // Đặt chiều rộng các cột
-        float[] columnWidths = {1f, 4f};
+        float[] columnWidths = {1f,4f,4f,4f,6f,8f};
         table.setWidths(columnWidths);
 
         // Thêm tiêu đề cho các cột
@@ -193,16 +230,48 @@ public class GuaranteeServiceImpl implements GuaranteeService{
         cell.setHorizontalAlignment(Element.ALIGN_CENTER);
         table.addCell(cell);
 
+        cell = new PdfPCell(new Phrase("Danh mục", fontHeader));
+        cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+        table.addCell(cell);
+
+        cell = new PdfPCell(new Phrase("Thương hiệu", fontHeader));
+        cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+        table.addCell(cell);
+
+        cell = new PdfPCell(new Phrase("Hình ảnh", fontHeader));
+        cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+        table.addCell(cell);
+
+        cell = new PdfPCell(new Phrase("Mô tả", fontHeader));
+        cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+        table.addCell(cell);
+
         // Thêm dữ liệu cho các dòng
         int stt = 1;
-        for (Guarantee brand : brands) {
+        for (Product product : products) {
             // Ô STT
             cell = new PdfPCell(new Phrase(String.valueOf(stt++), fontCell));
             cell.setHorizontalAlignment(Element.ALIGN_CENTER);
             table.addCell(cell);
 
-            // Ô Tên thương hiệu
-            cell = new PdfPCell(new Phrase(brand.getName(), fontCell));
+            // Ô Tên sp
+            cell = new PdfPCell(new Phrase(product.getName(), fontCell));
+            cell.setHorizontalAlignment(Element.ALIGN_LEFT);
+            table.addCell(cell);
+
+            cell = new PdfPCell(new Phrase(product.getCategory().getName(), fontCell));
+            cell.setHorizontalAlignment(Element.ALIGN_LEFT);
+            table.addCell(cell);
+
+            cell = new PdfPCell(new Phrase(product.getBrand().getName(), fontCell));
+            cell.setHorizontalAlignment(Element.ALIGN_LEFT);
+            table.addCell(cell);
+
+            cell = new PdfPCell(new Phrase(product.getThumbnail(), fontCell));
+            cell.setHorizontalAlignment(Element.ALIGN_LEFT);
+            table.addCell(cell);
+
+            cell = new PdfPCell(new Phrase(product.getDescription(), fontCell));
             cell.setHorizontalAlignment(Element.ALIGN_LEFT);
             table.addCell(cell);
         }
@@ -212,16 +281,6 @@ public class GuaranteeServiceImpl implements GuaranteeService{
 
         // Đóng tài liệu
         document.close();
-    }
-
-    @Override
-    public boolean existsByName(String name) {
-        return brandRepository.existsByName(name);
-    }
-
-    @Override
-    public boolean existsByNameAndIdNot(String name, Long id) {
-        return brandRepository.existsByNameAndIdNot(name,id);
     }
 
 }

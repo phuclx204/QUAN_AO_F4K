@@ -30,7 +30,7 @@ public class Product extends BaseEntity {
     @JoinColumn(name = "brand_id",nullable = false)
     private Brand brand;
 
-    @Column(name = "thumbnail", nullable = true)
+    @Column(name = "thumbnail")
     private String thumbnail;
 
     @Column(name = "description")

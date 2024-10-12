@@ -9,5 +9,5 @@ public class ProductRequest {
     private Long brandId;
     private String thumbnail;
     private String description;
-    private Integer status;
+    private Integer status=1;
 }

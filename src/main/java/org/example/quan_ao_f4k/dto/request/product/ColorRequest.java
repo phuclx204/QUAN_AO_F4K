@@ -4,9 +4,6 @@ import lombok.Data;
 
 @Data
 public class ColorRequest {
-
-    private Long id;
     private String name;
-    private Integer status;
-
+    private Integer status = 1;
 }

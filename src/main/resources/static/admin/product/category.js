@@ -1,144 +1,197 @@
-const URL_SEARCH = '/api/category';
-const URL = '/admin/category';
-const idTbl = '#jqGrid';
-const queryTable = $('#jqGrid');
-const querySearch = $('#searchForm');
-const queryModal = $('#staticBackdrop');
+// Đóng tất cả các modal
+function closeModal() {
+    $('.modal').hide(); // Ẩn tất cả các modal
+}
 
-$(function () {
-    queryTable.jqGrid({
-        ...girdOptionDefault,
-        url: URL_SEARCH,
-        pager: "#jqGridPager",
-        autowidth: true,
-        // multiselect: true,
-        loadonce: false,
-        // shrinkToFit: false,
-        // forceFit: true,
-        colModel: [
-            {label: 'ID', name: 'id', index: 'id', width: 50, key: true, hidden: true},
-            {label: 'STT', name: '_stt', index: 'stt', width: 25, resizable: false, align: 'center'},
-            {label: 'Tên', name: 'name', index: 'name'},
-            {label: 'Mô tả', name: 'description', index: 'description'},
-            {
-                name: 'actions',
-                label: 'Thao tác',
-                width: 100,
-                align: 'center',
-                sortable: false,
-                resizable: false,
-                formatter: (c, o, r) => addButtonIcon(r)
-            }
-        ],
-        // thêm số thứ tự cho bản ghi trả về
-        beforeProcessing: (data) => addStt(data),
-        gridComplete: () => {
-            // initCss from common.js
-            initCss(queryTable, 'table-sm', false)
-            // resize
-            new ResizeObserverManager($(".card"), queryTable);
-            // vì trong cột phải khai báo tại đây
-            // onDelete();
-            $(BTN.DELETE).click(function (e) {
-                e.preventDefault();
-                const rowId = $(this).data("id");
+// Mở modal thêm
+function openAddModal() {
+    $('#addModal').show(); // Hiển thị modal thêm
+}
 
-                $confirm('warning', 'Bạn có chắc chắn muốn xóa?')
-                    .then(async rs => {
-                        if (rs.isConfirmed) {
-                            try {
-                                await callApi(URL + '?id=' + rowId, DELETE)
-                                $alterTop('success', 'Xóa bản ghi thành công');
-                                reload();
-                            } catch (err) {
-                                console.log(err)
-                            }
-                        }
-                    }).catch(err => {
-                    console.log(err)
-                })
-            });
+// Hiển thị modal chỉnh sửa và điền dữ liệu
+function showEditModal(id, name,description) {
+    $('#editId').val(id);
+    $('#editName').val(name);
+    $('#editDescription').val(description);
+    $('#editModal').show();
+}
 
-            // onUpdate();
-            $(BTN.UPDATE).click(function (e) {
-                e.preventDefault();
-                const rowId = $(this).data("id");
 
-                openModalUpdate(rowId);
-            });
-        }
+// Tải danh sách và xử lý tìm kiếm
+$(document).ready(function () {
+    loadDatas();
+
+    $('.search-form').on('submit', function (event) {
+        event.preventDefault();
+        const search = $('input[name="search"]').val();
+        loadDatas(1, 10, 'id,dsc', search);
     });
 
+    // Hàm tải thương hiệu
+    function loadDatas(page = 1, size = 10, sort = 'id,dsc', search = '') {
+        $.ajax({
+            url: '/admin/category/list',
+            method: 'GET',
+            data: {page: page, size: size, sort: sort, search: search},
+            success: function (response) {
+                renderDatas(response.content);
+                setupPagination(response.totalPages, page);
+                // Hiển thị tổng số thương hiệu
+                $('#totalData').text(`Tổng  ${response.totalElements}` + ' bản ghi');
+            },
+            error: function (error) {
+                console.error('Không thể tải dữ liệu:', error);
+            }
+        });
+    }
+
+    // Hiển thị dữ liệu trong bảng
+    function renderDatas(datas) {
+        const tbody = $('tbody');
+        tbody.empty();
+
+        if (datas.length === 0) {
+            tbody.append(`
+            <tr>
+                <td colspan="4" style="text-align: center;color:red">Không có dữ liệu !</td>
+            </tr>
+        `);
+            return;
+        }
+
+        datas.forEach((i, index) => {
+            tbody.append(`
+                <tr>
+                    <td>${index + 1}</td>
+                    <td>${i.name}</td>
+                    <td>${i.description}</td>
+                    <td>
+                        <i class='bx bx-edit' onclick="showEditModal(${i.id}, '${i.name}', '${i.description}')"></i>
+                    </td>
+                    <td>
+                        <input type="checkbox" value="${i.id}" ${i.status === 1 ? 'checked' : ''} 
+                               onchange="submitStatusForm(this)">
+                    </td>
+                </tr>
+            `);
+        });
+    }
+
+    // Thiết lập phân trang
+    function setupPagination(totalPages, currentPage) {
+        const pagination = $('#pagination');
+        pagination.empty(); // Xóa nội dung cũ
+
+        // Nút Previous
+        if (currentPage > 1) {
+            pagination.append(`
+            <button class="page-button" data-page="${currentPage - 1}">Previous</button>
+        `);
+        } else {
+            pagination.append(`
+            <button class="page-button disabled">Previous</button>
+        `);
+        }
+
+        // Các nút trang
+        for (let i = 1; i <= totalPages; i++) {
+            pagination.append(`
+            <button class="page-button ${i === currentPage ? 'active' : ''}" data-page="${i}">${i}</button>
+        `);
+        }
+
+        // Nút Next
+        if (currentPage < totalPages) {
+            pagination.append(`
+            <button class="page-button" data-page="${currentPage + 1}">Next</button>
+        `);
+        } else {
+            pagination.append(`
+            <button class="page-button disabled">Next</button>
+        `);
+        }
+
+        // Thêm sự kiện lắng nghe cho các nút phân trang
+        $('.page-button:not(.disabled)').on('click', function () {
+            const page = $(this).data('page');
+            loadDatas(page, 10, 'id,dsc', '');
+        });
+    }
+
+
+    // Thêm
+    $('#addForm').on('submit', function (event) {
+        event.preventDefault();
+
+        const dataName = $('#addName').val();
+        const dataDescription = $('#desciptionName').val();
+        $.ajax({
+            url: '/admin/category',
+            method: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({name: dataName,description:dataDescription}),
+            success: function (response) {
+                $('#addModal').hide();
+                loadDatas();
+                Swal.fire('Success', 'Thêm mới thành công', 'success');
+            },
+            error: function (xhr) {
+                if (xhr.status === 409) {
+                    Swal.fire('Error', xhr.responseText, 'error');
+                } else {
+                    console.error('Error adding:', xhr);
+                    Swal.fire('Error', 'Không thể thêm mới', 'error');
+                }
+            }
+        });
+    });
+
+/// Update
+    $('#editForm').on('submit', function (event) {
+        event.preventDefault();
+
+        const id = $('#editId').val();
+        const dataName = $('#editName').val();
+        const dataDescription = $('#editDescription').val();
+        $.ajax({
+            url: `/admin/category/${id}`,
+            method: 'PUT',
+            contentType: 'application/json',
+            data: JSON.stringify({name: dataName,description:dataDescription}),
+            success: function (response) {
+                $('#editModal').hide();
+                loadDatas();
+                Swal.fire('Success', 'Cập nhật thành công!', 'success');
+            },
+            error: function (xhr) {
+                if (xhr.status === 409) {
+                    Swal.fire('Error', 'Tên đã tồn tại!', 'error');
+                } else {
+                    Swal.fire('Error', 'Cập nhật thất bại', 'error');
+                }
+            }
+        });
+    });
+
+
 });
 
+// Cập nhật trạng thái
+function submitStatusForm(checkbox) {
+    const id = checkbox.value;
+    const status = checkbox.checked ? 1 : 0;
 
-const openModalUpdate = (id) => {
-    // get row data
-    const ret = queryTable.jqGrid('getRowData', id);
-
-    //overriding in modal
-    const form = $('.form-update-insert');
-    form.removeClass('was-validated');
-    form.find('#model_id').val(ret.id);
-    form.find('#model_name').val(ret.name);
-    form.find('#model_description').val(ret.description);
-
-    // open modal
-    queryModal.modal('show')
+    $.ajax({
+        url: `/admin/category/${id}`,
+        method: 'PATCH', // Phương thức HTTP
+        contentType: 'application/json',
+        data: JSON.stringify({status: status}),
+        success: function () {
+            Swal.fire('Success', 'Cập nhật trạng thái thành công', 'success');
+        },
+        error: function () {
+            Swal.fire('Error', 'Cập nhật trạng thái thất bại', 'error');
+        }
+    });
 }
 
-const closeModal = ($this) => {
-    $this.modal('hide')
-}
-
-function reload() {
-    const page = queryTable.jqGrid('getGridParam', 'page');
-    queryTable.jqGrid('setGridParam', {
-        page: page
-    }).trigger("reloadGrid");
-}
-
-// on create
-$(BTN.CREATE).click(() => {
-    validate('needs-validation form-update-insert')
-        .then(async () => {
-            const form = $('.form-update-insert');
-            const data = {};
-            const id = form.find('#model_id').val();
-            const method = id ? PUT : POST;
-            if (id) {
-                data.id = id;
-            }
-            data.name = form.find('#model_name').val();
-            data.description = form.find('#model_description').val();
-            try {
-                await callApi(URL, method, data);
-                $alterTop('success', id ? 'Cập nhật thành công' : 'Thêm mới thành công');
-                closeModal(queryModal);
-                reload();
-            } catch (err) {
-                console.log(err)
-            }
-        })
-})
-
-// btn search - Lắng nghe sự kiện submit của form tìm kiếm
-querySearch.on('submit', function (e) {
-    // Chặn submit
-    e.preventDefault();
-    const searchValue = $('#searchInput').val();
-    console.log(searchValue, ' searchValue')
-    // set url and reload
-    queryTable.jqGrid('setGridParam', {
-        url: URL_SEARCH + '?search=' + encodeURIComponent(searchValue),
-    }).trigger('reloadGrid');
-});
-
-// refresh when modal close
-queryModal.on('hidden.bs.modal', function (event) {
-    const form = $('.form-update-insert');
-    form.removeClass('was-validated');
-    form.find('#model_id').val('');
-    form.find('#model_name').val('');
-    form.find('#model_description').val('');
-})

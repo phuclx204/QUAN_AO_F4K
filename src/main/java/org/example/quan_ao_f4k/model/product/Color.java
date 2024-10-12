@@ -10,6 +10,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.example.quan_ao_f4k.model.BaseEntity;
 
 @Entity
 @Table(name = "color")
@@ -17,14 +18,11 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
-public class Color {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class Color extends BaseEntity {
 
     @Column(name = "name", nullable = false)
     private String name;
 
     @Column(name = "status", nullable = false)
-    private String status;
+    private Integer status=1;
 }

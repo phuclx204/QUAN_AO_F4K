@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <th:block th:insert="admin/fragments/head :: head"></th:block>
+    <link rel="stylesheet" th:href="@{/admin/product/productCss.css}">
+    <link rel="stylesheet" th:href="@{/admin/plugins/bootstrap4/mine.css}"/>
+    <link rel="stylesheet" th:href="@{/admin/dist/css/common.css}"/>
+
+    <link rel="stylesheet" th:href="@{/admin/plugins/jqgrid-5.7.0/ui.jqgrid-bootstrap4.css}"/>
+    <link rel="stylesheet" th:href="@{/admin/plugins/sweetalert/sweetalert2.min.css}"/>
+</head>
+
+<body>
+<div th:replace="admin/fragments/sidebar::sidebar"></div>
+
+<section id="content">
+    <div th:replace="admin/fragments/content::content"></div>
+    <main>
+        <div class="head-title">
+            <div class="left">
+                <h1>Sản phẩm</h1>
+                <ul class="breadcrumb">
+                    <li>
+                        <a th:href="@{home}">Trang chủ</a>
+                    </li>
+                    <li><i class='bx bx-chevron-right'></i></li>
+                    <li>
+                        <a class="active" th:href="@{products}">Sản phẩm</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="export-container">
+                <label for="exportSelect" class="export-label">Xuất danh sách:</label>
+                <select id="exportSelect" class="styled-select">
+                    <option value="">-- Chọn định dạng --</option>
+                    <option value="/admin/products/export/excel">📊 Excel (.xlsx)</option>
+                    <option value="/admin/products/export/pdf">📄 PDF (.pdf)</option>
+                </select>
+            </div>
+        </div>
+        <div class="table-data">
+            <div class="order">
+                <div class="head">
+                    <a href="javascript:void(0);" class="btn-add-form" onclick="openAddModal()">
+                        <i class='bx bx-plus'></i>
+                    </a>
+
+                    <h3>Danh sách sản phẩm</h3>
+                    <form th:action="@{/admin/products}" method="get" class="search-form" id="searchForm">
+                        <div class="search-container">
+                            <input type="text" name="search" placeholder="Tìm kiếm sản phẩm..."
+                                   th:value="${param.search}" id="searchInput"/>
+                            <button type="submit" class="search-btn"><i class='bx bx-search'></i></button>
+                        </div>
+                    </form>
+                </div>
+                <table>
+                    <thead>
+                    <tr>
+                        <th>STT</th>
+                        <th>Tên</th>
+                        <th>Danh mục</th>
+                        <th>Thương hiệu</th>
+                        <th>Hình ảnh</th>
+                        <th>Mô tả</th>
+                        <th>Edit</th>
+                        <th>#</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+
+                    </tbody>
+                </table>
+                <span id="totalData"></span>
+                <div id="pagination" style="text-align: center;"></div>
+            </div>
+        </div>
+    </main>
+</section>
+
+<!-- Modal Add Product -->
+<div id="addModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal('addModal')">&times;</span>
+        <h2>Thêm sản phẩm</h2>
+
+        <form id="addForm">
+            <label for="addName">Tên sản phẩm:</label>
+            <input type="text" id="addName" name="name" required>
+
+            <div class="flex-container">
+                <select id="addCategory" name="category" required>
+                    <option value="">-- Chọn danh mục --</option>
+                    <!-- Options động -->
+                </select>
+
+                <select id="addBrand" name="brand" required>
+                    <option value="">-- Chọn thương hiệu --</option>
+                    <!-- Options động -->
+                </select>
+            </div>
+
+            <label for="addThumbnail">Hình ảnh (URL):</label>
+            <input type="text" id="addThumbnail" name="thumbnail" placeholder="Nhập URL hình ảnh">
+
+            <label for="addDescription">Mô tả:</label>
+            <textarea id="addDescription" name="description" rows="3"></textarea>
+
+            <button type="submit">Thêm sản phẩm</button>
+        </form>
+    </div>
+</div>
+
+<!-- Modal Edit Product -->
+<div id="editModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal('editModal')">&times;</span>
+        <h2>Chỉnh sửa sản phẩm</h2>
+
+        <form id="editForm">
+            <input type="hidden" id="editId" name="id">
+
+            <label for="editName">Tên sản phẩm:</label>
+            <input type="text" id="editName" name="name" required>
+
+            <div class="flex-container">
+                <select id="editCategory" name="category" required>
+                    <option value="">-- Chọn danh mục --</option>
+                    <!-- Options động -->
+                </select>
+
+                <select id="editBrand" name="brand" required>
+                    <option value="">-- Chọn thương hiệu --</option>
+                    <!-- Options động -->
+                </select>
+            </div>
+
+            <label for="editThumbnail">Hình ảnh (URL):</label>
+            <input type="text" id="editThumbnail" name="thumbnail">
+
+            <label for="editDescription">Mô tả:</label>
+            <textarea id="editDescription" name="description" rows="3"></textarea>
+
+            <button type="submit">Lưu thay đổi</button>
+        </form>
+    </div>
+</div>
+
+
+
+<!--default script-->
+<script th:src="@{/admin/script.js}"></script>
+
+<!--jquery-->
+<script th:src="@{/admin/plugins/jquery/jquery.min.js}"></script>
+<!--plugin table-->
+<script th:src="@{/admin/plugins/jqgrid-5.7.0/common.js}"></script>
+<script th:src="@{/admin/plugins/jqgrid-5.7.0/jquery.jqGrid.min.js}"></script>
+<script th:src="@{/admin/plugins/jqgrid-5.7.0/grid.locale-vn.js}"></script>
+<!--alter-->
+<script th:src="@{/admin/plugins/sweetalert/common.js}"></script>
+<script th:src="@{/admin/plugins/sweetalert/sweetalert2.min.js}"></script>
+<!--bootstrap-->
+<script th:src="@{/admin/plugins/bootstrap4/bootstrap.bundle.js}"></script>
+<!--custom script-->
+<script th:src="@{/admin/product/productjs.js}"></script>
+
+</body>
+</html>

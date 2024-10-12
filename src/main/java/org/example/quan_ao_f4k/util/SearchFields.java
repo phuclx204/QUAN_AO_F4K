@@ -17,8 +17,7 @@ public interface SearchFields {
             "name",
             "category.name",
             "brand.name",
-            "description",
-            "status"
+            "description"
     );
 
     List<String> PRODUCT_DETAIL = List.of(

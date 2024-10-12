@@ -128,7 +128,7 @@ button:hover {
     border: none; /* Xóa đường viền mặc định */
     background-color: #007bff; /* Màu nền mặc định */
     cursor: pointer; /* Hiển thị con trỏ chuột khi di chuột qua */
-    border-radius: 50px; /* Thêm border-radius */
+    border-radius: 50px; /* Thêm border-    radius */
     margin: 0 5px; /* Thêm khoảng cách giữa các nút */
     transition: background-color 0.3s; /* Hiệu ứng chuyển màu mượt mà */
 }
@@ -150,4 +150,7 @@ button:hover {
     cursor: not-allowed; /* Con trỏ không cho phép */
     pointer-events: none; /* Vô hiệu hóa sự kiện chuột */
 }
+
+
+
 
