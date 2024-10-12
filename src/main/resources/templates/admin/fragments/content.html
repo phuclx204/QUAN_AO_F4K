@@ -1,24 +1,24 @@
- <nav th:fragment="content">
-        <i class='bx bx-menu'></i>
-        <a href="#" class="nav-link">Kho</a>
-        <form action="#" method="get">
-            <div class="form-input">
-                <input type="search" placeholder="Tìm kiếm...">
-                <button type="submit" class="search-btn"><i class='bx bx-search'></i></button>
-            </div>
-        </form>
-        <label class="uiHover">
-            <i class='bx bxs-sun'></i>
-            <i class='bx bx-moon'></i>
-        </label>
-        <input type="checkbox" id="switch-mode" hidden>
-        <label for="switch-mode" class="switch-mode"></label>
-        <a href="#" class="notification">
-            <i class='bx bxs-bell'></i>
-            <span class="num">8</span>
-        </a>
-        <a href="#" class="profile">
-            <img th:src="@{/admin/img/people.png}" alt="Profile">
-        </a>
-    </nav>
+<nav th:fragment="content">
+    <i class='bx bx-menu'></i>
+    <!--        <a href="#" class="nav-link">Kho</a>-->
+    <form action="#" method="get">
+        <!--            <div class="form-input">-->
+        <!--                <input type="search" placeholder="Tìm kiếm...">-->
+        <!--                <button type="submit" class="search-btn"><i class='bx bx-search'></i></button>-->
+        <!--            </div>-->
+    </form>
+    <label class="uiHover">
+        <i class='bx bxs-sun'></i>
+        <i class='bx bx-moon'></i>
+    </label>
+    <input type="checkbox" id="switch-mode" hidden>
+    <label for="switch-mode" class="switch-mode"></label>
+    <a href="#" class="notification">
+        <i class='bx bxs-bell'></i>
+        <span class="num">8</span>
+    </a>
+    <a href="#" class="profile">
+        <img th:src="@{/admin/img/people.png}" alt="Profile">
+    </a>
+</nav>
 

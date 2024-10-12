@@ -1,91 +1,190 @@
-let currentBrandId = null; // Lưu ID thương hiệu hiện tại
-let currentBrandName = ''; // Lưu tên thương hiệu hiện tại
-let currentCheckbox = null; // Lưu checkbox hiện tại
-
-// Function to open a modal (either add or edit)
-function openModal(modalId) {
-    document.getElementById(modalId).style.display = "block";
+function closeModal() {
+    $('.modal').hide();
 }
 
-// Function to close modals
-window.closeModal = function () {
-    document.getElementById("editModal").style.display = "none";
-    document.getElementById("addModal").style.display = "none";
-    document.getElementById("confirmStatusModal").style.display = "none"; // Đóng modal xác nhận trạng thái
-};
+function openAddModal() {
+    $('#addModal').show();
+}
 
-// Open "add" modal when the plus icon is clicked
-document.querySelector('.bx-plus').onclick = function() {
-    openModal('addModal');
-};
+// Hiển thị modal chỉnh sửa và điền dữ liệu
+function showEditModal(id, name) {
+    $('#editId').val(id);
+    $('#editName').val(name);
+    $('#editModal').show();
+}
 
-// Populate edit form and open modal
-document.addEventListener("DOMContentLoaded", function () {
-    const editButtons = document.querySelectorAll(".bx-edit");
-    editButtons.forEach(button => {
-        button.addEventListener("click", function () {
-            const brandId = this.getAttribute("data-id");
-            const brandName = this.getAttribute("data-name");
 
-            // Cập nhật giá trị cho trường ẩn
-            document.getElementById("editBrandId").value = brandId;
-            document.getElementById("editBrandName").value = brandName;
+// Tải danh sách và xử lý tìm kiếm
+$(document).ready(function () {
+    loadDatas();
 
-            // Cập nhật action của form với ID
-            const editForm = document.getElementById("editForm");
-            editForm.setAttribute("action", `/admin/brand/update/${brandId}`);
+    $('.search-form').on('submit', function (event) {
+        event.preventDefault();
+        const search = $('input[name="search"]').val();
+        loadDatas(1, 10, 'id,dsc', search);
+    });
 
-            openModal('editModal');
+    // Hàm tải thương hiệu
+    function loadDatas(page = 1, size = 10, sort = 'id,dsc', search = '') {
+        $.ajax({
+            url: '/admin/brand/list',
+            method: 'GET',
+            data: { page: page, size: size, sort: sort, search: search },
+            success: function (response) {
+                renderDatas(response.content);
+                setupPagination(response.totalPages, page);
+                // Hiển thị tổng số thương hiệu
+                $('#totalData').text(`Tổng  ${response.totalElements}`+' bản ghi');
+            },
+            error: function (error) {
+                console.error('Không thể tải dữ liệu:', error);
+            }
+        });
+    }
+
+    // Hiển thị dữ liệu trong bảng
+    function renderDatas(datas) {
+        const tbody = $('tbody');
+        tbody.empty(); // Xóa nội dung cũ
+
+        if (datas.length === 0) {
+            tbody.append(`
+            <tr>
+                <td colspan="4" style="text-align: center;color:red">Không có dữ liệu !</td>
+            </tr>
+        `);
+            return;
+        }
+
+        datas.forEach((i, index) => {
+            tbody.append(`
+                <tr>
+                    <td>${index + 1}</td>
+                    <td>${i.name}</td>
+                    <td>
+                        <i class='bx bx-edit' onclick="showEditModal(${i.id}, '${i.name}')"></i>
+                    </td>
+                    <td>
+                        <input type="checkbox" value="${i.id}" ${i.status === 1 ? 'checked' : ''} 
+                               onchange="submitStatusForm(this)">
+                    </td>
+                </tr>
+            `);
+        });
+    }
+
+    // Thiết lập phân trang
+    function setupPagination(totalPages, currentPage) {
+        const pagination = $('#pagination');
+        pagination.empty();
+
+        // Nút Previous
+        if (currentPage > 1) {
+            pagination.append(`
+            <button class="page-button" data-page="${currentPage - 1}">Previous</button>
+        `);
+        } else {
+            pagination.append(`
+            <button class="page-button disabled">Previous</button>
+        `);
+        }
+
+        // Các nút trang
+        for (let i = 1; i <= totalPages; i++) {
+            pagination.append(`
+            <button class="page-button ${i === currentPage ? 'active' : ''}" data-page="${i}">${i}</button>
+        `);
+        }
+
+        // Nút Next
+        if (currentPage < totalPages) {
+            pagination.append(`
+            <button class="page-button" data-page="${currentPage + 1}">Next</button>
+        `);
+        } else {
+            pagination.append(`
+            <button class="page-button disabled">Next</button>
+        `);
+        }
+
+        // Thêm sự kiện cho các nút phân trang
+        $('.page-button:not(.disabled)').on('click', function() {
+            const page = $(this).data('page');
+            loadDatas(page, 10, 'id,dsc', '');
+        });
+    }
+
+
+    // Thêm
+    $('#addForm').on('submit', function (event) {
+        event.preventDefault();
+
+        const dataName = $('#addName').val();
+        $.ajax({
+            url: '/admin/brand',
+            method: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({ name: dataName }),
+            success: function (response) {
+                $('#addModal').hide();
+                loadDatas();
+                Swal.fire('Success', 'Thêm mới thành công', 'success');
+            },
+            error: function (xhr) {
+                if (xhr.status === 409) {
+                    Swal.fire('Error', xhr.responseText, 'error');
+                } else {
+                    console.error('Error adding:', xhr);
+                    Swal.fire('Error', 'Không thể thêm mới', 'error');
+                }
+            }
         });
     });
+
+/// Update brand
+    $('#editForm').on('submit', function (event) {
+        event.preventDefault();
+
+        const id = $('#editId').val();
+        const dataName = $('#editName').val();
+        $.ajax({
+            url: `/admin/brand/${id}`,
+            method: 'PUT',
+            contentType: 'application/json',
+            data: JSON.stringify({ name: dataName }),
+            success: function (response) {
+                $('#editModal').hide();
+                loadDatas();
+                Swal.fire('Success', 'Cập nhật thành công!', 'success');
+            },
+            error: function (xhr) {
+                if (xhr.status === 409) {
+                    Swal.fire('Error', 'Tên đã tồn tại!', 'error');
+                }  else {
+                    Swal.fire('Error', 'Cập nhật thất bại', 'error');
+                }
+            }
+        });
+    });
+
+
 });
-
-// Function to submit the form to update the brand status
+// Cập nhật trạng thái thương hiệu
 function submitStatusForm(checkbox) {
-    currentCheckbox = checkbox; // Lưu checkbox hiện tại
-    currentBrandId = checkbox.value; // Lấy ID của thương hiệu từ checkbox
-    currentBrandName =  checkbox.closest('tr').querySelector('.bx-edit').getAttribute('data-name'); // Lấy tên thương hiệu
+    const id = checkbox.value;
+    const status = checkbox.checked ? 1 : 0;
 
-    // Hiển thị modal xác nhận với tên thương hiệu
-    document.getElementById('confirmMessage').textContent = `Bạn có chắc chắn muốn ${checkbox.checked ? 'kích hoạt' : 'ngừng hoạt động'} thương hiệu "${currentBrandName}" không?`;
-    openModal('confirmStatusModal');
+    $.ajax({
+        url: `/admin/brand/${id}`,
+        method: 'PATCH',
+        contentType: 'application/json',
+        data: JSON.stringify({ status: status }),
+        success: function () {
+            Swal.fire('Success', 'Cập nhật trạng thái thành công', 'success');
+        },
+        error: function () {
+            Swal.fire('Error', 'Cập nhật trạng thái thất bại', 'error');
+        }
+    });
 }
-
-function confirmStatusChange() {
-    const status = currentCheckbox.checked ? 1 : 0; // Kiểm tra trạng thái
-    const statusForm = document.getElementById('statusForm');
-
-    // Gán giá trị vào các trường ẩn của form
-    document.getElementById('statusInput').value = status; // Gán giá trị status vào input ẩn
-    document.getElementById('brandIdInput').value = currentBrandId; // Gán ID thương hiệu vào input ẩn
-    document.getElementById('nameInput').value = currentBrandName; // Gán name thương hiệu vào input ẩn
-
-    // Gửi form cập nhật trạng thái
-    statusForm.action = `/admin/brand/update-status/${currentBrandId}`; // Cập nhật action của form
-    statusForm.submit(); // Tự động submit form
-    closeModal(); // Đóng modal
-}
-
-function cancelStatusChange() {
-    // Đặt checkbox về trạng thái ban đầu
-    if (currentCheckbox) {
-        currentCheckbox.checked = !currentCheckbox.checked; // Đảo ngược trạng thái
-    }
-    closeModal(); // Đóng modal
-}
-function toggleSearchInput() {
-    const input = document.getElementById('searchInput');
-    const searchIcon = document.getElementById('searchIcon');
-
-    // Nếu ô input đang ẩn thì hiển thị
-    if (input.style.display === 'none' || input.style.display === '') {
-        input.style.display = 'block'; // Hiện ô input
-        searchIcon.style.display = 'none'; // Ẩn biểu tượng tìm kiếm
-        input.focus(); // Đưa con trỏ vào ô input
-    } else {
-        input.style.display = 'none'; // Ẩn ô input
-        searchIcon.style.display = 'block'; // Hiện biểu tượng tìm kiếm
-    }
-}
-
 

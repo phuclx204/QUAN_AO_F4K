@@ -6,6 +6,6 @@ import lombok.Data;
 public class SizeRequest {
 
     private String name;
-    private Integer status;
+    private Integer status = 1;
 
 }

@@ -12,16 +12,12 @@ public interface SearchFields {
     List<String> WARD = List.of("name");
     List<String> ADDRESS = List.of("name");
 
-    List<String> GUARANTEE = List.of("" +
-                    "description",
-            "status"
-    );
+    List<String> GUARANTEE = List.of("name");
     List<String> PRODUCT = List.of(
             "name",
             "category.name",
             "brand.name",
-            "description",
-            "status"
+            "description"
     );
 
     List<String> PRODUCT_DETAIL = List.of(

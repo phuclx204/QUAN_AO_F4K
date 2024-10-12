@@ -1,8 +1,15 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 
-<head th:replace="admin/fragments/head::head"></head>
-<link rel="stylesheet" th:href="@{/admin/product/brand.css}">
+<head>
+    <th:block th:insert="admin/fragments/head :: head"></th:block>
+    <link rel="stylesheet" th:href="@{/admin/product/datas.css}">
+    <link rel="stylesheet" th:href="@{/admin/plugins/bootstrap4/mine.css}"/>
+    <link rel="stylesheet" th:href="@{/admin/dist/css/common.css}"/>
+
+    <link rel="stylesheet" th:href="@{/admin/plugins/jqgrid-5.7.0/ui.jqgrid-bootstrap4.css}"/>
+    <link rel="stylesheet" th:href="@{/admin/plugins/sweetalert/sweetalert2.min.css}"/>
+</head>
 
 <body>
 <div th:replace="admin/fragments/sidebar::sidebar"></div>
@@ -19,16 +26,16 @@
                     </li>
                     <li><i class='bx bx-chevron-right'></i></li>
                     <li>
-                        <a class="active" th:href="@{brand}">Thương hiệu</a>
+                        <a class="active" th:href="@{brand}">Quản lý thương hiệu</a>
                     </li>
                 </ul>
             </div>
             <div class="btn-container">
-                <a th:href="@{/admin/brand/exportExcel}" class="btn-download">
+                <a th:href="@{/admin/brand/export/excel}" class="btn-download">
                     <i class='bx bxs-cloud-download'></i>
                     <span class="text">Tải xuống Excel</span>
                 </a>
-                <a th:href="@{/admin/brand/exportPdf}" class="btn-download">
+                <a th:href="@{/admin/brand/export/pdf}" class="btn-download">
                     <i class='bx bxs-cloud-download'></i>
                     <span class="text">Tải xuống PDF</span>
                 </a>
@@ -38,79 +45,45 @@
         <div class="table-data">
             <div class="order">
                 <div class="head">
-                    <a href="javascript:void(0);" class="btn-add-form">
+                    <a href="javascript:void(0);" class="btn-add-form" onclick="openAddModal()">
                         <i class='bx bx-plus'></i>
                     </a>
 
                     <h3>Danh sách thương hiệu</h3>
-                    <form th:action="@{/admin/brand}" method="get" class="search-form">
+                    <form th:action="@{/admin/brand}" method="get" class="search-form" id="searchForm">
                         <div class="search-container">
-                            <i class='bx bx-search' id="searchIcon" onclick="toggleSearchInput()"></i>
-                            <input type="text" name="search" placeholder="Tìm kiếm thương hiệu..."
-                                   th:value="${param.search}" style="display: none;" id="searchInput"/>
+                            <input type="text" name="search" placeholder="Tìm kiếm..."
+                                   th:value="${param.search}" id="searchInput"/>
+                            <button type="submit" class="search-btn"><i class='bx bx-search'></i></button>
                         </div>
                     </form>
-
-
-                    <!--                    <i class='bx bx-filter'></i>-->
                 </div>
                 <table>
                     <thead>
                     <tr>
                         <th>STT</th>
-                        <th>Tên thương hiệu</th>
+                        <th>Tên</th>
                         <th>Edit</th>
                         <th>#</th>
                     </tr>
                     </thead>
                     <tbody>
-                    <tr th:each="brand, i : ${brands}">
-                        <td th:text="${i.index + 1}">1</td>
-                        <td th:text="${brand.name}">Name</td>
-                        <td>
-                            <a href="javascript:void(0);" class="bx bx-edit"
-                               th:data-id="${brand.id}"
-                               th:data-name="${brand.name}">
-                            </a>
-                        </td>
-                        <td>
-                            <input type="checkbox" th:id="'brand_' + ${brand.id}" th:value="${brand.id}"
-                                   th:checked="${brand.status == 1}" onchange="submitStatusForm(this)">
-                        </td>
-                    </tr>
+
                     </tbody>
                 </table>
-
-                <!-- Form ẩn để cập nhật trạng thái -->
-                <form id="statusForm" method="post" style="display:none;">
-                    <input type="hidden" name="status" id="statusInput">
-                    <input type="hidden" name="brandId" id="brandIdInput">
-                    <input type="hidden" name="name" id="nameInput">
-                </form>
-
-
+                <span id="totalData"></span>
+                <div id="pagination" style="text-align: center;"></div>
             </div>
         </div>
     </main>
 </section>
-<!-- Modal xác nhận -->
-<div id="confirmStatusModal" class="modal">
-    <div class="modal-content">
-        <span class="close" onclick="closeModal()">&times;</span>
-        <p id="confirmMessage">Bạn có chắc chắn muốn ngừng hoạt động thương hiệu này không?</p>
-        <button onclick="confirmStatusChange()">Xác nhận</button>
-        <button onclick="cancelStatusChange()">Hủy</button>
-    </div>
-</div>
 
-
-<!-- Modal add-->
 <div id="addModal" class="modal">
     <div class="modal-content">
         <span class="close" onclick="closeModal()">&times;</span>
-        <form id="addForm" th:action="@{/admin/brand/add}" method="post">
-            <label for="brandName">Tên Thương Hiệu:</label>
-            <input type="text" id="brandName" name="name">
+        <form id="addForm">
+            <label for="addName">Nhập tên:</label>
+            <input type="text" id="addName" name="name">
             <button type="submit">Thêm</button>
         </form>
     </div>
@@ -120,16 +93,31 @@
 <div id="editModal" class="modal">
     <div class="modal-content">
         <span class="close" onclick="closeModal()">&times;</span>
-        <form id="editForm" th:action="@{/admin/brand/update/{id}(id=${editBrandId})}" method="post">
-            <input type="hidden" id="editBrandId" name="id">
-            <label for="editBrandName">Tên Thương Hiệu:</label>
-            <input type="text" id="editBrandName" name="name">
+        <form id="editForm">
+            <input type="hidden" id="editId" name="id">
+            <label for="editName">Nhập tên:</label>
+            <input type="text" id="editName" name="name">
             <button type="submit">Cập nhật</button>
         </form>
     </div>
 </div>
 
+<!--default script-->
 <script th:src="@{/admin/script.js}"></script>
+
+<!--jquery-->
+<script th:src="@{/admin/plugins/jquery/jquery.min.js}"></script>
+<!--plugin table-->
+<script th:src="@{/admin/plugins/jqgrid-5.7.0/common.js}"></script>
+<script th:src="@{/admin/plugins/jqgrid-5.7.0/jquery.jqGrid.min.js}"></script>
+<script th:src="@{/admin/plugins/jqgrid-5.7.0/grid.locale-vn.js}"></script>
+<!--alter-->
+<script th:src="@{/admin/plugins/sweetalert/common.js}"></script>
+<script th:src="@{/admin/plugins/sweetalert/sweetalert2.min.js}"></script>
+<!--bootstrap-->
+<script th:src="@{/admin/plugins/bootstrap4/bootstrap.bundle.js}"></script>
+<!--custom script-->
 <script th:src="@{/admin/product/brandjs.js}"></script>
+
 </body>
 </html>

@@ -6,4 +6,6 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 public interface ProductDetailRepository extends JpaRepository<ProductDetail, Long>,
 		JpaSpecificationExecutor<ProductDetail> {
+	boolean existsBySizeId(Long id);
+	boolean existsByColorId(Long id);
 }

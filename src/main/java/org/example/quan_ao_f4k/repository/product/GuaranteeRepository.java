@@ -6,4 +6,6 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 public interface GuaranteeRepository extends JpaRepository<Guarantee, Long>,
 		JpaSpecificationExecutor<Guarantee> {
+	boolean existsByName(String name);
+	boolean existsByNameAndIdNot(String name,Long id);
 }

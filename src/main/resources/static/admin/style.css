@@ -622,58 +622,58 @@ body {
     font-weight: 700;
 }
 
-#content main .table-data .order table tr td .status.completed {
-    background: var(--light-green);
-}
+/*#content main .table-data .order table tr td .status.completed {*/
+/*    background: var(--light-green);*/
+/*}*/
 
-#content main .table-data .order table tr td .status.process {
-    background: var(--yellow);
-}
+/*#content main .table-data .order table tr td .status.process {*/
+/*    background: var(--yellow);*/
+/*}*/
 
-#content main .table-data .order table tr td .status.pending {
-    background: var(--orange);
-}
+/*#content main .table-data .order table tr td .status.pending {*/
+/*    background: var(--orange);*/
+/*}*/
 
 
-#content main .table-data .todo {
-    flex-grow: 1;
-    flex-basis: 300px;
-}
+/*#content main .table-data .todo {*/
+/*    flex-grow: 1;*/
+/*    flex-basis: 300px;*/
+/*}*/
 
-#content main .table-data .todo .todo-list {
-    width: 100%;
-}
+/*#content main .table-data .todo .todo-list {*/
+/*    width: 100%;*/
+/*}*/
 
-#content main .table-data .todo .todo-list li {
-    width: 100%;
-    margin-bottom: 16px;
-    background: var(--grey);
-    border-radius: 10px;
-    padding: 14px 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
+/*#content main .table-data .todo .todo-list li {*/
+/*    width: 100%;*/
+/*    margin-bottom: 16px;*/
+/*    background: var(--grey);*/
+/*    border-radius: 10px;*/
+/*    padding: 14px 20px;*/
+/*    display: flex;*/
+/*    justify-content: space-between;*/
+/*    align-items: center;*/
+/*}*/
 
-#content main .table-data .todo .todo-list li .bx {
-    cursor: pointer;
-}
+/*#content main .table-data .todo .todo-list li .bx {*/
+/*    cursor: pointer;*/
+/*}*/
 
-#content main .table-data .todo .todo-list li.completed {
-    border-left: 120px solid var(--green);
-}
+/*#content main .table-data .todo .todo-list li.completed {*/
+/*    border-left: 120px solid var(--green);*/
+/*}*/
 
-#content main .table-data .todo .todo-list li.not-completed {
-    border-left: 20px solid var(--red);
-}
+/*#content main .table-data .todo .todo-list li.not-completed {*/
+/*    border-left: 20px solid var(--red);*/
+/*}*/
 
-#content main .table-data .todo .todo-list li.process {
-    border-left: 60px solid var(--yellow);
-}
+/*#content main .table-data .todo .todo-list li.process {*/
+/*    border-left: 60px solid var(--yellow);*/
+/*}*/
 
-#content main .table-data .todo .todo-list li:last-child {
-    margin-bottom: 0;
-}
+/*#content main .table-data .todo .todo-list li:last-child {*/
+/*    margin-bottom: 0;*/
+/*}*/
 
 /* MAIN */
 /* CONTENT */

@@ -6,4 +6,6 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 public interface ColorRepository extends JpaRepository<Color, Long>,
 		JpaSpecificationExecutor<Color> {
+	boolean existsByName(String name);
+	boolean existsByNameAndIdNot(String name,Long id);
 }

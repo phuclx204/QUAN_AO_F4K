@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="admin/fragments/head::head"></head>
+
+<body>
+<div th:replace="admin/fragments/sidebar::sidebar"></div>
+
+<section id="content" >
+    <div th:replace="admin/fragments/content::content"></div>
+    <main >
+        <div class="head-title"  style="color:#00f2fe">
+            Thống kê
+        </div>
+    </main>
+</section>
+
+<script th:src="@{/admin/script.js}"></script>
+</body>
+</html>

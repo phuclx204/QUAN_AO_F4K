@@ -1,35 +1,123 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 
-<head th:replace="admin/fragments/head::head"></head>
+<head>
+    <th:block th:insert="admin/fragments/head :: head"></th:block>
+    <link rel="stylesheet" th:href="@{/admin/product/datas.css}">
+    <link rel="stylesheet" th:href="@{/admin/plugins/bootstrap4/mine.css}"/>
+    <link rel="stylesheet" th:href="@{/admin/dist/css/common.css}"/>
+
+    <link rel="stylesheet" th:href="@{/admin/plugins/jqgrid-5.7.0/ui.jqgrid-bootstrap4.css}"/>
+    <link rel="stylesheet" th:href="@{/admin/plugins/sweetalert/sweetalert2.min.css}"/>
+</head>
 
 <body>
 <div th:replace="admin/fragments/sidebar::sidebar"></div>
 
-<section id="content" >
+<section id="content">
     <div th:replace="admin/fragments/content::content"></div>
-    <main >
+    <main>
         <div class="head-title">
             <div class="left">
-                <h1>Màu sắc</h1>
+                <h1>Quản lý màu sắc</h1>
                 <ul class="breadcrumb">
                     <li>
                         <a th:href="@{statistical}">Trang chủ</a>
                     </li>
                     <li><i class='bx bx-chevron-right'></i></li>
                     <li>
-                        <a class="active" th:href="@{brand}">Màu sắc</a>
+                        <a class="active" th:href="@{color}">Màu sắc</a>
                     </li>
                 </ul>
             </div>
-            <a href="#" class="btn-download">
-                <i class='bx bxs-cloud-download'></i>
-                <span class="text">Tải xuống PDF</span>
-            </a>
+            <div class="btn-container">
+                <a th:href="@{/admin/color/export/excel}" class="btn-download">
+                    <i class='bx bxs-cloud-download'></i>
+                    <span class="text">Tải xuống Excel</span>
+                </a>
+                <a th:href="@{/admin/color/export/pdf}" class="btn-download">
+                    <i class='bx bxs-cloud-download'></i>
+                    <span class="text">Tải xuống PDF</span>
+                </a>
+            </div>
+        </div>
+
+        <div class="table-data">
+            <div class="order">
+                <div class="head">
+                    <a href="javascript:void(0);" class="btn-add-form" onclick="openAddModal()">
+                        <i class='bx bx-plus'></i>
+                    </a>
+
+                    <h3>Danh sách</h3>
+                    <form th:action="@{/admin/color}" method="get" class="search-form" id="searchForm">
+                        <div class="search-container">
+                            <input type="text" name="search" placeholder="Tìm kiếm tên..."
+                                   th:value="${param.search}" id="searchInput"/>
+                            <button type="submit" class="search-btn"><i class='bx bx-search'></i></button>
+                        </div>
+                    </form>
+                </div>
+                <table>
+                    <thead>
+                    <tr>
+                        <th>STT</th>
+                        <th>Tên</th>
+                        <th>Edit</th>
+                        <th>#</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+
+                    </tbody>
+                </table>
+                <span id="totalData"></span>
+                <div id="pagination" style="text-align: center;"></div>
+            </div>
         </div>
     </main>
 </section>
 
+<div id="addModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <form id="addForm">
+            <label for="addName">Nhập tên:</label>
+            <input type="text" id="addName" name="name">
+            <button type="submit">Thêm</button>
+        </form>
+    </div>
+</div>
+
+<!-- Modal for editing -->
+<div id="editModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <form id="editForm">
+            <input type="hidden" id="editId" name="id">
+            <label for="editName">Nhập tên:</label>
+            <input type="text" id="editName" name="name">
+            <button type="submit">Cập nhật</button>
+        </form>
+    </div>
+</div>
+
+<!--default script-->
 <script th:src="@{/admin/script.js}"></script>
+
+<!--jquery-->
+<script th:src="@{/admin/plugins/jquery/jquery.min.js}"></script>
+<!--plugin table-->
+<script th:src="@{/admin/plugins/jqgrid-5.7.0/common.js}"></script>
+<script th:src="@{/admin/plugins/jqgrid-5.7.0/jquery.jqGrid.min.js}"></script>
+<script th:src="@{/admin/plugins/jqgrid-5.7.0/grid.locale-vn.js}"></script>
+<!--alter-->
+<script th:src="@{/admin/plugins/sweetalert/common.js}"></script>
+<script th:src="@{/admin/plugins/sweetalert/sweetalert2.min.js}"></script>
+<!--bootstrap-->
+<script th:src="@{/admin/plugins/bootstrap4/bootstrap.bundle.js}"></script>
+<!--custom script-->
+<script th:src="@{/admin/product/color.js}"></script>
+
 </body>
 </html>
