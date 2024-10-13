@@ -20,10 +20,11 @@ import org.example.quan_ao_f4k.util.SearchFields;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @AllArgsConstructor
-public class ProductServiceImpl implements ProductService{
+public class ProductServiceImpl implements ProductService {
     private ProductMapper productMapper;
     private ProductRepository productRepository;
 
@@ -35,18 +36,33 @@ public class ProductServiceImpl implements ProductService{
 
     @Override
     public ProductResponse findById(Long aLong) {
-        return defaultFindById(aLong,productRepository, productMapper,"");
+        return defaultFindById(aLong, productRepository, productMapper, "");
     }
 
     @Override
     public ProductResponse save(ProductRequest request) {
-        return defaultSave(request, productRepository, productMapper);
+        Product product = productMapper.requestToEntity(request);
+        Product savedProduct = productRepository.save(product);
+        return productMapper.entityToResponse(savedProduct);
     }
 
     @Override
-    public ProductResponse save(Long aLong, ProductRequest request) {
-        return defaultSave(aLong,request,productRepository,productMapper,"");
+    public ProductResponse save(Long id, ProductRequest request) {
+        Product existingProduct = productRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Sản phẩm không tồn tại"));
+
+        existingProduct.setName(request.getName());
+        existingProduct.setDescription(request.getDescription());
+
+        if (request.getThumbnailName() != null) {
+            existingProduct.setThumbnail(request.getThumbnailName());
+        }
+        Product updatedProduct = productRepository.save(existingProduct);
+
+        return productMapper.entityToResponse(updatedProduct);
     }
+
+
 
     @Override
     public void delete(Long aLong) {
@@ -60,10 +76,6 @@ public class ProductServiceImpl implements ProductService{
 
     }
 
-    @Override
-    public ProductResponse findByName(String name) {
-        return findByName(name);
-    }
 
     @Override
     public void updateStatus(Long id, int status) {
@@ -216,7 +228,7 @@ public class ProductServiceImpl implements ProductService{
         table.setSpacingBefore(10f);
 
         // Đặt chiều rộng các cột
-        float[] columnWidths = {1f,4f,4f,4f,6f,8f};
+        float[] columnWidths = {1f, 4f, 4f, 4f, 6f, 8f};
         table.setWidths(columnWidths);
 
         // Thêm tiêu đề cho các cột

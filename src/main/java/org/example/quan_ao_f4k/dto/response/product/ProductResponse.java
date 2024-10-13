@@ -1,13 +1,14 @@
 package org.example.quan_ao_f4k.dto.response.product;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.example.quan_ao_f4k.model.product.Brand;
 
-@AllArgsConstructor
+import java.time.LocalDateTime;
+
+@Getter
+@Setter
 @NoArgsConstructor
-@Data
+@AllArgsConstructor
 public class ProductResponse {
     private Long id;
     private String name;
@@ -16,6 +17,8 @@ public class ProductResponse {
     private String thumbnail;
     private String description;
     private Integer status;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 }
 
 

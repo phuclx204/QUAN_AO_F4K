@@ -10,7 +10,7 @@ exportSelect.addEventListener('change', function () {
 
 
 // Hàm tải danh sách danh mục và thương hiệu vào combobox
-function loadCategoriesAndBrands(categoryId = null,brandId = null) {
+function loadCategoriesAndBrands(categoryId = null, brandId = null) {
     $.get('/admin/category/active', function (categories) {
         const categorySelect = $('#addCategory, #editCategory'); // Lấy cả hai select
         categorySelect.empty(); // Xóa các tùy chọn cũ
@@ -48,12 +48,20 @@ function openAddModal() {
 function showEditModal(id, name, categoryId, brandId, thumbnail, description) {
     $('#editId').val(id);
     $('#editName').val(name);
-    $('#editThumbnail').val(thumbnail);
-    $('#editDescription').val(description);
     loadCategoriesAndBrands(categoryId, brandId);
+    $('#editDescription').val(description);
+
+    // Hiển thị ảnh đã tồn tại
+    const thumbnailPreview = $('#editThumbnailPreview');
+    if (thumbnail) {
+        thumbnailPreview.attr('src', '/admin/img/' + thumbnail).show();
+    } else {
+        thumbnailPreview.hide();
+    }
 
     $('#editModal').show();
 }
+
 
 // Load danh sách và tìm kiếm
 $(document).ready(function () {
@@ -95,25 +103,28 @@ $(document).ready(function () {
             `);
             return;
         }
-        //load danh sách ra bảng
+
+// Load danh sách ra bảng
         datas.forEach((i, index) => {
             tbody.append(`
-                <tr>
-                    <td>${index + 1}</td>
-                    <td>${i.name}</td>
-                    <td>${i.category.name}</td>
-                    <td>${i.brand.name}</td>
-                    <td>${i.thumbnail}</td>
-                    <td>${i.description}</td>
-                    <td>
-                        <i class='bx bx-edit' onclick="showEditModal(${i.id}, '${i.name}', '${i.category.id}', '${i.brand.id}', '${i.thumbnail}', '${i.description}')"></i>
-                    </td>
-                    <td>
-                        <input type="checkbox" value="${i.id}" ${i.status === 1 ? 'checked' : ''} onchange="submitStatusForm(this)">
-                    </td>
-                </tr>
-            `);
+        <tr>
+            <td>${index + 1}</td>
+            <td><img src="/admin/img/${i.thumbnail}"></td>
+            <td>${i.name}</td>
+            <td>${i.category.name}</td>
+            <td>${i.brand.name}</td>
+            <td>${i.description}</td>
+            <td>${formatDate(i.createdAt)}</td>
+            <td>
+                <i class='bx bx-edit' onclick="showEditModal(${i.id}, '${i.name}', '${i.category.id}', '${i.brand.id}', '${i.thumbnail}', '${i.description}')"></i>
+            </td>
+            <td>
+                <input type="checkbox" value="${i.id}" ${i.status === 1 ? 'checked' : ''} onchange="submitStatusForm(this)">
+            </td>
+        </tr>
+    `);
         });
+
     }
 
     // Thiết lập phân trang
@@ -156,23 +167,20 @@ $(document).ready(function () {
             loadDatas(page, 10, 'id,dsc', '');
         });
     }
-// Xử lý thêm sản phẩm
+
     $('#addForm').on('submit', function (event) {
         event.preventDefault();
 
-        const data = {
-            name: $('#addName').val(),
-            categoryId: $('#addCategory').val(),
-            brandId: $('#addBrand').val(),
-            thumbnail: $('#addThumbnail').val(),
-            description: $('#addDescription').val()
-        };
+        const formData = new FormData(this); // Lấy toàn bộ dữ liệu từ form
 
         $.ajax({
             url: '/admin/products',
             method: 'POST',
-            contentType: 'application/json',
-            data: JSON.stringify(data),
+            enctype: 'multipart/form-data',
+            processData: false,
+            contentType: false,
+            data: formData,
+            cache: false,
             success: function () {
                 $('#addModal').hide();
                 loadDatas();
@@ -183,39 +191,38 @@ $(document).ready(function () {
             }
         });
     });
-    // Cập nhật thông tin sản phẩm
+
+    // Cập nhật sản phẩm
     $('#editForm').on('submit', function (event) {
         event.preventDefault();
 
-        const id = $('#editId').val();
-        const dataName = $('#editName').val();
-        const dataCategory = $('#editCategory').val();
-        const dataBrand = $('#editBrand').val();
-        const dataThumbnail = $('#editThumbnail').val();
-        const dataDescription = $('#editDescription').val();
+        const formData = new FormData(this);
+        const id = $('#editId').val();  // Lấy ID từ input
+        console.log('ID:', id);  // Log ID để kiểm tra
 
         $.ajax({
-            url: `/admin/products/${id}`,
+            url: '/admin/products/' + id,  // Đường dẫn đúng với ID
             method: 'PUT',
-            contentType: 'application/json',
-            data: JSON.stringify({
-                name: dataName,
-                categoryId: dataCategory,
-                brandId: dataBrand,
-                thumbnail: dataThumbnail,
-                description: dataDescription
-            }), // Chuyển đổi dữ liệu thành JSON
-            success: function (response) {
+            enctype: 'multipart/form-data',
+            processData: false,
+            contentType: false,
+            data: formData,
+            success: function () {
                 $('#editModal').hide();
                 loadDatas();
-                Swal.fire('Success', 'Cập nhật thành công!', 'success');
+                Swal.fire('Success', 'Cập nhật sản phẩm thành công!', 'success');
             },
             error: function (xhr) {
-                Swal.fire('Error', 'Cập nhật thất bại', 'error');
+                console.error('Error response:', xhr);
+                Swal.fire('Error', 'Cập nhật sản phẩm thất bại', 'error');
             }
         });
     });
+
+
+
 });
+
 // Cập nhật trạng thái
 function submitStatusForm(checkbox) {
     const id = checkbox.value;
@@ -233,4 +240,34 @@ function submitStatusForm(checkbox) {
             Swal.fire('Error', 'Cập nhật trạng thái thất bại', 'error');
         }
     });
+}
+// Hàm định dạng ngày giờ
+function formatDate(dateString) {
+    const date = new Date(dateString);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    const seconds = String(date.getSeconds()).padStart(2, '0');
+    return `${hours}:${minutes}:${seconds} ${day}-${month}-${year}`;
+}
+// Preview ảnh khi người dùng chọn file mới
+function previewImage(event) {
+    const preview = document.getElementById('editThumbnailPreview');
+    const file = event.target.files[0];
+
+    if (file) {
+        preview.src = URL.createObjectURL(file);
+        preview.style.display = 'block';
+    }
+}
+function showImageAddModal() {
+    const preview = document.getElementById('addThumbnailPreview');
+    const file = event.target.files[0];
+
+    if (file) {
+        preview.src = URL.createObjectURL(file);
+        preview.style.display = 'block';
+    }
 }

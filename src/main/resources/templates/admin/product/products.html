@@ -59,12 +59,13 @@
                     <thead>
                     <tr>
                         <th>STT</th>
+                        <th></th>
                         <th>Tên</th>
                         <th>Danh mục</th>
                         <th>Thương hiệu</th>
-                        <th>Hình ảnh</th>
                         <th>Mô tả</th>
-                        <th>Edit</th>
+                        <th>Thời gian tạo</th>
+                        <th>Sửa</th>
                         <th>#</th>
                     </tr>
                     </thead>
@@ -85,30 +86,33 @@
         <span class="close" onclick="closeModal('addModal')">&times;</span>
         <h2>Thêm sản phẩm</h2>
 
-        <form id="addForm">
+        <form id="addForm" enctype="multipart/form-data">
             <label for="addName">Tên sản phẩm:</label>
             <input type="text" id="addName" name="name" required>
 
             <div class="flex-container">
-                <select id="addCategory" name="category" required>
+                <select id="addCategory" name="categoryId" required>
                     <option value="">-- Chọn danh mục --</option>
                     <!-- Options động -->
                 </select>
 
-                <select id="addBrand" name="brand" required>
+                <select id="addBrand" name="brandId" required>
                     <option value="">-- Chọn thương hiệu --</option>
                     <!-- Options động -->
                 </select>
             </div>
 
-            <label for="addThumbnail">Hình ảnh (URL):</label>
-            <input type="text" id="addThumbnail" name="thumbnail" placeholder="Nhập URL hình ảnh">
+            <label for="addThumbnail">Hình ảnh:</label>
+            <input type="file" id="addThumbnail" name="thumbnail" accept="image/*" onchange="showImageAddModal(event)">
+
+            <img id="addThumbnailPreview" src="" alt="Thumbnail" style="display: none; width: 100px; margin-top: 10px;">
 
             <label for="addDescription">Mô tả:</label>
             <textarea id="addDescription" name="description" rows="3"></textarea>
 
             <button type="submit">Thêm sản phẩm</button>
         </form>
+
     </div>
 </div>
 
@@ -117,8 +121,7 @@
     <div class="modal-content">
         <span class="close" onclick="closeModal('editModal')">&times;</span>
         <h2>Chỉnh sửa sản phẩm</h2>
-
-        <form id="editForm">
+        <form id="editForm" enctype="multipart/form-data">
             <input type="hidden" id="editId" name="id">
 
             <label for="editName">Tên sản phẩm:</label>
@@ -136,8 +139,10 @@
                 </select>
             </div>
 
-            <label for="editThumbnail">Hình ảnh (URL):</label>
-            <input type="text" id="editThumbnail" name="thumbnail">
+            <label for="editThumbnail">Hình ảnh:</label>
+            <input type="file" id="editThumbnail" name="thumbnail" accept="image/*" onchange="previewImage(event)">
+
+            <img id="editThumbnailPreview" src="" alt="Thumbnail" style="display: none; width: 100px; margin-top: 10px;">
 
             <label for="editDescription">Mô tả:</label>
             <textarea id="editDescription" name="description" rows="3"></textarea>
@@ -146,7 +151,6 @@
         </form>
     </div>
 </div>
-
 
 
 <!--default script-->

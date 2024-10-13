@@ -10,19 +10,19 @@ import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.ReportingPolicy;
 
-@Mapper(componentModel = "spring",
-        unmappedTargetPolicy = ReportingPolicy.IGNORE
-        ,uses = {MapperCoverter.class,CategoryMapper.class,BrandMapper.class}
-)
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE,
+        uses = {MapperCoverter.class, CategoryMapper.class, BrandMapper.class})
 public interface ProductMapper extends GennericMapper<Product, ProductRequest, ProductResponse> {
+
     @Override
     @Mapping(source = "categoryId", target = "category", qualifiedByName = "convertToCategory")
     @Mapping(source = "brandId", target = "brand", qualifiedByName = "convertToBrand")
+    @Mapping(source = "thumbnailName", target = "thumbnail")
     Product requestToEntity(ProductRequest request);
 
-
     @Override
     @Mapping(source = "categoryId", target = "category", qualifiedByName = "convertToCategory")
     @Mapping(source = "brandId", target = "brand", qualifiedByName = "convertToBrand")
+    @Mapping(source = "thumbnailName", target = "thumbnail")
     Product partialUpdate(@MappingTarget Product entity, ProductRequest request);
 }

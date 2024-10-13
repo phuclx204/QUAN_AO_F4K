@@ -6,7 +6,6 @@ import org.example.quan_ao_f4k.dto.response.product.ProductResponse;
 import org.example.quan_ao_f4k.service.CrudService;
 
 public interface ProductService extends CrudService<Long, ProductRequest, ProductResponse> {
-	ProductResponse findByName(String name);
 
 	void updateStatus(Long id, int status);
 
