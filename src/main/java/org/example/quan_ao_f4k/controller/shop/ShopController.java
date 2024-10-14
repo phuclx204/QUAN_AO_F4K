@@ -1,6 +1,9 @@
 package org.example.quan_ao_f4k.controller.shop;
 
+import org.example.quan_ao_f4k.service.shop.ShopService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -8,7 +11,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("shop")
 public class ShopController {
 
-    @GetMapping("index")
+    @Autowired
+    private ShopService service;
+
+    @GetMapping("home")
     public String index() {
         return "shop/pages/index";
     }
@@ -19,7 +25,8 @@ public class ShopController {
     }
 
     @GetMapping("category")
-    public String category() {
+    public String category(Model model) {
+        service.addModelFilter(model);
         return "shop/pages/category";
     }
 
