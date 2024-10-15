@@ -2,14 +2,23 @@ package org.example.quan_ao_f4k.util;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import java.util.List;
 
 public class JacksonEx {
 
     public static final ObjectMapper INIT_MAPPER = new ObjectMapper();
+
+    static {
+        // Đăng ký JavaTimeModule để hỗ trợ LocalDateTime
+        INIT_MAPPER.registerModule(new JavaTimeModule());
+        // Tắt việc ghi các đối tượng Date dưới dạng timestamps
+        INIT_MAPPER.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+    }
 
     public static <T> T convertToType(Object obj, Class<T> valueType) {
         try {
