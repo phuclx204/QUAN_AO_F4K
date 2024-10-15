@@ -119,6 +119,34 @@
                         </div>
                         <!-- / Brands Filter -->
 
+                        <!-- Type Filter -->
+                        <div class="py-4 widget-filter border-top">
+                            <a class="small text-body text-decoration-none text-secondary-hover transition-all transition-all fs-6 fw-bolder d-block collapse-icon-chevron"
+                               data-bs-toggle="collapse" href="#filter-category" role="button" aria-expanded="true"
+                               aria-controls="filter-category">
+                                Danh mục
+                            </a>
+                            <div id="filter-category" class="collapse show">
+                                <div class="input-group my-3 py-1">
+                                    <input type="text" class="form-control py-2 filter-search rounded"
+                                           placeholder="Search" aria-label="Search">
+                                    <span
+                                            class="input-group-text bg-transparent px-2 position-absolute top-7 end-0 border-0 z-index-20"><i
+                                            class="ri-search-2-line text-muted"></i></span>
+                                </div>
+                                <div class="filter-options">
+                                    <div class="form-group form-check mb-0" th:each="item:${listCategory}">
+                                        <input type="checkbox" class="form-check-input"
+                                               th:id="'filter-category-' + ${item.id}">
+                                        <label
+                                                class="form-check-label fw-normal text-body flex-grow-1 d-flex justify-content-between"
+                                                th:for="'filter-category-' + ${item.id}">[[${item.name}]]</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- / Type Filter -->
+
                         <!-- Sizes Filter -->
                         <div class="py-4 widget-filter border-top">
                             <a class="small text-body text-decoration-none text-secondary-hover transition-all transition-all fs-6 fw-bolder d-block collapse-icon-chevron"
@@ -128,8 +156,10 @@
                             </a>
                             <div id="filter-sizes" class="collapse show">
                                 <div class="filter-options mt-3">
-                                    <div class="form-group d-inline-block mr-2 mb-2 form-check-bg form-check-custom" th:each="item:${listSize}">
-                                        <input type="checkbox" class="form-check-bg-input" th:id="'filter-sizes-'+${item.id}">
+                                    <div class="form-group d-inline-block mr-2 mb-2 form-check-bg form-check-custom"
+                                         th:each="item:${listSize}">
+                                        <input type="checkbox" class="form-check-bg-input"
+                                               th:id="'filter-sizes-'+${item.id}">
                                         <label class="form-check-label fw-normal" th:for="'filter-sizes-'+${item.id}">[[${item.name}]]</label>
                                     </div>
                                 </div>
@@ -146,33 +176,11 @@
                             </a>
                             <div id="filter-colour" class="collapse show">
                                 <div class="filter-options mt-3">
-                                    <div class="form-group d-inline-block mr-1 mb-1 form-check-solid-bg-checkmark form-check-custom form-check-primary">
-                                        <input type="checkbox" class="form-check-color-input" id="filter-colours-0">
-                                        <label class="form-check-label" for="filter-colours-0"></label>
-                                    </div>
-                                    <div class="form-group d-inline-block mr-1 mb-1 form-check-solid-bg-checkmark form-check-custom form-check-success">
-                                        <input type="checkbox" class="form-check-color-input" id="filter-colours-1">
-                                        <label class="form-check-label" for="filter-colours-1"></label>
-                                    </div>
-                                    <div class="form-group d-inline-block mr-1 mb-1 form-check-solid-bg-checkmark form-check-custom form-check-danger">
-                                        <input type="checkbox" class="form-check-color-input" id="filter-colours-2">
-                                        <label class="form-check-label" for="filter-colours-2"></label>
-                                    </div>
-                                    <div class="form-group d-inline-block mr-1 mb-1 form-check-solid-bg-checkmark form-check-custom form-check-info">
-                                        <input type="checkbox" class="form-check-color-input" id="filter-colours-3">
-                                        <label class="form-check-label" for="filter-colours-3"></label>
-                                    </div>
-                                    <div class="form-group d-inline-block mr-1 mb-1 form-check-solid-bg-checkmark form-check-custom form-check-warning">
-                                        <input type="checkbox" class="form-check-color-input" id="filter-colours-4">
-                                        <label class="form-check-label" for="filter-colours-4"></label>
-                                    </div>
-                                    <div class="form-group d-inline-block mr-1 mb-1 form-check-solid-bg-checkmark form-check-custom form-check-dark">
-                                        <input type="checkbox" class="form-check-color-input" id="filter-colours-5">
-                                        <label class="form-check-label" for="filter-colours-5"></label>
-                                    </div>
-                                    <div class="form-group d-inline-block mr-1 mb-1 form-check-solid-bg-checkmark form-check-custom form-check-secondary">
-                                        <input type="checkbox" class="form-check-color-input" id="filter-colours-6">
-                                        <label class="form-check-label" for="filter-colours-6"></label>
+                                    <div class="form-group d-inline-block mr-2 mb-2 form-check-bg form-check-custom"
+                                         th:each="item:${listColor}">
+                                        <input type="checkbox" class="form-check-bg-input"
+                                               th:id="'filter-colour-'+${item.id}">
+                                        <label class="form-check-label fw-normal" th:for="'filter-colour-'+${item.id}">[[${item.name}]]</label>
                                     </div>
                                 </div>
                             </div>
@@ -225,522 +233,14 @@
                 </div>                    <!-- / Top Toolbar-->
 
                 <!-- Products-->
-                <div class="row g-4 mb-5">
-                    <div class="col-12 col-sm-6 col-md-4">
-                        <!-- Card Product-->
-                        <div class="card position-relative h-100 card-listing hover-trigger">
-                            <div class="card-header">
-                                <picture class="position-relative overflow-hidden d-block bg-light">
-                                    <img class="w-100 img-fluid position-relative z-index-10" title=""
-                                         src="../../shop/dist/images/products/product-1.jpg" alt="">
-                                </picture>
-                                <picture class="position-absolute z-index-20 start-0 top-0 hover-show bg-light">
-                                    <img class="w-100 img-fluid" title=""
-                                         src="../../shop/dist/images/products/product-1b.jpg" alt="">
-                                </picture>
-                                <div class="card-actions">
-                                    <span class="small text-uppercase tracking-wide fw-bolder text-center d-block">Quick Add</span>
-                                    <div class="d-flex justify-content-center align-items-center flex-wrap mt-3">
-                                        <button class="btn btn-outline-dark btn-sm mx-2">S</button>
-                                        <button class="btn btn-outline-dark btn-sm mx-2">M</button>
-                                        <button class="btn btn-outline-dark btn-sm mx-2">L</button>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="card-body px-0 text-center">
-                                <div class="d-flex justify-content-center align-items-center mx-auto mb-1">
-                                    <!-- Review Stars Small-->
-                                    <div class="rating position-relative d-table">
-                                        <div class="position-absolute stars" style="width: 90%">
-                                            <i class="ri-star-fill text-dark mr-1"></i>
-                                            <i class="ri-star-fill text-dark mr-1"></i>
-                                            <i class="ri-star-fill text-dark mr-1"></i>
-                                            <i class="ri-star-fill text-dark mr-1"></i>
-                                            <i class="ri-star-fill text-dark mr-1"></i>
-                                        </div>
-                                        <div class="stars">
-                                            <i class="ri-star-fill mr-1 text-muted opacity-25"></i>
-                                            <i class="ri-star-fill mr-1 text-muted opacity-25"></i>
-                                            <i class="ri-star-fill mr-1 text-muted opacity-25"></i>
-                                            <i class="ri-star-fill mr-1 text-muted opacity-25"></i>
-                                            <i class="ri-star-fill mr-1 text-muted opacity-25"></i>
-                                        </div>
-                                    </div>
-                                    <span class="small fw-bolder ms-2 text-muted"> 4.7 (456)</span>
-                                </div>
-                                <a class="mb-0 mx-2 mx-md-4 fs-p link-cover text-decoration-none d-block text-center"
-                                   href="./product.html">Full Zip Hoodie</a>
-                                <p class="fw-bolder m-0 mt-2">$1129.99</p>
-                            </div>
-                        </div>
-                        <!--/ Card Product-->
-                    </div>
-                    <div class="col-12 col-sm-6 col-md-4">
-                        <!-- Card Product-->
-                        <div class="card position-relative h-100 card-listing hover-trigger">
-                            <span class="badge card-badge bg-secondary">-25%</span>
-                            <div class="card-header">
-                                <picture class="position-relative overflow-hidden d-block bg-light">
-                                    <img class="w-100 img-fluid position-relative z-index-10" title=""
-                                         src="../../shop/dist/images/products/product-2.jpg" alt="">
-                                </picture>
-                                <div class="card-actions">
-                                    <span class="small text-uppercase tracking-wide fw-bolder text-center d-block">Quick Add</span>
-                                    <div class="d-flex justify-content-center align-items-center flex-wrap mt-3">
-                                        <button class="btn btn-outline-dark btn-sm mx-2">S</button>
-                                        <button class="btn btn-outline-dark btn-sm mx-2">M</button>
-                                        <button class="btn btn-outline-dark btn-sm mx-2">L</button>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="card-body px-0 text-center">
-                                <div class="d-flex justify-content-center align-items-center mx-auto mb-1">
-                                    <!-- Review Stars Small-->
-                                    <div class="rating position-relative d-table">
-                                        <div class="position-absolute stars" style="width: 60%">
-                                            <i class="ri-star-fill text-dark mr-1"></i>
-                                            <i class="ri-star-fill text-dark mr-1"></i>
-                                            <i class="ri-star-fill text-dark mr-1"></i>
-                                            <i class="ri-star-fill text-dark mr-1"></i>
-                                            <i class="ri-star-fill text-dark mr-1"></i>
-                                        </div>
-                                        <div class="stars">
-                                            <i class="ri-star-fill mr-1 text-muted opacity-25"></i>
-                                            <i class="ri-star-fill mr-1 text-muted opacity-25"></i>
-                                            <i class="ri-star-fill mr-1 text-muted opacity-25"></i>
-                                            <i class="ri-star-fill mr-1 text-muted opacity-25"></i>
-                                            <i class="ri-star-fill mr-1 text-muted opacity-25"></i>
-                                        </div>
-                                    </div>
-                                    <span class="small fw-bolder ms-2 text-muted"> 4.4 (1289)</span>
-                                </div>
-                                <a class="mb-0 mx-2 mx-md-4 fs-p link-cover text-decoration-none d-block text-center"
-                                   href="./product.html">Mens Sherpa Hoodie</a>
-                                <div class="d-flex justify-content-center align-items-center mt-2">
-                                    <p class="mb-0 me-2 text-danger fw-bolder">$<span>599.55</span></p>
-                                    <p class="mb-0 text-muted fw-bolder"><s>$<span>150.00</span></s></p>
-                                </div>
-                            </div>
-                        </div>
-                        <!--/ Card Product-->
-                    </div>
-                    <div class="col-12 col-sm-6 col-md-4">
-                        <!-- Card Product-->
-                        <div class="card position-relative h-100 card-listing hover-trigger">
-                            <span class="badge card-badge bg-secondary">-65%</span>
-                            <div class="card-header">
-                                <picture class="position-relative overflow-hidden d-block bg-light">
-                                    <img class="w-100 img-fluid position-relative z-index-10" title=""
-                                         src="../../shop/dist/images/products/product-3.jpg" alt="">
-                                </picture>
-                                <div class="card-actions">
-                                    <span class="small text-uppercase tracking-wide fw-bolder text-center d-block">Quick Add</span>
-                                    <div class="d-flex justify-content-center align-items-center flex-wrap mt-3">
-                                        <button class="btn btn-outline-dark btn-sm mx-2">S</button>
-                                        <button class="btn btn-outline-dark btn-sm mx-2">M</button>
-                                        <button class="btn btn-outline-dark btn-sm mx-2">L</button>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="card-body px-0 text-center">
-                                <div class="d-flex justify-content-center align-items-center mx-auto mb-1">
-                                    <!-- Review Stars Small-->
-                                    <div class="rating position-relative d-table">
-                                        <div class="position-absolute stars" style="width: 20%">
-                                            <i class="ri-star-fill text-dark mr-1"></i>
-                                            <i class="ri-star-fill text-dark mr-1"></i>
-                                            <i class="ri-star-fill text-dark mr-1"></i>
-                                            <i class="ri-star-fill text-dark mr-1"></i>
-                                            <i class="ri-star-fill text-dark mr-1"></i>
-                                        </div>
-                                        <div class="stars">
-                                            <i class="ri-star-fill mr-1 text-muted opacity-25"></i>
-                                            <i class="ri-star-fill mr-1 text-muted opacity-25"></i>
-                                            <i class="ri-star-fill mr-1 text-muted opacity-25"></i>
-                                            <i class="ri-star-fill mr-1 text-muted opacity-25"></i>
-                                            <i class="ri-star-fill mr-1 text-muted opacity-25"></i>
-                                        </div>
-                                    </div>
-                                    <span class="small fw-bolder ms-2 text-muted"> 4.7 (754)</span>
-                                </div>
-                                <a class="mb-0 mx-2 mx-md-4 fs-p link-cover text-decoration-none d-block text-center"
-                                   href="./product.html">Womens Essentials Hoodie</a>
-                                <div class="d-flex justify-content-center align-items-center mt-2">
-                                    <p class="mb-0 me-2 text-danger fw-bolder">$<span>779.55</span></p>
-                                    <p class="mb-0 text-muted fw-bolder"><s>$<span>1100.00</span></s></p>
-                                </div>
-                            </div>
-                        </div>
-                        <!--/ Card Product-->
-                    </div>
-                    <div class="col-12 col-sm-6 col-md-4">
-                        <!-- Card Product-->
-                        <div class="card position-relative h-100 card-listing hover-trigger">
-                            <div class="card-header">
-                                <picture class="position-relative overflow-hidden d-block bg-light">
-                                    <img class="w-100 img-fluid position-relative z-index-10" title=""
-                                         src="../../shop/dist/images/products/product-4.jpg" alt="">
-                                </picture>
-                                <div class="card-actions">
-                                    <span class="small text-uppercase tracking-wide fw-bolder text-center d-block">Quick Add</span>
-                                    <div class="d-flex justify-content-center align-items-center flex-wrap mt-3">
-                                        <button class="btn btn-outline-dark btn-sm mx-2">S</button>
-                                        <button class="btn btn-outline-dark btn-sm mx-2">M</button>
-                                        <button class="btn btn-outline-dark btn-sm mx-2">L</button>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="card-body px-0 text-center">
-                                <div class="d-flex justify-content-center align-items-center mx-auto mb-1">
-                                    <!-- Review Stars Small-->
-                                    <div class="rating position-relative d-table">
-                                        <div class="position-absolute stars" style="width: 70%">
-                                            <i class="ri-star-fill text-dark mr-1"></i>
-                                            <i class="ri-star-fill text-dark mr-1"></i>
-                                            <i class="ri-star-fill text-dark mr-1"></i>
-                                            <i class="ri-star-fill text-dark mr-1"></i>
-                                            <i class="ri-star-fill text-dark mr-1"></i>
-                                        </div>
-                                        <div class="stars">
-                                            <i class="ri-star-fill mr-1 text-muted opacity-25"></i>
-                                            <i class="ri-star-fill mr-1 text-muted opacity-25"></i>
-                                            <i class="ri-star-fill mr-1 text-muted opacity-25"></i>
-                                            <i class="ri-star-fill mr-1 text-muted opacity-25"></i>
-                                            <i class="ri-star-fill mr-1 text-muted opacity-25"></i>
-                                        </div>
-                                    </div>
-                                    <span class="small fw-bolder ms-2 text-muted"> 4.4 (1289)</span>
-                                </div>
-                                <a class="mb-0 mx-2 mx-md-4 fs-p link-cover text-decoration-none d-block text-center"
-                                   href="./product.html">Elevated Lined Hoodie</a>
-                                <p class="fw-bolder m-0 mt-2">$1829.99</p>
-                            </div>
-                        </div>
-                        <!--/ Card Product-->
-                    </div>
-                    <div class="d-none d-md-flex col-md-8">
-                        <div class="w-100 h-100 position-relative">
-                            <div class="position-absolute w-50 h-100 start-0 bottom-0 top-0 bg-pos-center-center bg-img-cover"
-                                 style="background-image: url(../../shop/dist/images/banners/banner-3.jpg);">
-                            </div>
-                            <div
-                                    class="position-absolute w-50 h-100 bg-light end-0 top-0 bottom-0 d-flex justify-content-center align-items-center">
-                                <div class="px-4 text-center">
-                                    <h4 class="fs-4 fw-bold mb-4">Built for adventure</h4>
-                                    <p class="mb-4">The perfect grab-and-go layer for every hiking adventure</p>
-                                    <a href="#" class="text-link-border border-2 pb-1 fw-bolder">Shop Now</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-12 col-sm-6 col-md-4">
-                        <!-- Card Product-->
-                        <div class="card position-relative h-100 card-listing hover-trigger">
-                            <div class="card-header">
-                                <picture class="position-relative overflow-hidden d-block bg-light">
-                                    <img class="w-100 img-fluid position-relative z-index-10" title=""
-                                         src="../../shop/dist/images/products/product-1.jpg" alt="">
-                                </picture>
-                                <picture class="position-absolute z-index-20 start-0 top-0 hover-show bg-light">
-                                    <img class="w-100 img-fluid" title=""
-                                         src="../../shop/dist/images/products/product-1b.jpg" alt="">
-                                </picture>
-                                <div class="card-actions">
-                                    <span class="small text-uppercase tracking-wide fw-bolder text-center d-block">Quick Add</span>
-                                    <div class="d-flex justify-content-center align-items-center flex-wrap mt-3">
-                                        <button class="btn btn-outline-dark btn-sm mx-2">S</button>
-                                        <button class="btn btn-outline-dark btn-sm mx-2">M</button>
-                                        <button class="btn btn-outline-dark btn-sm mx-2">L</button>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="card-body px-0 text-center">
-                                <div class="d-flex justify-content-center align-items-center mx-auto mb-1">
-                                    <!-- Review Stars Small-->
-                                    <div class="rating position-relative d-table">
-                                        <div class="position-absolute stars" style="width: 90%">
-                                            <i class="ri-star-fill text-dark mr-1"></i>
-                                            <i class="ri-star-fill text-dark mr-1"></i>
-                                            <i class="ri-star-fill text-dark mr-1"></i>
-                                            <i class="ri-star-fill text-dark mr-1"></i>
-                                            <i class="ri-star-fill text-dark mr-1"></i>
-                                        </div>
-                                        <div class="stars">
-                                            <i class="ri-star-fill mr-1 text-muted opacity-25"></i>
-                                            <i class="ri-star-fill mr-1 text-muted opacity-25"></i>
-                                            <i class="ri-star-fill mr-1 text-muted opacity-25"></i>
-                                            <i class="ri-star-fill mr-1 text-muted opacity-25"></i>
-                                            <i class="ri-star-fill mr-1 text-muted opacity-25"></i>
-                                        </div>
-                                    </div>
-                                    <span class="small fw-bolder ms-2 text-muted"> 4.7 (456)</span>
-                                </div>
-                                <a class="mb-0 mx-2 mx-md-4 fs-p link-cover text-decoration-none d-block text-center"
-                                   href="./product.html">Full Zip Hoodie</a>
-                                <p class="fw-bolder m-0 mt-2">$1129.99</p>
-                            </div>
-                        </div>
-                        <!--/ Card Product-->
-                    </div>
-                    <div class="col-12 col-sm-6 col-md-4">
-                        <!-- Card Product-->
-                        <div class="card position-relative h-100 card-listing hover-trigger">
-                            <span class="badge card-badge bg-secondary">-25%</span>
-                            <div class="card-header">
-                                <picture class="position-relative overflow-hidden d-block bg-light">
-                                    <img class="w-100 img-fluid position-relative z-index-10" title=""
-                                         src="../../shop/dist/images/products/product-2.jpg" alt="">
-                                </picture>
-                                <div class="card-actions">
-                                    <span class="small text-uppercase tracking-wide fw-bolder text-center d-block">Quick Add</span>
-                                    <div class="d-flex justify-content-center align-items-center flex-wrap mt-3">
-                                        <button class="btn btn-outline-dark btn-sm mx-2">S</button>
-                                        <button class="btn btn-outline-dark btn-sm mx-2">M</button>
-                                        <button class="btn btn-outline-dark btn-sm mx-2">L</button>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="card-body px-0 text-center">
-                                <div class="d-flex justify-content-center align-items-center mx-auto mb-1">
-                                    <!-- Review Stars Small-->
-                                    <div class="rating position-relative d-table">
-                                        <div class="position-absolute stars" style="width: 60%">
-                                            <i class="ri-star-fill text-dark mr-1"></i>
-                                            <i class="ri-star-fill text-dark mr-1"></i>
-                                            <i class="ri-star-fill text-dark mr-1"></i>
-                                            <i class="ri-star-fill text-dark mr-1"></i>
-                                            <i class="ri-star-fill text-dark mr-1"></i>
-                                        </div>
-                                        <div class="stars">
-                                            <i class="ri-star-fill mr-1 text-muted opacity-25"></i>
-                                            <i class="ri-star-fill mr-1 text-muted opacity-25"></i>
-                                            <i class="ri-star-fill mr-1 text-muted opacity-25"></i>
-                                            <i class="ri-star-fill mr-1 text-muted opacity-25"></i>
-                                            <i class="ri-star-fill mr-1 text-muted opacity-25"></i>
-                                        </div>
-                                    </div>
-                                    <span class="small fw-bolder ms-2 text-muted"> 4.4 (1289)</span>
-                                </div>
-                                <a class="mb-0 mx-2 mx-md-4 fs-p link-cover text-decoration-none d-block text-center"
-                                   href="./product.html">Mens Sherpa Hoodie</a>
-                                <div class="d-flex justify-content-center align-items-center mt-2">
-                                    <p class="mb-0 me-2 text-danger fw-bolder">$<span>599.55</span></p>
-                                    <p class="mb-0 text-muted fw-bolder"><s>$<span>150.00</span></s></p>
-                                </div>
-                            </div>
-                        </div>
-                        <!--/ Card Product-->
-                    </div>
-                    <div class="col-12 col-sm-6 col-md-4">
-                        <!-- Card Product-->
-                        <div class="card position-relative h-100 card-listing hover-trigger">
-                            <span class="badge card-badge bg-secondary">-65%</span>
-                            <div class="card-header">
-                                <picture class="position-relative overflow-hidden d-block bg-light">
-                                    <img class="w-100 img-fluid position-relative z-index-10" title=""
-                                         src="../../shop/dist/images/products/product-3.jpg" alt="">
-                                </picture>
-                                <div class="card-actions">
-                                    <span class="small text-uppercase tracking-wide fw-bolder text-center d-block">Quick Add</span>
-                                    <div class="d-flex justify-content-center align-items-center flex-wrap mt-3">
-                                        <button class="btn btn-outline-dark btn-sm mx-2">S</button>
-                                        <button class="btn btn-outline-dark btn-sm mx-2">M</button>
-                                        <button class="btn btn-outline-dark btn-sm mx-2">L</button>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="card-body px-0 text-center">
-                                <div class="d-flex justify-content-center align-items-center mx-auto mb-1">
-                                    <!-- Review Stars Small-->
-                                    <div class="rating position-relative d-table">
-                                        <div class="position-absolute stars" style="width: 20%">
-                                            <i class="ri-star-fill text-dark mr-1"></i>
-                                            <i class="ri-star-fill text-dark mr-1"></i>
-                                            <i class="ri-star-fill text-dark mr-1"></i>
-                                            <i class="ri-star-fill text-dark mr-1"></i>
-                                            <i class="ri-star-fill text-dark mr-1"></i>
-                                        </div>
-                                        <div class="stars">
-                                            <i class="ri-star-fill mr-1 text-muted opacity-25"></i>
-                                            <i class="ri-star-fill mr-1 text-muted opacity-25"></i>
-                                            <i class="ri-star-fill mr-1 text-muted opacity-25"></i>
-                                            <i class="ri-star-fill mr-1 text-muted opacity-25"></i>
-                                            <i class="ri-star-fill mr-1 text-muted opacity-25"></i>
-                                        </div>
-                                    </div>
-                                    <span class="small fw-bolder ms-2 text-muted"> 4.7 (754)</span>
-                                </div>
-                                <a class="mb-0 mx-2 mx-md-4 fs-p link-cover text-decoration-none d-block text-center"
-                                   href="./product.html">Womens Essentials Hoodie</a>
-                                <div class="d-flex justify-content-center align-items-center mt-2">
-                                    <p class="mb-0 me-2 text-danger fw-bolder">$<span>779.55</span></p>
-                                    <p class="mb-0 text-muted fw-bolder"><s>$<span>1100.00</span></s></p>
-                                </div>
-                            </div>
-                        </div>
-                        <!--/ Card Product-->
-                    </div>
-                    <div class="col-12 col-sm-6 col-md-4">
-                        <!-- Card Product-->
-                        <div class="card position-relative h-100 card-listing hover-trigger">
-                            <div class="card-header">
-                                <picture class="position-relative overflow-hidden d-block bg-light">
-                                    <img class="w-100 img-fluid position-relative z-index-10" title=""
-                                         src="../../shop/dist/images/products/product-4.jpg" alt="">
-                                </picture>
-                                <div class="card-actions">
-                                    <span class="small text-uppercase tracking-wide fw-bolder text-center d-block">Quick Add</span>
-                                    <div class="d-flex justify-content-center align-items-center flex-wrap mt-3">
-                                        <button class="btn btn-outline-dark btn-sm mx-2">S</button>
-                                        <button class="btn btn-outline-dark btn-sm mx-2">M</button>
-                                        <button class="btn btn-outline-dark btn-sm mx-2">L</button>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="card-body px-0 text-center">
-                                <div class="d-flex justify-content-center align-items-center mx-auto mb-1">
-                                    <!-- Review Stars Small-->
-                                    <div class="rating position-relative d-table">
-                                        <div class="position-absolute stars" style="width: 70%">
-                                            <i class="ri-star-fill text-dark mr-1"></i>
-                                            <i class="ri-star-fill text-dark mr-1"></i>
-                                            <i class="ri-star-fill text-dark mr-1"></i>
-                                            <i class="ri-star-fill text-dark mr-1"></i>
-                                            <i class="ri-star-fill text-dark mr-1"></i>
-                                        </div>
-                                        <div class="stars">
-                                            <i class="ri-star-fill mr-1 text-muted opacity-25"></i>
-                                            <i class="ri-star-fill mr-1 text-muted opacity-25"></i>
-                                            <i class="ri-star-fill mr-1 text-muted opacity-25"></i>
-                                            <i class="ri-star-fill mr-1 text-muted opacity-25"></i>
-                                            <i class="ri-star-fill mr-1 text-muted opacity-25"></i>
-                                        </div>
-                                    </div>
-                                    <span class="small fw-bolder ms-2 text-muted"> 4.4 (1289)</span>
-                                </div>
-                                <a class="mb-0 mx-2 mx-md-4 fs-p link-cover text-decoration-none d-block text-center"
-                                   href="./product.html">Elevated Lined Hoodie</a>
-                                <p class="fw-bolder m-0 mt-2">$1829.99</p>
-                            </div>
-                        </div>
-                        <!--/ Card Product-->
-                    </div>
-                    <div class="col-12 col-sm-6 col-md-4">
-                        <!-- Card Product-->
-                        <div class="card position-relative h-100 card-listing hover-trigger">
-                            <div class="card-header">
-                                <picture class="position-relative overflow-hidden d-block bg-light">
-                                    <img class="w-100 img-fluid position-relative z-index-10" title=""
-                                         src="../../shop/dist/images/products/product-5.jpg" alt="">
-                                </picture>
-                                <picture class="position-absolute z-index-20 start-0 top-0 hover-show bg-light">
-                                    <img class="w-100 img-fluid" title=""
-                                         src="../../shop/dist/images/products/product-5b.jpg" alt="">
-                                </picture>
-                                <div class="card-actions">
-                                    <span class="small text-uppercase tracking-wide fw-bolder text-center d-block">Quick Add</span>
-                                    <div class="d-flex justify-content-center align-items-center flex-wrap mt-3">
-                                        <button class="btn btn-outline-dark btn-sm mx-2">S</button>
-                                        <button class="btn btn-outline-dark btn-sm mx-2">M</button>
-                                        <button class="btn btn-outline-dark btn-sm mx-2">L</button>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="card-body px-0 text-center">
-                                <div class="d-flex justify-content-center align-items-center mx-auto mb-1">
-                                    <!-- Review Stars Small-->
-                                    <div class="rating position-relative d-table">
-                                        <div class="position-absolute stars" style="width: 84%">
-                                            <i class="ri-star-fill text-dark mr-1"></i>
-                                            <i class="ri-star-fill text-dark mr-1"></i>
-                                            <i class="ri-star-fill text-dark mr-1"></i>
-                                            <i class="ri-star-fill text-dark mr-1"></i>
-                                            <i class="ri-star-fill text-dark mr-1"></i>
-                                        </div>
-                                        <div class="stars">
-                                            <i class="ri-star-fill mr-1 text-muted opacity-25"></i>
-                                            <i class="ri-star-fill mr-1 text-muted opacity-25"></i>
-                                            <i class="ri-star-fill mr-1 text-muted opacity-25"></i>
-                                            <i class="ri-star-fill mr-1 text-muted opacity-25"></i>
-                                            <i class="ri-star-fill mr-1 text-muted opacity-25"></i>
-                                        </div>
-                                    </div>
-                                    <span class="small fw-bolder ms-2 text-muted"> 4.8 (189)</span>
-                                </div>
-                                <a class="mb-0 mx-2 mx-md-4 fs-p link-cover text-decoration-none d-block text-center"
-                                   href="./product.html">Mens Slab Hoodie</a>
-                                <p class="fw-bolder m-0 mt-2">$29.99</p>
-                            </div>
-                        </div>
-                        <!--/ Card Product-->
-                    </div>
-                    <div class="col-12 col-sm-6 col-md-4">
-                        <!-- Card Product-->
-                        <div class="card position-relative h-100 card-listing hover-trigger">
-                            <div class="card-header">
-                                <picture class="position-relative overflow-hidden d-block bg-light">
-                                    <img class="w-100 img-fluid position-relative z-index-10" title=""
-                                         src="../../shop/dist/images/products/product-6.jpg" alt="">
-                                </picture>
-                                <div class="card-actions">
-                                    <span class="small text-uppercase tracking-wide fw-bolder text-center d-block">Quick Add</span>
-                                    <div class="d-flex justify-content-center align-items-center flex-wrap mt-3">
-                                        <button class="btn btn-outline-dark btn-sm mx-2">S</button>
-                                        <button class="btn btn-outline-dark btn-sm mx-2">M</button>
-                                        <button class="btn btn-outline-dark btn-sm mx-2">L</button>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="card-body px-0 text-center">
-                                <div class="d-flex justify-content-center align-items-center mx-auto mb-1">
-                                    <!-- Review Stars Small-->
-                                    <div class="rating position-relative d-table">
-                                        <div class="position-absolute stars" style="width: 60%">
-                                            <i class="ri-star-fill text-dark mr-1"></i>
-                                            <i class="ri-star-fill text-dark mr-1"></i>
-                                            <i class="ri-star-fill text-dark mr-1"></i>
-                                            <i class="ri-star-fill text-dark mr-1"></i>
-                                            <i class="ri-star-fill text-dark mr-1"></i>
-                                        </div>
-                                        <div class="stars">
-                                            <i class="ri-star-fill mr-1 text-muted opacity-25"></i>
-                                            <i class="ri-star-fill mr-1 text-muted opacity-25"></i>
-                                            <i class="ri-star-fill mr-1 text-muted opacity-25"></i>
-                                            <i class="ri-star-fill mr-1 text-muted opacity-25"></i>
-                                            <i class="ri-star-fill mr-1 text-muted opacity-25"></i>
-                                        </div>
-                                    </div>
-                                    <span class="small fw-bolder ms-2 text-muted"> 4.5 (1567)</span>
-                                </div>
-                                <a class="mb-0 mx-2 mx-md-4 fs-p link-cover text-decoration-none d-block text-center"
-                                   href="./product.html">Blocked Striped Hoodie</a>
-                                <p class="fw-bolder m-0 mt-2">$1329.99</p>
-                            </div>
-                        </div>
-                        <!--/ Card Product-->
-                    </div>
-                </div>
+                <div class="row g-4 mb-5" id="product-show-list"></div>
                 <!-- / Products-->
 
-                <!-- Pagiation-->
                 <!-- Pagination-->
                 <nav class="border-top mt-5 pt-5 d-flex justify-content-between align-items-center"
-                     aria-label="Category Pagination">
-                    <ul class="pagination">
-                        <li class="page-item"><a class="page-link" href="#"><i
-                                class="ri-arrow-left-line align-bottom"></i> Prev</a></li>
-                    </ul>
-                    <ul class="pagination">
-                        <li class="page-item active mx-1"><a class="page-link" href="#">1</a></li>
-                        <li class="page-item mx-1"><a class="page-link" href="#">2</a></li>
-                        <li class="page-item mx-1"><a class="page-link" href="#">3</a></li>
-                    </ul>
-                    <ul class="pagination">
-                        <li class="page-item"><a class="page-link" href="#">Next <i
-                                class="ri-arrow-right-line align-bottom"></i></a></li>
-                    </ul>
-                </nav>                    <!-- / Pagination-->
+                     aria-label="Category Pagination" id="pagination-product">
+                </nav>
+                <!-- / Pagination-->
 
                 <!-- Related Categories-->
                 <div class="border-top mt-5 pt-5">
@@ -1031,6 +531,56 @@
                     </div>
                 </div>
                 <!-- / Brands Filter -->
+
+                <!-- Type Filter -->
+                <div class="py-4 widget-filter border-top">
+                    <a class="small text-body text-decoration-none text-secondary-hover transition-all transition-all fs-6 fw-bolder d-block collapse-icon-chevron"
+                       data-bs-toggle="collapse" href="#filter-modal-type" role="button" aria-expanded="false"
+                       aria-controls="filter-modal-type">
+                        Type
+                    </a>
+                    <div id="filter-modal-type" class="collapse">
+                        <div class="input-group my-3 py-1">
+                            <input type="text" class="form-control py-2 filter-search rounded" placeholder="Search"
+                                   aria-label="Search">
+                            <span class="input-group-text bg-transparent p-2 position-absolute top-2 end-0 border-0 z-index-20"><i
+                                    class="ri-search-2-line text-muted"></i></span>
+                        </div>
+                        <div class="filter-options">
+                            <div class="form-group form-check mb-0">
+                                <input type="checkbox" class="form-check-input" id="filter-type-modal-0">
+                                <label class="form-check-label fw-normal text-body flex-grow-1 d-flex justify-content-between"
+                                       for="filter-type-modal-0">Slip On </label>
+                            </div>
+                            <div class="form-group form-check mb-0">
+                                <input type="checkbox" class="form-check-input" id="filter-type-modal-1">
+                                <label class="form-check-label fw-normal text-body flex-grow-1 d-flex justify-content-between"
+                                       for="filter-type-modal-1">Strap Up </label>
+                            </div>
+                            <div class="form-group form-check mb-0">
+                                <input type="checkbox" class="form-check-input" id="filter-type-modal-2">
+                                <label class="form-check-label fw-normal text-body flex-grow-1 d-flex justify-content-between"
+                                       for="filter-type-modal-2">Zip Up </label>
+                            </div>
+                            <div class="form-group form-check mb-0">
+                                <input type="checkbox" class="form-check-input" id="filter-type-modal-3">
+                                <label class="form-check-label fw-normal text-body flex-grow-1 d-flex justify-content-between"
+                                       for="filter-type-modal-3">Toggle </label>
+                            </div>
+                            <div class="form-group form-check mb-0">
+                                <input type="checkbox" class="form-check-input" id="filter-type-modal-4">
+                                <label class="form-check-label fw-normal text-body flex-grow-1 d-flex justify-content-between"
+                                       for="filter-type-modal-4">Auto </label>
+                            </div>
+                            <div class="form-group form-check mb-0">
+                                <input type="checkbox" class="form-check-input" id="filter-type-modal-5">
+                                <label class="form-check-label fw-normal text-body flex-grow-1 d-flex justify-content-between"
+                                       for="filter-type-modal-5">Click </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- / Type Filter -->
 
                 <!-- Sizes Filter -->
                 <div class="py-4 widget-filter border-top">

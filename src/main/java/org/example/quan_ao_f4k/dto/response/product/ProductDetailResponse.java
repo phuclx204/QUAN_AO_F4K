@@ -10,6 +10,7 @@ import java.math.BigDecimal;
 
 @Data
 public class ProductDetailResponse {
+    private Long id;
     private Product product;
     private Size size;
     private Color color;
