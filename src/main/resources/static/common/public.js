@@ -3,11 +3,9 @@ const GET = 'GET';
 const PUT = 'PUT';
 const DELETE = 'DELETE';
 
-const createUrl = (action, controller, params = {}) => {
-    const baseUrl = window.location.origin;
+const imageBlank = "https://firebasestorage.googleapis.com/v0/b/clothes-f4k.appspot.com/o/common%2Fdata_not_found.png?alt=media&token=36148ded-ba2c-4207-8525-2da16e7a8557";
 
-    let url = `${baseUrl}/${controller}/${action}`;
-
+const createUrl = (url, params = {}) => {
     const queryString = new URLSearchParams(params).toString();
     if (queryString) {
         url += `?${queryString}`;
@@ -65,3 +63,29 @@ function callApi(url, method = 'POST', data = null) {
         });
     });
 }
+
+const getPagination = (currentPage, totalPage) => {
+    const pages = [];
+
+    if (currentPage < 1 || currentPage > totalPage) {
+        console.error('currentPage không hợp lệ.');
+        return;
+    }
+
+    if (totalPage <= 3) {
+        for (let i = 1; i <= totalPage; i++) {
+            pages.push(i);
+        }
+    } else {
+        if (currentPage === 1) {
+            pages.push(1, 2, 3);
+        } else if (currentPage === totalPage) {
+            pages.push(totalPage - 2, totalPage - 1, totalPage);
+        } else if (currentPage === totalPage - 1) {
+            pages.push(totalPage - 2, totalPage - 1, totalPage);
+        } else {
+            pages.push(currentPage - 1, currentPage, currentPage + 1);
+        }
+    }
+    return pages;
+};
