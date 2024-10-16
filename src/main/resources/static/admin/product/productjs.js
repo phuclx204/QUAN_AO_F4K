@@ -44,11 +44,14 @@ $('tbody').on('click', 'a', function (event) {
 
 function closeModal() {
     $('.modal').hide();
+    $('#addForm')[0].reset();
+    $('#editForm')[0].reset();
 }
 
 function openAddModal() {
     loadCategoriesAndBrands();
     $('#addModal').show();
+    $('#addForm')[0].reset();
 }
 
 function showEditModal(id, name, categoryId, brandId, thumbnail, description) {
@@ -204,6 +207,7 @@ $(document).ready(function () {
             success: function () {
                 $('#addModal').hide();
                 loadDatas();
+                $('#addForm')[0].reset();
                 Swal.fire('Success', 'Thêm sản phẩm thành công!', 'success');
             },
             error: function (xhr) {
@@ -234,7 +238,7 @@ $(document).ready(function () {
             success: function () {
                 $('#editModal').hide();
                 loadDatas();
-                $('#editForm').reload();
+                $('#editForm')[0].reset();
                 Swal.fire('Success', 'Cập nhật sản phẩm thành công!', 'success');
             },
             error: function (xhr) {
@@ -295,19 +299,9 @@ function formatDate(dateString) {
     return `${hours}:${minutes}:${seconds} ${day}-${month}-${year}`;
 }
 
-// Preview ảnh khi người dùng chọn file mới
-function previewImage(event) {
-    const preview = document.getElementById('editThumbnailPreview');
-    const file = event.target.files[0];
-
-    if (file) {
-        preview.src = URL.createObjectURL(file);
-        preview.style.display = 'block';
-    }
-}
-
-function showImageAddModal(event) {
-    const preview = document.getElementById('addThumbnailPreview');
+// Hàm xem trước ảnh khi người dùng chọn file mới
+function previewImage(event, previewId) {
+    const preview = document.getElementById(previewId);
     const file = event.target.files[0];
 
     if (file) {

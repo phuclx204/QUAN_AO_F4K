@@ -1,4 +1,3 @@
-
 $(document).ready(function () {
 
     loadComboBoxFilter();
@@ -17,7 +16,7 @@ $(document).ready(function () {
             success: function (response) {
                 renderProductDetails(response.content);
                 setupPagination(response.totalPages, page);
-                $('#totalData').text(`Tổng ${response.totalElements} chi tiết sản phẩm`);
+                $('#totalData').text(`${response.totalElements} lọai sản phẩm`);
             },
             error: function (error) {
                 console.error('Không thể tải dữ liệu:', error);
@@ -77,7 +76,7 @@ $(document).ready(function () {
         if (datas.length === 0) {
             tbody.append(`
             <tr>
-                <td colspan="10" style="text-align: center; color: red;">Không có dữ liệu!</td>
+                <td colspan="8" style="text-align: center; color: red;">Không có dữ liệu!</td>
             </tr>
         `);
             $('#pagination').hide();
@@ -170,7 +169,7 @@ $(document).ready(function () {
         };
 
         $.ajax({
-            url: '/admin/products/product-detail/'+productId+'/add',
+            url: '/admin/products/product-detail/' + productId + '/add',
             method: 'POST',
             contentType: 'application/json',
             data: JSON.stringify(data),

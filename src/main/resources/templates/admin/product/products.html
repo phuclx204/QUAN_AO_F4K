@@ -109,7 +109,7 @@
             <div id="addBrandIdError" style="color: #f34349;"></div>
 
             <label for="addThumbnail">Hình ảnh:</label>
-            <input type="file" id="addThumbnail" name="thumbnail" accept="image/*" onchange="showImageAddModal(event)">
+            <input type="file" id="addThumbnail" name="thumbnail" accept="image/*" onchange="previewImage(event,'addThumbnailPreview')">
 
             <img id="addThumbnailPreview" src="" alt="Thumbnail" style="display: none; width: 100px; margin-top: 10px;">
 
@@ -148,7 +148,7 @@
             <div id="editCategoryError" style="color: #f34349;"></div>
 
             <label for="editThumbnail">Hình ảnh:</label>
-            <input type="file" id="editThumbnail" name="thumbnail" accept="image/*" onchange="previewImage(event)">
+            <input type="file" id="editThumbnail" name="thumbnail" accept="image/*" onchange="previewImage(event,'editThumbnailPreview')">
 
             <img id="editThumbnailPreview" src="" alt="Thumbnail" style="display: none; width: 100px; margin-top: 10px;">
 
