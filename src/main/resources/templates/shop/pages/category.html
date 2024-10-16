@@ -18,17 +18,14 @@
         <div class="container position-relative z-index-20" data-aos="fade-right" data-aos-delay="300">
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
-                    <li class="breadcrumb-item breadcrumb-light"><a href="#">Home</a></li>
-                    <li class="breadcrumb-item breadcrumb-light"><a href="#">Activities</a></li>
-                    <li class="breadcrumb-item active breadcrumb-light" aria-current="page">Clothing</li>
+                    <li class="breadcrumb-item breadcrumb-light"><a th:href="@{/shop/home}">Trang chủ</a></li>
+                    <li class="breadcrumb-item active breadcrumb-light" aria-current="page">Cửa hàng</li>
                 </ol>
             </nav>
-            <h1 class="fw-bold display-6 mb-4 text-white">Latest Arrivals (121)</h1>
+            <h1 class="fw-bold display-6 mb-4 text-white">Chào Mừng Đến Với Cửa Hàng Của Chúng Tôi!</h1>
             <div class="col-12 col-md-6">
                 <p class="lead text-white mb-0">
-                    Move, stretch, jump and hike in our latest waterproof arrivals. We've got you covered for your
-                    hike or climbing sessions, from Gortex jackets to lightweight waterproof pants. Discover our
-                    latest range of outdoor clothing.
+                    Di chuyển, duỗi người, nhảy và đi bộ đường dài trong những sản phẩm mới nhất chống thấm nước của chúng tôi. Chúng tôi bảo vệ bạn trong các buổi đi bộ đường dài hoặc leo núi, từ áo khoác Gortex đến quần chống thấm nước nhẹ. Khám phá dòng sản phẩm quần áo ngoài trời mới nhất của chúng tôi.
                 </p>
             </div>
         </div>
@@ -41,62 +38,16 @@
 
             <!-- Category Aside/Sidebar -->
             <div class="d-none d-lg-flex col-lg-3">
-                <div class="pe-4">
+                <div class="pe-4 w-100">
                     <!-- Category Aside -->
                     <aside>
-
-                        <!-- Filter Category -->
-                        <div class="mb-4">
-                            <h2 class="mb-4 fs-6 mt-2 fw-bolder">Danh sách sản phẩm</h2>
-                            <nav>
-                                <ul class="list-unstyled list-default-text" th:each="item : ${listProduct}">
-                                    <li class="mb-2">
-                                        <a class="text-decoration-none text-body text-secondary-hover transition-all d-flex justify-content-between align-items-center"
-                                           href="#">
-                                            <span>
-                                                <i class="ri-arrow-right-s-line align-bottom ms-n1"></i>
-                                                [[${item.key.name}]]
-                                            </span>
-                                            <span class="text-muted ms-4">([[${item.value}]])</span></a>
-                                    </li>
-                                </ul>
-                            </nav>
-                        </div>
-                        <!-- / Filter Category-->
-
-                        <!-- Price Filter -->
-                        <div class="py-4 widget-filter widget-filter-price border-top">
-                            <a class="small text-body text-decoration-none text-secondary-hover transition-all transition-all fs-6 fw-bolder d-block collapse-icon-chevron"
-                               data-bs-toggle="collapse" href="#filter-price" role="button" aria-expanded="true"
-                               aria-controls="filter-price">
-                                Giá tiền
-                            </a>
-                            <div id="filter-price" class="collapse show">
-                                <!--                                <div class="filter-price mt-6"></div>-->
-                                <!--                                <div class="d-flex justify-content-between align-items-center mt-7">-->
-                                <div class="d-flex justify-content-between align-items-center mt-3">
-                                    <div class="input-group mb-0 me-2 border">
-                                        <input type="number" min="00" max="1000" step="100"
-                                               class="filter-min form-control-sm border flex-grow-1 text-muted border-0">
-                                        <span class="input-group-text bg-transparent fs-7 p-2 text-muted border-0">VNĐ</span>
-
-                                    </div>
-                                    <div class="input-group mb-0 ms-2 border">
-                                        <input type="number" min="00" max="1000" step="100"
-                                               class="filter-max form-control-sm flex-grow-1 text-muted border-0">
-                                        <span class="input-group-text bg-transparent fs-7 p-2 text-muted border-0">VNĐ</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- / Price Filter -->
-
                         <!-- Brands Filter -->
-                        <div class="py-4 widget-filter border-top">
+                        <div class="py-4 widget-filter border-top"
+                             style="margin-bottom: 1.5rem!important; border-top: none!important;">
                             <a class="small text-body text-decoration-none text-secondary-hover transition-all transition-all fs-6 fw-bolder d-block collapse-icon-chevron"
                                data-bs-toggle="collapse" href="#filter-brands" role="button" aria-expanded="true"
                                aria-controls="filter-brands">
-                                Brands
+                                Nhãn hàng
                             </a>
                             <div id="filter-brands" class="collapse show">
                                 <div class="input-group my-3 py-1">
@@ -108,9 +59,10 @@
                                 <div class="simplebar-wrapper">
                                     <div class="filter-options" data-pixr-simplebar>
                                         <div class="form-group form-check mb-0" th:each="item : ${listBrand}">
-                                            <input type="checkbox" class="form-check-input" id="filter-brand-0">
+                                            <input type="checkbox" class="form-check-input cb-brand" value="1000000"
+                                                   th:data-id="${item.key.id}">
                                             <label class="form-check-label fw-normal text-body flex-grow-1 d-flex justify-content-between"
-                                                   for="filter-brand-0">[[${item.key.name}]]<span
+                                            >[[${item.key.name}]]<span
                                                     class="text-muted">([[${item.value}]])</span></label>
                                         </div>
                                     </div>
@@ -118,6 +70,38 @@
                             </div>
                         </div>
                         <!-- / Brands Filter -->
+
+                        <!-- Price Filter -->
+                        <div class="py-4 widget-filter widget-filter-price border-top">
+                            <a class="small text-body text-decoration-none text-secondary-hover transition-all transition-all fs-6 fw-bolder d-block collapse-icon-chevron"
+                               data-bs-toggle="collapse" href="#filter-price" role="button" aria-expanded="true"
+                               aria-controls="filter-price">
+                                Giá tiền
+                            </a>
+                            <div id="filter-price" class="collapse show">
+                                <div class="d-flex justify-content-between align-items-center mt-3">
+                                    <div class="input-group mb-0 me-2 border">
+                                        <input type="text"
+                                               class="filter-min form-control-sm flex-grow-1 text-muted border-0 filter-min-price"
+                                               style="width: 50%">
+                                        <div class="input-group-append">
+                                            <span class="input-group-text"
+                                                  style="font-size: 12px; height: 32px; border: none!important;; background-color: transparent!important;">VNĐ</span>
+                                        </div>
+                                    </div>
+                                    <div class="input-group mb-0 ms-2 border">
+                                        <input type="text"
+                                               class="filter-max form-control-sm flex-grow-1 text-muted border-0 filter-max-price"
+                                               style="width: 50%">
+                                        <div class="input-group-append">
+                                            <span class="input-group-text"
+                                                  style="font-size: 12px; height: 32px; border: none!important;; background-color: transparent!important;">VNĐ</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- / Price Filter -->
 
                         <!-- Type Filter -->
                         <div class="py-4 widget-filter border-top">
@@ -134,13 +118,15 @@
                                             class="input-group-text bg-transparent px-2 position-absolute top-7 end-0 border-0 z-index-20"><i
                                             class="ri-search-2-line text-muted"></i></span>
                                 </div>
-                                <div class="filter-options">
-                                    <div class="form-group form-check mb-0" th:each="item:${listCategory}">
-                                        <input type="checkbox" class="form-check-input"
-                                               th:id="'filter-category-' + ${item.id}">
-                                        <label
-                                                class="form-check-label fw-normal text-body flex-grow-1 d-flex justify-content-between"
-                                                th:for="'filter-category-' + ${item.id}">[[${item.name}]]</label>
+                                <div class="simplebar-wrapper">
+                                    <div class="filter-options" data-pixr-simplebar>
+                                        <div class="form-group form-check mb-0" th:each="item:${listCategory}">
+                                            <input type="checkbox" class="form-check-input cb-category"
+                                                   th:id="'filter-category-' + ${item.id}" th:data-id="${item.id}">
+                                            <label
+                                                    class="form-check-label fw-normal text-body flex-grow-1 d-flex justify-content-between"
+                                                    th:for="'filter-category-' + ${item.id}">[[${item.name}]]</label>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -152,14 +138,14 @@
                             <a class="small text-body text-decoration-none text-secondary-hover transition-all transition-all fs-6 fw-bolder d-block collapse-icon-chevron"
                                data-bs-toggle="collapse" href="#filter-sizes" role="button" aria-expanded="true"
                                aria-controls="filter-sizes">
-                                Sizes
+                                Kích cỡ
                             </a>
                             <div id="filter-sizes" class="collapse show">
                                 <div class="filter-options mt-3">
                                     <div class="form-group d-inline-block mr-2 mb-2 form-check-bg form-check-custom"
                                          th:each="item:${listSize}">
-                                        <input type="checkbox" class="form-check-bg-input"
-                                               th:id="'filter-sizes-'+${item.id}">
+                                        <input type="checkbox" class="form-check-bg-input cb-sizes"
+                                               th:id="'filter-sizes-'+${item.id}" th:data-id="${item.id}">
                                         <label class="form-check-label fw-normal" th:for="'filter-sizes-'+${item.id}">[[${item.name}]]</label>
                                     </div>
                                 </div>
@@ -172,14 +158,14 @@
                             <a class="small text-body text-decoration-none text-secondary-hover transition-all transition-all fs-6 fw-bolder d-block collapse-icon-chevron"
                                data-bs-toggle="collapse" href="#filter-colour" role="button" aria-expanded="true"
                                aria-controls="filter-colour">
-                                Colour
+                                Màu chủ đạo
                             </a>
                             <div id="filter-colour" class="collapse show">
                                 <div class="filter-options mt-3">
                                     <div class="form-group d-inline-block mr-2 mb-2 form-check-bg form-check-custom"
                                          th:each="item:${listColor}">
-                                        <input type="checkbox" class="form-check-bg-input"
-                                               th:id="'filter-colour-'+${item.id}">
+                                        <input type="checkbox" class="form-check-bg-input cb-color"
+                                               th:id="'filter-colour-'+${item.id}" th:data-id="${item.id}">
                                         <label class="form-check-label fw-normal" th:for="'filter-colour-'+${item.id}">[[${item.name}]]</label>
                                     </div>
                                 </div>
@@ -193,20 +179,22 @@
             <!-- / Category Aside/Sidebar -->
 
             <!-- Category Products-->
-            <div class="col-12 col-lg-9">
+            <div class="col-12 col-lg-9" style="position: relative">
 
                 <!-- Top Toolbar-->
                 <div class="mb-4 d-md-flex justify-content-between align-items-center">
                     <div class="d-flex justify-content-start align-items-center flex-grow-1 mb-4 mb-md-0">
-                        <small class="d-inline-block fw-bolder">Filtered by:</small>
-                        <ul class="list-unstyled d-inline-block mb-0 ms-2">
-                            <li class="bg-light py-1 fw-bolder px-2 cursor-pointer d-inline-block me-1 small">Type: Slip
-                                On <i
-                                        class="ri-close-circle-line align-bottom ms-1"></i></li>
-                        </ul>
-                        <span
-                                class="fw-bolder text-muted-hover text-decoration-underline ms-2 cursor-pointer small">Clear
-                                All</span>
+                        <form action="" style="width: 100%" id="filter-search-product">
+                            <div class="input-group my-3 py-1 w-4">
+                                <input type="text" class="form-control py-2 filter-search rounded filter-search-input"
+                                       placeholder="Search" aria-label="Search">
+                                <span class="input-group-text bg-transparent px-2 position-absolute top-7 end-0 border-0 z-index-20"><i
+                                        class="ri-search-2-line text-muted"></i></span>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="d-flex justify-content-start align-items-center flex-grow-1 mb-4 mb-md-0">
+                        <span class="fw-bolder text-muted-hover text-decoration-underline ms-2 cursor-pointer small btn-clear-all">Clear All</span>
                     </div>
                     <div class="d-flex align-items-center flex-column flex-md-row">
                         <!-- Filter Trigger-->
@@ -218,15 +206,15 @@
                         <!-- / Filter Trigger-->
                         <div class="dropdown ms-md-2 lh-1 p-3 bg-light w-100 mb-2 mb-md-0 w-md-auto">
                             <p class="fs-xs fw-bold text-uppercase text-muted-hover p-0 m-0" role="button"
-                               data-bs-toggle="dropdown" aria-expanded="false">Sort By <i
+                               data-bs-toggle="dropdown" aria-expanded="false">Sắp xếp theo <i
                                     class="ri-arrow-drop-down-line ri-lg align-bottom"></i></p>
                             <ul class="dropdown-menu">
-                                <li><a class="dropdown-item fs-xs fw-bold text-uppercase text-muted-hover mb-2"
-                                       href="#">Price: Hi Low</a></li>
-                                <li><a class="dropdown-item fs-xs fw-bold text-uppercase text-muted-hover mb-2"
-                                       href="#">Price: Low Hi</a></li>
-                                <li><a class="dropdown-item fs-xs fw-bold text-uppercase text-muted-hover mb-2"
-                                       href="#">Name</a></li>
+                                <li>
+                                    <a class="dropdown-item fs-xs fw-bold text-uppercase text-muted-hover mb-2 filter-list-price"
+                                       href="#" data-id="desc">Giá: cao đến thấp</a></li>
+                                <li>
+                                    <a class="dropdown-item fs-xs fw-bold text-uppercase text-muted-hover mb-2 filter-list-price"
+                                       href="#" data-id="asc">Giá: thấp đến cao</a></li>
                             </ul>
                         </div>
                     </div>
@@ -238,33 +226,34 @@
 
                 <!-- Pagination-->
                 <nav class="border-top mt-5 pt-5 d-flex justify-content-between align-items-center"
-                     aria-label="Category Pagination" id="pagination-product">
+                     aria-label="Category Pagination" id="pagination-product"
+                     style="position: absolute; width: 100%; bottom: -50px">
                 </nav>
                 <!-- / Pagination-->
 
                 <!-- Related Categories-->
-                <div class="border-top mt-5 pt-5">
-                    <p class="lead fw-bolder">Related Categories</p>
-                    <div class="d-flex flex-wrap justify-content-start align-items-center">
-                        <a class="btn btn-sm btn-outline-dark rounded-pill me-2 mb-2 mb-md-0 text-white-hover"
-                           href="#">Hiking
-                            Shoes</a>
-                        <a class="btn btn-sm btn-outline-dark rounded-pill me-2 mb-2 mb-md-0 text-white-hover"
-                           href="#">Waterproof Trousers</a>
-                        <a class="btn btn-sm btn-outline-dark rounded-pill me-2 mb-2 mb-md-0 text-white-hover"
-                           href="#">Hiking
-                            Shirts</a>
-                        <a class="btn btn-sm btn-outline-dark rounded-pill me-2 mb-2 mb-md-0 text-white-hover"
-                           href="#">Jackets</a>
-                        <a class="btn btn-sm btn-outline-dark rounded-pill me-2 mb-2 mb-md-0 text-white-hover"
-                           href="#">Gilets</a>
-                        <a class="btn btn-sm btn-outline-dark rounded-pill me-2 mb-2 mb-md-0 text-white-hover"
-                           href="#">Hiking
-                            Socks</a>
-                        <a class="btn btn-sm btn-outline-dark rounded-pill me-2 mb-2 mb-md-0 text-white-hover"
-                           href="#">Rugsacks</a>
-                    </div>
-                </div>
+                <!--                <div class="border-top mt-5 pt-5">-->
+                <!--                    <p class="lead fw-bolder">Related Categories</p>-->
+                <!--                    <div class="d-flex flex-wrap justify-content-start align-items-center">-->
+                <!--                        <a class="btn btn-sm btn-outline-dark rounded-pill me-2 mb-2 mb-md-0 text-white-hover"-->
+                <!--                           href="#">Hiking-->
+                <!--                            Shoes</a>-->
+                <!--                        <a class="btn btn-sm btn-outline-dark rounded-pill me-2 mb-2 mb-md-0 text-white-hover"-->
+                <!--                           href="#">Waterproof Trousers</a>-->
+                <!--                        <a class="btn btn-sm btn-outline-dark rounded-pill me-2 mb-2 mb-md-0 text-white-hover"-->
+                <!--                           href="#">Hiking-->
+                <!--                            Shirts</a>-->
+                <!--                        <a class="btn btn-sm btn-outline-dark rounded-pill me-2 mb-2 mb-md-0 text-white-hover"-->
+                <!--                           href="#">Jackets</a>-->
+                <!--                        <a class="btn btn-sm btn-outline-dark rounded-pill me-2 mb-2 mb-md-0 text-white-hover"-->
+                <!--                           href="#">Gilets</a>-->
+                <!--                        <a class="btn btn-sm btn-outline-dark rounded-pill me-2 mb-2 mb-md-0 text-white-hover"-->
+                <!--                           href="#">Hiking-->
+                <!--                            Socks</a>-->
+                <!--                        <a class="btn btn-sm btn-outline-dark rounded-pill me-2 mb-2 mb-md-0 text-white-hover"-->
+                <!--                           href="#">Rugsacks</a>-->
+                <!--                    </div>-->
+                <!--                </div>-->
                 <!-- Related Categories-->
 
             </div>
@@ -854,7 +843,6 @@
         </div>
     </div>
 </section>
-
 
 <script th:replace="shop/fragments/script::div"></script>
 <!--default-->

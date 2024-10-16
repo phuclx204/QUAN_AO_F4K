@@ -89,3 +89,14 @@ const getPagination = (currentPage, totalPage) => {
     }
     return pages;
 };
+
+function removeNullProperties(obj) {
+    return Object.fromEntries(
+        Object.entries(obj).filter(([key, value]) => value !== null)
+    );
+}
+
+function formatNumberByDot(value) {
+    let numericValue = value.replace(/\D/g, '');
+    return numericValue.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+}
