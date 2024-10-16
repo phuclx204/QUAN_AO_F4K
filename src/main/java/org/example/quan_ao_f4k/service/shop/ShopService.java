@@ -3,6 +3,7 @@ package org.example.quan_ao_f4k.service.shop;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.example.quan_ao_f4k.dto.request.shop.ShopRequest;
 import org.example.quan_ao_f4k.mapper.product.ProductMapper;
 import org.example.quan_ao_f4k.model.product.*;
 import org.example.quan_ao_f4k.repository.shop.CriteriaRepository;
@@ -39,8 +40,8 @@ public class ShopService {
         model.addAttribute("listCategory", criteriaRepository.findAllByStatus(Category.class));
     }
 
-    public Page<ObjectNode> getListProductDetail(int page, int size) {
-        List<Product> productList = criteriaRepository.findAllByStatus(Product.class);
+    public Page<ObjectNode> getListProductDetail(ShopRequest.RequestSearch requestSearch) {
+        List<Product> productList = criteriaRepository.searchProductByRequest(requestSearch);
 
         List<ObjectNode> productNodes = productList.stream()
                 .map(product -> JacksonEx.convertToType(product, ObjectNode.class))
@@ -55,7 +56,7 @@ public class ShopService {
             }
         });
 
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = PageRequest.of(requestSearch.getPage(), requestSearch.getPageSize());
         return F4KUtils.toPage(productNodes, pageable);
     }
 
