@@ -126,38 +126,35 @@ button:hover {
 /*end modal*/
 
 
-
+/*paging*/
+#pagination input[type="text"] {
+    height: 35px;
+    font-size: 16px;
+    padding: 0 5px;
+    margin: 10px;
+}
 
 .page-button {
-    padding: 10px 15px; /* Thêm khoảng cách cho nút */
-    border: none; /* Xóa đường viền mặc định */
-    background-color: #007bff; /* Màu nền mặc định */
-    cursor: pointer; /* Hiển thị con trỏ chuột khi di chuột qua */
-    border-radius: 50px; /* Thêm border-    radius */
-    margin: 0 5px; /* Thêm khoảng cách giữa các nút */
-    transition: background-color 0.3s; /* Hiệu ứng chuyển màu mượt mà */
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.2s ease-in-out;
+    margin: 15px;
 }
 
 .page-button:hover {
-    background-color: var(--cyan); /* Màu nền khi hover */
-    border-radius: 50px;
+    background-color: #0056b3;
 }
 
-.page-button.active {
-    background-color: #9df3e8; /* Màu nền cho nút đang được chọn */
-    color: #626ef3; /* Đổi màu chữ cho nút đang được chọn */
-    border-radius: 50px;
-
-}
-.page-button.disabled {
-    background-color: #e0e0e0; /* Màu nền cho nút bị vô hiệu hóa */
-    color: #3d3d3d; /* Màu chữ cho nút bị vô hiệu hóa */
-    cursor: not-allowed; /* Con trỏ không cho phép */
-    pointer-events: none; /* Vô hiệu hóa sự kiện chuột */
+.page-button:disabled {
+    display: none;
 }
 
-
-
+/*end paging*/
 
 /**/
 .export-container {
@@ -201,3 +198,90 @@ button:hover {
     border-color: #0056b3;
     box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
 }
+/*Hiệu ứng vào checkbox*/
+.styled-checkbox {
+    width: 20px; /* Kích thước checkbox */
+    height: 20px; /* Kích thước checkbox */
+    cursor: pointer; /* Con trỏ khi hover */
+}
+
+
+
+td {
+    vertical-align: middle; /* Căn giữa theo chiều dọc trong ô */
+}
+a {
+    display: inline-block; /* Giữ inline hoặc block nếu cần */
+}
+
+p {
+    display: inline-block; /* Đặt các phần tử thành hàng ngang */
+    margin: 0; /* Bỏ margin mặc định của p */
+}
+
+p i {
+    font-size: 20px; /* Kích thước biểu tượng */
+    transition: transform 0.2s; /* Hiệu ứng chuyển tiếp */
+}
+
+p i:hover {
+    transform: scale(1.1); /* Tăng kích thước khi hover */
+}
+
+input[type="checkbox"] {
+    width: 20px; /* Kích thước checkbox */
+    height: 20px; /* Kích thước checkbox */
+    cursor: pointer; /* Con trỏ khi hover */
+}
+
+/* Tùy chọn khác cho checkbox */
+input[type="checkbox"]:checked {
+    accent-color: #007bff; /* Màu sắc của checkbox khi được chọn */
+}
+.product-image {
+    width: 100px; /* Điều chỉnh kích thước hình ảnh ban đầu */
+    height: auto; /* Giữ tỉ lệ hình ảnh */
+    transition: transform 0.3s ease; /* Thêm hiệu ứng chuyển tiếp */
+    cursor: pointer; /* Hiển thị con trỏ khi hover */
+}
+
+.product-image:hover {
+    transform: scale(2.0); /* Phóng to hình ảnh khi hover lên 50% */
+}
+/* CSS cho tooltip */
+p[title] {
+    position: relative; /* Đặt vị trí cho tooltip */
+}
+p[title]::after {
+    pointer-events: none; /* Đảm bảo tooltip không chặn click */
+}
+
+
+p[title]:hover::after {
+    content: attr(title); /* Lấy nội dung từ thuộc tính title */
+    position: absolute; /* Đặt vị trí tooltip */
+    background-color: #333; /* Màu nền */
+    color: #fff; /* Màu chữ */
+    padding: 5px; /* Khoảng cách bên trong */
+    border-radius: 4px; /* Bo góc */
+    white-space: nowrap; /* Ngăn ngắt dòng trong tooltip */
+    z-index: 10; /* Đảm bảo tooltip hiển thị trên các phần tử khác */
+    bottom: 100%; /* Đặt tooltip lên trên thẻ p */
+    left: 50%; /* Đặt tooltip vào giữa thẻ p */
+    transform: translateX(-80%); /* Căn giữa tooltip */
+    margin-bottom: 5px; /* Khoảng cách giữa tooltip và thẻ p */
+    opacity: 0; /* Ẩn tooltip */
+    transition: opacity 0.3s; /* Hiệu ứng chuyển tiếp */
+}
+
+p[title]:hover::after {
+    z-index: 9999; /* Đảm bảo hiển thị trên cùng */
+}
+
+a {
+    z-index: 1; /* Đảm bảo có thể nhận click */
+    position: relative;
+}
+
+
+

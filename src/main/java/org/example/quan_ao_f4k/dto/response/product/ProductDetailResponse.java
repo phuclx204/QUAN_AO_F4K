@@ -7,15 +7,17 @@ import org.example.quan_ao_f4k.model.product.Product;
 import org.example.quan_ao_f4k.model.product.Size;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Data
 public class ProductDetailResponse {
     private Long id;
-    private Product product;
-    private Size size;
-    private Color color;
+    private ProductResponse product;
+    private SizeResponse size;
+    private ColorResponse color;
     private BigDecimal price;
-    private Guarantee guarantee;
     private Integer quantity;
     private Integer status;
+    private LocalDateTime createdAt;
 }

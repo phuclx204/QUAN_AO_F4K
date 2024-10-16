@@ -26,14 +26,13 @@
                     </li>
                     <li><i class='bx bx-chevron-right'></i></li>
                     <li>
-                        <a class="active" th:href="@{products}">Sản phẩm</a>
+                        <a class="active" th:href="@{/admin/products}">Sản phẩm</a>
                     </li>
                 </ul>
             </div>
             <div class="export-container">
-                <label for="exportSelect" class="export-label">Xuất danh sách:</label>
                 <select id="exportSelect" class="styled-select">
-                    <option value="">-- Chọn định dạng --</option>
+                    <option value="">-- Xuất danh sách --</option>
                     <option value="/admin/products/export/excel">📊 Excel (.xlsx)</option>
                     <option value="/admin/products/export/pdf">📄 PDF (.pdf)</option>
                 </select>
@@ -58,7 +57,6 @@
                 <table>
                     <thead>
                     <tr>
-                        <th>STT</th>
                         <th></th>
                         <th>Tên</th>
                         <th>Danh mục</th>
@@ -74,7 +72,13 @@
                     </tbody>
                 </table>
                 <span id="totalData"></span>
-                <div id="pagination" style="text-align: center;"></div>
+                <div id="pagination" class="d-flex justify-content-center align-items-center gap-2">
+                    <button class="page-button" id="prevPage">Trước</button>
+                    <input type="text" id="pageInput" style="width: 50px; text-align: center; border: 1px solid #ced4da; border-radius: 5px;" />
+                    <span id="totalPagesText" style="font-weight: bold;"></span>
+                    <button class="page-button" id="nextPage">Tiếp theo</button>
+                </div>
+
             </div>
         </div>
     </main>
@@ -88,19 +92,21 @@
 
         <form id="addForm" enctype="multipart/form-data">
             <label for="addName">Tên sản phẩm:</label>
-            <input type="text" id="addName" name="name" required>
+            <input type="text" id="addName" name="name">
+            <div id="addNameError" style="color: #f34349;"></div>
 
             <div class="flex-container">
-                <select id="addCategory" name="categoryId" required>
+                <select id="addCategory" name="categoryId">
                     <option value="">-- Chọn danh mục --</option>
                     <!-- Options động -->
                 </select>
-
-                <select id="addBrand" name="brandId" required>
+                <select id="addBrand" name="brandId">
                     <option value="">-- Chọn thương hiệu --</option>
                     <!-- Options động -->
                 </select>
             </div>
+            <div id="addCategoryIdError" style="color: #f34349;"></div>
+            <div id="addBrandIdError" style="color: #f34349;"></div>
 
             <label for="addThumbnail">Hình ảnh:</label>
             <input type="file" id="addThumbnail" name="thumbnail" accept="image/*" onchange="showImageAddModal(event)">
@@ -109,8 +115,7 @@
 
             <label for="addDescription">Mô tả:</label>
             <textarea id="addDescription" name="description" rows="3"></textarea>
-
-            <button type="submit">Thêm sản phẩm</button>
+            <button type="submit">Lưu</button>
         </form>
 
     </div>
@@ -125,19 +130,22 @@
             <input type="hidden" id="editId" name="id">
 
             <label for="editName">Tên sản phẩm:</label>
-            <input type="text" id="editName" name="name" required>
+            <input type="text" id="editName" name="name">
+            <div id="editNameError" style="color: #f34349;"></div>
 
             <div class="flex-container">
-                <select id="editCategory" name="category" required>
+                <select id="editCategory" name="categoryId">
                     <option value="">-- Chọn danh mục --</option>
                     <!-- Options động -->
                 </select>
 
-                <select id="editBrand" name="brand" required>
+                <select id="editBrand" name="brandId">
                     <option value="">-- Chọn thương hiệu --</option>
                     <!-- Options động -->
                 </select>
             </div>
+            <div id="editBrandIdError" style="color: #f34349;"></div>
+            <div id="editCategoryError" style="color: #f34349;"></div>
 
             <label for="editThumbnail">Hình ảnh:</label>
             <input type="file" id="editThumbnail" name="thumbnail" accept="image/*" onchange="previewImage(event)">
@@ -146,7 +154,7 @@
 
             <label for="editDescription">Mô tả:</label>
             <textarea id="editDescription" name="description" rows="3"></textarea>
-
+            <div id="errorDescription" style="color: #f34349"></div>
             <button type="submit">Lưu thay đổi</button>
         </form>
     </div>

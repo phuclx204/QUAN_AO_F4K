@@ -1,10 +1,6 @@
 package org.example.quan_ao_f4k.model.product;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,23 +15,23 @@ import org.example.quan_ao_f4k.model.BaseEntity;
 @Setter
 public class Product extends BaseEntity {
 
-    @Column(name = "name", nullable = false)
-    private String name;
+	@Column(name = "name", nullable = false)
+	private String name;
 
-    @ManyToOne
-    @JoinColumn(name = "category_id",nullable = false)
-    private Category category;
+	@ManyToOne
+	@JoinColumn(name = "category_id",nullable = false)
+	private Category category;
 
-    @ManyToOne
-    @JoinColumn(name = "brand_id",nullable = false)
-    private Brand brand;
+	@ManyToOne
+	@JoinColumn(name = "brand_id",nullable = false)
+	private Brand brand;
 
-    @Column(name = "thumbnail")
-    private String thumbnail;
+	@Column(name = "thumbnail")
+	private String thumbnail;
 
-    @Column(name = "description")
-    private String description;
+	@Column(name = "description")
+	private String description;
 
-    @Column(name = "status", nullable = false)
-    private Integer status =1;
+	@Column(name = "status", nullable = false)
+	private Integer status =1;
 }

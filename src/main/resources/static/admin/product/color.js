@@ -1,42 +1,36 @@
-// Đóng tất cả các modal
 function closeModal() {
     $('.modal').hide();
 }
 
-// Mở modal thêm
 function openAddModal() {
     $('#addModal').show();
 }
 
-// Hiển thị modal chỉnh sửa và điền dữ liệu
 function showEditModal(id, name) {
     $('#editId').val(id);
     $('#editName').val(name);
     $('#editModal').show();
 }
 
-
-// Tải danh sách và xử lý tìm kiếm
 $(document).ready(function () {
     loadDatas();
 
     $('.search-form').on('submit', function (event) {
         event.preventDefault();
         const search = $('input[name="search"]').val();
-        loadDatas(1, 10, 'id,dsc', search);
+        loadDatas(1, 5, 'id,desc', search);
     });
 
-    // Hàm tải thương hiệu
-    function loadDatas(page = 1, size = 10, sort = 'id,dsc', search = '') {
+    function loadDatas(page = 1, size = 5, sort = 'id,desc', search = '') {
         $.ajax({
             url: '/admin/color/list',
             method: 'GET',
-            data: {page: page, size: size, sort: sort, search: search},
+            data: { page: page, size: size, sort: sort, search: search },
             success: function (response) {
                 renderDatas(response.content);
                 setupPagination(response.totalPages, page);
-                // Hiển thị tổng số thương hiệu
-                $('#totalData').text(`Tổng  ${response.totalElements}` + ' bản ghi');
+
+                $('#totalData').text(`Tổng  ${response.totalElements}`+' bản ghi');
             },
             error: function (error) {
                 console.error('Không thể tải dữ liệu:', error);
@@ -44,10 +38,9 @@ $(document).ready(function () {
         });
     }
 
-    // Hiển thị dữ liệu trong bảng
     function renderDatas(datas) {
         const tbody = $('tbody');
-        tbody.empty(); // Xóa nội dung cũ
+        tbody.empty();
 
         if (datas.length === 0) {
             tbody.append(`
@@ -55,7 +48,10 @@ $(document).ready(function () {
                 <td colspan="4" style="text-align: center;color:red">Không có dữ liệu !</td>
             </tr>
         `);
+            $('#pagination').hide();
             return;
+        } else {
+            $('#pagination').show();
         }
 
         datas.forEach((i, index) => {
@@ -75,49 +71,52 @@ $(document).ready(function () {
         });
     }
 
-    // Thiết lập phân trang
     function setupPagination(totalPages, currentPage) {
         const pagination = $('#pagination');
-        pagination.empty(); // Xóa nội dung cũ
+        pagination.empty();
 
-        // Nút Previous
-        if (currentPage > 1) {
-            pagination.append(`
-            <button class="page-button" data-page="${currentPage - 1}">Previous</button>
-        `);
-        } else {
-            pagination.append(`
-            <button class="page-button disabled">Previous</button>
-        `);
-        }
 
-        // Các nút trang
-        for (let i = 1; i <= totalPages; i++) {
-            pagination.append(`
-            <button class="page-button ${i === currentPage ? 'active' : ''}" data-page="${i}">${i}</button>
+        pagination.append(`
+        <button class="page-button" ${currentPage === 1 ? 'disabled' : ''} data-page="${currentPage - 1}">
+            Trước
+        </button>
         `);
-        }
 
-        // Nút Next
-        if (currentPage < totalPages) {
-            pagination.append(`
-            <button class="page-button" data-page="${currentPage + 1}">Next</button>
+        pagination.append(`
+        <input type="text" id="pageInput" value="${currentPage}" style="width: 50px; text-align: center;" />
+        <span> / ${totalPages}</span>
         `);
-        } else {
-            pagination.append(`
-            <button class="page-button disabled">Next</button>
-        `);
-        }
 
-        // Thêm sự kiện lắng nghe cho các nút phân trang
-        $('.page-button:not(.disabled)').on('click', function () {
+        pagination.append(`
+        <button class="page-button" ${currentPage === totalPages ? 'disabled' : ''} data-page="${currentPage + 1}">
+            Tiếp theo
+        </button>
+        `);
+
+        $('.page-button').on('click', function () {
             const page = $(this).data('page');
-            loadDatas(page, 10, 'id,dsc', '');
+            loadDatas(page);
+        });
+
+        $('#pageInput').on('input', function () {
+            this.value = this.value.replace(/[^0-9]/g, '');
+        });
+
+        $('#pageInput').on('keypress', function (e) {
+            if (e.key === 'Enter') {
+                let inputPage = parseInt($(this).val());
+
+                if (isNaN(inputPage) || inputPage < 1) {
+                    inputPage = 1;
+                } else if (inputPage > totalPages) {
+                    inputPage = totalPages;
+                }
+
+                loadDatas(inputPage);
+            }
         });
     }
 
-
-    // Thêm thương hiệu
     $('#addForm').on('submit', function (event) {
         event.preventDefault();
 
@@ -126,44 +125,47 @@ $(document).ready(function () {
             url: '/admin/color',
             method: 'POST',
             contentType: 'application/json',
-            data: JSON.stringify({name: dataName}),
+            data: JSON.stringify({ name: dataName }),
             success: function (response) {
                 $('#addModal').hide();
                 loadDatas();
                 Swal.fire('Success', 'Thêm mới thành công', 'success');
             },
             error: function (xhr) {
+                let errorMessage = 'Không thể thêm mới';
                 if (xhr.status === 409) {
-                    Swal.fire('Error', xhr.responseText, 'error');
-                } else {
-                    console.error('Error adding:', xhr);
-                    Swal.fire('Error', 'Không thể thêm mới', 'error');
+                    errorMessage = xhr.responseText;
+                } else if (xhr.status === 400 && xhr.responseJSON) {
+                    errorMessage = xhr.responseJSON.map(error => error.defaultMessage).join(', ');
                 }
+                Swal.fire('Error', errorMessage, 'error');
             }
         });
     });
 
-/// Update brand
     $('#editForm').on('submit', function (event) {
         event.preventDefault();
+
         const id = $('#editId').val();
         const dataName = $('#editName').val();
         $.ajax({
             url: `/admin/color/${id}`,
             method: 'PUT',
             contentType: 'application/json',
-            data: JSON.stringify({name: dataName}),
+            data: JSON.stringify({ name: dataName }),
             success: function (response) {
                 $('#editModal').hide();
                 loadDatas();
                 Swal.fire('Success', 'Cập nhật thành công!', 'success');
             },
             error: function (xhr) {
+                let errorMessage = 'Không thể thêm mới';
                 if (xhr.status === 409) {
-                    Swal.fire('Error', 'Tên đã tồn tại!', 'error');
-                } else {
-                    Swal.fire('Error', 'Cập nhật thất bại', 'error');
+                    errorMessage = xhr.responseText;
+                } else if (xhr.status === 400 && xhr.responseJSON) {
+                    errorMessage = xhr.responseJSON.map(error => error.defaultMessage).join(', ');
                 }
+                Swal.fire('Error', errorMessage, 'error');
             }
         });
     });
@@ -171,7 +173,6 @@ $(document).ready(function () {
 
 });
 
-// Cập nhật trạng thái
 function submitStatusForm(checkbox) {
     const id = checkbox.value;
     const status = checkbox.checked ? 1 : 0;
@@ -180,7 +181,7 @@ function submitStatusForm(checkbox) {
         url: `/admin/color/${id}`,
         method: 'PATCH',
         contentType: 'application/json',
-        data: JSON.stringify({status: status}),
+        data: JSON.stringify({ status: status }),
         success: function () {
             Swal.fire('Success', 'Cập nhật trạng thái thành công', 'success');
         },

@@ -1,38 +1,35 @@
 package org.example.quan_ao_f4k.controller.product;
 
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.example.quan_ao_f4k.dto.request.product.ProductRequest;
 import org.example.quan_ao_f4k.dto.response.product.ProductResponse;
 import org.example.quan_ao_f4k.list.ListResponse;
-import org.example.quan_ao_f4k.model.product.Brand;
-import org.example.quan_ao_f4k.model.product.Category;
-import org.example.quan_ao_f4k.repository.product.BrandRepository;
-import org.example.quan_ao_f4k.repository.product.CategoryRepository;
+import org.example.quan_ao_f4k.service.product.ProductDetailService;
 import org.example.quan_ao_f4k.service.product.ProductService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.List;
 
-@RequestMapping(value = "admin/products")
+@RequestMapping(value = "/admin/products")
 @Controller
 @AllArgsConstructor
 public class ProductController {
 	private final ProductService productService;
+	private final ProductDetailService productDetailService;
 
-	@GetMapping({"", "/"})
-	public String getProduct(Model model) {
+	@GetMapping()
+	public String getProduct() {
 		return "admin/product/products";
 	}
 
@@ -41,63 +38,60 @@ public class ProductController {
 	@GetMapping("/list")
 	public ResponseEntity<ListResponse<ProductResponse>> getAllBrands(
 			@RequestParam(defaultValue = "1") int page,
-			@RequestParam(defaultValue = "10") int size,
-			@RequestParam(defaultValue = "id,asc") String sort,
+			@RequestParam(defaultValue = "5") int size,
+			@RequestParam(defaultValue = "id,desc") String sort,
 			@RequestParam(required = false) String filter,
 			@RequestParam(required = false) String search) {
 		ListResponse<ProductResponse> response = productService.findAll(page, size, sort, filter, search, false);
 		return ResponseEntity.ok(response);
 	}
 
-
-	//	thêm
 	@PostMapping
-	public ResponseEntity<?> add(@ModelAttribute ProductRequest productRequest) {
-		MultipartFile thumbnail = productRequest.getThumbnail();
-		String fileName = "people.png";  // Mặc định nếu không có file
-		String uploadDir = "src/main/resources/static/admin/img/";
-		Path path = Paths.get(uploadDir);
-
+	public ResponseEntity<?> add(@Valid @ModelAttribute ProductRequest productRequest, BindingResult bindingResult) {
 		try {
-			if (thumbnail != null && !thumbnail.isEmpty()) {
-				fileName = thumbnail.getOriginalFilename();
-				Files.copy(thumbnail.getInputStream(), path.resolve(fileName), StandardCopyOption.REPLACE_EXISTING);
+			if (bindingResult.hasErrors()) {
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(bindingResult.getAllErrors());
 			}
+
+			boolean exists = productService.existsProductNamesByBrandAndCategory(productRequest.getName(),
+					productRequest.getBrandId(), productRequest.getCategoryId());
+
+			if (exists) {
+				return ResponseEntity.status(HttpStatus.CONFLICT)
+						.body("Sản phẩm có tên với thương hiệu và danh mục này đã tồn tại");
+			}
+
+			String fileName = uploadThumbnail(productRequest.getThumbnail());
+			productRequest.setThumbnailName(fileName);
+			ProductResponse productResponse = productService.save(productRequest);
+			return ResponseEntity.status(HttpStatus.CREATED).body(productResponse);
 		} catch (IOException e) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Lỗi khi lưu file");
 		}
-
-		// Gán tên file đã upload vào request
-		productRequest.setThumbnailName(fileName);
-
-		ProductResponse productResponse = productService.save(productRequest);
-		return ResponseEntity.status(HttpStatus.CREATED).body(productResponse);
 	}
 
 	@PutMapping("/{id}")
-	public ResponseEntity<?> update(
-			@PathVariable("id") Long id,
-			@ModelAttribute ProductRequest productRequest) {
-
-		MultipartFile thumbnail = productRequest.getThumbnail();
-		ProductResponse res = productService.findById(id);
-
-		String fileName = res.getThumbnail();
-		String uploadDir = "src/main/resources/static/admin/img/";
-		Path path = Paths.get(uploadDir);
-
+	public ResponseEntity<?> update(@PathVariable("id") Long id,
+	                                @Valid @ModelAttribute ProductRequest productRequest,
+	                                BindingResult bindingResult) {
 		try {
-			if (thumbnail != null && !thumbnail.isEmpty()) {
-				fileName = thumbnail.getOriginalFilename();
-				Files.copy(thumbnail.getInputStream(), path.resolve(fileName), StandardCopyOption.REPLACE_EXISTING);
+			if (bindingResult.hasErrors()) {
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(bindingResult.getAllErrors());
 			}
+			boolean exists = productService.existsProductNamesByBrandAndCategory(productRequest.getName(),
+					productRequest.getBrandId(), productRequest.getCategoryId());
+
+			if (exists) {
+				return ResponseEntity.status(HttpStatus.CONFLICT).
+						body("Sản phẩm có tên với thương hiệu và danh mục này đã tồn tại.");
+			}
+			String fileName = uploadThumbnail(productRequest.getThumbnail());
+			productRequest.setThumbnailName(fileName);
+			ProductResponse productResponse = productService.save(id, productRequest);
+			return ResponseEntity.ok(productResponse);
 		} catch (IOException e) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Lỗi khi lưu file");
 		}
-
-		productRequest.setThumbnailName(fileName);
-		ProductResponse productResponse = productService.save(id, productRequest);
-		return ResponseEntity.ok(productResponse);
 	}
 
 
@@ -119,4 +113,17 @@ public class ProductController {
 	public void exportToPdf(HttpServletResponse response) throws Exception {
 		productService.exportPdf(response);
 	}
+
+	private String uploadThumbnail(MultipartFile thumbnail) throws IOException {
+		String uploadDir = "src/main/resources/static/admin/img/";
+		Path path = Paths.get(uploadDir);
+
+		if (thumbnail != null && !thumbnail.isEmpty()) {
+			String fileName = thumbnail.getOriginalFilename();
+			Files.copy(thumbnail.getInputStream(), path.resolve(fileName), StandardCopyOption.REPLACE_EXISTING);
+			return fileName;
+		}
+		return "people.png";
+	}
+
 }

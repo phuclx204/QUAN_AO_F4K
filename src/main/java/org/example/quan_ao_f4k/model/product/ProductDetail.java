@@ -33,12 +33,8 @@ public class ProductDetail extends BaseEntity {
 	@JoinColumn(name = "color_id",nullable = false)
 	private Color color;
 
-	@Column(name = "price", precision = 10, scale = 2)
+	@Column(name = "price", precision = 65, scale = 2)
 	private BigDecimal price;
-
-	@ManyToOne
-	@JoinColumn(name = "guarantee_id",nullable = true)
-	private Guarantee guarantee;
 
 	@Column(name = "quantity",nullable = false)
 	private Integer quantity;

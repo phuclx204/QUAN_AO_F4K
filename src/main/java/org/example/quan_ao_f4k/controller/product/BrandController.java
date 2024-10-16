@@ -1,6 +1,7 @@
 package org.example.quan_ao_f4k.controller.product;
 
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.example.quan_ao_f4k.dto.request.product.BrandRequest;
 import org.example.quan_ao_f4k.dto.response.product.BrandResponse;
@@ -10,6 +11,7 @@ import org.example.quan_ao_f4k.service.product.BrandService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,18 +23,17 @@ public class BrandController extends GenericController<BrandRequest, BrandRespon
 
 	private final BrandService brandService;
 
-	// Trả về giao diện HTML cho danh sách thương hiệu
 	@GetMapping
 	public String getAllBrandsPage() {
-		return "/admin/product/brand"; // Tên file HTML
+		return "/admin/product/brand";
 	}
 
 	// Lấy danh sách thương hiệu với phân trang và sắp xếp
 	@GetMapping("/list")
 	public ResponseEntity<ListResponse<BrandResponse>> getAllBrands(
 			@RequestParam(defaultValue = "1") int page,
-			@RequestParam(defaultValue = "10") int size,
-			@RequestParam(defaultValue = "id,asc") String sort,
+			@RequestParam(defaultValue = "5") int size,
+			@RequestParam(defaultValue = "id,desc") String sort,
 			@RequestParam(required = false) String filter,
 			@RequestParam(required = false) String search) {
 		ListResponse<BrandResponse> response = brandService.findAll(page, size, sort, filter, search, false);
@@ -42,7 +43,10 @@ public class BrandController extends GenericController<BrandRequest, BrandRespon
 
 	// Tạo mới thương hiệu
 	@PostMapping
-	public ResponseEntity<?> addBrand(@RequestBody BrandRequest brandRequest) {
+	public ResponseEntity<?> addBrand(@Valid @RequestBody BrandRequest brandRequest, BindingResult bindingResult) {
+		if (bindingResult.hasErrors()) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(bindingResult.getAllErrors());
+		}
 		if (brandService.existsByName(brandRequest.getName())) {
 			return ResponseEntity.status(HttpStatus.CONFLICT)
 					.body("Tên này đã tồn tại!");
@@ -55,9 +59,10 @@ public class BrandController extends GenericController<BrandRequest, BrandRespon
 
 	// Cập nhật thông tin thương hiệu
 	@PutMapping("/{id}")
-	public ResponseEntity<?> updateBrand(@PathVariable Long id, @RequestBody BrandRequest request) {
-		// Kiểm tra xem tên thương hiệu đã tồn tại chưa
-		System.out.println("ID Brand "+id);
+	public ResponseEntity<?> updateBrand(@PathVariable Long id,@Valid @RequestBody BrandRequest request, BindingResult bindingResult) {
+		if (bindingResult.hasErrors()) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(bindingResult.getAllErrors());
+		}
 		if (brandService.existsByNameAndIdNot(request.getName(), id)) {
 			return ResponseEntity.status(HttpStatus.CONFLICT)
 					.body("Tên đã tồn tại");
@@ -65,21 +70,11 @@ public class BrandController extends GenericController<BrandRequest, BrandRespon
 		return ResponseEntity.ok(brandService.save(id, request));
 	}
 
-
-
 	// Cập nhật trạng thái thương hiệu
 	@PatchMapping("/{id}")
 	public ResponseEntity<Void> updateBrandStatus(@PathVariable Long id, @RequestBody BrandRequest request) {
 		brandService.updateStatus(id, request.getStatus());
 		return ResponseEntity.noContent().build();
-	}
-
-
-	// Tìm thương hiệu theo tên
-	@GetMapping("/search")
-	public ResponseEntity<BrandResponse> getBrandByName(@RequestParam String name) {
-		BrandResponse response = brandService.findByName(name);
-		return ResponseEntity.ok(response);
 	}
 
 	// Xuất danh sách thương hiệu ra Excel

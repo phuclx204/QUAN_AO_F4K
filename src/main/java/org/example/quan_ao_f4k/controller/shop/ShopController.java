@@ -1,11 +1,7 @@
 package org.example.quan_ao_f4k.controller.shop;
 
-import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import jakarta.annotation.Nullable;
 import org.example.quan_ao_f4k.dto.request.shop.ShopRequest;
-import org.example.quan_ao_f4k.dto.response.product.ProductDetailResponse;
-import org.example.quan_ao_f4k.model.product.ProductDetail;
 import org.example.quan_ao_f4k.service.shop.ShopService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -14,8 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @Controller
 @RequestMapping("shop")

@@ -11,6 +11,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.example.quan_ao_f4k.model.product.Product;
+import org.example.quan_ao_f4k.model.product.ProductDetail;
 
 import java.time.LocalDateTime;
 
@@ -28,8 +29,8 @@ public class CartProduct {
 
     @Id
     @ManyToOne
-    @JoinColumn(name = "product_id", nullable = false)
-    private Product product;
+    @JoinColumn(name = "is_parent", nullable = false)
+    private ProductDetail productDetail;
 
     @Column(name = "quantity")
     private Integer quantity;

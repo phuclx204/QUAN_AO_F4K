@@ -15,11 +15,11 @@ import org.example.quan_ao_f4k.dto.response.product.SizeResponse;
 import org.example.quan_ao_f4k.list.ListResponse;
 import org.example.quan_ao_f4k.mapper.product.SizeMapper;
 import org.example.quan_ao_f4k.model.product.Size;
-import org.example.quan_ao_f4k.repository.product.ProductDetailRepository;
 import org.example.quan_ao_f4k.repository.product.SizeRepository;
 import org.example.quan_ao_f4k.util.SearchFields;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -27,7 +27,6 @@ import java.util.List;
 public class SizeServiceImpl implements SizeService{
     private SizeMapper sizeMapper;
     private SizeRepository sizeRepository;
-    private ProductDetailRepository productDetailRepository;
 
     @Override
     public ListResponse<SizeResponse> findAll(int page, int size, String sort, String filter, String search, boolean all) {
@@ -60,11 +59,6 @@ public class SizeServiceImpl implements SizeService{
     public void delete(List<Long> longs) {
         sizeRepository.deleteAllById(longs);
 
-    }
-
-    @Override
-    public SizeResponse findByName(String name) {
-        return findByName(name);
     }
 
     @Override
@@ -225,6 +219,18 @@ public class SizeServiceImpl implements SizeService{
     @Override
     public boolean existsByNameAndIdNot(String name, Long id) {
         return sizeRepository.existsByNameAndIdNot(name,id);
+    }
+
+
+    @Override
+    public List<SizeResponse> findByStatusActive() {
+        List<Size> brands = sizeRepository.findByStatus(1);
+        List<SizeResponse> responses = new ArrayList<>();
+        for (Size brand : brands) {
+            SizeResponse brandResponse = new SizeResponse(brand.getId(),brand.getName(),brand.getStatus());
+            responses.add(brandResponse);
+        }
+        return responses;
     }
 
 }

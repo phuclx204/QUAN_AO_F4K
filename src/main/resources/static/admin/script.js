@@ -6,9 +6,8 @@ allSideMenu.forEach((item) => {
     const href = item.getAttribute("href");
     localStorage.setItem("activeMenu", href);
 
-    // Kiểm tra nếu sidebar đang ở trạng thái thu nhỏ thì không thay đổi trạng thái mở
     if (sidebar.classList.contains("hide")) {
-      e.stopPropagation(); // Ngăn chặn hành vi mở rộng sidebar khi click
+      e.stopPropagation();
     }
   });
 });
@@ -31,14 +30,13 @@ menuBar.addEventListener("click", function () {
   sidebar.classList.toggle("hide");
 });
 
-// Ensure proper display on resize
+
 window.addEventListener("resize", function () {
   if (this.innerWidth > 760) {
-    sidebar.classList.remove("hide"); // Show sidebar if window wider than 760px
+    sidebar.classList.remove("hide");
   }
 });
 
-// Theme switch logic
 const switchMode = document.getElementById("switch-mode");
 
 switchMode.addEventListener("change", function () {

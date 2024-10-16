@@ -28,7 +28,7 @@ public class OrderDetail {
 
     @Id
     @ManyToOne
-    @JoinColumn(name = "product_detail_id", referencedColumnName = "id")
+    @JoinColumn(name = "is_parent", referencedColumnName = "id")
     private ProductDetail productDetail;
 
     @Column(name = "quantity")

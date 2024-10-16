@@ -62,11 +62,6 @@ public class CategoryServiceImpl implements CategoryService{
 	}
 
 	@Override
-	public CategoryResponse findByName(String name) {
-		return findByName(name);
-	}
-
-	@Override
 	public void updateStatus(Long id, int status) {
 		Category brand = brandRepository.findById(id)
 				.orElseThrow(() -> new RuntimeException("Không tồn tại đối tượng"));

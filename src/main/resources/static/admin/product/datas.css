@@ -123,34 +123,32 @@ button:hover {
     }
 }
 
+/*paging*/
+#pagination input[type="text"] {
+    height: 35px;
+    font-size: 16px;
+    padding: 0 5px;
+    margin: 10px;
+}
+
 .page-button {
-    padding: 10px 15px; /* Thêm khoảng cách cho nút */
-    border: none; /* Xóa đường viền mặc định */
-    background-color: #007bff; /* Màu nền mặc định */
-    cursor: pointer; /* Hiển thị con trỏ chuột khi di chuột qua */
-    border-radius: 50px; /* Thêm border-    radius */
-    margin: 0 5px; /* Thêm khoảng cách giữa các nút */
-    transition: background-color 0.3s; /* Hiệu ứng chuyển màu mượt mà */
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.2s ease-in-out;
+    margin: 15px;
 }
 
 .page-button:hover {
-    background-color: var(--cyan); /* Màu nền khi hover */
-    border-radius: 50px;
+    background-color: #0056b3;
 }
 
-.page-button.active {
-    background-color: #9df3e8; /* Màu nền cho nút đang được chọn */
-    color: #626ef3; /* Đổi màu chữ cho nút đang được chọn */
-    border-radius: 50px;
-
-}
-.page-button.disabled {
-    background-color: #e0e0e0; /* Màu nền cho nút bị vô hiệu hóa */
-    color: #3d3d3d; /* Màu chữ cho nút bị vô hiệu hóa */
-    cursor: not-allowed; /* Con trỏ không cho phép */
-    pointer-events: none; /* Vô hiệu hóa sự kiện chuột */
+.page-button:disabled {
+    display: none;
 }
 
-
-
-
+/*end paging*/
