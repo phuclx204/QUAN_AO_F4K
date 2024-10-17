@@ -133,7 +133,12 @@ $(document).ready(function () {
             success: function (response) {
                 $('#addModal').hide();
                 loadDatas();
-                Swal.fire('Success', 'Thêm mới thành công', 'success');
+                Swal.fire({
+                    title: 'Thông báo',
+                    text: 'Thêm mới thành công.',
+                    timer: 2000,
+                    timerProgressBar: true,
+                });
             },
             error: function (xhr) {
                 let errorMessage = 'Không thể thêm mới';
@@ -161,7 +166,12 @@ $(document).ready(function () {
             success: function (response) {
                 $('#editModal').hide();
                 loadDatas();
-                Swal.fire('Success', 'Cập nhật thành công!', 'success');
+                Swal.fire({
+                    title: 'Thông báo',
+                    text: 'Đã lưu thay đổi.',
+                    timer: 2000,
+                    timerProgressBar: true,
+                });
             },
             error: function (xhr) {
                 let errorMessage = 'Không thể thêm mới';
@@ -188,7 +198,12 @@ function submitStatusForm(checkbox) {
         contentType: 'application/json',
         data: JSON.stringify({status: status}),
         success: function () {
-            Swal.fire('Success', 'Cập nhật trạng thái thành công', 'success');
+            Swal.fire({
+                title: 'Thông báo',
+                text: 'Đã thay đổi trạng thái.',
+                timer: 2000,
+                timerProgressBar: true,
+            });
         },
         error: function () {
             Swal.fire('Error', 'Cập nhật trạng thái thất bại', 'error');

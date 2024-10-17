@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import org.example.quan_ao_f4k.dto.request.product.ProductDetailRequest;
 import org.example.quan_ao_f4k.dto.response.product.ProductDetailResponse;
 import org.example.quan_ao_f4k.list.ListResponse;
-import org.example.quan_ao_f4k.model.product.Product;
 import org.example.quan_ao_f4k.repository.product.ProductRepository;
 import org.example.quan_ao_f4k.service.product.ProductDetailService;
 import org.springframework.http.HttpStatus;
@@ -14,7 +13,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @RequestMapping(value = "/admin/products/product-detail")
 @Controller

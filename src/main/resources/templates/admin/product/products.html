@@ -26,7 +26,7 @@
                     </li>
                     <li><i class='bx bx-chevron-right'></i></li>
                     <li>
-                        <a class="active" th:href="@{/admin/products}">Sản phẩm</a>
+                        <a class="active" th:href="@{/admin/product}">Sản phẩm</a>
                     </li>
                 </ul>
             </div>
@@ -46,7 +46,7 @@
                     </a>
 
                     <h3>Danh sách sản phẩm</h3>
-                    <form th:action="@{/admin/products}" method="get" class="search-form" id="searchForm">
+                    <form th:action="@{/admin/product}" method="get" class="search-form" id="searchForm">
                         <div class="search-container">
                             <input type="text" name="search" placeholder="Tìm kiếm sản phẩm..."
                                    th:value="${param.search}" id="searchInput"/>
@@ -176,7 +176,7 @@
 <!--bootstrap-->
 <script th:src="@{/admin/plugins/bootstrap4/bootstrap.bundle.js}"></script>
 <!--custom script-->
-<script th:src="@{/admin/product/productjs.js}"></script>
+<script th:src="@{/admin/product/product.js}"></script>
 
 </body>
 </html>

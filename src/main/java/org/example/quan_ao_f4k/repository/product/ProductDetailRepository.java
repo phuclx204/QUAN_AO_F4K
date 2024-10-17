@@ -1,17 +1,15 @@
 package org.example.quan_ao_f4k.repository.product;
 
-import org.example.quan_ao_f4k.dto.request.product.ProductDetailRequest;
-import org.example.quan_ao_f4k.dto.response.product.ProductDetailResponse;
 import org.example.quan_ao_f4k.model.product.ProductDetail;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+@Repository
 public interface ProductDetailRepository extends JpaRepository<ProductDetail, Long>,
 		JpaSpecificationExecutor<ProductDetail> {
 
@@ -35,5 +33,6 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, Lo
 			@Param("colorId") Long colorId,
 			@Param("id") Long id);
 
-
+	@Query("SELECT pd FROM ProductDetail pd WHERE pd.product.id = :productId")
+	List<ProductDetail> findProductDetailsByProductId(@Param("productId") Long productId);
 }

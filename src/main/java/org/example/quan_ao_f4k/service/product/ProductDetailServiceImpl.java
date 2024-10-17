@@ -4,43 +4,40 @@ import org.example.quan_ao_f4k.dto.request.product.ProductDetailRequest;
 import org.example.quan_ao_f4k.dto.response.product.ProductDetailResponse;
 import org.example.quan_ao_f4k.list.ListResponse;
 import org.example.quan_ao_f4k.mapper.product.ProductDetailMapper;
-import org.example.quan_ao_f4k.mapper.product.ProductDetailMapperImpl;
 import org.example.quan_ao_f4k.model.product.Color;
 import org.example.quan_ao_f4k.model.product.Product;
 import org.example.quan_ao_f4k.model.product.ProductDetail;
 import org.example.quan_ao_f4k.model.product.Size;
+import org.example.quan_ao_f4k.repository.order.CartProductRepository;
+import org.example.quan_ao_f4k.repository.order.OrderDetailRepository;
 import org.example.quan_ao_f4k.repository.product.ColorRepository;
 import org.example.quan_ao_f4k.repository.product.ProductDetailRepository;
 import org.example.quan_ao_f4k.repository.product.ProductRepository;
 import org.example.quan_ao_f4k.repository.product.SizeRepository;
 import org.example.quan_ao_f4k.util.SearchFields;
-import org.example.quan_ao_f4k.util.SearchUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 @Service
 public class ProductDetailServiceImpl implements ProductDetailService {
 
     @Autowired
     private ProductDetailMapper productDetailMapper;
-
     @Autowired
     private ProductDetailRepository productDetailRepository;
-
     @Autowired
     private ProductRepository productRepository;
-
     @Autowired
     private SizeRepository sizeRepository;
-
     @Autowired
     private ColorRepository colorRepository;
     @Autowired
-    private ProductDetailMapperImpl productDetailMapperImpl;
+    private CartProductRepository cartProductRepository;
+    @Autowired
+    private OrderDetailRepository orderDetailRepository;
 
     @Override
     public ListResponse<ProductDetailResponse> findAll(int page, int size, String sort, String filter, String search, boolean all) {
@@ -112,12 +109,39 @@ public class ProductDetailServiceImpl implements ProductDetailService {
     }
 
     @Override
-    public boolean isAddExistsByProductSizeAndColor(Long productId,Long sizeId, Long colorId) {
-        return productDetailRepository.isAddExistsByProductSizeAndColor(productId,sizeId, colorId);
+    public boolean isAddExistsByProductSizeAndColor(Long productId, Long sizeId, Long colorId) {
+        return productDetailRepository.isAddExistsByProductSizeAndColor(productId, sizeId, colorId);
     }
-    @Override
-    public boolean isUpdateExistsByProductSizeAndColor(Long productId,Long sizeId, Long colorId,Long id) {
-        return productDetailRepository.isUpdateExistsByProductSizeAndColorId(productId,sizeId, colorId,id);
 
+    @Override
+    public boolean isUpdateExistsByProductSizeAndColor(Long productId, Long sizeId, Long colorId, Long id) {
+        return productDetailRepository.isUpdateExistsByProductSizeAndColorId(productId, sizeId, colorId, id);
     }
+
+    @Override
+    public boolean deleteProductDetail(Long productId, Long id) {
+        Optional<Product> product = productRepository.findById(productId);
+        if (product.isPresent()) {
+            List<ProductDetail> listProductDetail = productDetailRepository.findProductDetailsByProductId(product.get().getId());
+            for (ProductDetail productDetail : listProductDetail) {
+                if(productDetail.getId().equals(id)){
+                    boolean hasConstraints = checkConstraints(id);
+                    if (hasConstraints) {
+
+                        return false;
+                    }
+                    productDetailRepository.deleteById(id);
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    private boolean checkConstraints(Long isParent) {
+        int orderCount = orderDetailRepository.countByProductDetail(isParent);
+        int cartCount = cartProductRepository.countByProductDetail(isParent);
+
+        return (orderCount > 0 || cartCount > 0);
+    }
+
 }

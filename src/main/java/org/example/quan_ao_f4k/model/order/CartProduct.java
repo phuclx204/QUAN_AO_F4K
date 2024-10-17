@@ -1,11 +1,6 @@
 package org.example.quan_ao_f4k.model.order;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,16 +16,18 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Getter
 @Setter
+@IdClass(CartProductId.class)
 public class CartProduct {
     @Id
     @ManyToOne
-    @JoinColumn(name = "cart_id", nullable = false)
+    @JoinColumn(name = "cart_id")
     private Cart cart;
 
     @Id
     @ManyToOne
-    @JoinColumn(name = "is_parent", nullable = false)
+    @JoinColumn(name = "is_parent")
     private ProductDetail productDetail;
+
 
     @Column(name = "quantity")
     private Integer quantity;

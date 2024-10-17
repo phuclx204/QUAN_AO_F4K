@@ -13,6 +13,12 @@ exportSelect.on('change', function () {
         }).then((result) => {
             if (result.isConfirmed) {
                 window.location.href = selectedValue;
+                Swal.fire({
+                    title: 'Thông báo',
+                    text: 'Xuất danh sách thành công.',
+                    timer: 2000,
+                    timerProgressBar: true,
+                });
             }
         });
     }
@@ -208,7 +214,12 @@ $(document).ready(function () {
                 $('#addModal').hide();
                 loadDatas();
                 $('#addForm')[0].reset();
-                Swal.fire('Success', 'Thêm sản phẩm thành công!', 'success');
+                Swal.fire({
+                    title: 'Thông báo',
+                    text: 'Thêm mới thành công.',
+                    timer: 2000,
+                    timerProgressBar: true,
+                });
             },
             error: function (xhr) {
                 if (xhr.status === 400 && xhr.responseJSON) {
@@ -239,7 +250,12 @@ $(document).ready(function () {
                 $('#editModal').hide();
                 loadDatas();
                 $('#editForm')[0].reset();
-                Swal.fire('Success', 'Cập nhật sản phẩm thành công!', 'success');
+                Swal.fire({
+                    title: 'Thông báo',
+                    text: 'Đã lưu thay đổi',
+                    timer: 2000,
+                    timerProgressBar: true,
+                });
             },
             error: function (xhr) {
                 if (xhr.status === 400 && xhr.responseJSON) {
@@ -279,7 +295,12 @@ function submitStatusForm(checkbox) {
         contentType: 'application/json',
         data: JSON.stringify({status: status}),
         success: function () {
-            Swal.fire('Success', 'Cập nhật trạng thái thành công', 'success');
+            Swal.fire({
+                title: 'Thông báo',
+                text: 'Đã thay đổi trạng thái.',
+                timer: 2000,
+                timerProgressBar: true,
+            });
         },
         error: function () {
             Swal.fire('Error', 'Cập nhật trạng thái thất bại', 'error');

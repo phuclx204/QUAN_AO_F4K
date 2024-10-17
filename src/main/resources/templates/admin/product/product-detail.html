@@ -79,39 +79,6 @@
 </section>
 <input type="hidden" th:value="${productId}" id="productId">
 <!-- Modal thêm chi tiết sản phẩm -->
-<div id="addModal" class="modal">
-    <div class="modal-content">
-        <span class="close" onclick="closeModal('addModal')">&times;</span>
-        <h2>Thêm chi tiết sản phẩm</h2>
-
-        <form id="addForm">
-            <div class="flex-container">
-                <select id="selectAddColor" name="colorId">
-                    <option value="">-- Màu Sắc --</option>
-                </select>
-
-                <select id="selectAddSize" name="sizeId">
-                    <option value="">-- Kích thước --</option>
-                </select>
-            </div>
-            <div id="addColorError" style="color: #f34349"></div>
-            <div id="addSizeError" style="color: #f34349"></div>
-
-            <label for="addPrice">Nhập giá:</label>
-            <input type="text" id="addPrice" name="price">
-            <div id="addPriceError" style="color: #f34349"></div>
-
-
-            <label for="addQuantity">Số lượng:</label>
-            <input type="number" id="addQuantity" name="quantity">
-            <div id="addQuantityError" style="color: #f34349"></div>
-
-            <button type="submit">Lưu</button>
-        </form>
-    </div>
-</div>
-
-<!-- Modal chỉnh sửa chi tiết sản phẩm -->
 <div id="editModal" class="modal">
     <div class="modal-content">
         <span class="close" onclick="closeModal('editModal')">&times;</span>
@@ -129,19 +96,51 @@
                     <option value="">-- Kích thước --</option>
                 </select>
             </div>
-            <div id="editColorIdError" style="color: #f34349;"></div>
-            <div id="editSizeError" style="color: #f34349;"></div>
+            <div id="editColorIdError" class="error" style="color: #f34349;"></div>
+            <div id="editSizeError" class="error" style="color: #f34349;"></div>
 
             <label for="editPrice">Nhập giá:</label>
             <input type="text" id="editPrice" name="price">
-            <div id="editPriceError" style="color: #f34349"></div>
+            <div id="editPriceError" class="error" style="color: #f34349"></div>
 
             <label for="editQuantity">Số lượng:</label>
             <input type="number" id="editQuantity" name="quantity">
-            <div id="editQuantityError" style="color: #f34349"></div>
-
+            <div id="editQuantityError" class="error" style="color: #f34349"></div>
 
             <button type="submit">Cập nhật</button>
+        </form>
+    </div>
+</div>
+
+<!-- Modal chỉnh sửa chi tiết sản phẩm -->
+<div id="addModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal('addModal')">&times;</span>
+        <h2>Thêm chi tiết sản phẩm</h2>
+
+        <form id="addForm">
+            <div class="flex-container">
+                <select id="selectAddColor" name="colorId">
+                    <option value="">-- Màu Sắc --</option>
+                </select>
+
+                <select id="selectAddSize" name="sizeId">
+                    <option value="">-- Kích thước --</option>
+                </select>
+            </div>
+            <div id="addColorError" class="error" style="color: #f34349"></div>
+            <div id="addSizeError" class="error" style="color: #f34349"></div>
+
+            <label for="addPrice">Nhập giá:</label>
+            <input type="text" id="addPrice" name="price">
+            <div id="addPriceError" class="error" style="color: #f34349"></div>
+
+
+            <label for="addQuantity">Số lượng:</label>
+            <input type="number" id="addQuantity" name="quantity">
+            <div id="addQuantityError" class="error" style="color: #f34349"></div>
+
+            <button type="submit">Lưu</button>
         </form>
     </div>
 </div>

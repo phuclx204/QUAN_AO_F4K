@@ -47,12 +47,12 @@ $(document).ready(function () {
             <tr>
                 <td colspan="4" style="text-align: center;color:red">Không có dữ liệu !</td>
             </tr>
-        `);
-            $('#pagination').hide();
+        `);$('#pagination').hide();
             return;
         } else {
             $('#pagination').show();
         }
+
 
         datas.forEach((i, index) => {
             tbody.append(`
@@ -129,7 +129,12 @@ $(document).ready(function () {
             success: function (response) {
                 $('#addModal').hide();
                 loadDatas();
-                Swal.fire('Success', 'Thêm mới thành công', 'success');
+                Swal.fire({
+                    title: 'Thông báo',
+                    text: 'Thêm mới thành công.',
+                    timer: 2000,
+                    timerProgressBar: true,
+                });
             },
             error: function (xhr) {
                 let errorMessage = 'Không thể thêm mới';
@@ -156,7 +161,12 @@ $(document).ready(function () {
             success: function (response) {
                 $('#editModal').hide();
                 loadDatas();
-                Swal.fire('Success', 'Cập nhật thành công!', 'success');
+                Swal.fire({
+                    title: 'Thông báo',
+                    text: 'Cập nhật thành công.',
+                    timer: 2000,
+                    timerProgressBar: true,
+                });
             },
             error: function (xhr) {
                 let errorMessage = 'Không thể thêm mới';
@@ -183,10 +193,20 @@ function submitStatusForm(checkbox) {
         contentType: 'application/json',
         data: JSON.stringify({ status: status }),
         success: function () {
-            Swal.fire('Success', 'Cập nhật trạng thái thành công', 'success');
+            Swal.fire({
+                title: 'Thông báo',
+                text: 'Đã đổi trạng thái.',
+                timer: 2000,
+                timerProgressBar: true,
+            });
         },
         error: function () {
-            Swal.fire('Error', 'Cập nhật trạng thái thất bại', 'error');
+            Swal.fire({
+                title: 'Thông báo',
+                text: 'Cập nhật trạng thái thất bại.',
+                timer: 2000,
+                timerProgressBar: true,
+            });
         }
     });
 }
