@@ -26,7 +26,6 @@ import java.nio.file.StandardCopyOption;
 @AllArgsConstructor
 public class ProductController {
 	private final ProductService productService;
-	private final ProductDetailService productDetailService;
 
 	@GetMapping()
 	public String getProduct() {
