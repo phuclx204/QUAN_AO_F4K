@@ -297,9 +297,12 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public boolean existsProductNamesByBrandAndCategory(String name,Long brandId, Long categoryId) {
-        List<String> productName = productRepository.findProductNamesByBrandAndCategory(brandId, categoryId);
-        return productName.contains(name);
+    public boolean isUpdateExistProductByBrandAndCate(String name, Long brandId, Long categoryId,Long id) {
+        return productRepository.isUpdateExistProductByBrandAndCate(name,brandId, categoryId,id);
+    }
+    @Override
+    public boolean isAddExistProductByBrandAndCate(String name, Long brandId, Long categoryId) {
+        return productRepository.isAddExistProductByBrandAndCate(name,brandId, categoryId);
     }
 
 }

@@ -178,8 +178,14 @@ $(document).ready(function () {
                 Swal.fire('Success', 'Lưu thành công!', 'success');
                 loadProductDetails();
             },
-            error: function (error) {
-                Swal.fire('Error', 'Lưu thất bại!', 'error');
+            error: function (xhr) {
+                if (xhr.status === 400 && xhr.responseJSON) {
+                    displayErrors(xhr.responseJSON, 'add');
+                } else if(xhr.status === 409){
+                    Swal.fire('Lỗi',xhr.responseText,'warning')
+                } else {
+                    Swal.fire('Lỗi', 'Không thể thêm mới', 'error');
+                }
             }
         });
     });
@@ -208,12 +214,31 @@ $(document).ready(function () {
                 Swal.fire('Success', 'Cập nhật thành công!', 'success');
                 loadProductDetails();
             },
-            error: function (error) {
-                Swal.fire('Error', 'Cập nhật thất bại!', 'error');
+            error: function (xhr) {
+                if (xhr.status === 400 && xhr.responseJSON) {
+                    displayErrors(xhr.responseJSON, 'edit');
+                } else if(xhr.status === 409){
+                    Swal.fire('Lỗi',xhr.responseText,'warning')
+                } else {
+                    Swal.fire('Lỗi', 'Không thể cập nhật', 'error');
+                }
             }
         });
     });
 //     end cập nhật
+    function displayErrors(errors, formType) {
+        $(`#${formType}Error`).html('');
+
+        errors.forEach(error => {
+            const field = error.field;
+            const message = error.defaultMessage;
+            $(`#${formType}${capitalize(field)}Error`).html(message);
+        });
+    }
+
+    function capitalize(str) {
+        return str.charAt(0).toUpperCase() + str.slice(1);
+    }
 });
 
 function formatDate(dateString) {

@@ -1,13 +1,18 @@
 package org.example.quan_ao_f4k.controller.product;
 
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.example.quan_ao_f4k.dto.request.product.ProductDetailRequest;
 import org.example.quan_ao_f4k.dto.response.product.ProductDetailResponse;
 import org.example.quan_ao_f4k.list.ListResponse;
+import org.example.quan_ao_f4k.model.product.Product;
+import org.example.quan_ao_f4k.repository.product.ProductRepository;
 import org.example.quan_ao_f4k.service.product.ProductDetailService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -17,6 +22,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class ProductDetailController {
 
 	private final ProductDetailService productDetailService;
+	private final ProductRepository productRepository;
 
 
 	@GetMapping("/{productId}")
@@ -41,16 +47,37 @@ public class ProductDetailController {
 
 
 	@PostMapping("/{productId}/add")
-	public ResponseEntity<ProductDetailResponse> addProductDetail(@PathVariable("productId") Long productId,
-	                                                              @RequestBody ProductDetailRequest productDetailRequest) {
+	public ResponseEntity<?> addProductDetail(@PathVariable("productId") Long productId,
+	                                          @Valid @RequestBody ProductDetailRequest productDetailRequest,
+	                                          BindingResult bindingResult) {
+		boolean exists = productDetailService.isAddExistsByProductSizeAndColor(productId,
+				productDetailRequest.getSizeId(), productDetailRequest.getColorId());
+		if (bindingResult.hasErrors()) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(bindingResult.getAllErrors());
+		}
+		if (exists) {
+			return ResponseEntity.status(HttpStatus.CONFLICT)
+					.body("Sản phẩm có màu và kích cỡ này đã tồn tại");
+		}
 		return ResponseEntity.ok(productDetailService.addProductDetail(productId, productDetailRequest));
 	}
 
 	@PutMapping("/{productId}/update/{id}")
-	public ResponseEntity<ProductDetailResponse> updateProductDetail(@PathVariable("productId") Long productId,
-	                                                                 @PathVariable("id") Long id,
-	                                                                 @RequestBody ProductDetailRequest productDetailRequest) {
-		return ResponseEntity.ok(productDetailService.updateProductDetail(productId,id, productDetailRequest));
+	public ResponseEntity<?> updateProductDetail(@PathVariable("productId") Long productId,
+	                                             @PathVariable("id") Long id,
+	                                             @Valid @RequestBody ProductDetailRequest productDetailRequest,
+	                                             BindingResult bindingResult) {
+		boolean exists = productDetailService.isUpdateExistsByProductSizeAndColor(productId,
+				productDetailRequest.getSizeId(), productDetailRequest.getColorId(),id);
+		if (bindingResult.hasErrors()) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(bindingResult.getAllErrors());
+		}
+		if (exists) {
+			return ResponseEntity.status(HttpStatus.CONFLICT)
+					.body("Sản phẩm có màu và kích cỡ này đã tồn tại");
+		}
+		return ResponseEntity.ok(productDetailService.updateProductDetail(productId, id, productDetailRequest));
 	}
+
 
 }

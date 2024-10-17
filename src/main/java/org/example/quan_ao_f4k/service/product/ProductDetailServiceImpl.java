@@ -110,4 +110,14 @@ public class ProductDetailServiceImpl implements ProductDetailService {
 
         return productDetailMapper.entityToResponse(productDetail);
     }
+
+    @Override
+    public boolean isAddExistsByProductSizeAndColor(Long productId,Long sizeId, Long colorId) {
+        return productDetailRepository.isAddExistsByProductSizeAndColor(productId,sizeId, colorId);
+    }
+    @Override
+    public boolean isUpdateExistsByProductSizeAndColor(Long productId,Long sizeId, Long colorId,Long id) {
+        return productDetailRepository.isUpdateExistsByProductSizeAndColorId(productId,sizeId, colorId,id);
+
+    }
 }

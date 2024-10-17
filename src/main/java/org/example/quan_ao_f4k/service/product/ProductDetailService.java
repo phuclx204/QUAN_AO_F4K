@@ -12,4 +12,6 @@ public interface ProductDetailService extends CrudService<Long, ProductDetailReq
 			Long productId, int page, int size, String sort, String filter, String search, boolean all);
 	ProductDetailResponse addProductDetail(Long productId, ProductDetailRequest request);
 	ProductDetailResponse updateProductDetail(Long productId,Long id,ProductDetailRequest request);
+	boolean isAddExistsByProductSizeAndColor(Long productId,Long sizeId, Long colorId);
+	boolean isUpdateExistsByProductSizeAndColor(Long productId,Long sizeId, Long colorId,Long id);
 }

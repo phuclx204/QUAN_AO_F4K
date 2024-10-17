@@ -17,7 +17,7 @@
         </a>
         <div class="head-title">
             <div class="left">
-<!--                <h1 style="margin: 10px">Sản phẩm chi tiết</h1>-->
+                <!--                <h1 style="margin: 10px">Sản phẩm chi tiết</h1>-->
             </div>
         </div>
         <div class="table-data">
@@ -66,7 +66,7 @@
                     </tbody>
                 </table>
                 <span id="totalData"></span>
-<!--                <div id="totalQuantity" style="margin-top: 10px;">Tổng số lượng: 0</div>-->
+                <!--                <div id="totalQuantity" style="margin-top: 10px;">Tổng số lượng: 0</div>-->
                 <div id="pagination" class="d-flex justify-content-center align-items-center gap-2">
                     <button class="page-button" id="prevPage">Trước</button>
                     <input type="text" id="pageInput" style="width: 50px; text-align: center; border: 1px solid #ced4da; border-radius: 5px;" />
@@ -94,11 +94,17 @@
                     <option value="">-- Kích thước --</option>
                 </select>
             </div>
+            <div id="addColorError" style="color: #f34349"></div>
+            <div id="addSizeError" style="color: #f34349"></div>
+
             <label for="addPrice">Nhập giá:</label>
             <input type="text" id="addPrice" name="price">
+            <div id="addPriceError" style="color: #f34349"></div>
+
 
             <label for="addQuantity">Số lượng:</label>
             <input type="number" id="addQuantity" name="quantity">
+            <div id="addQuantityError" style="color: #f34349"></div>
 
             <button type="submit">Lưu</button>
         </form>
@@ -115,19 +121,25 @@
             <input type="hidden" id="editProductDetailId" name="id">
             <input type="hidden" id="editProductId" name="productId">
             <div class="flex-container">
-                <select id="selectEditColor" name="color">
+                <select id="selectEditColor" name="colorId">
                     <option value="">-- Màu Sắc --</option>
                 </select>
 
-                <select id="selectEditSize" name="size">
+                <select id="selectEditSize" name="sizeId">
                     <option value="">-- Kích thước --</option>
                 </select>
             </div>
+            <div id="editColorIdError" style="color: #f34349;"></div>
+            <div id="editSizeError" style="color: #f34349;"></div>
+
             <label for="editPrice">Nhập giá:</label>
             <input type="text" id="editPrice" name="price">
+            <div id="editPriceError" style="color: #f34349"></div>
 
             <label for="editQuantity">Số lượng:</label>
             <input type="number" id="editQuantity" name="quantity">
+            <div id="editQuantityError" style="color: #f34349"></div>
+
 
             <button type="submit">Cập nhật</button>
         </form>

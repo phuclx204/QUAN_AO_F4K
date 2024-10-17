@@ -53,7 +53,7 @@ public class ProductController {
 				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(bindingResult.getAllErrors());
 			}
 
-			boolean exists = productService.existsProductNamesByBrandAndCategory(productRequest.getName(),
+			boolean exists = productService.isAddExistProductByBrandAndCate(productRequest.getName(),
 					productRequest.getBrandId(), productRequest.getCategoryId());
 
 			if (exists) {
@@ -78,8 +78,8 @@ public class ProductController {
 			if (bindingResult.hasErrors()) {
 				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(bindingResult.getAllErrors());
 			}
-			boolean exists = productService.existsProductNamesByBrandAndCategory(productRequest.getName(),
-					productRequest.getBrandId(), productRequest.getCategoryId());
+			boolean exists = productService.isUpdateExistProductByBrandAndCate(productRequest.getName(),
+					productRequest.getBrandId(), productRequest.getCategoryId(),id);
 
 			if (exists) {
 				return ResponseEntity.status(HttpStatus.CONFLICT).

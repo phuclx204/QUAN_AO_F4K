@@ -10,7 +10,23 @@ import java.util.List;
 
 public interface ProductRepository extends JpaRepository<Product, Long>,
 		JpaSpecificationExecutor<Product> {
-	@Query("SELECT p.name FROM Product p WHERE p.brand.id = :brandId AND p.category.id = :categoryId")
-	List<String> findProductNamesByBrandAndCategory(@Param("brandId") Long brandId, @Param("categoryId") Long categoryId);
+	@Query("SELECT COUNT(p) > 0 FROM Product p " +
+			"WHERE LOWER(p.name) = LOWER(:name) " +
+			"AND p.brand.id = :brandId " +
+			"AND p.category.id = :categoryId " +
+			"AND p.id <> :id")
+	boolean isUpdateExistProductByBrandAndCate(
+			@Param("name") String name,
+			@Param("brandId") Long brandId,
+			@Param("categoryId") Long categoryId,
+			@Param("id") Long id);
 
+	@Query("SELECT COUNT(p) > 0 FROM Product p " +
+			"WHERE LOWER(p.name) = LOWER(:name) " +
+			"AND p.brand.id = :brandId " +
+			"AND p.category.id = :categoryId ")
+	boolean isAddExistProductByBrandAndCate(
+			@Param("name") String name,
+			@Param("brandId") Long brandId,
+			@Param("categoryId") Long categoryId);
 }

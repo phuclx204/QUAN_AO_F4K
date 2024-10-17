@@ -14,4 +14,26 @@ import java.util.List;
 
 public interface ProductDetailRepository extends JpaRepository<ProductDetail, Long>,
 		JpaSpecificationExecutor<ProductDetail> {
+
+	@Query("SELECT COUNT(pd) > 0 FROM ProductDetail pd " +
+			"WHERE pd.product.id = :productId " +
+			"AND pd.size.id = :sizeId " +
+			"AND pd.color.id = :colorId")
+	boolean isAddExistsByProductSizeAndColor(
+			@Param("productId") Long productId,
+			@Param("sizeId") Long sizeId,
+			@Param("colorId") Long colorId);
+
+	@Query("SELECT COUNT(pd) > 0 FROM ProductDetail pd " +
+			"WHERE pd.product.id = :productId " +
+			"AND pd.size.id = :sizeId " +
+			"AND pd.color.id = :colorId " +
+			"AND pd.id <> :id")
+	boolean isUpdateExistsByProductSizeAndColorId(
+			@Param("productId") Long productId,
+			@Param("sizeId") Long sizeId,
+			@Param("colorId") Long colorId,
+			@Param("id") Long id);
+
+
 }

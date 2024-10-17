@@ -13,7 +13,6 @@ import java.time.LocalDateTime;
 @Data
 public class ProductDetailRequest {
 
-    @NotNull(message = "Sản phẩm không được để trống.")
     private Long productId;
 
     @NotNull(message = "Vui lòng chọn kích cỡ")
@@ -30,7 +29,6 @@ public class ProductDetailRequest {
     @Min(value = 0, message = "Số lượng không được âm.")
     private Integer quantity;
 
-    @NotNull(message = "Vui lòng chọn trạng thái")
     private Integer status = 1;
 
     private LocalDateTime createdAt = LocalDateTime.now();
