@@ -1,0 +1,158 @@
+/* Reset margin and padding for all elements */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Body styles */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+}
+
+/* Main container */
+.main-container {
+    display: flex;
+    flex-direction: column;
+    margin: 10px;
+}
+
+/* Header styles */
+.header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #ffffff;
+    padding: 0;
+    border-radius: 5px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Search input styles */
+.search-input {
+    width: 70%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+/* Button styles */
+.add-product-btn {
+    padding: 10px 10px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.add-product-btn:hover {
+    background-color: #218838;
+}
+
+/* Main content area */
+.row {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+/* Left section for orders */
+.order-list-area {
+    flex: 0 0 65%; /* Flex-basis for the order list */
+    padding: 15px;
+    background-color: white;
+    border-radius: 4px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Right section for invoice */
+.invoice-summary-area {
+    flex: 0 0 30%; /* Flex-basis for the invoice */
+    padding: 15px;
+    background-color: white;
+    border-radius: 4px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Customer info section */
+.customer-info-container {
+    margin-top: 20px;
+}
+
+.customer-info-card {
+    background-color: #fff;
+    border-radius: 4px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+}
+
+/* Input field styles */
+.input-field {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+/* Button styles */
+.btn {
+    padding: 10px 15px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.btn:hover {
+    background-color: #0056b3;
+}
+
+/* Total amount styles */
+.total-amount {
+    font-weight: bold;
+    font-size: 18px;
+}
+
+/* Responsive image styles */
+.responsive-img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Invoice switch styles */
+.invoice-switch {
+    display: flex;
+    align-items: center;
+    margin: 10px 0;
+}
+
+.invoice-switch input {
+    margin-right: 10px;
+}
+
+/* Modal styles */
+.modal-header {
+    background-color: #007bff;
+    color: white;
+}
+
+.modal-header .close {
+    color: white;
+}
+
+/* Hover effects for buttons */
+.payment-action-btn {
+    background-color: #28a745;
+    margin-top: 10px;
+}
+
+.payment-action-btn:hover {
+    background-color: #218838;
+}
