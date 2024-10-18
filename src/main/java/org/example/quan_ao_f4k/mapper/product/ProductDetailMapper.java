@@ -19,14 +19,12 @@ public interface ProductDetailMapper extends GennericMapper<ProductDetail, Produ
     @Mapping(source = "colorId", target = "color", qualifiedByName = "convertToColor")
     @Mapping(source = "productId", target = "product", qualifiedByName = "convertToProduct")
     @Mapping(source = "sizeId", target = "size", qualifiedByName = "convertToSize")
-    @Mapping(source = "guaranteeId", target = "guarantee", qualifiedByName = "convertToGuarantee")
     ProductDetail requestToEntity(ProductDetailRequest request);
 
     @Override
     @Mapping(source = "colorId", target = "color", qualifiedByName = "convertToColor")
     @Mapping(source = "productId", target = "product", qualifiedByName = "convertToProduct")
     @Mapping(source = "sizeId", target = "size", qualifiedByName = "convertToSize")
-    @Mapping(source = "guaranteeId", target = "guarantee", qualifiedByName = "convertToGuarantee")
     @Mapping(target = "updatedAt", expression = "java(java.time.LocalDateTime.now())")
     ProductDetail partialUpdate(@MappingTarget ProductDetail productDetail, ProductDetailRequest request);
 

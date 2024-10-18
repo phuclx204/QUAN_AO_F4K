@@ -8,19 +8,25 @@ import com.itextpdf.text.pdf.PdfWriter;
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.xssf.usermodel.*;
 import org.example.quan_ao_f4k.dto.request.product.BrandRequest;
 import org.example.quan_ao_f4k.dto.response.product.BrandResponse;
 import org.example.quan_ao_f4k.list.ListResponse;
+import org.example.quan_ao_f4k.mapper.GennericMapper;
 import org.example.quan_ao_f4k.mapper.product.BrandMapper;
 import org.example.quan_ao_f4k.model.product.Brand;
 import org.example.quan_ao_f4k.repository.product.BrandRepository;
+import org.example.quan_ao_f4k.repository.product.ProductRepository;
 import org.example.quan_ao_f4k.util.SearchFields;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -59,11 +65,6 @@ public class BrandServiceImpl implements BrandService {
 	public void delete(List<Long> longs) {
 		brandRepository.deleteAllById(longs);
 
-	}
-
-	@Override
-	public BrandResponse findByName(String name) {
-		return findByName(name);
 	}
 
 	@Override

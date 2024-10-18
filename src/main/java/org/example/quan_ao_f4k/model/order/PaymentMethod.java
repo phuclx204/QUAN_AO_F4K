@@ -10,6 +10,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.example.quan_ao_f4k.model.BaseEntity;
 
 @Entity
 @Table(name = "payment_method")
@@ -17,10 +18,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
-public class PaymentMethod {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class PaymentMethod extends BaseEntity {
 
     @Column(name = "name", nullable = false)
     private String name;

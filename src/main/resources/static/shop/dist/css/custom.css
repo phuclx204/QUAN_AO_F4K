@@ -1,0 +1,12 @@
+.custom-img-product {
+    width: 750px;
+    height: 1000px;
+}
+
+.card-actions {
+    z-index: 100!important;
+}
+
+.c-black {
+    color: black!important;
+}

@@ -89,6 +89,31 @@ public interface CrudService<ID, I, O> {
         I typedRequest = mapper.convertValue(request, requestType);
         return save(id, typedRequest);
     }
+    default  <E, I, O> ListResponse<O> defaultFindDetailsByProductId(
+            Long productId, int page, int size,
+            String sort, String filter, String search, boolean all,
+            List<String> searchFields,
+            JpaSpecificationExecutor<E> repository,
+            GennericMapper<E, I, O> mapper,
+            String resourceName) {
 
+        Specification<E> byProductId = (root, query, criteriaBuilder) ->
+                criteriaBuilder.equal(root.get("product").get("id"), productId);
+
+        Specification<E> filterable = RSQLJPASupport.toSpecification(filter);
+        Specification<E> searchable = SearchUtils.parse(search, searchFields);
+
+        Specification<E> spec = Specification.where(byProductId)
+                .and(filterable != null ? filterable : null)
+                .and(searchable != null ? searchable : null);
+
+        Pageable pageable = all ? Pageable.unpaged() : PageRequest.of(page - 1, size);
+
+        Page<E> entities = repository.findAll(spec, pageable);
+
+        List<O> responseList = mapper.entityToResponse(entities.getContent());
+
+        return new ListResponse<>(responseList, entities);
+    }
 }
 

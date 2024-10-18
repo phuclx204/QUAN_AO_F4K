@@ -3,10 +3,30 @@ package org.example.quan_ao_f4k.repository.product;
 import org.example.quan_ao_f4k.model.product.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
+import java.util.List;
 
 public interface ProductRepository extends JpaRepository<Product, Long>,
 		JpaSpecificationExecutor<Product> {
-	boolean existsByBrandId(Long id);
-	boolean existsByCategoryId(Long id);
-	boolean existsByNameAndIdNot(String name,Long id);
+	@Query("SELECT COUNT(p) > 0 FROM Product p " +
+			"WHERE LOWER(p.name) = LOWER(:name) " +
+			"AND p.brand.id = :brandId " +
+			"AND p.category.id = :categoryId " +
+			"AND p.id <> :id")
+	boolean isUpdateExistProductByBrandAndCate(
+			@Param("name") String name,
+			@Param("brandId") Long brandId,
+			@Param("categoryId") Long categoryId,
+			@Param("id") Long id);
+
+	@Query("SELECT COUNT(p) > 0 FROM Product p " +
+			"WHERE LOWER(p.name) = LOWER(:name) " +
+			"AND p.brand.id = :brandId " +
+			"AND p.category.id = :categoryId ")
+	boolean isAddExistProductByBrandAndCate(
+			@Param("name") String name,
+			@Param("brandId") Long brandId,
+			@Param("categoryId") Long categoryId);
 }

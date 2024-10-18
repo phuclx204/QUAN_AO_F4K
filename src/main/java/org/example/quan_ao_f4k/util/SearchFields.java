@@ -21,7 +21,8 @@ public interface SearchFields {
     );
 
     List<String> PRODUCT_DETAIL = List.of(
-            "product.name"
+            "color.name",
+            "size.name"
     );
 }
 

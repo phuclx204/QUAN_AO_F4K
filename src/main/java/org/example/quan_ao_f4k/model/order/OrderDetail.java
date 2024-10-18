@@ -1,11 +1,6 @@
 package org.example.quan_ao_f4k.model.order;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,20 +15,22 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @Getter
 @Setter
+@IdClass(OrderDetailId.class)
 public class OrderDetail {
     @Id
     @ManyToOne
-    @JoinColumn(name = "order_id", referencedColumnName = "id")
+    @JoinColumn(name = "order_id")
     private Order order;
 
     @Id
     @ManyToOne
-    @JoinColumn(name = "product_detail_id", referencedColumnName = "id")
+    @JoinColumn(name = "id_parent")
     private ProductDetail productDetail;
+
 
     @Column(name = "quantity")
     private Integer quantity;
 
-    @Column(name = "price", precision = 10, scale = 2)
+    @Column(name = "price", precision = 65, scale = 2)
     private BigDecimal price;
 }

@@ -11,14 +11,17 @@ import lombok.AllArgsConstructor;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.xssf.usermodel.*;
 import org.example.quan_ao_f4k.dto.request.product.ColorRequest;
+import org.example.quan_ao_f4k.dto.response.product.BrandResponse;
 import org.example.quan_ao_f4k.dto.response.product.ColorResponse;
 import org.example.quan_ao_f4k.list.ListResponse;
 import org.example.quan_ao_f4k.mapper.product.ColorMapper;
+import org.example.quan_ao_f4k.model.product.Brand;
 import org.example.quan_ao_f4k.model.product.Color;
 import org.example.quan_ao_f4k.repository.product.ColorRepository;
 import org.example.quan_ao_f4k.util.SearchFields;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -58,11 +61,6 @@ public class ColorServiceImpl implements ColorService{
     public void delete(List<Long> longs) {
         brandRepository.deleteAllById(longs);
 
-    }
-
-    @Override
-    public ColorResponse findByName(String name) {
-        return findByName(name);
     }
 
     @Override
@@ -222,6 +220,17 @@ public class ColorServiceImpl implements ColorService{
     @Override
     public boolean existsByNameAndIdNot(String name, Long id) {
         return brandRepository.existsByNameAndIdNot(name,id);
+    }
+
+    @Override
+    public List<ColorResponse> findByStatusActive() {
+        List<Color> brands = brandRepository.findByStatus(1);
+        List<ColorResponse> responses = new ArrayList<>();
+        for (Color brand : brands) {
+            ColorResponse brandResponse = new ColorResponse(brand.getId(),brand.getName(),brand.getStatus());
+            responses.add(brandResponse);
+        }
+        return responses;
     }
 
 }

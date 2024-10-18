@@ -6,7 +6,6 @@ import org.example.quan_ao_f4k.model.address.Province;
 import org.example.quan_ao_f4k.model.address.Ward;
 import org.example.quan_ao_f4k.model.product.Brand;
 import org.example.quan_ao_f4k.model.product.Category;
-import org.example.quan_ao_f4k.model.product.ProductDetail;
 import org.example.quan_ao_f4k.repository.address.AddressRepository;
 import org.example.quan_ao_f4k.repository.address.DistrictRepository;
 import org.example.quan_ao_f4k.repository.address.ProvinceRepository;

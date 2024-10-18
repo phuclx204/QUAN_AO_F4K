@@ -10,11 +10,14 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.xssf.usermodel.*;
+import org.example.quan_ao_f4k.dto.request.product.ProductDetailRequest;
 import org.example.quan_ao_f4k.dto.request.product.ProductRequest;
+import org.example.quan_ao_f4k.dto.response.product.ProductDetailResponse;
 import org.example.quan_ao_f4k.dto.response.product.ProductResponse;
 import org.example.quan_ao_f4k.list.ListResponse;
 import org.example.quan_ao_f4k.mapper.product.ProductMapper;
 import org.example.quan_ao_f4k.model.product.Product;
+import org.example.quan_ao_f4k.model.product.ProductDetail;
 import org.example.quan_ao_f4k.repository.product.ProductRepository;
 import org.example.quan_ao_f4k.util.SearchFields;
 import org.springframework.stereotype.Service;
@@ -75,7 +78,6 @@ public class ProductServiceImpl implements ProductService {
         productRepository.deleteAllById(longs);
 
     }
-
 
     @Override
     public void updateStatus(Long id, int status) {
@@ -190,7 +192,6 @@ public class ProductServiceImpl implements ProductService {
         ops.close();
     }
 
-
     @Override
     public void exportPdf(HttpServletResponse response) throws Exception {
         List<Product> products = productRepository.findAll();
@@ -293,6 +294,15 @@ public class ProductServiceImpl implements ProductService {
 
         // Đóng tài liệu
         document.close();
+    }
+
+    @Override
+    public boolean isUpdateExistProductByBrandAndCate(String name, Long brandId, Long categoryId,Long id) {
+        return productRepository.isUpdateExistProductByBrandAndCate(name,brandId, categoryId,id);
+    }
+    @Override
+    public boolean isAddExistProductByBrandAndCate(String name, Long brandId, Long categoryId) {
+        return productRepository.isAddExistProductByBrandAndCate(name,brandId, categoryId);
     }
 
 }
