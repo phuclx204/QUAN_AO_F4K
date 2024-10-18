@@ -19,39 +19,85 @@ body {
 }
 
 /* Header styles */
-.header-container {
+
+.header-form {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background-color: #ffffff;
-    padding: 0;
-    border-radius: 5px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    justify-content: space-between; /* Tạo khoảng cách giữa các phần tử */
+    align-items: center; /* Căn giữa theo chiều dọc */
+    margin-bottom: 20px; /* Khoảng cách dưới form */
 }
 
-/* Search input styles */
+.form-input {
+    position: relative; /* Để đặt button search bên trong */
+}
+
 .search-input {
-    width: 70%;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 16px;
+    padding: 10px 40px 10px 15px; /* Padding cho input */
+    border: 1px solid #ccc; /* Đường viền */
+    border-radius: 5px; /* Bo tròn góc */
+    font-size: 16px; /* Kích thước chữ */
+    transition: border-color 0.3s; /* Hiệu ứng chuyển màu */
+    width: 300px; /* Đặt chiều rộng cố định cho input */
 }
 
-/* Button styles */
-.add-product-btn {
-    padding: 10px 10px;
-    background-color: #28a745;
+.search-input:focus {
+    border-color: #007bff; /* Màu viền khi focus */
+    outline: none; /* Bỏ viền mặc định */
+}
+
+.search-btn {
+    position: absolute; /* Đặt nút bên trong input */
+    top: 50%; /* Căn giữa theo chiều dọc */
+    right: 10px; /* Căn lề phải */
+    transform: translateY(-50%); /* Căn giữa hoàn hảo */
+    background-color: gray; /* Nền trong suốt */
+    border: none; /* Bỏ đường viền */
+    cursor: pointer; /* Con trỏ chuột khi hover */
+}
+
+.create-invoice-btn {
+    background-color: #1b6db5; /* Màu xanh */
     color: white;
     border: none;
-    border-radius: 4px;
+    padding: 10px 12px; /* Padding cho nút */
+    border-radius: 5px; /* Bo tròn góc */
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    font-size: 18px; /* Kích thước chữ */
+    transition: background-color 0.3s; /* Hiệu ứng chuyển màu */
+    margin-left: auto; /* Đẩy nút sang bên phải */
 }
 
-.add-product-btn:hover {
-    background-color: #218838;
+.create-invoice-btn:hover {
+    background-color: #218838; /* Màu xanh đậm khi hover */
 }
+
+/* Container cho hóa đơn */
+.invoice-container {
+    padding: 15px; /* Padding cho container */
+    border: 1px solid #ddd; /* Đường viền */
+    border-radius: 5px; /* Bo tròn góc */
+    background-color: #f9f9f9; /* Nền nhạt */
+    margin-top: 20px; /* Khoảng cách trên container */
+    font-size: 16px; /* Kích thước chữ */
+}
+.invoice-container button {
+    padding: 10px 15px; /* Padding cho nút */
+    border: 1px solid #ddd; /* Đường viền */
+    border-radius: 5px; /* Bo tròn góc */
+    background-color: #f9f9f9; /* Nền nhạt */
+    margin-top: 20px; /* Khoảng cách trên nút */
+    font-size: 16px; /* Kích thước chữ */
+    color: #333; /* Màu chữ */
+    cursor: pointer; /* Hiển thị con trỏ chuột khi hover */
+    transition: background-color 0.3s, color 0.3s; /* Hiệu ứng chuyển màu */
+}
+
+/* Hiệu ứng hover cho nút */
+.invoice-container button:hover {
+    background-color: #b4dbed; /* Màu nền khi hover */
+    color: #000; /* Màu chữ khi hover */
+}
+
 
 /* Main content area */
 .row {

@@ -17,13 +17,23 @@
 <section id="content">
     <div th:replace="admin/fragments/content::content"></div>
     <main>
-        <!-- Header -->
-        <div class="header-container d-flex p-2">
-            <input type="text" class="search-input" placeholder="Tìm kiếm sản phẩm" />
-            <button class="add-product-btn ml-2" data-toggle="modal" data-target="#productModal">
-                Thêm sản phẩm
-            </button>
+        <form action="#" method="get" class="header-form">
+            <div class="form-input">
+                <input type="search" placeholder="Tìm kiếm..." class="search-input">
+                <button type="submit" class="search-btn"><i class='bx bx-search'></i></button>
+            </div>
+            <button class="create-invoice-btn"><i class="bx bx-plus">Tạo hóa đơn</i></button>
+        </form>
+        <div class="invoice-container">
+            <button>Hóa đơn 1</button>>
+            <button>Hóa đơn 1</button>>
+            <button>Hóa đơn 1</button>>
+            <button>Hóa đơn 1</button>>
+            <button>Hóa đơn 1</button>>
+            <button>Hóa đơn 1</button>>
+            <button>Hóa đơn 1</button>>
         </div>
+
 
         <div class="main-container mt-3">
             <div class="row">
