@@ -1,11 +1,7 @@
 package org.example.quan_ao_f4k.controller.shop;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import org.example.quan_ao_f4k.dto.request.shop.CartRequest;
 import org.example.quan_ao_f4k.dto.request.shop.ShopRequest;
-import org.example.quan_ao_f4k.model.authentication.User;
 import org.example.quan_ao_f4k.service.shop.ShopService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -13,7 +9,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 @RequestMapping("shop")
