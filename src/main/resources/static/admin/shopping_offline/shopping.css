@@ -1,0 +1,204 @@
+/* Reset margin and padding for all elements */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Body styles */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+}
+
+/* Main container */
+.main-container {
+    display: flex;
+    flex-direction: column;
+    margin: 10px;
+}
+
+/* Header styles */
+
+.header-form {
+    display: flex;
+    justify-content: space-between; /* Tạo khoảng cách giữa các phần tử */
+    align-items: center; /* Căn giữa theo chiều dọc */
+    margin-bottom: 20px; /* Khoảng cách dưới form */
+}
+
+.form-input {
+    position: relative; /* Để đặt button search bên trong */
+}
+
+.search-input {
+    padding: 10px 40px 10px 15px; /* Padding cho input */
+    border: 1px solid #ccc; /* Đường viền */
+    border-radius: 5px; /* Bo tròn góc */
+    font-size: 16px; /* Kích thước chữ */
+    transition: border-color 0.3s; /* Hiệu ứng chuyển màu */
+    width: 300px; /* Đặt chiều rộng cố định cho input */
+}
+
+.search-input:focus {
+    border-color: #007bff; /* Màu viền khi focus */
+    outline: none; /* Bỏ viền mặc định */
+}
+
+.search-btn {
+    position: absolute; /* Đặt nút bên trong input */
+    top: 50%; /* Căn giữa theo chiều dọc */
+    right: 10px; /* Căn lề phải */
+    transform: translateY(-50%); /* Căn giữa hoàn hảo */
+    background-color: gray; /* Nền trong suốt */
+    border: none; /* Bỏ đường viền */
+    cursor: pointer; /* Con trỏ chuột khi hover */
+}
+
+.create-invoice-btn {
+    background-color: #1b6db5; /* Màu xanh */
+    color: white;
+    border: none;
+    padding: 10px 12px; /* Padding cho nút */
+    border-radius: 5px; /* Bo tròn góc */
+    cursor: pointer;
+    font-size: 18px; /* Kích thước chữ */
+    transition: background-color 0.3s; /* Hiệu ứng chuyển màu */
+    margin-left: auto; /* Đẩy nút sang bên phải */
+}
+
+.create-invoice-btn:hover {
+    background-color: #218838; /* Màu xanh đậm khi hover */
+}
+
+/* Container cho hóa đơn */
+.invoice-container {
+    padding: 15px; /* Padding cho container */
+    border: 1px solid #ddd; /* Đường viền */
+    border-radius: 5px; /* Bo tròn góc */
+    background-color: #f9f9f9; /* Nền nhạt */
+    margin-top: 20px; /* Khoảng cách trên container */
+    font-size: 16px; /* Kích thước chữ */
+}
+.invoice-container button {
+    padding: 10px 15px; /* Padding cho nút */
+    border: 1px solid #ddd; /* Đường viền */
+    border-radius: 5px; /* Bo tròn góc */
+    background-color: #f9f9f9; /* Nền nhạt */
+    margin-top: 20px; /* Khoảng cách trên nút */
+    font-size: 16px; /* Kích thước chữ */
+    color: #333; /* Màu chữ */
+    cursor: pointer; /* Hiển thị con trỏ chuột khi hover */
+    transition: background-color 0.3s, color 0.3s; /* Hiệu ứng chuyển màu */
+}
+
+/* Hiệu ứng hover cho nút */
+.invoice-container button:hover {
+    background-color: #b4dbed; /* Màu nền khi hover */
+    color: #000; /* Màu chữ khi hover */
+}
+
+
+/* Main content area */
+.row {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+/* Left section for orders */
+.order-list-area {
+    flex: 0 0 65%; /* Flex-basis for the order list */
+    padding: 15px;
+    background-color: white;
+    border-radius: 4px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Right section for invoice */
+.invoice-summary-area {
+    flex: 0 0 30%; /* Flex-basis for the invoice */
+    padding: 15px;
+    background-color: white;
+    border-radius: 4px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Customer info section */
+.customer-info-container {
+    margin-top: 20px;
+}
+
+.customer-info-card {
+    background-color: #fff;
+    border-radius: 4px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+}
+
+/* Input field styles */
+.input-field {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+/* Button styles */
+.btn {
+    padding: 10px 15px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.btn:hover {
+    background-color: #0056b3;
+}
+
+/* Total amount styles */
+.total-amount {
+    font-weight: bold;
+    font-size: 18px;
+}
+
+/* Responsive image styles */
+.responsive-img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Invoice switch styles */
+.invoice-switch {
+    display: flex;
+    align-items: center;
+    margin: 10px 0;
+}
+
+.invoice-switch input {
+    margin-right: 10px;
+}
+
+/* Modal styles */
+.modal-header {
+    background-color: #007bff;
+    color: white;
+}
+
+.modal-header .close {
+    color: white;
+}
+
+/* Hover effects for buttons */
+.payment-action-btn {
+    background-color: #28a745;
+    margin-top: 10px;
+}
+
+.payment-action-btn:hover {
+    background-color: #218838;
+}
