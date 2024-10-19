@@ -1,7 +1,11 @@
 package org.example.quan_ao_f4k.controller.shop;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import org.example.quan_ao_f4k.dto.request.shop.CartRequest;
 import org.example.quan_ao_f4k.dto.request.shop.ShopRequest;
+import org.example.quan_ao_f4k.model.authentication.User;
 import org.example.quan_ao_f4k.service.shop.ShopService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -18,35 +22,37 @@ public class ShopController {
     @Autowired
     private ShopService service;
 
-    @GetMapping("home")
+    @GetMapping("/home")
     public String index() {
-        return "shop/pages/index";
+        System.out.println("vao");
+        return "/shop/pages/index";
     }
 
-    @GetMapping("cart")
+    @GetMapping("/cart")
     public String cart() {
-        return "shop/pages/cart";
+        return "/shop/pages/cart";
     }
 
-    @GetMapping("category")
+    @GetMapping("/category")
     public String category(Model model) {
         service.addModelFilter(model);
-        return "shop/pages/category";
+        return "/shop/pages/category";
     }
 
-    @GetMapping("list-product")
+    @GetMapping("/list-product")
     @ResponseBody
     public ResponseEntity<Page<ObjectNode>> listProduct(@ModelAttribute ShopRequest.RequestSearch requestSearch) {
         return ResponseEntity.status(HttpStatus.OK).body(service.getListProductDetail(requestSearch));
     }
 
-    @GetMapping("checkout")
+    @GetMapping("/checkout")
     public String checkout() {
-        return "shop/pages/checkout";
+        return "/shop/pages/checkout";
     }
 
-    @GetMapping("product")
+    @GetMapping("/product")
     public String product() {
-        return "shop/pages/product";
+        return "/shop/pages/product";
     }
+
 }

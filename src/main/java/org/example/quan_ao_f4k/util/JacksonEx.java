@@ -20,6 +20,15 @@ public class JacksonEx {
         INIT_MAPPER.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
     }
 
+    public static JsonNode readFormText(String jsonText) {
+        try {
+            return INIT_MAPPER.readTree(jsonText);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     public static <T> T convertToType(Object obj, Class<T> valueType) {
         try {
             JsonNode jsonNode = INIT_MAPPER.valueToTree(obj);
