@@ -9,7 +9,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 @RequestMapping("shop")
@@ -18,35 +21,37 @@ public class ShopController {
     @Autowired
     private ShopService service;
 
-    @GetMapping("home")
+    @GetMapping("/home")
     public String index() {
-        return "shop/pages/index";
+        System.out.println("vao");
+        return "/shop/pages/index";
     }
 
-    @GetMapping("cart")
+    @GetMapping("/cart")
     public String cart() {
-        return "shop/pages/cart";
+        return "/shop/pages/cart";
     }
 
-    @GetMapping("category")
+    @GetMapping("/category")
     public String category(Model model) {
         service.addModelFilter(model);
-        return "shop/pages/category";
+        return "/shop/pages/category";
     }
 
-    @GetMapping("list-product")
+    @GetMapping("/list-product")
     @ResponseBody
     public ResponseEntity<Page<ObjectNode>> listProduct(@ModelAttribute ShopRequest.RequestSearch requestSearch) {
         return ResponseEntity.status(HttpStatus.OK).body(service.getListProductDetail(requestSearch));
     }
 
-    @GetMapping("checkout")
+    @GetMapping("/checkout")
     public String checkout() {
-        return "shop/pages/checkout";
+        return "/shop/pages/checkout";
     }
 
-    @GetMapping("product")
+    @GetMapping("/product")
     public String product() {
-        return "shop/pages/product";
+        return "/shop/pages/product";
     }
+
 }

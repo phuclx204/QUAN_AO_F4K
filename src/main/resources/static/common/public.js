@@ -1,9 +1,115 @@
+const imageBlank = "https://firebasestorage.googleapis.com/v0/b/clothes-f4k.appspot.com/o/common%2Fdata_not_found.png?alt=media&token=36148ded-ba2c-4207-8525-2da16e7a8557";
+
+const getCommon = () => {
+    /**
+     * @Param formId is name id <form></form>
+     */
+    function getFormValuesByName(formId) {
+        if (formId.startsWith(".")) {
+            formId = formId.substring(1)
+        }
+        const form = document.getElementById(formId);
+
+        // Chọn tất cả các input có thuộc tính `name`
+        const inputs = form.querySelectorAll('input[name]');
+
+        const values = {};
+        inputs.forEach(input => {
+            values[input.name] = input.value;
+        });
+        return values;
+    }
+
+    return {
+        getFormValuesByName
+    }
+}
+
+const loading = () => {
+    function showLoading() {
+        const loadingOverlay = document.getElementById('loading-overlay');
+        loadingOverlay.style.display = 'flex';
+    }
+
+    function hideLoading() {
+        const loadingOverlay = document.getElementById('loading-overlay');
+        loadingOverlay.style.display = 'none';
+    }
+
+    return {showLoading, hideLoading}
+}
+
+// for validate
+const getValidate = () => {
+    /**
+     * @Param formId is name id <form></form>
+     * @Param validationRules is object { name:id-input: list object [{ rule: rule check, mess: mess when validate }] }
+     */
+    const validateForm = (formId, validationRules = {}) => {
+        const form = document.getElementById(formId);
+        const inputs = form.querySelectorAll('input');
+        let isValid = true;
+
+        inputs.forEach(input => {
+            const rules = validationRules[input.id];
+            const invalidFeedback = input.parentElement.querySelector('.invalid-feedback');
+
+            if (rules) {
+                for (let {rule, message} of rules) {
+                    if (!rule(input.value)) {
+                        invalidFeedback.textContent = message;
+                        input.setCustomValidity("Invalid");
+                        invalidFeedback.style.display = "block";
+                        isValid = false;
+                        break;
+                    } else {
+                        invalidFeedback.style.display = "none";
+                        invalidFeedback.textContent = "";
+                        input.setCustomValidity("");
+                    }
+                }
+            }
+        });
+
+        return isValid;
+    };
+
+    /**
+     *
+     * @Param formId is id form name
+     */
+    function clearValidation(formId) {
+        if (!formId.startsWith(".")) {
+            formId = "." + formId
+        }
+        const form = document.querySelector(formId)
+
+        form.classList.remove('was-validated');
+
+        const inputs = form.querySelectorAll('input, select, textarea');
+        inputs.forEach(input => {
+            input.value = '';
+            input.classList.remove('is-invalid', 'is-valid');
+
+            const invalidFeedback = input.parentElement.querySelector('.invalid-feedback');
+            if (invalidFeedback) {
+                invalidFeedback.style.display = "none";
+            }
+        });
+    }
+
+    return {
+        validateForm,
+        clearValidation
+    }
+}
+
+
+// for ajax
 const POST = 'POST';
 const GET = 'GET';
 const PUT = 'PUT';
 const DELETE = 'DELETE';
-
-const imageBlank = "https://firebasestorage.googleapis.com/v0/b/clothes-f4k.appspot.com/o/common%2Fdata_not_found.png?alt=media&token=36148ded-ba2c-4207-8525-2da16e7a8557";
 
 const createUrl = (url, params = {}) => {
     const queryString = new URLSearchParams(params).toString();
@@ -14,28 +120,12 @@ const createUrl = (url, params = {}) => {
     return url;
 }
 
-function validate(formClass) {
-    return new Promise((resolve, reject) => {
-        const forms = document.getElementsByClassName(formClass);
-        const validation = Array.prototype.filter.call(forms, function (form) {
-            form.addEventListener('submit', function (event) {
-                event.preventDefault();
-                if (form.checkValidity() === false) {
-                    event.preventDefault();
-                    event.stopPropagation();
-                }
-                form.classList.add('was-validated');
-            }, false);
-            return form.checkValidity();
-        });
-        if (validation.length) {
-            resolve(true)
-        } else {
-            reject(false)
-        }
-    })
-}
-
+/**
+ *
+ * @Param url is api name
+ * @Param method is rest method | post | put | delete | get
+ * @Param data is data send to controller, in body
+ */
 function callApi(url, method = 'POST', data = null) {
     return new Promise((resolve, reject) => {
         if (!url || typeof url !== 'string') {
@@ -55,7 +145,7 @@ function callApi(url, method = 'POST', data = null) {
                 resolve(response);
             },
             error: function (xhr) {
-                const objectError = xhr.responseJSON || { message: "An unknown error occurred" };
+                const objectError = xhr.responseJSON || {message: "An unknown error occurred"};
 
                 $alterTop('error', objectError.message);
                 reject(objectError);
@@ -63,6 +153,9 @@ function callApi(url, method = 'POST', data = null) {
         });
     });
 }
+
+// for ajax end
+
 
 const getPagination = (currentPage, totalPage) => {
     const pages = [];
