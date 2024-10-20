@@ -2,18 +2,85 @@ function closeModal() {
     $('.modal').hide();
 }
 
+
 function openAddModal() {
     $('#addModal').show();
 }
 
-function showEditModal(id, name) {
+function showEditModal(id, name, hex) {
     $('#editId').val(id);
     $('#editName').val(name);
+
+    // Hiển thị màu đã chọn
+    $('#editHex').val(hex);
+    $('#editSelectedColor').css('background-color', hex);
+
+    // Hiển thị modal
     $('#editModal').show();
+
+    // Khởi tạo Pickr sau khi modal được hiển thị
+    setTimeout(() => {
+        const editPickr = Pickr.create({
+            el: '#editColorPicker',
+            theme: 'nano',
+            default: hex,
+            swatches: [
+                '#F44336', '#E91E63', '#9C27B0',
+                '#673AB7', '#3F51B5', '#2196F3'
+            ],
+            components: {
+                preview: true,
+                opacity: false,
+                hue: true,
+                interaction: {
+                    hex: true,
+                    input: true,
+                    save: false
+                }
+            }
+        });
+
+        // Xử lý khi người dùng chọn màu
+        editPickr.on('change', (color) => {
+            const hexCode = color.toHEXA().toString();
+            $('#editHex').val(hexCode);
+            $('#editSelectedColor').css('background-color', hexCode);
+        });
+    }, 0);
 }
 
 $(document).ready(function () {
     loadDatas();
+
+    $(document).ready(function () {
+        const pickr = Pickr.create({
+            el: '#colorPicker',
+            theme: 'nano',
+            default:'#ffffff',
+            swatches: [
+                '#F44336', '#E91E63', '#9C27B0',
+                '#673AB7', '#3F51B5', '#2196F3'
+            ],
+            components: {
+                preview: true,
+                opacity: false,
+                hue: true,
+                interaction: {
+                    hex: true,
+                    input: true,
+                    save: false // Không cần nút lưu
+                }
+            }
+        });
+
+        // Xử lý khi người dùng chọn màu
+        pickr.on('change', (color) => {
+            const hexCode = color.toHEXA().toString();
+            $('#hexCode').val(hexCode);
+            $('#selectedColor').css('background-color', hexCode);
+        });
+    });
+
 
     $('.search-form').on('submit', function (event) {
         event.preventDefault();
@@ -25,12 +92,11 @@ $(document).ready(function () {
         $.ajax({
             url: '/admin/color/list',
             method: 'GET',
-            data: { page: page, size: size, sort: sort, search: search },
+            data: {page: page, size: size, sort: sort, search: search},
             success: function (response) {
                 renderDatas(response.content);
                 setupPagination(response.totalPages, page);
-
-                $('#totalData').text(`Tổng  ${response.totalElements}`+' bản ghi');
+                $('#totalData').text(`Tổng  ${response.totalElements}` + ' bản ghi');
             },
             error: function (error) {
                 console.error('Không thể tải dữ liệu:', error);
@@ -47,7 +113,8 @@ $(document).ready(function () {
             <tr>
                 <td colspan="4" style="text-align: center;color:red">Không có dữ liệu !</td>
             </tr>
-        `);$('#pagination').hide();
+        `);
+            $('#pagination').hide();
             return;
         } else {
             $('#pagination').show();
@@ -59,8 +126,9 @@ $(document).ready(function () {
                 <tr>
                     <td>${index + 1}</td>
                     <td>${i.name}</td>
+                    <td>${i.hex || 'N/A'}</td>
                     <td>
-                        <i class='bx bx-edit' onclick="showEditModal(${i.id}, '${i.name}')"></i>
+                        <i class='bx bx-edit' onclick="showEditModal(${i.id}, '${i.name}', '${i.hex}')"></i>
                     </td>
                     <td>
                         <input type="checkbox" value="${i.id}" ${i.status === 1 ? 'checked' : ''} 
@@ -74,7 +142,6 @@ $(document).ready(function () {
     function setupPagination(totalPages, currentPage) {
         const pagination = $('#pagination');
         pagination.empty();
-
 
         pagination.append(`
         <button class="page-button" ${currentPage === 1 ? 'disabled' : ''} data-page="${currentPage - 1}">
@@ -117,15 +184,29 @@ $(document).ready(function () {
         });
     }
 
+
+    // Thêm
     $('#addForm').on('submit', function (event) {
         event.preventDefault();
 
         const dataName = $('#addName').val();
+        const dataHex = $('#hexCode').val();
+
+        if (!dataName) {
+            Swal.fire('Error', 'Tên không được để trống!', 'error');
+            return;
+        }
+
+        if (!/^#[0-9A-F]{6}$/i.test(dataHex)) {
+            Swal.fire('Error', 'Mã hex không hợp lệ!', 'error');
+            return;
+        }
+
         $.ajax({
             url: '/admin/color',
             method: 'POST',
             contentType: 'application/json',
-            data: JSON.stringify({ name: dataName }),
+            data: JSON.stringify({name: dataName,hex:dataHex}),
             success: function (response) {
                 $('#addModal').hide();
                 loadDatas();
@@ -153,17 +234,18 @@ $(document).ready(function () {
 
         const id = $('#editId').val();
         const dataName = $('#editName').val();
+        const dataHex = $('#editHex').val();
         $.ajax({
             url: `/admin/color/${id}`,
             method: 'PUT',
             contentType: 'application/json',
-            data: JSON.stringify({ name: dataName }),
+            data: JSON.stringify({name: dataName,hex:dataHex}),
             success: function (response) {
                 $('#editModal').hide();
                 loadDatas();
                 Swal.fire({
                     title: 'Thông báo',
-                    text: 'Cập nhật thành công.',
+                    text: 'Đã lưu thay đổi.',
                     timer: 2000,
                     timerProgressBar: true,
                 });
@@ -191,22 +273,17 @@ function submitStatusForm(checkbox) {
         url: `/admin/color/${id}`,
         method: 'PATCH',
         contentType: 'application/json',
-        data: JSON.stringify({ status: status }),
+        data: JSON.stringify({status: status}),
         success: function () {
             Swal.fire({
                 title: 'Thông báo',
-                text: 'Đã đổi trạng thái.',
+                text: 'Đã thay đổi trạng thái.',
                 timer: 2000,
                 timerProgressBar: true,
             });
         },
         error: function () {
-            Swal.fire({
-                title: 'Thông báo',
-                text: 'Cập nhật trạng thái thất bại.',
-                timer: 2000,
-                timerProgressBar: true,
-            });
+            Swal.fire('Error', 'Cập nhật trạng thái thất bại', 'error');
         }
     });
 }

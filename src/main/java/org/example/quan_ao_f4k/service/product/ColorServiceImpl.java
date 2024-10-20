@@ -227,7 +227,7 @@ public class ColorServiceImpl implements ColorService{
         List<Color> brands = brandRepository.findByStatus(1);
         List<ColorResponse> responses = new ArrayList<>();
         for (Color brand : brands) {
-            ColorResponse brandResponse = new ColorResponse(brand.getId(),brand.getName(),brand.getStatus());
+            ColorResponse brandResponse = new ColorResponse(brand.getId(),brand.getName(),brand.getHex(),brand.getStatus());
             responses.add(brandResponse);
         }
         return responses;
