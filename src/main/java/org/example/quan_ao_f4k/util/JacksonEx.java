@@ -44,8 +44,7 @@ public class JacksonEx {
     }
 
     public static <T> ObjectNode convertObject2Node(T obj) {
-        ObjectMapper mapper = new ObjectMapper();
-        return mapper.valueToTree(obj);
+        return convertToType(obj, ObjectNode.class);
     }
 
     public static <T> ArrayNode convertList2ArrayNode(List<T> list) {

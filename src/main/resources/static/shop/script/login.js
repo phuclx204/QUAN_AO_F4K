@@ -1,9 +1,4 @@
 const {validateForm, clearValidation} = getValidate();
-const {getFormValuesByName} = getCommon();
-
-const idFormLogin = 'loginForm';
-
-const URL = "/auth"
 
 const validationLogin = {
     "login-username": [
@@ -24,26 +19,17 @@ const validationLogin = {
     ]
 }
 
-// $(document).on('submit', '#loginForm', async function (e) {
-//     e.preventDefault();
-//
-//     const isValid = validateForm('loginForm', validationLogin);
-//     if (isValid) {
-//         try {
-//             loading().showLoading()
-//             const href = await callApi(URL + "/login", POST, getFormValuesByName(idFormLogin));
-//             clearValidation(idFormLogin);
-//
-//             if (href) {
-//                 const a = document.createElement("a");
-//                 a.href = href;
-//                 a.click()
-//             }
-//         } catch (e) {
-//             console.log(e)
-//         } finally {
-//             loading().hideLoading()
-//         }
-//     }
-// })
+$(document).on('submit', '#loginForm', async function (e) {
+    e.preventDefault();
+
+    const isValid = validateForm('loginForm', validationLogin);
+    if (isValid) {
+        try {
+            e.target.submit();
+            clearValidation(idFormRegister)
+        } catch (e) {
+            console.log(e)
+        }
+    }
+})
 

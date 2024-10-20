@@ -20,23 +20,50 @@ const getCommon = () => {
         return values;
     }
 
+    function removeNullProperties(obj) {
+        return Object.fromEntries(
+            Object.entries(obj).filter(([key, value]) => value !== null)
+        );
+    }
+
+    function formatNumberByDot(value) {
+        let numericValue = value.replace(/\D/g, '');
+        return numericValue.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    }
+
+    const getPagination = (currentPage, totalPage) => {
+        if (currentPage === 1 && totalPage === 0) return []
+        const pages = [];
+
+        if (currentPage < 1 || currentPage > totalPage) {
+            console.error('currentPage không hợp lệ.');
+            return;
+        }
+
+        if (totalPage <= 3) {
+            for (let i = 1; i <= totalPage; i++) {
+                pages.push(i);
+            }
+        } else {
+            if (currentPage === 1) {
+                pages.push(1, 2, 3);
+            } else if (currentPage === totalPage) {
+                pages.push(totalPage - 2, totalPage - 1, totalPage);
+            } else if (currentPage === totalPage - 1) {
+                pages.push(totalPage - 2, totalPage - 1, totalPage);
+            } else {
+                pages.push(currentPage - 1, currentPage, currentPage + 1);
+            }
+        }
+        return pages;
+    };
+
     return {
-        getFormValuesByName
+        getFormValuesByName,
+        removeNullProperties,
+        formatNumberByDot,
+        getPagination
     }
-}
-
-const loading = () => {
-    function showLoading() {
-        const loadingOverlay = document.getElementById('loading-overlay');
-        loadingOverlay.style.display = 'flex';
-    }
-
-    function hideLoading() {
-        const loadingOverlay = document.getElementById('loading-overlay');
-        loadingOverlay.style.display = 'none';
-    }
-
-    return {showLoading, hideLoading}
 }
 
 // for validate
@@ -104,92 +131,58 @@ const getValidate = () => {
     }
 }
 
-
 // for ajax
 const POST = 'POST';
 const GET = 'GET';
 const PUT = 'PUT';
 const DELETE = 'DELETE';
 
-const createUrl = (url, params = {}) => {
-    const queryString = new URLSearchParams(params).toString();
-    if (queryString) {
-        url += `?${queryString}`;
+const $ajax = (function() {
+    const createUrl = (url, params = {}) => {
+        const queryString = new URLSearchParams(params).toString();
+        if (queryString) {
+            url += `?${queryString}`;
+        }
+
+        return url;
     }
 
-    return url;
-}
-
-/**
- *
- * @Param url is api name
- * @Param method is rest method | post | put | delete | get
- * @Param data is data send to controller, in body
- */
-function callApi(url, method = 'POST', data = null) {
-    return new Promise((resolve, reject) => {
-        if (!url || typeof url !== 'string') {
-            return reject(new Error("URL is string"));
-        }
-
-        if (![GET, POST, DELETE, PUT].includes(method.toUpperCase())) {
-            return reject(new Error("Invalid HTTP method"));
-        }
-
-        $.ajax({
-            type: method.toUpperCase(),
-            url: url,
-            contentType: "application/json",
-            data: data ? JSON.stringify(data) : null,
-            success: function (response) {
-                resolve(response);
-            },
-            error: function (xhr) {
-                const objectError = xhr.responseJSON || {message: "An unknown error occurred"};
-
-                $alterTop('error', objectError.message);
-                reject(objectError);
+    /**
+     *
+     * @Param url is api name
+     * @Param method is rest method | post | put | delete | get
+     * @Param data is data send to controller, in body
+     */
+    function callApi(url, method = 'POST', data = null) {
+        return new Promise((resolve, reject) => {
+            if (!url || typeof url !== 'string') {
+                return reject(new Error("URL is string"));
             }
+
+            if (![GET, POST, DELETE, PUT].includes(method.toUpperCase())) {
+                return reject(new Error("Invalid HTTP method"));
+            }
+
+            $.ajax({
+                type: method.toUpperCase(),
+                url: url,
+                contentType: "application/json",
+                data: data ? JSON.stringify(data) : null,
+                success: function (response) {
+                    resolve(response);
+                },
+                error: function (xhr) {
+                    const objectError = xhr.responseJSON || {message: "An unknown error occurred"};
+
+                    $alterTop('error', objectError.message);
+                    reject(objectError);
+                }
+            });
         });
-    });
-}
-
-// for ajax end
-
-
-const getPagination = (currentPage, totalPage) => {
-    const pages = [];
-
-    if (currentPage < 1 || currentPage > totalPage) {
-        console.error('currentPage không hợp lệ.');
-        return;
     }
 
-    if (totalPage <= 3) {
-        for (let i = 1; i <= totalPage; i++) {
-            pages.push(i);
-        }
-    } else {
-        if (currentPage === 1) {
-            pages.push(1, 2, 3);
-        } else if (currentPage === totalPage) {
-            pages.push(totalPage - 2, totalPage - 1, totalPage);
-        } else if (currentPage === totalPage - 1) {
-            pages.push(totalPage - 2, totalPage - 1, totalPage);
-        } else {
-            pages.push(currentPage - 1, currentPage, currentPage + 1);
-        }
+    return {
+      createUrl, callApi
     }
-    return pages;
-};
+})()
 
-function removeNullProperties(obj) {
-    return Object.fromEntries(
-        Object.entries(obj).filter(([key, value]) => value !== null)
-    );
-}
-
-function formatNumberByDot(value) {
-    let numericValue = value.replace(/\D/g, '');
-    return numericValue.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-}
