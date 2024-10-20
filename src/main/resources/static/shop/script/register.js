@@ -1,9 +1,6 @@
 const {validateForm, clearValidation} = getValidate();
-const {getFormValuesByName} = getCommon();
 
 const idFormRegister = 'registerForm';
-
-const URL = "/auth"
 
 const validationRegister = {
     'register-username': [

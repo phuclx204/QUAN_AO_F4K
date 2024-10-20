@@ -1,6 +1,7 @@
 package org.example.quan_ao_f4k.repository.shop;
 
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.*;
@@ -24,6 +25,22 @@ public class CriteriaRepository {
 
     @PersistenceContext
     private EntityManager entityManager;
+
+    public ProductDetail getFirstProductDetailById(Long idProduct) {
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        CriteriaQuery<ProductDetail> query = cb.createQuery(ProductDetail.class);
+        Root<ProductDetail> productDetail = query.from(ProductDetail.class);
+
+        query.select(productDetail).where(cb.equal(productDetail.get("product").get("id"), idProduct));
+
+        try {
+            return entityManager.createQuery(query)
+                    .setMaxResults(1)
+                    .getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        }
+    }
 
     public List<Product> searchProductByRequest(ShopRequest.RequestSearch objSearch) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
