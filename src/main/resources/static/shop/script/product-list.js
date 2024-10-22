@@ -1,5 +1,8 @@
+const { removeNullProperties, getPagination, formatNumberByDot } = getCommon();
+
 const URL = "/shop";
-const GET_LIST_API = URL + "/list-product";
+const GET_LIST_API = URL + "/collections/list-product";
+
 const queryShowProduct = $('#product-show-list');
 const queryPagination = $('#pagination-product')
 const querySearchForm = $('#filter-search-product')
@@ -22,52 +25,40 @@ const defaultObjSearch = {
     color: null,
     orderBy: 'asc'
 };
-
 const objSearch = {...defaultObjSearch}
-
-const resetSearchObject = () => {
-    Object.assign(objSearch, defaultObjSearch);
-};
-
-const handleData = (lstData = []) => {
-    for (let item of lstData) {
-        const objCustom = {
-            id: item.id,
-            name: item.name,
-            listImg: [],
-            listSize: [],
-            price: null,
-            discount: null,
-        }
-
-        const listDetail = item.listDetail;
-        if (listDetail.length) {
-            const productDetail = listDetail[listDetail.length - 1];
-            objCustom.listImg = productDetail.listImage;
-            objCustom.price = productDetail.price;
-        }
-
-        addDom(objCustom);
-    }
-}
 
 const getListProduct = async (objSearch = {}) => {
     try {
-        const result = await callApi(createUrl(GET_LIST_API, objSearch), GET);
+        const result = await $ajax.callApi($ajax.createUrl(GET_LIST_API, objSearch), GET);
         queryShowProduct.empty();
 
         objPagination.totalPages = result.totalPages;
         objPagination.pageSize = result.size;
         objPagination.currentPage = result.number;
 
-        handleData(result.content);
+        const data = result.content.map(el => {
+            return {
+                id: el.id,
+                name: el.product.name,
+                price: el.price,
+                discount: null,
+                listImg: el.listImage
+            }
+        })
+
+        data.forEach(el => addDomListProduct(el));
         addDomPagination(result);
     } catch (e) {
         console.log(e);
     }
 };
+getListProduct().catch(e => console.log(e))
 
-const addDom = (item) => {
+const resetSearchObject = () => {
+    Object.assign(objSearch, defaultObjSearch);
+};
+
+const addDomListProduct = (item) => {
     const productCardHTML = `
         <div class="col-12 col-sm-6 col-md-4">
             <div class="card position-relative h-100 card-listing hover-trigger">
@@ -75,12 +66,12 @@ const addDom = (item) => {
                     ${getDomPicture(item.listImg[0])}
                     ${getDomPicture(item.listImg[1], false)}
                     <div class="card-actions">
-                        <a class="small text-uppercase tracking-wide fw-bolder text-center d-block btn-add-cart" href="#" data-id="${item.id}">Quick Add</a>
+                        <a class="small text-uppercase tracking-wide fw-bolder text-center d-block btn-add-cart" href="/shop/cart/add/${item.id}}" data-id="${item.id}">Quick Add</a>
                         <div class="d-flex justify-content-center align-items-center flex-wrap mt-3"></div>
                     </div>
                 </div>
                 <div class="card-body px-0 text-center">
-                    <a class="mb-0 mx-2 mx-md-4 fs-p link-cover text-decoration-none d-block text-center" href="/shop/category#">${item.name}</a>
+                    <a class="mb-0 mx-2 mx-md-4 fs-p link-cover text-decoration-none d-block text-center link-name-product" href="/shop/product/${item.id}">${item.name}</a>
                     <p class="fw-bolder m-0 mt-2">${item.price} VNĐ</p>
                 </div>
             </div>
@@ -88,7 +79,6 @@ const addDom = (item) => {
     `;
     queryShowProduct.append(productCardHTML);
 };
-
 const getDomPicture = (srcImg, isFirst = true) => {
     const path = srcImg?.path || imageBlank;
     return `
@@ -100,7 +90,6 @@ const getDomPicture = (srcImg, isFirst = true) => {
         </picture>
     `;
 };
-
 const addDomPagination = (object = {totalPages: null, number: null}) => {
     queryPagination.empty();
     const currentPage = object.number;
@@ -117,7 +106,10 @@ const addDomPagination = (object = {totalPages: null, number: null}) => {
     `;
 
     let pagesHtml = '<ul class="pagination">';
+
     const pages = getPagination(currentPage + 1, totalPages);
+    if (!pages.length) return
+
     pages.forEach((page, index) => {
         let pages = page - 1;
         pagesHtml += `
@@ -141,12 +133,6 @@ const addDomPagination = (object = {totalPages: null, number: null}) => {
     const paginationHtml = prevHtml + pagesHtml + nextHtml;
     queryPagination.append(paginationHtml);
 }
-
-(function () {
-    'use strict';
-    getListProduct();
-})();
-
 const getParamPagination = (currentPage) => {
     return {
         page: currentPage,
@@ -160,13 +146,11 @@ $(document).on('click', '#btn-pagination-pre', async function (e) {
     const obj = getParamPagination(objPagination.currentPage - 1);
     await getListProduct(obj);
 })
-
 $(document).on('click', '#btn-pagination-next', async function (e) {
     e.preventDefault();
     const obj = getParamPagination(objPagination.currentPage + 1);
     await getListProduct(obj);
 })
-
 $(document).on('click', '.btn-page', async function (e) {
     e.preventDefault();
     const page = $(this).data("id");
@@ -174,14 +158,6 @@ $(document).on('click', '.btn-page', async function (e) {
     await getListProduct(getParamPagination(page));
 })
 // btn pagination
-
-// add cart
-$(document).on('click', '.btn-add-cart', function (e) {
-    e.preventDefault();
-    const rowId = $(this).data("id");
-    console.log(rowId, ' - rowId');
-});
-//
 
 
 // Lưu trữ các phần tử DOM
@@ -276,7 +252,6 @@ $(document).on('blur', '.filter-min-price', function () {
 $(document).on('blur', '.filter-max-price', function () {
     handlePriceBlur('max', '.filter-min-price', '.filter-max-price');
 });
-
 $('.filter-list-price').on('click', async function (e) {
     e.preventDefault();
 

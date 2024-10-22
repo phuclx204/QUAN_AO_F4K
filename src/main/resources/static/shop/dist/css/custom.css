@@ -10,3 +10,14 @@
 .c-black {
     color: black!important;
 }
+
+.link-name-product:hover {
+    transition: all .2s ease-in-out;
+    font-weight: 600;
+    color: #1f7886;
+}
+
+.card-actions:hover {
+    transition: all .2s ease-in-out;
+    background: #fdfdfd !important;
+}

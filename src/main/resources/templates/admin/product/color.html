@@ -9,6 +9,29 @@
 
     <link rel="stylesheet" th:href="@{/admin/plugins/jqgrid-5.7.0/ui.jqgrid-bootstrap4.css}"/>
     <link rel="stylesheet" th:href="@{/admin/plugins/sweetalert/sweetalert2.min.css}"/>
+    <!-- CSS và JS của Pickr -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/themes/nano.min.css" />
+    <style>
+        #colorPicker {
+            width: 300px;
+        }
+        #selectedColor {
+            width: 70px;
+            height: 50px;
+            border: 1px solid #000;
+            border-radius: 10px;
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+        #editSelectedColor {
+            width: 70px;
+            height: 50px;
+            border: 1px solid #000;
+            border-radius: 10px;
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+    </style>
 </head>
 
 <body>
@@ -19,14 +42,14 @@
     <main>
         <div class="head-title">
             <div class="left">
-                <h1>Quản lý màu sắc</h1>
+                <h1>Màu sắc</h1>
                 <ul class="breadcrumb">
                     <li>
-                        <a th:href="@{statistical}">Trang chủ</a>
+                        <a th:href="@{home}">Trang chủ</a>
                     </li>
                     <li><i class='bx bx-chevron-right'></i></li>
                     <li>
-                        <a class="active" th:href="@{color}">Màu sắc</a>
+                        <a class="active" th:href="@{color}">Quản lý màu sắc</a>
                     </li>
                 </ul>
             </div>
@@ -49,10 +72,10 @@
                         <i class='bx bx-plus'></i>
                     </a>
 
-                    <h3>Danh sách</h3>
+                    <h3>Danh sách </h3>
                     <form th:action="@{/admin/color}" method="get" class="search-form" id="searchForm">
                         <div class="search-container">
-                            <input type="text" name="search" placeholder="Tìm kiếm tên..."
+                            <input type="text" name="search" placeholder="Tìm kiếm..."
                                    th:value="${param.search}" id="searchInput"/>
                             <button type="submit" class="search-btn"><i class='bx bx-search'></i></button>
                         </div>
@@ -63,6 +86,7 @@
                     <tr>
                         <th>STT</th>
                         <th>Tên</th>
+                        <th>Mã hex</th>
                         <th>Edit</th>
                         <th>#</th>
                     </tr>
@@ -78,6 +102,7 @@
                     <span id="totalPagesText" style="font-weight: bold;"></span>
                     <button class="page-button" id="nextPage">Tiếp theo</button>
                 </div>
+
             </div>
         </div>
     </main>
@@ -89,6 +114,12 @@
         <form id="addForm">
             <label for="addName">Nhập tên:</label>
             <input type="text" id="addName" name="name">
+
+            <label>Chọn mã màu:</label>
+            <div id="colorPicker"></div>  <!-- Khung cho bộ chọn màu -->
+
+            <input type="text" id="hexCode" name="hex" disabled>  <!-- Lưu mã màu -->
+            <div id="selectedColor"></div>
             <button type="submit">Thêm</button>
         </form>
     </div>
@@ -102,10 +133,17 @@
             <input type="hidden" id="editId" name="id">
             <label for="editName">Nhập tên:</label>
             <input type="text" id="editName" name="name">
+
+            <label>Chọn mã màu:</label>
+            <div id="editColorPicker"></div>  <!-- Khung cho bộ chọn màu trong modal chỉnh sửa -->
+
+            <input type="text" id="editHex" name="hex" disabled>  <!-- Lưu mã màu -->
+            <div id="editSelectedColor"></div>
             <button type="submit">Cập nhật</button>
         </form>
     </div>
 </div>
+
 
 <!--default script-->
 <script th:src="@{/admin/script.js}"></script>
@@ -123,6 +161,8 @@
 <script th:src="@{/admin/plugins/bootstrap4/bootstrap.bundle.js}"></script>
 <!--custom script-->
 <script th:src="@{/admin/product/color.js}"></script>
+<!--màu-->
+<script src="https://cdn.jsdelivr.net/npm/@simonwep/pickr"></script>
 
 </body>
 </html>

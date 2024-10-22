@@ -23,6 +23,9 @@ public class Color extends BaseEntity {
     @Column(name = "name", nullable = false)
     private String name;
 
+    @Column(name = "hex")
+    private String hex;
+
     @Column(name = "status", nullable = false)
     private Integer status=1;
 }

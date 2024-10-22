@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 public class ColorResponse {
     private Long id;
     private String name;
+    private String hex;
     private Integer status;
 
 }
