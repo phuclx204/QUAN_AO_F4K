@@ -39,6 +39,6 @@ public class Image {
     @Column(name = "status", nullable = false)
     private Integer status =1;
 
-    @Column(name = "table_code", nullable = false)
+    @Column(name = "tabble_code", nullable = false)
     private String tableCode;
 }
