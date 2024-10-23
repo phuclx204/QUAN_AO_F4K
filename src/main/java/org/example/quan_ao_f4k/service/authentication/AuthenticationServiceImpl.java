@@ -1,6 +1,6 @@
 package org.example.quan_ao_f4k.service.authentication;
 
-import lombok.SneakyThrows;
+import lombok.RequiredArgsConstructor;
 import org.example.quan_ao_f4k.dto.request.authentication.RegisterRequest;
 import org.example.quan_ao_f4k.dto.response.authentication.AuthenticationResponse;
 import org.example.quan_ao_f4k.exception.BadRequestException;
@@ -10,23 +10,20 @@ import org.example.quan_ao_f4k.model.authentication.User;
 import org.example.quan_ao_f4k.repository.authentication.RoleRepository;
 import org.example.quan_ao_f4k.repository.authentication.UserRepository;
 import org.example.quan_ao_f4k.util.F4KConstants;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+import java.util.Optional;
+
 @Repository
+@RequiredArgsConstructor
 public class AuthenticationServiceImpl implements AuthenticationService {
-    @Autowired
-    private UserMapper userMapper;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private RoleRepository roleRepository;
+    private final UserMapper userMapper;
+    private final PasswordEncoder passwordEncoder;
+    private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
 
 
     private Role getRole() {
@@ -43,22 +40,32 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     public User findByLogin(String login) {
-        return userRepository.findByUsername(login)
-                .orElse(null);
+        Optional<User> userOptional = userRepository.findByUsername(login);
+        return userOptional
+                .orElseThrow(() -> new IllegalStateException("User with username: " + login + " does not exist"));
+    }
+
+    @Override
+    public User getUserById(Long userId) {
+        Optional<User> userOptional = userRepository.findById(userId);
+        return userOptional
+                .orElseThrow(() -> new IllegalStateException("User with id: " + userId + " does not exist"));
     }
 
     @Override
     public AuthenticationResponse register(RegisterRequest request) {
-
         if (userRepository.existsByUsername(request.getUsername())) {
             throw new BadRequestException("Username is already in use");
         }
 
-        User newUser = new User();
-        newUser.setUsername(request.getUsername());
-        newUser.setPassword(passwordEncoder.encode(request.getPassword()));
-        newUser.setEmail(request.getEmail());
-        newUser.setRole(getRole());
+        User newUser = User
+                .builder()
+                .username(request.getUsername())
+                .password(passwordEncoder.encode(request.getPassword()))
+                .role(getRole())
+                .email(request.getEmail())
+                .status(F4KConstants.STATUS_ON)
+                .build();
 
         User createdUser = userRepository.save(newUser);
 
@@ -68,16 +75,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .build();
     }
 
-    @SneakyThrows
     @Override
-    public AuthenticationResponse login(RegisterRequest request) {
-        User user = userRepository.findByUsername(request.getUsername())
-                .orElseThrow(
-                        () -> new Exception("Username or password is incorrect")
-                );
-
-        return AuthenticationResponse.builder()
-                .userDto(userMapper.entityToResponse(user))
-                .build();
+    public List<User> getUsers() {
+        return userRepository.findAll();
     }
 }
