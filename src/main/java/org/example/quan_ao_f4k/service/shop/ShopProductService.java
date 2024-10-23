@@ -5,13 +5,14 @@ import org.example.quan_ao_f4k.dto.response.shop.ShopResponse;
 import org.example.quan_ao_f4k.model.authentication.User;
 import org.example.quan_ao_f4k.model.general.Image;
 import org.example.quan_ao_f4k.model.order.Cart;
+import org.example.quan_ao_f4k.model.order.CartProduct;
 import org.example.quan_ao_f4k.model.product.*;
+import org.example.quan_ao_f4k.repository.authentication.UserRepository;
 import org.example.quan_ao_f4k.repository.general.ImageRepository;
 import org.example.quan_ao_f4k.repository.order.CartProductRepository;
 import org.example.quan_ao_f4k.repository.order.CartRepository;
 import org.example.quan_ao_f4k.repository.product.ColorRepository;
 import org.example.quan_ao_f4k.repository.product.ProductDetailRepository;
-import org.example.quan_ao_f4k.repository.product.ProductRepository;
 import org.example.quan_ao_f4k.repository.product.SizeRepository;
 import org.example.quan_ao_f4k.repository.shop.CriteriaRepository;
 import org.example.quan_ao_f4k.util.F4KConstants;
@@ -25,10 +26,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.math.BigDecimal;
+import java.util.*;
 import java.util.function.Function;
 
 @Service
@@ -54,6 +53,8 @@ public class ShopProductService {
 
     @Autowired
     SizeRepository sizeRepository;
+    @Autowired
+    private UserRepository userRepository;
 
     public Page<ShopResponse.ProductListResponse> getListProductDetail(ShopRequest.RequestSearch requestSearch) {
         List<Product> productList = criteriaRepository.searchProductByRequest(requestSearch);
@@ -64,8 +65,8 @@ public class ShopProductService {
             if (productDetail == null) continue;
 
             ShopResponse.ProductListResponse objTmp = ShopResponse.ProductListResponse.builder()
-                    .id(SimpleEncoderDecoder.encode(productDetail.getId() + ""))
-                    .idParent(SimpleEncoderDecoder.encode(productDetail.getProduct().getId() + ""))
+                    .id(SimpleEncoderDecoder.encrypt(productDetail.getId() + ""))
+                    .idParent(SimpleEncoderDecoder.encrypt(productDetail.getProduct().getId() + ""))
                     .color(productDetail.getColor())
                     .size(productDetail.getSize())
                     .price(productDetail.getPrice())
@@ -89,7 +90,7 @@ public class ShopProductService {
     }
 
     public void addModelProductDetail(Model model, String idParent, String colorName) {
-        Long idProduct = Long.valueOf(SimpleEncoderDecoder.decode(idParent));
+        Long idProduct = Long.valueOf(SimpleEncoderDecoder.decrypt(idParent));
 
         ProductDetail objTmp = productDetailRepository
                 .findProductDetailsByProductIdAndSizeAndColorId(idProduct, colorName)
@@ -115,7 +116,57 @@ public class ShopProductService {
         model.addAttribute("listData", getListProductDetail(requestSearch));
     }
 
+    public ShopResponse.CartResponse getListCart(UserDetails userDetails) {
+        User user = userRepository.findByUsername(userDetails.getUsername()).orElse(null);
+
+        if (Objects.isNull(user)) {
+            return ShopResponse.CartResponse.builder()
+                    .listData(new ArrayList<>())
+                    .subtotal(BigDecimal.ZERO)
+                    .build();
+        }
+
+        Cart cart = cartRepository.findByUserId(user.getId()).orElse(null);
+        if (Objects.isNull(cart)) {
+            cart = cartRepository.save(
+                    Cart.builder()
+                            .user(user)
+                            .status(F4KConstants.STATUS_ON)
+                            .build()
+            );
+        }
+        List<CartProduct> cartProductList = cartProductRepository.findAllByCart_Id(cart.getId());
+
+        List<ShopResponse.CartDto> listCartDto = new ArrayList<>();
+        BigDecimal subtotal = BigDecimal.ZERO;
+        for (CartProduct item: cartProductList) {
+
+            BigDecimal total = item.getProductDetail().getPrice().multiply(BigDecimal.valueOf(item.getQuantity()));
+            item.getProductDetail().setIdEncore(SimpleEncoderDecoder.encrypt(item.getProductDetail().getId().toString()));
+            subtotal = subtotal.add(total);
+
+            ShopResponse.CartDto objTmp = ShopResponse.CartDto
+                    .builder()
+                    .image(imageRepository.findImageByIdParent(item.getProductDetail().getId()))
+                    .productDetail(item.getProductDetail())
+                    .quantity(item.getQuantity())
+                    .total(total)
+                    .build();
+
+            listCartDto.add(objTmp);
+        }
+
+        return ShopResponse.CartResponse.builder()
+                .listData(listCartDto)
+                .subtotal(subtotal)
+                .build();
+    }
+
     public void addCart(Long id, User user) {
+
+        if (Objects.isNull(user)) {
+            return;
+        }
 
         ProductDetail objTmp = productDetailRepository
                 .findById(id)

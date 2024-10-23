@@ -1,6 +1,7 @@
 package org.example.quan_ao_f4k.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -15,7 +16,9 @@ import java.time.LocalDateTime;
 @Accessors(chain = true)
 @MappedSuperclass
 public abstract class BaseEntity {
+
     @Id
+    @JsonIgnore
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
@@ -41,4 +44,7 @@ public abstract class BaseEntity {
     public void preUpdate() {
         this.updatedAt = LocalDateTime.now();
     }
+
+    @Transient
+    private String idEncore;
 }
