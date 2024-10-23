@@ -12,4 +12,7 @@ public interface ImageRepository extends JpaRepository<Image, Long>,
 
 	@Query("SELECT a FROM Image a WHERE a.idParent = ?1")
 	List<Image> getImageByIdParent(Long id);
+
+	@Query("SELECT a FROM Image a WHERE a.idParent = ?1 order by a.idParent asc limit 1")
+	Image findImageByIdParent(Long id);
 }

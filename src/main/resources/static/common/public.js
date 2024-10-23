@@ -56,11 +56,18 @@ const getCommon = () => {
         return pages;
     };
 
+    const convert2Vnd = (value = "") => {
+        let price = parseFloat(value);
+        price = price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+        price = price.replaceAll("₫", "VNĐ")
+        return price;
+    }
     return {
         getFormValuesByName,
         removeNullProperties,
         formatNumberByDot,
-        getPagination
+        getPagination,
+        convert2Vnd
     }
 }
 
