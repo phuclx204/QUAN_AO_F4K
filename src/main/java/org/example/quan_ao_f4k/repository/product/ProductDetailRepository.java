@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface ProductDetailRepository extends JpaRepository<ProductDetail, Long>,
@@ -35,4 +36,7 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, Lo
 
 	@Query("SELECT pd FROM ProductDetail pd WHERE pd.product.id = :productId")
 	List<ProductDetail> findProductDetailsByProductId(@Param("productId") Long productId);
+
+	@Query("SELECT pd FROM ProductDetail pd WHERE pd.product.id = ?1 and pd.color.name = ?2 order by pd.id asc limit 1")
+	Optional<ProductDetail> findProductDetailsByProductIdAndSizeAndColorId(Long id, String color);
 }

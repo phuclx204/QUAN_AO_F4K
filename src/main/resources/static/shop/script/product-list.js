@@ -1,6 +1,5 @@
 const { removeNullProperties, getPagination, formatNumberByDot } = getCommon();
 
-const URL = "/shop";
 const GET_LIST_API = URL + "/collections/list-product";
 
 const queryShowProduct = $('#product-show-list');
@@ -36,10 +35,14 @@ const getListProduct = async (objSearch = {}) => {
         objPagination.pageSize = result.size;
         objPagination.currentPage = result.number;
 
+        // mapping data
         const data = result.content.map(el => {
             return {
                 id: el.id,
+                idParent: el.idParent,
                 name: el.product.name,
+                color: el.color.name,
+                size: el.size.name,
                 price: el.price,
                 discount: null,
                 listImg: el.listImage
@@ -59,6 +62,10 @@ const resetSearchObject = () => {
 };
 
 const addDomListProduct = (item) => {
+
+    const hrefProduct = '/shop/product/' + item.idParent + `?color=${item.color}`;
+    const hrefQuickAdd = '/shop/cart/add/' + item.id;
+
     const productCardHTML = `
         <div class="col-12 col-sm-6 col-md-4">
             <div class="card position-relative h-100 card-listing hover-trigger">
@@ -66,12 +73,12 @@ const addDomListProduct = (item) => {
                     ${getDomPicture(item.listImg[0])}
                     ${getDomPicture(item.listImg[1], false)}
                     <div class="card-actions">
-                        <a class="small text-uppercase tracking-wide fw-bolder text-center d-block btn-add-cart" href="/shop/cart/add/${item.id}}" data-id="${item.id}">Quick Add</a>
+                        <a class="small text-uppercase tracking-wide fw-bolder text-center d-block btn-add-cart" href="${hrefQuickAdd}" data-id="${item.id}">Quick Add</a>
                         <div class="d-flex justify-content-center align-items-center flex-wrap mt-3"></div>
                     </div>
                 </div>
                 <div class="card-body px-0 text-center">
-                    <a class="mb-0 mx-2 mx-md-4 fs-p link-cover text-decoration-none d-block text-center link-name-product" href="/shop/product/${item.id}">${item.name}</a>
+                    <a class="mb-0 mx-2 mx-md-4 fs-p link-cover text-decoration-none d-block text-center link-name-product" href="${hrefProduct}">${item.name}</a>
                     <p class="fw-bolder m-0 mt-2">${item.price} VNĐ</p>
                 </div>
             </div>
