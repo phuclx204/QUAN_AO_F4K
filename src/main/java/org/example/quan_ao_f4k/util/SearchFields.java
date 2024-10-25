@@ -24,5 +24,16 @@ public interface SearchFields {
             "color.name",
             "size.name"
     );
+    List<String> ORDER = List.of(
+            "code",
+            "toName",
+            "toAddress",
+            "toPhone",
+            "status",
+            "paymentStatus",
+            "paymentMethodType",
+            "user.username",
+            "note"
+    );
 }
 

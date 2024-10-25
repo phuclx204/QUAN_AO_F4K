@@ -3,6 +3,7 @@ package org.example.quan_ao_f4k.controller.product;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.example.quan_ao_f4k.dto.request.product.ProductDetailRequest;
+import org.example.quan_ao_f4k.dto.response.product.CategoryResponse;
 import org.example.quan_ao_f4k.dto.response.product.ProductDetailResponse;
 import org.example.quan_ao_f4k.list.ListResponse;
 import org.example.quan_ao_f4k.model.product.Product;
@@ -23,7 +24,16 @@ public class ProductDetailController {
 
 	private final ProductDetailService productDetailService;
 	private final ProductRepository productRepository;
-
+	@GetMapping("list")
+	public ResponseEntity<ListResponse<ProductDetailResponse>> getAllBrands(
+			@RequestParam(defaultValue = "1") int page,
+			@RequestParam(defaultValue = "5") int size,
+			@RequestParam(defaultValue = "id,desc") String sort,
+			@RequestParam(required = false) String filter,
+			@RequestParam(required = false) String search) {
+		ListResponse<ProductDetailResponse> response = productDetailService.findAll(page, size, sort, filter, search, false);
+		return ResponseEntity.ok(response);
+	}
 
 	@GetMapping("/{productId}")
 	public String getProductDetails(@PathVariable("productId") Long productId, Model model) {

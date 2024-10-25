@@ -16,7 +16,7 @@ import org.example.quan_ao_f4k.model.authentication.User;
 import java.math.BigDecimal;
 
 @Entity
-@Table(name = "order")
+@Table(name = "orders")
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter

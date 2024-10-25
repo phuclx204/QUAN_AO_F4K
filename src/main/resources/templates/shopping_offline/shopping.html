@@ -22,17 +22,21 @@
                 <input type="search" placeholder="Tìm kiếm..." class="search-input">
                 <button type="submit" class="search-btn"><i class='bx bx-search'></i></button>
             </div>
-            <button class="create-invoice-btn"><i class="bx bx-plus">Tạo hóa đơn</i></button>
+            <button type="button" class="create-invoice-btn" onclick="confirmCreateInvoice()">
+                <i class="bx bx-plus">Tạo hóa đơn</i>
+            </button>
         </form>
         <div class="invoice-container">
-            <button>Hóa đơn 1</button>>
-            <button>Hóa đơn 1</button>>
-            <button>Hóa đơn 1</button>>
-            <button>Hóa đơn 1</button>>
-            <button>Hóa đơn 1</button>>
-            <button>Hóa đơn 1</button>>
-            <button>Hóa đơn 1</button>>
+            <h5>Danh sách hóa đơn:</h5>
+            <ul>
+                <li th:each="order : ${listOrder}">
+                    <button th:text="'Hóa đơn ' + ${order.id}"
+                            th:onclick="'viewInvoice(' + ${order.id} + ')'">
+                    </button>
+                </li>
+            </ul>
         </div>
+
 
 
         <div class="main-container mt-3">
@@ -40,8 +44,30 @@
                 <!-- Order List Area -->
                 <div class="col-md-8 order-list-area">
                     <div class="order-list-content">
-                        <img src="https://via.placeholder.com/150" alt="Empty State Icon" class="responsive-img" />
-                        <h5>Đơn hàng của bạn chưa có sản phẩm nào!</h5>
+                        <h5>Giỏ hàng</h5>
+                        <button class="btn-add">Thêm sản phẩm</button>
+
+                        <table class="table mt-3" border="1">
+                            <thead>
+                            <tr>
+                                <th scope="col">STT</th>
+                                <th scope="col">Ảnh</th>
+                                <th scope="col">Sản phẩm</th>
+                                <th scope="col">Tổng tiền</th>
+                                <th scope="col">Thao tác</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <th scope="row">1</th>
+                                <td>Mark</td>
+                                <td>Otto</td>
+                                <td>@mdo</td>
+                                <td><a class="btn btn-danger">Xóa</a></td>
+                            </tr>
+
+                            </tbody>
+                        </table>
                     </div>
 
                     <!-- Customer Information Section -->
@@ -50,9 +76,8 @@
                             <div class="card-body">
                                 <div class="row">
                                     <div class="col-md-4">
-                                        <input type="text" class="input-field" placeholder="Điện thoại (F4)" />
-                                        <input type="text" class="input-field" placeholder="Tên khách" />
-                                        <input type="email" class="input-field" placeholder="Email" />
+                                        <input type="text" class="input-field" placeholder="Điện thoại (F4)"/>
+                                        <input type="text" class="input-field" placeholder="Tên khách"/>
                                     </div>
                                     <div class="col-md-4">
                                         <select class="input-field">
@@ -69,8 +94,8 @@
                                         <select class="input-field">
                                             <option>Khác</option>
                                         </select>
-                                        <input type="text" class="input-field" placeholder="Địa chỉ chi tiết" />
-                                        <input type="date" class="input-field" placeholder="Ngày sinh" />
+                                        <input type="text" class="input-field" placeholder="Địa chỉ chi tiết"/>
+                                        <input type="date" class="input-field" placeholder="Ngày sinh"/>
                                     </div>
                                 </div>
                                 <button class="btn btn-warning mt-3">Lưu thông tin</button>
@@ -91,12 +116,12 @@
                         </h5>
                         <p>
                             Tiền khách đưa (F8):
-                            <input type="number" class="input-field" placeholder="0" />
+                            <input type="number" class="input-field" placeholder="0"/>
                         </p>
                         <p>Tiền thừa trả khách: <span class="float-right">0 ₫</span></p>
                         <textarea class="input-field" placeholder="Thêm ghi chú"></textarea>
                         <div class="invoice-switch">
-                            <input type="checkbox" id="invoiceCheckbox" checked />
+                            <input type="checkbox" id="invoiceCheckbox" checked/>
                             <label for="invoiceCheckbox">In hóa đơn</label>
                         </div>
                         <button class="btn payment-action-btn">Thanh toán (F9)</button>
@@ -106,22 +131,73 @@
         </div>
 
     </main>
-<!--default script-->
-<script th:src="@{/admin/script.js}"></script>
+    <div id="productModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <header>
+                <div class="header-top">
+                    <input type="text" id="searchInput" placeholder="Nhập tên sản phẩm">
+                    <div class="header-actions">
+                        <button class="btn-search">Tìm kiếm</button>
+                        <button class="btn-add">Làm mới</button>
+                    </div>
+                </div>
+                <nav>
+                    <ul>
+                        <li>
+                            <label>Danh mục:</label>
+                            <select id="categorySelect">
+                                <option value="">Tất cả</option>
+                            </select>
+                        </li>
+                        <li>
+                            <label>Thương Hiệu:</label>
+                            <select id="brandSelect">
+                                <option value="">Tất cả</option>
+                            </select>
+                        </li>
+                        <li>
+                            <label>Màu sắc:</label>
+                            <select id="colorSelect">
+                                <option value="">Tất cả</option>
+                            </select>
+                        </li>
+                        <li>
+                            <label>Kích Cỡ:</label>
+                            <select id="sizeSelect">
+                                <option value="">Tất cả</option>
+                            </select>
+                        </li>
+                        <div class="slider">
+                            <label>Khoảng Giá:</label>
+                            <input type="range" id="priceRange" min="0" max="10000000">
+                        </div>
+                    </ul>
+                </nav>
+            </header>
+            <main class="main-content">
+                <div class="product-list" id="productList">
+                    <!-- Dynamic Product Items will be added here -->
+                </div>
+            </main>
+        </div>
+    </div>
+    <!--default script-->
+    <script th:src="@{/admin/script.js}"></script>
 
-<!--jquery-->
-<script th:src="@{/admin/plugins/jquery/jquery.min.js}"></script>
-<!--plugin table-->
-<script th:src="@{/admin/plugins/jqgrid-5.7.0/common.js}"></script>
-<script th:src="@{/admin/plugins/jqgrid-5.7.0/jquery.jqGrid.min.js}"></script>
-<script th:src="@{/admin/plugins/jqgrid-5.7.0/grid.locale-vn.js}"></script>
-<!--alter-->
-<script th:src="@{/admin/plugins/sweetalert/common.js}"></script>
-<script th:src="@{/admin/plugins/sweetalert/sweetalert2.min.js}"></script>
-<!--bootstrap-->
-<script th:src="@{/admin/plugins/bootstrap4/bootstrap.bundle.js}"></script>
-<!--custom script-->
-<script th:src="@{/admin/shopping_offline/shopping.js}"></script>
+    <!--jquery-->
+    <script th:src="@{/admin/plugins/jquery/jquery.min.js}"></script>
+    <!--plugin table-->
+    <script th:src="@{/admin/plugins/jqgrid-5.7.0/common.js}"></script>
+    <script th:src="@{/admin/plugins/jqgrid-5.7.0/jquery.jqGrid.min.js}"></script>
+    <script th:src="@{/admin/plugins/jqgrid-5.7.0/grid.locale-vn.js}"></script>
+    <!--alter-->
+    <script th:src="@{/admin/plugins/sweetalert/common.js}"></script>
+    <script th:src="@{/admin/plugins/sweetalert/sweetalert2.min.js}"></script>
+    <!--bootstrap-->
+    <script th:src="@{/admin/plugins/bootstrap4/bootstrap.bundle.js}"></script>
+    <!--custom script-->
+    <script th:src="@{/admin/shopping_offline/shopping.js}"></script>
 
 </body>
 </html>

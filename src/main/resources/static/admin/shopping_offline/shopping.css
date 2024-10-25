@@ -202,3 +202,101 @@ body {
 .payment-action-btn:hover {
     background-color: #218838;
 }
+/* Modal styles */
+.modal {
+    display: none; /* Ẩn modal theo mặc định */
+    position: fixed; /* Đặt vị trí cố định */
+    z-index: 1000; /* Đảm bảo modal hiển thị trên tất cả các phần tử khác */
+    left: 0;
+    top: 0;
+    width: 100%; /* Chiếm toàn bộ chiều rộng */
+    height: 100%; /* Chiếm toàn bộ chiều cao */
+    background-color: rgba(0, 0, 0, 0.7); /* Màu nền mờ cho modal */
+    justify-content: center; /* Căn giữa theo chiều ngang */
+    align-items: center; /* Căn giữa theo chiều dọc */
+}
+
+/* Nội dung modal */
+.modal-content {
+    background-color: #fff; /* Nền trắng cho nội dung modal */
+    margin: 2rem; /* Khoảng cách xung quanh modal */
+    padding: 20px;
+    border-radius: 8px; /* Bo tròn góc */
+    width: 80%; /* Chiều rộng modal */
+    max-width: 600px; /* Chiều rộng tối đa */
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); /* Đổ bóng cho modal */
+}
+
+/* Nút đóng modal */
+.close {
+    float: right; /* Đặt nút đóng ở bên phải */
+    font-size: 28px; /* Kích thước chữ cho nút đóng */
+    font-weight: bold; /* Chữ đậm */
+    color: #aaa; /* Màu chữ cho nút đóng */
+    transition: color 0.3s; /* Hiệu ứng chuyển màu */
+}
+
+.close:hover,
+.close:focus {
+    color: #000; /* Màu chữ khi hover */
+    text-decoration: none; /* Bỏ gạch chân khi hover */
+    cursor: pointer; /* Hiển thị con trỏ chuột */
+}
+
+/* Header của modal */
+.modal-header {
+    display: flex; /* Sử dụng flex để căn chỉnh các phần tử */
+    justify-content: space-between; /* Tạo khoảng cách giữa tiêu đề và nút đóng */
+    align-items: center; /* Căn giữa theo chiều dọc */
+    background-color: #007bff; /* Màu nền cho header */
+    color: white; /* Màu chữ cho header */
+    padding: 10px; /* Padding cho header */
+    border-top-left-radius: 8px; /* Bo tròn góc trái trên */
+    border-top-right-radius: 8px; /* Bo tròn góc phải trên */
+}
+
+/* Các nút trong modal */
+.header-actions .btn-search,
+.header-actions .btn-add {
+    background-color: #007bff; /* Màu nền cho nút */
+    color: #fff; /* Màu chữ cho nút */
+    border: none; /* Bỏ đường viền */
+    padding: 0.5rem 1rem; /* Padding cho nút */
+    border-radius: 4px; /* Bo tròn góc cho nút */
+    cursor: pointer; /* Hiển thị con trỏ chuột */
+    transition: background-color 0.3s; /* Hiệu ứng chuyển màu */
+}
+
+.header-actions .btn-search:hover,
+.header-actions .btn-add:hover {
+    background-color: #0056b3; /* Màu nền khi hover */
+}
+
+/* Danh sách sản phẩm trong modal */
+.product-list {
+    max-height: 400px; /* Chiều cao tối đa cho danh sách sản phẩm */
+    overflow-y: auto; /* Thêm cuộn dọc nếu nội dung vượt quá chiều cao */
+    margin-top: 10px; /* Khoảng cách trên danh sách sản phẩm */
+}
+
+/* Mỗi sản phẩm trong danh sách */
+.product-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border: 1px solid #ccc; /* Đường viền cho sản phẩm */
+    border-radius: 4px; /* Bo tròn góc cho sản phẩm */
+    padding: 1rem; /* Padding cho sản phẩm */
+    margin-bottom: 10px; /* Khoảng cách dưới mỗi sản phẩm */
+    transition: box-shadow 0.3s; /* Hiệu ứng chuyển bóng */
+}
+
+.product-item:hover {
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Tăng bóng khi hover */
+}
+
+/* Hình ảnh sản phẩm */
+.product-item img {
+    max-width: 100%; /* Chiều rộng tối đa hình ảnh */
+    height: auto; /* Tự động điều chỉnh chiều cao */
+}

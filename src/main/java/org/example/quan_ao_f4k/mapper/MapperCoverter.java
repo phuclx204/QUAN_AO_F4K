@@ -4,12 +4,14 @@ import org.example.quan_ao_f4k.model.address.Address;
 import org.example.quan_ao_f4k.model.address.District;
 import org.example.quan_ao_f4k.model.address.Province;
 import org.example.quan_ao_f4k.model.address.Ward;
+import org.example.quan_ao_f4k.model.authentication.User;
 import org.example.quan_ao_f4k.model.product.Brand;
 import org.example.quan_ao_f4k.model.product.Category;
 import org.example.quan_ao_f4k.repository.address.AddressRepository;
 import org.example.quan_ao_f4k.repository.address.DistrictRepository;
 import org.example.quan_ao_f4k.repository.address.ProvinceRepository;
 import org.example.quan_ao_f4k.repository.address.WardRepository;
+import org.example.quan_ao_f4k.repository.authentication.UserRepository;
 import org.example.quan_ao_f4k.repository.product.BrandRepository;
 import org.example.quan_ao_f4k.repository.product.CategoryRepository;
 import org.example.quan_ao_f4k.repository.product.ProductDetailRepository;
@@ -38,6 +40,8 @@ public abstract class MapperCoverter {
     private DistrictRepository districtRepository;
     @Autowired
     private WardRepository wardRepository;
+    @Autowired
+    private UserRepository userRepository;
 
 
     @Autowired
@@ -101,6 +105,11 @@ public abstract class MapperCoverter {
     public Province convertToProvince(Long id){
         return provinceRepository.findById(id).orElseThrow(()
                 -> new RuntimeException("Loi tim province"));
+    }
+    @Named("convertToUser")
+    public User convertToUser(Long id){
+        return userRepository.findById(id).orElseThrow(()
+                -> new RuntimeException("Loi tim user"));
     }
 
     @Named("convertToDistrict")
