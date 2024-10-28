@@ -4,6 +4,11 @@
 /*	padding-bottom: 9px;*/
 /*}*/
 
+.ui-jqgrid .ui-jqgrid-htable thead th div {
+	overflow: visible!important;
+	font-weight: 600!important;
+}
+
 .ui-th-column {
 	border-right: 1px solid #ffffff!important;
 }

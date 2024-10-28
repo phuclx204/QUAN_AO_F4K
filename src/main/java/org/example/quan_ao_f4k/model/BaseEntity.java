@@ -18,7 +18,6 @@ import java.time.LocalDateTime;
 public abstract class BaseEntity {
 
     @Id
-    @JsonIgnore
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
