@@ -22,9 +22,6 @@ import java.math.BigDecimal;
 @Getter
 @Setter
 public class Order extends BaseEntity {
-    @ManyToOne
-    @JoinColumn(name = "address_id")
-    private Address address;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
@@ -57,8 +54,11 @@ public class Order extends BaseEntity {
     @Column(name = "code", length = 20, nullable = false,unique = true)
     private String code;
 
+    @Column(name = "order_type", length = 20, nullable = false,unique = true)
+    private String order_type;
+
+
     @Column(name = "status", nullable = false)
     private Integer status =1;
-
 
 }

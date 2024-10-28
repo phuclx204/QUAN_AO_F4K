@@ -20,6 +20,7 @@ import org.mapstruct.ReportingPolicy;
 public interface OrderMapper extends GennericMapper<Order, OrderRequest, OrderResponse> {
 
     @Override
-    @Mapping(source = "userId", target = "user", qualifiedByName = "convertToUser")
+    @Mapping(source = "order_type", target = "order_type") // Ánh xạ order_type
+//    @Mapping(source = "userId", target = "user", qualifiedByName = "convertToUser")
     Order requestToEntity(OrderRequest request);
 }

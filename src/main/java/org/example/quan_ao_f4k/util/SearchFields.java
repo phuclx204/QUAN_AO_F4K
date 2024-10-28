@@ -33,7 +33,15 @@ public interface SearchFields {
             "paymentStatus",
             "paymentMethodType",
             "user.username",
-            "note"
+            "note",
+            "order_type"
+    );
+    List<String> ORDER_DETAIL = List.of(
+            "order.id",
+            "productDetail.id",
+            "price",
+            "quantity"
+
     );
 }
 

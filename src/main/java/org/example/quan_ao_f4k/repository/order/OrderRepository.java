@@ -1,8 +1,6 @@
 package org.example.quan_ao_f4k.repository.order;
 
 import org.example.quan_ao_f4k.model.order.Order;
-import org.example.quan_ao_f4k.model.order.OrderDetail;
-import org.example.quan_ao_f4k.model.order.OrderDetailId;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
@@ -15,9 +13,6 @@ import java.util.List;
 public interface OrderRepository extends JpaRepository<Order, Long>,
         JpaSpecificationExecutor<Order> {
 
-    @Query("SELECT o FROM Order o WHERE o.status = ?1") // Sửa lại tên bảng
-    List<Order> findOrdersByStatus(int status);
-
-
-
+    @Query("SELECT o FROM Order o WHERE o.order_type = :orderType AND o.status = :status")
+    List<Order> findOrdersByStatus(@Param("orderType") String orderType, @Param("status") Integer status);
 }

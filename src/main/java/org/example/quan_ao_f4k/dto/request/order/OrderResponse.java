@@ -13,7 +13,6 @@ public class OrderResponse {
     private Long id;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private Long addressId;
     private Long userId;
     private String toName;
     private String toAddress;

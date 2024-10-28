@@ -6,7 +6,10 @@ import org.example.quan_ao_f4k.dto.request.order.OrderResponse;
 import org.example.quan_ao_f4k.list.ListResponse;
 import org.example.quan_ao_f4k.mapper.address.WardMapper;
 import org.example.quan_ao_f4k.mapper.order.OrderMapper;
+import org.example.quan_ao_f4k.model.order.Order;
+import org.example.quan_ao_f4k.model.order.OrderDetail;
 import org.example.quan_ao_f4k.repository.address.WardRepository;
+import org.example.quan_ao_f4k.repository.order.OrderDetailRepository;
 import org.example.quan_ao_f4k.repository.order.OrderRepository;
 import org.example.quan_ao_f4k.service.product.ProductServiceImpl;
 import org.example.quan_ao_f4k.util.SearchFields;
@@ -21,6 +24,7 @@ import java.util.stream.Collectors;
 public class OrderServiceImpl implements OrderService{
     private OrderMapper orderMapper;
     private OrderRepository orderRepository;
+    private OrderDetailRepository orderDetailRepository;
     private ProductServiceImpl productService;
     @Override
     public ListResponse<OrderResponse> findAll(int page, int size, String sort, String filter, String search, boolean all) {
@@ -29,17 +33,18 @@ public class OrderServiceImpl implements OrderService{
 
     @Override
     public OrderResponse findById(Long aLong) {
-        return null;
+        Order order = orderRepository.findById(aLong).get();
+        return orderMapper.entityToResponse(order);
     }
 
     @Override
     public OrderResponse save(OrderRequest request) {
-        return defaultSave(request, orderRepository, orderMapper);
+            return defaultSave(request, orderRepository, orderMapper);
     }
 
     @Override
     public OrderResponse save(Long aLong, OrderRequest request) {
-        return null;
+        return defaultSave(aLong,request,orderRepository,orderMapper,"");
     }
 
     @Override
@@ -51,13 +56,17 @@ public class OrderServiceImpl implements OrderService{
     public void delete(List<Long> longs) {
 
     }
-    public List<OrderResponse> findOrdersByStatus(int status) {
-        return orderRepository.findOrdersByStatus(status)
+    public List<OrderResponse> findOrdersByOrderType(String orderType,int status) {
+        return orderRepository.findOrdersByStatus(orderType,status)
                 .stream()
                 .map(orderMapper::entityToResponse)
                 .collect(Collectors.toList());
     }
+    public List<OrderDetail> findCart(Long idOrder) {
+        return orderDetailRepository.findOrderDetailsByOrderId(idOrder);
+    }
     public void addModelOrder(Model model) {
-        model.addAttribute("listOrder",this.findOrdersByStatus(5));
+        model.addAttribute("listOrder",this.findOrdersByOrderType("OFFLINE",1));
+
     }
 }

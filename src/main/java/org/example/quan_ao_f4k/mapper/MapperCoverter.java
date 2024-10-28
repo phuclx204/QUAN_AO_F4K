@@ -5,6 +5,7 @@ import org.example.quan_ao_f4k.model.address.District;
 import org.example.quan_ao_f4k.model.address.Province;
 import org.example.quan_ao_f4k.model.address.Ward;
 import org.example.quan_ao_f4k.model.authentication.User;
+import org.example.quan_ao_f4k.model.order.Order;
 import org.example.quan_ao_f4k.model.product.Brand;
 import org.example.quan_ao_f4k.model.product.Category;
 import org.example.quan_ao_f4k.repository.address.AddressRepository;
@@ -12,6 +13,7 @@ import org.example.quan_ao_f4k.repository.address.DistrictRepository;
 import org.example.quan_ao_f4k.repository.address.ProvinceRepository;
 import org.example.quan_ao_f4k.repository.address.WardRepository;
 import org.example.quan_ao_f4k.repository.authentication.UserRepository;
+import org.example.quan_ao_f4k.repository.order.OrderRepository;
 import org.example.quan_ao_f4k.repository.product.BrandRepository;
 import org.example.quan_ao_f4k.repository.product.CategoryRepository;
 import org.example.quan_ao_f4k.repository.product.ProductDetailRepository;
@@ -55,6 +57,8 @@ public abstract class MapperCoverter {
 
     @Autowired
     private GuaranteeRepository guaranteeRepository;
+    @Autowired
+    private OrderRepository orderRepository;
 
     @Named("convertToBrand")
     public Brand convertToBrand(Long id){
@@ -70,6 +74,11 @@ public abstract class MapperCoverter {
     public ProductDetail convertToProductDetail(Long id) {
         return productDetailRepository.findById(id).orElseThrow(() -> new RuntimeException("Loi tim product detail"));
     }
+    @Named("convertToOrder")
+    public Order convertToOrder(Long id) {
+        return orderRepository.findById(id).orElseThrow(() -> new RuntimeException("Loi tim order"));
+    }
+
 
 
     @Named("convertToSize")
@@ -109,7 +118,7 @@ public abstract class MapperCoverter {
     @Named("convertToUser")
     public User convertToUser(Long id){
         return userRepository.findById(id).orElseThrow(()
-                -> new RuntimeException("Loi tim user"));
+                -> new RuntimeException("Loi tim USER"));
     }
 
     @Named("convertToDistrict")
@@ -123,6 +132,7 @@ public abstract class MapperCoverter {
         return wardRepository.findById(id).orElseThrow(()
                 -> new RuntimeException("Loi tim Ward"));
     }
+
 
 
 }

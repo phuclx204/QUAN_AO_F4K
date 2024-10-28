@@ -26,17 +26,14 @@
                 <i class="bx bx-plus">Tạo hóa đơn</i>
             </button>
         </form>
+        <h5>Danh sách hóa đơn:</h5>
         <div class="invoice-container">
-            <h5>Danh sách hóa đơn:</h5>
-            <ul>
-                <li th:each="order : ${listOrder}">
-                    <button th:text="'Hóa đơn ' + ${order.id}"
-                            th:onclick="'viewInvoice(' + ${order.id} + ')'">
-                    </button>
-                </li>
-            </ul>
+    <span th:each="order, iterStat : ${listOrder}">
+        <button th:text="'Hóa đơn ' + ${iterStat.index + 1}"
+                th:onclick="'viewInvoice(' + ${order.id} + ')'">
+        </button>
+    </span>
         </div>
-
 
 
         <div class="main-container mt-3">
@@ -53,21 +50,29 @@
                                 <th scope="col">STT</th>
                                 <th scope="col">Ảnh</th>
                                 <th scope="col">Sản phẩm</th>
-                                <th scope="col">Tổng tiền</th>
+                                <th scope="col">Giá tiền</th>
+                                <th scope="col">Số Lượng</th>
                                 <th scope="col">Thao tác</th>
                             </tr>
                             </thead>
+                            <!-- Show a message if there are no order details -->
                             <tbody>
-                            <tr>
-                                <th scope="row">1</th>
-                                <td>Mark</td>
-                                <td>Otto</td>
-                                <td>@mdo</td>
-                                <td><a class="btn btn-danger">Xóa</a></td>
+                            <tbody>
+                            <tr th:each="detail, iterStat : ${orderDetails}">
+                                <th scope="row" th:text="${iterStat.index + 1}">1</th>
+                                <td>Ảnh</td>
+                                <td th:text="'Tên sản phẩm : ' + ${detail.productDetail.product.name} + ' Size : ' + ${detail.productDetail.size.name} + ' Màu : ' + ${detail.productDetail.color.name}"></td>
+                                <td th:text="${detail.productDetail.price}"></td>
+                                <td ><input type="number" th:value="${detail.quantity}" style="width: 50px;"></td>
+                                <td ><a class="btn btn-danger">Xóa</a></td>
                             </tr>
-
+                            <tr th:if="${#lists.isEmpty(orderDetails)}">
+                                <td colspan="5">No order details available.</td>
+                            </tr>
                             </tbody>
-                        </table>
+
+                       </table>
+
                     </div>
 
                     <!-- Customer Information Section -->
@@ -107,6 +112,16 @@
                 <!-- Invoice and Summary Area -->
                 <div class="col-md-4 invoice-summary-area">
                     <div class="invoice-summary-container">
+                        <div th:if="${order != null}">
+                            <input type="text" id="currentOrderId" th:value="${order.id}" />
+                            <button type="button" class="create-invoice-btn"
+                                    th:if="${order.code} != null"
+                                    th:onclick="'cancelOrder(' + ${order.id} + ')'">
+                                <i class="bx bx-plus">Hủy Đơn</i>
+                            </button>
+                            <h2>Mã hóa đơn: <span th:text="${order.code}"></span></h2>
+                        </div>
+
                         <h5>Tổng tiền: <span class="float-right">0 ₫</span></h5>
                         <p>Voucher: <span class="float-right">Chọn hoặc nhập mã</span></p>
                         <p>Phí vận chuyển: <span class="float-right">+0 ₫</span></p>
@@ -127,6 +142,7 @@
                         <button class="btn payment-action-btn">Thanh toán (F9)</button>
                     </div>
                 </div>
+
             </div>
         </div>
 
