@@ -58,7 +58,6 @@ public class Order extends BaseEntity {
     @Column(name = "order_type", length = 20, nullable = false,unique = true)
     private String order_type;
 
-
     @Column(name = "status", nullable = false)
     private Integer status =1;
 

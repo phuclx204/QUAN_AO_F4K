@@ -111,14 +111,17 @@ function cancelOrder(orderId) {
         if (result.isConfirmed) {
             // Gửi yêu cầu cập nhật trạng thái đơn hàng
             updateOrderStatus(orderId, 0); // Gọi hàm updateOrderStatus với status = 0
+
         }
     });
 }
 function updateOrderStatus(orderId, status) {
-    const updateData = {
-        status: status
-    };
+    const orderCode = document.getElementById('orderCode').innerText;
 
+    const updateData = {
+        status: status,
+        code: orderCode
+    }
     // Gửi yêu cầu PUT để cập nhật trạng thái đơn hàng
     $.ajax({
         url: '/admin/shopping-offline/' + orderId, // URL cập nhật đơn hàng
@@ -209,7 +212,8 @@ function addProductToInvoice(productId) {
     const currentOrderId = getCurrentOrderId(); // Lấy ID hóa đơn hiện tại
 
     if (!currentOrderId) {
-        Swal.fire('Lỗi', 'Không tìm thấy ID hóa đơn hiện tại.', 'error');
+        modal.style.display = "none";
+        Swal.fire('Lỗi', 'Vui lòng chọn hóa đơn.', 'error');
         return; // Thoát nếu không tìm thấy ID hóa đơn
     }
 

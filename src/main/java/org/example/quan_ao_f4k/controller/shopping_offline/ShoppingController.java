@@ -25,7 +25,7 @@ public class ShoppingController {
 	private final OrderRepository orderRepository;
 	private final OrderDetailServiceimpl orderDetailService;
 
-	@GetMapping("")
+	@GetMapping({"","/"})
 	public String getOrdersWithStatusFive(Model model) {
 		try {
 			orderService.addModelOrder(model);
@@ -34,7 +34,7 @@ public class ShoppingController {
 		}
 		return "/shopping_offline/shopping";
 	}
-	@PostMapping("")
+	@PostMapping({"","/"})
 	public ResponseEntity<OrderResponse> add(@RequestBody OrderRequest request) {
 			OrderResponse orderResponse = orderService.save(request);
 			return ResponseEntity.status(HttpStatus.CREATED).body(orderResponse);

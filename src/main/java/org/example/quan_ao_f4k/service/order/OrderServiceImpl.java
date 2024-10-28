@@ -11,9 +11,14 @@ import org.example.quan_ao_f4k.repository.order.OrderDetailRepository;
 import org.example.quan_ao_f4k.repository.order.OrderRepository;
 import org.example.quan_ao_f4k.service.product.ProductServiceImpl;
 import org.example.quan_ao_f4k.util.SearchFields;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -71,4 +76,22 @@ public class OrderServiceImpl implements OrderService {
 		model.addAttribute("listOrder", this.findOrdersByOrderType("OFFLINE", 1));
 
 	}
+
+	@Override
+	public ListResponse<OrderResponse> searchOrders(int page, int size, String sort, LocalDateTime startDate, LocalDateTime endDate,
+	                                                String search, Integer status) {
+		Pageable pageable = PageRequest.of(page - 1, size);
+
+		// Áp dụng phân trang và lọc
+		Page<Order> orders = orderRepository.searchOrders(pageable, startDate, endDate, search, status);
+
+		// Chuyển đổi danh sách Order thành OrderResponse
+		List<OrderResponse> orderResponses = orders.getContent().stream()
+				.map(orderMapper::entityToResponse)
+				.collect(Collectors.toList());
+
+		return new ListResponse<>(orderResponses, orders);
+	}
+
+
 }

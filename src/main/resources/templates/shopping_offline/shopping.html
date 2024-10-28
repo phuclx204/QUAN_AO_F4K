@@ -103,13 +103,13 @@
                 <div class="col-md-4 new-invoice-summary-area">
                     <div class="new-invoice-summary-container">
                         <div th:if="${order != null}">
-                            <input type="text" id="currentOrderId" th:value="${order.id}" />
+                            <input type="hidden" id="currentOrderId" th:value="${order.id}" />
                             <button type="button" class="new-create-invoice-btn"
                                     th:if="${order.code} != null"
                                     th:onclick="'cancelOrder(' + ${order.id} + ')'">
-                                <i class="bx bx-plus">Hủy Đơn</i>
+                                <i class="bx bx-minus">Hủy hóa đơn</i>
                             </button>
-                            <h2>Mã hóa đơn: <span th:text="${order.code}"></span></h2>
+                            <h2>Mã hóa đơn: <span id="orderCode" th:text="${order.code}"></span></h2>
                         </div>
 
                         <h5>Tổng tiền: <span class="float-right">0 ₫</span></h5>
@@ -129,7 +129,7 @@
                             <input type="checkbox" id="invoiceCheckbox" checked/>
                             <label for="invoiceCheckbox">In hóa đơn</label>
                         </div>
-                        <button class="btn new-payment-action-btn">Thanh toán (F9)</button>
+                        <button class="btn new-payment-action-btn">Thanh toán</button>
                     </div>
                 </div>
             </div>

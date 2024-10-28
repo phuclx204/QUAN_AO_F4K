@@ -34,7 +34,7 @@ public interface SearchFields {
             "paymentMethodType",
             "user.username",
             "note",
-            "orderType"
+            "order_type"
     );
     List<String> ORDER_DETAIL = List.of(
             "order.id",

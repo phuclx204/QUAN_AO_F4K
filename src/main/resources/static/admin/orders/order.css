@@ -9,11 +9,16 @@
     padding: 20px;
 }
 
+
 .search-filter {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 20px;
+    padding: 20px;
+    background-color: #f8f9fa; /* Màu nền nhẹ */
+    border-radius: 8px; /* Bo góc cho background */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Đổ bóng */
 }
 
 .search-form {
@@ -28,6 +33,12 @@
     border: 1px solid #ccc;
     border-radius: 4px;
     font-size: 16px;
+    transition: border-color 0.3s; /* Hiệu ứng chuyển tiếp khi hover */
+}
+
+.search-input:focus {
+    border-color: #007bff; /* Màu biên khi focus */
+    outline: none; /* Bỏ viền mặc định khi focus */
 }
 
 .date-filter {
@@ -41,11 +52,16 @@
     font-size: 14px;
 }
 
-.date-filter input[type="date"] {
+.date-filter input[type="datetime-local"] {
     padding: 8px;
     border: 1px solid #ccc;
     border-radius: 4px;
     font-size: 14px;
+    transition: border-color 0.3s; /* Hiệu ứng chuyển tiếp khi hover */
+}
+
+.date-filter input[type="datetime-local"]:focus {
+    border-color: #007bff; /* Màu biên khi focus */
 }
 
 #selectEmployee {
@@ -54,27 +70,56 @@
     border: 1px solid #ccc;
     border-radius: 4px;
     font-size: 14px;
+    transition: border-color 0.3s; /* Hiệu ứng chuyển tiếp khi hover */
+}
+
+#selectEmployee:focus {
+    border-color: #007bff; /* Màu biên khi focus */
 }
 
 .search-btn,
 .refresh-btn {
     margin-left: 20px;
     padding: 10px 20px;
-    background-color: #007bff;
+    background-color: #007bff; /* Màu xanh cho nút tìm kiếm */
     color: #fff;
     border: none;
     border-radius: 4px;
     font-size: 16px;
     cursor: pointer;
+    transition: background-color 0.3s; /* Hiệu ứng chuyển tiếp màu nền */
 }
 
 .refresh-btn {
-    background-color: #dc3545;
+    background-color: #dc3545; /* Màu đỏ cho nút reset */
 }
 
 .search-btn:hover,
 .refresh-btn:hover {
-    opacity: 0.8;
+    opacity: 0.8; /* Hiệu ứng nhấn */
+}
+
+@media (max-width: 768px) {
+    .search-filter {
+        flex-direction: column; /* Bố cục theo chiều dọc trên màn hình nhỏ */
+    }
+
+    .search-form {
+        flex-direction: column; /* Bố cục theo chiều dọc cho form */
+    }
+
+    .date-filter {
+        margin-left: 0;
+        margin-top: 10px; /* Khoảng cách giữa các thành phần */
+    }
+
+    #selectEmployee,
+    .search-btn,
+    .refresh-btn {
+        margin-left: 0;
+        margin-top: 10px; /* Khoảng cách giữa các nút */
+        width: 100%; /* Đặt chiều rộng 100% cho nút */
+    }
 }
 
 .tabs {
@@ -101,10 +146,12 @@
     border-radius: 4px;
     color: white;
 }
+
 /*loại hóa đơn*/
 .online {
     background-color: #00be60;
 }
+
 .offline {
     background-color: #af3e3e;
 }
@@ -177,6 +224,7 @@
     background-color: #f6c23e;
     color: white;
 }
+
 /*paging*/
 #pagination input[type="text"] {
     height: 35px;
@@ -204,4 +252,5 @@
 .page-button:disabled {
     display: none;
 }
+
 /*end paging*/

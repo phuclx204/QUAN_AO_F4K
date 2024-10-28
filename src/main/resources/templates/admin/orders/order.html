@@ -43,17 +43,18 @@
         </div>
         <div class="order-container">
             <div class="search-filter">
-                <form th:action="@{/admin/orders}" method="get" class="search-form" id="searchForm">
-                    <input type="text" name="search" placeholder="Tìm kiếm mã hóa đơn,tên khách hàng,sdt,loại đơn..."
+                <form id="searchForm" class="search-form" method="get">
+                    <input type="text" name="search" placeholder="Tìm kiếm mã hóa đơn, tên khách hàng, sdt, loại đơn..."
                            th:value="${param.search}" id="searchInput" class="search-input"/>
                     <div class="date-filter">
-                        <label for="startDate">Từ:</label>
-                        <input type="date" id="startDate" name="startDate" placeholder="Từ ngày"
-                               th:value="${param.startDate}"/>
-
-                        <label for="endDate">Đến:</label>
-                        <input type="date" id="endDate" name="endDate" placeholder="Đến ngày"
-                               th:value="${param.endDate}"/>
+                        <div class="date-input-group">
+                            <label for="startDate">Từ:</label>
+                            <input type="datetime-local" id="startDate" name="startDate" placeholder="Từ ngày" th:value="${param.startDate}" />
+                        </div>
+                        <div class="date-input-group">
+                            <label for="endDate">Đến:</label>
+                            <input type="datetime-local" id="endDate" name="endDate" placeholder="Đến ngày" th:value="${param.endDate}" />
+                        </div>
                     </div>
                     <select id="selectEmployee">
                         <option>Tất cả nhân viên</option>
@@ -64,7 +65,7 @@
             </div>
             <div class="tabs">
                 <button class="tab active" data-status="">Tất cả</button>
-                <button class="tab" data-status="1">Chờ xác nhận</button>
+                <button class="tab" data-status="5">Chờ xác nhận</button>
                 <button class="tab" data-status="3">Chờ lấy hàng</button>
                 <button class="tab" data-status="4">Chờ giao hàng</button>
                 <button class="tab" data-status="6">Đang giao</button>

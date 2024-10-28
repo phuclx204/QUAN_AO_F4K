@@ -26,4 +26,5 @@ public class OrderResponse {
 	private BigDecimal tax;
 	private String code;
 	private Integer status;
+	private String order_type;
 }
