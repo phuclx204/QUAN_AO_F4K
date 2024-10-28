@@ -85,9 +85,10 @@ const getValidate = () => {
         inputs.forEach(input => {
             const rules = validationRules[input.id];
             const invalidFeedback = input.parentElement.querySelector('.invalid-feedback');
-
+            // console.log(input, ' - ', invalidFeedback)
             if (rules) {
-                for (let {rule, message} of rules) {
+                for (let {rule, message, lib, type} of rules) {
+                    // console.log(input.value, ' value')
                     if (!rule(input.value)) {
                         invalidFeedback.textContent = message;
                         input.setCustomValidity("Invalid");
@@ -105,6 +106,20 @@ const getValidate = () => {
 
         return isValid;
     };
+
+    // function validateBoostrap(rule, message) {
+    //     if (!rule(input.value)) {
+    //         invalidFeedback.textContent = message;
+    //         input.setCustomValidity("Invalid");
+    //         invalidFeedback.style.display = "block";
+    //         isValid = false;
+    //         break;
+    //     } else {
+    //         invalidFeedback.style.display = "none";
+    //         invalidFeedback.textContent = "";
+    //         input.setCustomValidity("");
+    //     }
+    // }
 
     /**
      *
@@ -178,9 +193,13 @@ const $ajax = (function() {
                 },
                 error: function (xhr) {
                     const objectError = xhr.responseJSON || {message: "An unknown error occurred"};
-
-                    $alterTop('error', objectError.message);
-                    reject(objectError);
+                    if(Array.isArray(objectError)) {
+                        $alterTop('error', objectError[0].defaultMessage);
+                        reject(objectError);
+                    } else {
+                        $alterTop('error', objectError.message);
+                        reject(objectError);
+                    }
                 }
             });
         });
