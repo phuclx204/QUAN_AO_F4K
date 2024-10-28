@@ -5,12 +5,8 @@ import lombok.AllArgsConstructor;
 import org.example.quan_ao_f4k.dto.request.order.OrderDetailRequest;
 import org.example.quan_ao_f4k.dto.request.order.OrderDetailResponse;
 import org.example.quan_ao_f4k.dto.request.order.OrderRequest;
-import org.example.quan_ao_f4k.dto.request.order.OrderResponse;
-import org.example.quan_ao_f4k.model.order.Order;
-import org.example.quan_ao_f4k.model.order.OrderDetail;
-import org.example.quan_ao_f4k.repository.order.OrderDetailRepository;
+import org.example.quan_ao_f4k.dto.response.orders.OrderResponse;
 import org.example.quan_ao_f4k.repository.order.OrderRepository;
-import org.example.quan_ao_f4k.service.order.OrderDetailService;
 import org.example.quan_ao_f4k.service.order.OrderDetailServiceimpl;
 import org.example.quan_ao_f4k.service.order.OrderServiceImpl;
 

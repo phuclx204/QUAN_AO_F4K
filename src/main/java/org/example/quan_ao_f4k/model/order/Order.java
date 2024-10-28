@@ -39,8 +39,9 @@ public class Order extends BaseEntity {
     @Column(name = "total_pay", precision = 10, scale = 2)
     private BigDecimal totalPay;
 
-    @Column(name = "payment_method_type")
-    private Integer paymentMethodType;
+    @ManyToOne
+    @JoinColumn(name = "payment_method_type")
+    private PaymentMethod paymentMethod;
 
     @Column(name = "payment_status")
     private Integer paymentStatus;
@@ -55,7 +56,7 @@ public class Order extends BaseEntity {
     private String code;
 
     @Column(name = "order_type", length = 20, nullable = false,unique = true)
-    private String order_type;
+    private String orderType;
 
 
     @Column(name = "status", nullable = false)

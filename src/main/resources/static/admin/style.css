@@ -49,9 +49,6 @@ body {
 }
 
 
-
-
-
 /* SIDEBAR */
 #sidebar {
     position: fixed;
@@ -182,11 +179,44 @@ body {
     justify-content: center;
 }
 
+/* Thay đổi kiểu dáng cho submenu */
+.submenu {
+    display: none; /* Ẩn submenu ban đầu */
+    position: relative;
+    z-index: 999; /* Tăng z-index để menu con nằm trên các phần tử khác */
+    background-color: #d4d4d4; /* Màu nền cho submenu */
+    padding: 0; /* Không cần padding */
+    list-style: none; /* Không có dấu đầu dòng */
+    margin: 0; /* Không có margin */
+}
+
+.submenu li {
+    padding: 10px; /* Padding cho từng mục trong submenu */
+}
+
+.submenu li:hover {
+    background: #d4d4d4; /* Màu nền khi hover */
+}
+
+
+.has-submenu.active .submenu {
+    display: block; /* Đảm bảo submenu được hiển thị */
+    opacity: 1; /* Đảm bảo submenu được hiển thị */
+    max-height: 500px; /* Giới hạn chiều cao */
+    overflow: hidden; /* Ẩn phần nội dung thừa */
+}
+
+/* Hiệu ứng hover cho các mục trong menu chính */
+#sidebar .side-menu.top li a:hover {
+    background: rgba(255, 255, 255, 0.1); /* Thay đổi màu nền khi hover */
+}
+
+/* Thay đổi kiểu dáng cho sidebar khi ẩn */
+#sidebar.hide .side-menu li a {
+    width: calc(48px - (4px * 2));
+    transition: width .3s ease;
+}
 /* SIDEBAR */
-
-
-
-
 
 /* CONTENT */
 #content {
@@ -408,9 +438,6 @@ body {
 /* NAVBAR */
 
 
-
-
-
 /* MAIN */
 #content main {
     width: 100%;
@@ -526,10 +553,6 @@ body {
     color: var(--dark);
 }
 
-
-
-
-
 #content main .table-data {
     display: flex;
     flex-wrap: wrap;
@@ -602,66 +625,6 @@ body {
     background: var(--grey);
 }
 
-/*#content main .table-data .order table tr td .status {*/
-/*    font-size: 10px;*/
-/*    padding: 6px 16px;*/
-/*    color: var(--light);*/
-/*    border-radius: 20px;*/
-/*    font-weight: 700;*/
-/*}*/
-
-/*#content main .table-data .order table tr td .status.completed {*/
-/*    background: var(--light-green);*/
-/*}*/
-
-/*#content main .table-data .order table tr td .status.process {*/
-/*    background: var(--yellow);*/
-/*}*/
-
-/*#content main .table-data .order table tr td .status.pending {*/
-/*    background: var(--orange);*/
-/*}*/
-
-
-/*#content main .table-data .todo {*/
-/*    flex-grow: 1;*/
-/*    flex-basis: 300px;*/
-/*}*/
-
-/*#content main .table-data .todo .todo-list {*/
-/*    width: 100%;*/
-/*}*/
-
-/*#content main .table-data .todo .todo-list li {*/
-/*    width: 100%;*/
-/*    margin-bottom: 16px;*/
-/*    background: var(--grey);*/
-/*    border-radius: 10px;*/
-/*    padding: 14px 20px;*/
-/*    display: flex;*/
-/*    justify-content: space-between;*/
-/*    align-items: center;*/
-/*}*/
-
-/*#content main .table-data .todo .todo-list li .bx {*/
-/*    cursor: pointer;*/
-/*}*/
-
-/*#content main .table-data .todo .todo-list li.completed {*/
-/*    border-left: 120px solid var(--green);*/
-/*}*/
-
-/*#content main .table-data .todo .todo-list li.not-completed {*/
-/*    border-left: 20px solid var(--red);*/
-/*}*/
-
-/*#content main .table-data .todo .todo-list li.process {*/
-/*    border-left: 60px solid var(--yellow);*/
-/*}*/
-
-/*#content main .table-data .todo .todo-list li:last-child {*/
-/*    margin-bottom: 0;*/
-/*}*/
 
 /* MAIN */
 /* CONTENT */
@@ -732,71 +695,3 @@ body {
     }
 }
 
-/* Modal styles */
-.modal {
-    display: none; /* Ẩn modal mặc định */
-    position: fixed;
-    z-index: 1000; /* Đặt nó ở trên cùng */
-    left: 0;
-    top: 0;
-    width: 100%; /* Full width */
-    height: 100%; /* Full height */
-    overflow: auto; /* Bật cuộn nếu cần */
-    background-color: rgba(0, 0, 0, 0.6); /* Màu nền với độ trong suốt */
-}
-
-.modal-content {
-    background-color: #fff; /* Màu nền cho modal */
-    border-radius: 8px; /* Bo góc cho modal */
-    margin: auto; /* Căn giữa */
-    padding: 20px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5); /* Đổ bóng cho modal */
-    width: 400px; /* Kích thước cố định cho modal */
-    position: relative; /* Để căn giữa */
-    top: 50%; /* Đặt từ phía trên */
-    transform: translateY(-50%); /* Đẩy lên một nửa chiều cao của modal */
-}
-
-.close {
-    color: #aaa;
-    float: right;
-    font-size: 28px;
-    font-weight: bold;
-}
-
-.close:hover,
-.close:focus {
-    color: black;
-    text-decoration: none;
-    cursor: pointer;
-}
-
-h2 {
-    margin: 0; /* Bỏ margin trên tiêu đề */
-}
-
-label {
-    display: block; /* Để label trên mỗi hàng */
-    margin-bottom: 5px; /* Khoảng cách dưới label */
-}
-
-input[type="text"] {
-    width: 100%; /* Full width cho input */
-    padding: 10px; /* Padding cho input */
-    border: 1px solid #ccc; /* Đường viền cho input */
-    border-radius: 4px; /* Bo góc cho input */
-}
-
-button {
-    background-color: #3C91E6; /* Màu nền cho nút */
-    color: white; /* Màu chữ */
-    border: none; /* Bỏ viền */
-    margin-top: 10px;
-    padding: 10px 15px; /* Padding cho nút */
-    border-radius: 4px; /* Bo góc cho nút */
-    cursor: pointer; /* Con trỏ chuột thành hình bàn tay */
-}
-
-button:hover {
-    background-color: #3C91E6; /* Màu nền khi hover */
-}

@@ -14,6 +14,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public interface CrudService<ID, I, O> {
@@ -42,8 +43,27 @@ public interface CrudService<ID, I, O> {
         Specification<E> sortable = RSQLJPASupport.toSort(sort);
         Specification<E> filterable = RSQLJPASupport.toSpecification(filter);
         Specification<E> searchable = SearchUtils.parse(search, searchFields);
+        Specification<E> statusFilter = extractStatusFilter(filter);
+
+        LocalDate startDate = extractDateFromFilter(filter, "startDate");
+        LocalDate endDate = extractDateFromFilter(filter, "endDate");
+
+        Specification<E> dateRangeSpec = (root, query, criteriaBuilder) -> {
+            if (startDate != null && endDate != null) {
+                return criteriaBuilder.between(root.get("created_at"), startDate, endDate);
+            } else if (startDate != null) {
+                return criteriaBuilder.greaterThanOrEqualTo(root.get("created_at"), startDate);
+            } else if (endDate != null) {
+                return criteriaBuilder.lessThanOrEqualTo(root.get("created_at"), endDate);
+            }
+            return criteriaBuilder.conjunction(); // Không áp dụng bộ lọc nếu không có ngày
+        };
+
+        // Kết hợp các tiêu chí lọc thành một Specification
+        Specification<E> finalSpec = sortable.and(filterable).and(searchable).and(statusFilter).and(dateRangeSpec);
+
         Pageable pageable = all ? Pageable.unpaged() : PageRequest.of(page - 1, size);
-        Page<E> entities = repository.findAll(sortable.and(filterable).and(searchable), pageable);
+        Page<E> entities = repository.findAll(finalSpec, pageable);
         List<O> entityResponses = mapper.entityToResponse(entities.getContent());
         return new ListResponse<>(entityResponses, entities);
     }
@@ -89,6 +109,7 @@ public interface CrudService<ID, I, O> {
         I typedRequest = mapper.convertValue(request, requestType);
         return save(id, typedRequest);
     }
+
     default  <E, I, O> ListResponse<O> defaultFindDetailsByProductId(
             Long productId, int page, int size,
             String sort, String filter, String search, boolean all,
@@ -115,5 +136,36 @@ public interface CrudService<ID, I, O> {
 
         return new ListResponse<>(responseList, entities);
     }
-}
 
+    // Hàm hỗ trợ: Trích xuất bộ lọc status từ filter
+    private <E> Specification<E> extractStatusFilter(String filter) {
+        if (filter != null && filter.contains("status==")) {
+            // Trích xuất giá trị status từ chuỗi filter
+            String[] parts = filter.split(";");
+            for (String part : parts) {
+                if (part.startsWith("status==")) {
+                    String statusValue = part.split("==")[1];
+                    return (root, query, criteriaBuilder) ->
+                            criteriaBuilder.equal(root.get("status"), Integer.parseInt(statusValue));
+                }
+            }
+        }
+        // Trả về Specification mặc định nếu không có status trong filter
+        return (root, query, criteriaBuilder) -> criteriaBuilder.conjunction();
+    }
+
+    // Phương thức phụ để lấy ngày từ filter
+    private LocalDate extractDateFromFilter(String filter, String key) {
+        if (filter != null && filter.contains(key + "=")) {
+            try {
+                String[] parts = filter.split(key + "=");
+                String dateString = parts[1].split("&")[0];
+                return LocalDate.parse(dateString); // Cần đảm bảo định dạng đúng ISO (yyyy-MM-dd)
+            } catch (Exception e) {
+                e.printStackTrace(); // Xử lý ngoại lệ nếu cần
+            }
+        }
+        return null;
+    }
+
+}

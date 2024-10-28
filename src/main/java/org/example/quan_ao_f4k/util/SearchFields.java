@@ -34,14 +34,16 @@ public interface SearchFields {
             "paymentMethodType",
             "user.username",
             "note",
-            "order_type"
+            "orderType"
     );
     List<String> ORDER_DETAIL = List.of(
             "order.id",
             "productDetail.id",
             "price",
             "quantity"
-
+    );
+    List<String> EMPLOYEE = List.of(
+            "user.name"
     );
 }
 

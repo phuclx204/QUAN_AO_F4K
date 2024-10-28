@@ -1,6 +1,26 @@
 // Giả định rằng bạn có hàm này để lấy số lượng hóa đơn hiện tại
 function getOrderCount() {
-    return $('.invoice-container button').length; // Lấy số lượng hóa đơn từ các nút trong invoice-container
+    return $('.new-invoice-container button').length; // Lấy số lượng hóa đơn từ các nút trong invoice-container
+}
+
+
+function loadOptions(endpoint, selectElement, defaultOption, selectedId = null) {
+    $.get(endpoint, function (data) {
+        selectElement.empty().append(`<option value="">${defaultOption}</option>`);
+        data.forEach(item => {
+            const selected = item.id == selectedId ? 'selected' : '';
+            selectElement.append(`<option value="${item.id}" ${selected}>${item.name}</option>`);
+        });
+    });
+}
+
+function loadSelect(categoryId = null, brandId = null) {
+    const categorySelect = $('#categorySelect');
+    const brandSelect = $('#brandSelect');
+    const colorSelect = $('#colorSelect');
+    const sizeSelect = $('#sizeSelect');
+    loadOptions('/admin/category/active', categorySelect, 'Tất cả', categoryId);
+    loadOptions('/admin/brand/active', brandSelect, 'Tất cả', brandId);
 }
 
 function confirmCreateInvoice() {
@@ -136,16 +156,15 @@ function viewInvoice(id) {
         window.location.href = '/admin/shopping-offline/' + id;
     }
 
-
-
     const modal = document.getElementById("productModal");
-     const btnAddProduct = document.querySelector(".btn-add");
-     const spanClose = document.querySelector(".close");
+     const btnAddProduct = document.querySelector(".new-btn-add");
+     const spanClose = document.querySelector(".new-close");
      const productList = document.getElementById("productList");
 
      // Mở modal khi bấm nút "Thêm sản phẩm"
      btnAddProduct.onclick = function () {
          modal.style.display = "block";
+         loadSelect();
          fetchProductDetails(); // Call API when the modal opens
      }
 
@@ -161,17 +180,20 @@ function viewInvoice(id) {
          }
      }
 
+$('.search-form').on('submit', function (event) {
+    event.preventDefault();
+    const search = $('input[name="search"]').val();
+    fetchProductDetails(1, 5, 'id,desc', search);
+});
      // Function to fetch product details from the API
-     function fetchProductDetails() {
-         const page = 1;
-         const size = 5;
-         const sort = "id,desc";
-         const search = document.getElementById("searchInput").value;
+     function fetchProductDetails(page=1,size=5,sort='id,desc',search='') {
+         search = document.getElementById("searchInput").value;
 
          fetch(`/admin/products/product-detail/list?page=${page}&size=${size}&sort=${sort}&search=${search}`)
              .then(response => response.json())
              .then(data => {
                  renderProductList(data.content);
+                 setupPagination(data.totalPages,page)
              })
              .catch(error => {
                  console.error('Error fetching product details:', error);
@@ -208,6 +230,7 @@ function addProductToInvoice(productId) {
         contentType: 'application/json',
         data: JSON.stringify(orderDetailData),
         success: function (response) {
+            modal.style.display = "none";
             Swal.fire({
                 title: 'Thêm sản phẩm thành công!',
                 text: "Sản phẩm đã được thêm vào hóa đơn.",
@@ -220,6 +243,7 @@ function addProductToInvoice(productId) {
             });
         },
         error: function (xhr) {
+            modal.style.display = "none";
             let errorMessage = 'Không thể thêm sản phẩm vào hóa đơn.';
             if (xhr.status === 400 && xhr.responseJSON) {
                 errorMessage = xhr.responseJSON.map(error => error.defaultMessage).join(', ');
@@ -229,27 +253,86 @@ function addProductToInvoice(productId) {
     });
 }
 function renderProductList(products) {
+    const productList = document.getElementById('productList');
     productList.innerHTML = ''; // Xóa nội dung trước đó
 
-    products.forEach(product => {
-        const productItem = document.createElement('div');
-        productItem.classList.add('product-item');
+    if (products.length === 0) {
+        productList.innerHTML = `
+            <tr>
+                <td colspan="6" style="text-align: center; color: red;">Không có dữ liệu!</td>
+            </tr>
+        `;
+        return;
+    }
 
-        // Thêm một định danh duy nhất cho sản phẩm
-        const productId = product.id; // Giả sử sản phẩm có trường 'id'
+    products.forEach((product,index) => {
+        const productRow = document.createElement('tr'); // Tạo hàng mới
 
-        productItem.innerHTML = `
-            <img src="${product.product.imageUrl}" alt="${product.product.name}">
-            <h3>${product.product.name}</h3>
-            <p class="price">${product.price} VND</p>
-            <div class="actions">
-                <div class="select-color">
-                    ${product.color ? `<span class="color-circle" style="background-color: ${product.color.code};"></span>` : ''}
-                </div>
-                <button class="btn-buy" onclick="addProductToInvoice(${product.id})">Chọn Vào giỏi</button>
-            </div>
+        productRow.innerHTML = `
+            <td>${index + 1}</td>
+            <td><img src="${product.product.imageUrl}" alt="${product.product.name}" style="width: 50px; height: 50px;"></td>
+            <td>${product.product.name}</td>
+            <td>${product.price} VND</td>
+            <td>
+                ${product.color ? `<span class="color-circle" style="background-color: ${product.color.hex}; display: inline-block; width: 20px; height: 20px; border-radius: 50%;"></span>` : ''}
+            </td>
+            <td>
+                <button class="new-btn-buy" onclick="addProductToInvoice(${product.id})">Chọn Vào giỏ</button>
+            </td>
         `;
 
-        productList.appendChild(productItem);
+        productList.appendChild(productRow); // Thêm hàng vào bảng
     });
 }
+
+function setupPagination(totalPages, currentPage) {
+    const pagination = $('#pagination');
+    if (totalPages === 0) {
+        pagination.hide();
+        return;
+    } else {
+        pagination.show();
+    }
+    pagination.empty();
+
+    pagination.append(`
+        <button class="page-button" ${currentPage === 1 ? 'disabled' : ''} data-page="${currentPage - 1}">
+            Trước
+        </button>
+        `);
+
+    pagination.append(`
+        <input type="text" id="pageInput" value="${currentPage}" style="width: 50px; text-align: center;" />
+        <span> / ${totalPages}</span>
+        `);
+
+    pagination.append(`
+        <button class="page-button" ${currentPage === totalPages ? 'disabled' : ''} data-page="${currentPage + 1}">
+            Tiếp theo
+        </button>
+        `);
+
+    $('.page-button').on('click', function () {
+        const page = $(this).data('page');
+        fetchProductDetails(page);
+    });
+
+    $('#pageInput').on('input', function () {
+        this.value = this.value.replace(/[^0-9]/g, '');
+    });
+
+    $('#pageInput').on('keypress', function (e) {
+        if (e.key === 'Enter') {
+            let inputPage = parseInt($(this).val());
+
+            if (isNaN(inputPage) || inputPage < 1) {
+                inputPage = 1;
+            } else if (inputPage > totalPages) {
+                inputPage = totalPages;
+            }
+
+            fetchProductDetails(inputPage);
+        }
+    });
+}
+

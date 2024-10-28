@@ -228,67 +228,103 @@ p[title]:hover::after {
 
 
 
-/*modal add*/
+
 /* Modal Container */
 .modal {
-    display: none; /* Ẩn modal mặc định */
-    position: fixed; /* Đặt vị trí cố định */
-    z-index: 1; /* Đặt z-index cao để hiển thị trên các phần khác */
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
     left: 0;
     top: 0;
-    width: 100%; /* Chiều rộng 100% */
-    height: 100%; /* Chiều cao 100% */
-    overflow: auto; /* Thêm thanh cuộn nếu cần */
-    background-color: rgba(0, 0, 0, 0.5); /* Nền mờ */
-    display: flex; /* Sử dụng flexbox */
-    justify-content: center; /* Căn giữa theo chiều ngang */
-    align-items: center; /* Căn giữa theo chiều dọc */
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgba(0, 0, 0, 0.4); /* Black with opacity */
+    transition: all 0.3s ease-in-out; /* Smooth transition for resize */
 }
 
+/* Modal Content */
 .modal-content {
-    background-color: #fefefe; /* Nền trắng */
-    padding: 20px; /* Padding bên trong modal */
-    border: 1px solid #888; /* Đường viền */
-    width: 40%; /* Chiều rộng modal đã giảm xuống 40% */
-    max-width: 500px; /* Chiều rộng tối đa */
-    border-radius: 8px; /* Bo góc cho modal */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Đổ bóng cho modal */
+    background-color: #fefefe;
+    margin: auto; /* Center horizontally */
+    margin-top: 5%; /* Adjust top margin for responsiveness */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 90%; /* Default width */
+    max-width: 500px; /* Max width for larger screens */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Add shadow for better visibility */
+    border-radius: 8px; /* Rounded corners */
+    position: relative;
+    transition: all 0.3s ease-in-out; /* Smooth transition for resize */
 }
 
+/* Close Button */
 .close {
-    color: #aaa; /* Màu cho nút đóng */
-    float: right; /* Đẩy nút sang bên phải */
-    font-size: 28px; /* Kích thước font chữ */
-    font-weight: bold; /* Đậm chữ */
+    color: #aaa;
+    position: absolute;
+    right: 20px;
+    top: 15px;
+    font-size: 28px;
+    font-weight: bold;
 }
 
 .close:hover,
 .close:focus {
-    color: black; /* Màu khi hover */
-    text-decoration: none; /* Bỏ gạch chân */
-    cursor: pointer; /* Con trỏ thành hình bàn tay */
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
 }
 
 /* Form Styling */
 form {
     display: flex;
-    flex-direction: column; /* Căn chỉnh theo chiều dọc */
-    align-items: stretch; /* Căng các phần tử ra để chiếm toàn bộ chiều rộng của form */
+    flex-direction: column;
+    align-items: center;
 }
 
 /* Input Fields */
-input[type="text"],
-input[type="number"],
-select {
-    width: 100%; /* Chiều rộng 100% cho các input, textarea, select */
-    padding: 10px; /* Padding bên trong */
-    margin-top: 5px; /* Khoảng cách phía trên */
-    margin-bottom: 10px; /* Khoảng cách phía trên */
-    border: 1px solid #ccc; /* Đường viền */
-    border-radius: 4px; /* Bo góc */
-    box-sizing: border-box; /* Đảm bảo padding và border không làm thay đổi kích thước */
+input[type="text"] {
+    width: 100%; /* Full width inside modal */
+    padding: 10px;
+    margin: 10px 0;
+    box-sizing: border-box;
+    border: 1px solid #888;
+    border-radius: 4px;
+    transition: all 0.3s ease-in-out;
 }
 
+/* Button Styling */
+button {
+    padding: 10px 20px;
+    background-color: var(--blue); /* Match color with search button */
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+    border-radius: 30px;
+}
+
+button:hover {
+    background-color:var(--cyan);
+    border-radius: 50px;
+}
+
+/* Media Query for Smaller Screens */
+@media (max-width: 600px) {
+    .modal-content {
+        width: 95%; /* Increase width for smaller screens */
+        padding: 15px; /* Adjust padding */
+    }
+
+    input[type="text"] {
+        font-size: 14px; /* Adjust font size for input fields */
+    }
+
+    button {
+        width: 100%; /* Button takes full width on smaller screens */
+    }
+}
 .flex-container {
     display: flex;
     gap: 10px;

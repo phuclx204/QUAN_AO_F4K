@@ -4,16 +4,20 @@ import org.example.quan_ao_f4k.model.address.Address;
 import org.example.quan_ao_f4k.model.address.District;
 import org.example.quan_ao_f4k.model.address.Province;
 import org.example.quan_ao_f4k.model.address.Ward;
+import org.example.quan_ao_f4k.model.authentication.Role;
 import org.example.quan_ao_f4k.model.authentication.User;
 import org.example.quan_ao_f4k.model.order.Order;
+import org.example.quan_ao_f4k.model.order.PaymentMethod;
 import org.example.quan_ao_f4k.model.product.Brand;
 import org.example.quan_ao_f4k.model.product.Category;
 import org.example.quan_ao_f4k.repository.address.AddressRepository;
 import org.example.quan_ao_f4k.repository.address.DistrictRepository;
 import org.example.quan_ao_f4k.repository.address.ProvinceRepository;
 import org.example.quan_ao_f4k.repository.address.WardRepository;
+import org.example.quan_ao_f4k.repository.authentication.RoleRepository;
 import org.example.quan_ao_f4k.repository.authentication.UserRepository;
 import org.example.quan_ao_f4k.repository.order.OrderRepository;
+import org.example.quan_ao_f4k.repository.order.PaymentMethodRepository;
 import org.example.quan_ao_f4k.repository.product.BrandRepository;
 import org.example.quan_ao_f4k.repository.product.CategoryRepository;
 import org.example.quan_ao_f4k.repository.product.ProductDetailRepository;
@@ -43,96 +47,101 @@ public abstract class MapperCoverter {
     @Autowired
     private WardRepository wardRepository;
     @Autowired
-    private UserRepository userRepository;
-
-
-    @Autowired
     private SizeRepository sizeRepository;
-
     @Autowired
     private ColorRepository colorRepository;
-
     @Autowired
     private ProductRepository productRepository;
-
     @Autowired
-    private GuaranteeRepository guaranteeRepository;
+    private UserRepository userRepository;
     @Autowired
-    private OrderRepository orderRepository;
+    private RoleRepository roleRepository;
+    @Autowired
+    private PaymentMethodRepository paymentMethodRepository;
+	@Autowired
+	private OrderRepository orderRepository;
 
     @Named("convertToBrand")
-    public Brand convertToBrand(Long id){
-        return brandRepository.findById(id).orElseThrow(()
-                -> new RuntimeException("Loi tim brand"));
+    public Brand convertToBrand(Long id) {
+        return brandRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Lỗi tìm Brand"));
     }
+
     @Named("convertToCategory")
-    public Category convertToCategory(Long id){
-        return categoryRepository.findById(id).orElseThrow(()
-                -> new RuntimeException("Loi tim cate"));
+    public Category convertToCategory(Long id) {
+        return categoryRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Lỗi tìm Category"));
     }
+
     @Named("convertToProductDetail")
     public ProductDetail convertToProductDetail(Long id) {
-        return productDetailRepository.findById(id).orElseThrow(() -> new RuntimeException("Loi tim product detail"));
+        return productDetailRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Lỗi tìm Product Detail"));
     }
+
+    @Named("convertToSize")
+    public Size convertToSize(Long id) {
+        return sizeRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Lỗi tìm Size"));
+    }
+
+    @Named("convertToColor")
+    public Color convertToColor(Long id) {
+        return colorRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Lỗi tìm Color"));
+    }
+
+    @Named("convertToProduct")
+    public Product convertToProduct(Long id) {
+        return productRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Lỗi tìm Product"));
+    }
+
+    @Named("convertToAddress")
+    public Address convertToAddress(Long id) {
+        return addressRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Lỗi tìm Address"));
+    }
+
+    @Named("convertToProvince")
+    public Province convertToProvince(Long id) {
+        return provinceRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Lỗi tìm Province"));
+    }
+
+    @Named("convertToDistrict")
+    public District convertToDistrict(Long id) {
+        return districtRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Lỗi tìm District"));
+    }
+
+    @Named("convertToWard")
+    public Ward convertToWard(Long id) {
+        return wardRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Lỗi tìm Ward"));
+    }
+
+    @Named("convertToUser")
+    public User convertToUser(Long id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Lỗi tìm User"));
+    }
+
+    @Named("convertToRole")
+    public Role convertToRole(Long id) {
+        return roleRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Lỗi tìm Role"));
+    }
+
+    @Named("convertToPayment")
+    public PaymentMethod convertToPayment(Long id) {
+        return paymentMethodRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Lỗi tìm Payment Method"));
+    }
+
     @Named("convertToOrder")
     public Order convertToOrder(Long id) {
         return orderRepository.findById(id).orElseThrow(() -> new RuntimeException("Loi tim order"));
     }
-
-
-
-    @Named("convertToSize")
-    public Size convertToSize(Long id){
-        return sizeRepository.findById(id).orElseThrow(()
-                -> new RuntimeException("Loi tim cate"));
-    }
-
-    @Named("convertToColor")
-    public Color convertToColor(Long id){
-        return colorRepository.findById(id).orElseThrow(()
-                -> new RuntimeException("Loi tim cate"));
-    }
-
-    @Named("convertToProduct")
-    public Product convertToProduct(Long id){
-        return productRepository.findById(id).orElseThrow(()
-                -> new RuntimeException("Loi tim cate"));
-    }
-
-    @Named("convertToGuarantee")
-    public Guarantee convertToGuarantee(Long id){
-        return guaranteeRepository.findById(id).orElseThrow(()
-                -> new RuntimeException("Loi tim cate"));
-    }
-    @Named("convertToAddress")
-    public Address convertToAddress(Long id){
-        return addressRepository.findById(id).orElseThrow(()
-                -> new RuntimeException("Loi tim ..."));
-    }
-
-    @Named("convertToProvince")
-    public Province convertToProvince(Long id){
-        return provinceRepository.findById(id).orElseThrow(()
-                -> new RuntimeException("Loi tim province"));
-    }
-    @Named("convertToUser")
-    public User convertToUser(Long id){
-        return userRepository.findById(id).orElseThrow(()
-                -> new RuntimeException("Loi tim USER"));
-    }
-
-    @Named("convertToDistrict")
-    public District convertToDistrict(Long id){
-        return districtRepository.findById(id).orElseThrow(()
-                -> new RuntimeException("Loi tim District"));
-    }
-
-    @Named("convertToWard")
-    public Ward convertToWard(Long id){
-        return wardRepository.findById(id).orElseThrow(()
-                -> new RuntimeException("Loi tim Ward"));
-    }
-
-
 
 }

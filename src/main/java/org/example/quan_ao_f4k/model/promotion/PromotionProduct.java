@@ -12,6 +12,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.example.quan_ao_f4k.model.product.Product;
 
+import java.math.BigDecimal;
+
 @Entity
 @Table(name = "promotion_product")
 @AllArgsConstructor
@@ -31,4 +33,15 @@ public class PromotionProduct {
 
     @Column(name = "quantity")
     private Integer quantity;
+
+    @Column(name = "discount_value",precision = 10,scale = 2)
+    private BigDecimal discountValue;
+
+    @Column(name = "status")
+    private Integer status;
+
+    @Column(name = "type")
+    private Integer type;
+
+
 }
