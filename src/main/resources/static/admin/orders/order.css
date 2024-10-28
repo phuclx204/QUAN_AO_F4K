@@ -9,7 +9,6 @@
     padding: 20px;
 }
 
-
 .search-filter {
     display: flex;
     justify-content: space-between;
@@ -154,6 +153,9 @@
 
 .offline {
     background-color: #af3e3e;
+}
+.null {
+    background-color: #4a4a4a;
 }
 
 /*các trạng thái hóa đơn*/

@@ -66,7 +66,9 @@ $(document).ready(function () {
                 <td>${order.toPhone}</td>
                 <td>${order.totalPay}</td>
                 <td>
-                    <span class="badge ${order.order_type === 'ONLINE' ? 'online' : 'offline'}">${order.order_type}</span>
+                    <span class="badge ${order.order_type === 'ONLINE' ? 'online' : order.order_type === 'OFFLINE' ? 'offline' : 'null'}">
+                        ${order.order_type}
+                    </span>
                 </td>
                 <td>
                     <span class="badge ${getStatusClass(order.status)}">
