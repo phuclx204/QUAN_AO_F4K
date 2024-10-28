@@ -15,15 +15,16 @@ import org.mapstruct.ReportingPolicy;
 
 @Mapper(componentModel = "spring"
         , unmappedTargetPolicy = ReportingPolicy.IGNORE
-        , uses = {MapperCoverter.class, AddressMapper.class})
+        , uses = {MapperCoverter.class})
 public interface OrderMapper extends GennericMapper<Order, OrderRequest, OrderResponse> {
     @Override
-    @Mapping(source = "userId", target = "user", qualifiedByName = "convertToUser")
-    @Mapping(source = "paymentMethodId", target = "paymentMethod", qualifiedByName = "convertToPayment")
+    @Mapping(source = "order_type", target = "order_type")
+//    @Mapping(source = "userId", target = "user", qualifiedByName = "convertToUser")
     Order requestToEntity(OrderRequest request);
 
     @Override
-    @Mapping(source = "userId", target = "user", qualifiedByName = "convertToUser")
-    @Mapping(source = "paymentMethodId", target = "paymentMethod", qualifiedByName = "convertToPayment")
+    @Mapping(source = "order_type", target = "order_type")
+//    @Mapping(source = "userId", target = "user", qualifiedByName = "convertToUser")
+//    @Mapping(source = "paymentMethodId", target = "paymentMethod", qualifiedByName = "convertToPayment")
     Order partialUpdate(@MappingTarget Order entity, OrderRequest request);
 }

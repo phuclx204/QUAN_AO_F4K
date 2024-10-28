@@ -54,15 +54,13 @@ function confirmCreateInvoice() {
 }
 
 function createInvoice() {
-    // Dữ liệu cần gửi để tạo hóa đơn
     const orderData = {
-        userId: 61, // Thay thế giá trị này nếu cần
-        code: generateUniqueCode(), // Tạo mã duy nhất
+        userId: 61,
+        code: generateUniqueCode(),
         status: 1,
-        order_type: 'OFFLINE' // Đặt loại đơn hàng là OFFLINE
+        order_type: 'OFFLINE'
     };
 
-    // Gửi yêu cầu POST để tạo hóa đơn
     $.ajax({
         url: '/admin/shopping-offline',
         method: 'POST',

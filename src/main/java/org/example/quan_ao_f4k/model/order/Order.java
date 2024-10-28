@@ -56,7 +56,7 @@ public class Order extends BaseEntity {
     private String code;
 
     @Column(name = "order_type", length = 20, nullable = false,unique = true)
-    private String orderType;
+    private String order_type;
 
 
     @Column(name = "status", nullable = false)

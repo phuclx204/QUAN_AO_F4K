@@ -9,16 +9,19 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @AllArgsConstructor
 public class OrderRequest {
+    @Nullable
     private Long userId;
     private String toName;
     private String toAddress;
     private String toPhone;
     private BigDecimal totalPay;
+    @Nullable
     private Long paymentMethodId;
     private Integer paymentStatus;
     private String note;
     private BigDecimal tax;
+    @Nullable
     private String code;
     private Integer status=1;
-    private String orderType;
+    private String order_type;
 }

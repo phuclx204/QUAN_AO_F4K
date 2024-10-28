@@ -13,18 +13,17 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class OrderResponse {
 	private Long id;
-	private UserResponse user;
+	private LocalDateTime createdAt;
+	private LocalDateTime updatedAt;
+	private Long userId;
 	private String toName;
 	private String toAddress;
 	private String toPhone;
 	private BigDecimal totalPay;
-	private PaymentMethodResponse paymentMethod;
+	private Long paymentMethodType;
 	private Integer paymentStatus;
 	private String note;
 	private BigDecimal tax;
 	private String code;
 	private Integer status;
-	private String orderType;
-	private LocalDateTime createdAt;
-	private LocalDateTime updatedAt;
 }
