@@ -24,5 +24,26 @@ public interface SearchFields {
             "color.name",
             "size.name"
     );
+    List<String> ORDER = List.of(
+            "code",
+            "toName",
+            "toAddress",
+            "toPhone",
+            "status",
+            "paymentStatus",
+            "paymentMethodType",
+            "user.username",
+            "note",
+            "order_type"
+    );
+    List<String> ORDER_DETAIL = List.of(
+            "order.id",
+            "productDetail.id",
+            "price",
+            "quantity"
+    );
+    List<String> EMPLOYEE = List.of(
+            "user.name"
+    );
 }
 

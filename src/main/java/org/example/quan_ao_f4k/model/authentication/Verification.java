@@ -35,5 +35,5 @@ public class Verification extends BaseEntity {
     private LocalDateTime expireAt;
 
     @Column(name = "type", length = 255)
-    private String type;
+    private Integer type;
 }

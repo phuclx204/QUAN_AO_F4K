@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.util.Optional;
 
+@Repository
 public interface CartRepository extends JpaRepository<Cart, Long>,
 		JpaSpecificationExecutor<Cart> {
 

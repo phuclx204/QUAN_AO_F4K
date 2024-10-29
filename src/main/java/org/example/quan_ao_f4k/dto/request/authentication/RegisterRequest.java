@@ -11,4 +11,7 @@ public class RegisterRequest {
     private String username;
     private String email;
     private String password;
+    private Long addressId;
+    private Long roleId=2L;//Mắc định là user
+
 }

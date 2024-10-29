@@ -5,19 +5,49 @@ allSideMenu.forEach((item) => {
   item.addEventListener("click", function (e) {
     const href = item.getAttribute("href");
     localStorage.setItem("activeMenu", href);
-
-    if (sidebar.classList.contains("hide")) {
-      e.stopPropagation();
-    }
   });
 });
 
+// Handle submenu toggle
+const submenuItems = document.querySelectorAll(".has-submenu > a");
+
+// Handle submenu toggle with animation
+submenuItems.forEach((item) => {
+  item.addEventListener("click", function (e) {
+    e.preventDefault();
+    const parent = this.parentElement;
+    const submenu = parent.querySelector(".submenu");
+
+    // Toggle active class for the parent
+    parent.classList.toggle("active");
+
+    // Toggle submenu display with animation
+    if (parent.classList.contains("active")) {
+      submenu.style.display = 'block'; // Hiển thị submenu
+    } else {
+      submenu.style.display = 'none'; // Ẩn submenu
+    }
+
+    // Lưu trạng thái submenu vào localStorage
+    const href = this.getAttribute("href");
+    localStorage.setItem("activeMenu", href);
+  });
+});
+
+// Load trạng thái menu từ localStorage
 window.addEventListener("load", function () {
   const activeMenu = localStorage.getItem("activeMenu");
   if (activeMenu) {
     const activeLink = document.querySelector(`a[href='${activeMenu}']`);
     if (activeLink) {
       activeLink.parentElement.classList.add("active");
+      // Nếu có menu con, mở nó
+      const parent = activeLink.closest('.has-submenu');
+      if (parent) {
+        parent.classList.add("active");
+        const submenu = parent.querySelector(".submenu");
+        submenu.style.display = 'block'; // Mở submenu
+      }
     }
   }
 });
@@ -30,12 +60,12 @@ menuBar.addEventListener("click", function () {
   sidebar.classList.toggle("hide");
 });
 
-
 window.addEventListener("resize", function () {
   if (this.innerWidth > 760) {
     sidebar.classList.remove("hide");
   }
 });
+
 
 const switchMode = document.getElementById("switch-mode");
 
@@ -70,3 +100,4 @@ document.addEventListener("DOMContentLoaded", function () {
     document.querySelector(".bx.bxs-sun").style.display = "inline-block";
   }
 });
+

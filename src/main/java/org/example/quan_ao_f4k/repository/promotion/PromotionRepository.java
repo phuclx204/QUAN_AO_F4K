@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import java.time.LocalDate;
 import java.util.List;
 
+@Repository
 public interface PromotionRepository extends JpaRepository<Promotion, Long>,
 		JpaSpecificationExecutor<Promotion> {
 

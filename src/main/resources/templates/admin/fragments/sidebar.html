@@ -24,45 +24,49 @@
             </a>
         </li>
         <!--        product -->
-        <li>
-            <a th:href="@{/admin/products}">
+        <li class="has-submenu">
+            <a href="javascript:void(0)">
                 <i class='bx bxs-doughnut-chart'></i>
-                <span class="text">Sản phẩm</span>
+                <span class="text">Quản lý sản phẩm</span>
+                <i class='bx bx-chevron-down toggle-icon'></i>
             </a>
+            <ul class="submenu">
+                <li>
+                    <a th:href="@{/admin/products}">
+                        <i class='bx bxs-doughnut-chart'></i>
+                        <span class="text">Sản phẩm</span>
+                    </a>
+                </li>
+                <li>
+                    <a th:href="@{/admin/brand}">
+                        <i class='bx bx-building'></i>
+                        <span class="text">Thương hiệu</span>
+                    </a>
+                </li>
+                <li>
+                    <a th:href="@{/admin/category}">
+                        <i class='bx bx-category'></i>
+                        <span class="text">Danh mục</span>
+                    </a>
+                </li>
+                <li>
+                    <a th:href="@{/admin/size}">
+                        <i class='bx bx-expand'></i>
+                        <span class="text">Kích thước</span>
+                    </a>
+                </li>
+                <li>
+                    <a th:href="@{/admin/color}">
+                        <i class='bx bx-palette'></i>
+                        <span class="text">Màu sắc</span>
+                    </a>
+                </li>
+            </ul>
         </li>
-        <!--        <li>-->
-        <!--            <a th:href="@{product-detail}">-->
-        <!--                <i class='bx bx-package'></i>-->
-        <!--                <span class="text">Sản phẩm chi tiết</span>-->
-        <!--            </a>-->
-        <!--        </li>-->
-        <li>
-            <a th:href="@{/admin/brand}">
-                <i class='bx bx-building'></i>
-                <span class="text">Thương hiệu</span>
-            </a>
-        </li>
-        <li>
-            <a th:href="@{/admin/category}">
-                <i class='bx bx-category'></i>
-                <span class="text">Danh mục</span>
-            </a>
-        </li>
-        <li>
-            <a th:href="@{/admin/size}">
-                <i class='bx bx-expand'></i>
-                <span class="text">Kích thước</span>
-            </a>
-        </li>
-        <li>
-            <a th:href="@{/admin/color}">
-                <i class='bx bx-palette'></i>
-                <span class="text">Màu sắc</span>
-            </a>
-        </li>
+
         <!--        Hóa đơn-->
         <li>
-            <a th:href="@{/admin/order}">
+            <a th:href="@{/admin/orders}">
                 <i class='bx bx-receipt'></i>
                 <span class="text">Hóa đơn</span>
             </a>
@@ -94,7 +98,7 @@
             </a>
         </li>
         <li>
-            <a href="#" class="logout">
+            <a th:href="@{/account/logout}">
                 <i class='bx bxs-log-out-circle'></i>
                 <span class="text">Đăng xuất</span>
             </a>

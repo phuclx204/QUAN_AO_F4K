@@ -16,15 +16,12 @@ import org.example.quan_ao_f4k.model.authentication.User;
 import java.math.BigDecimal;
 
 @Entity
-@Table(name = "order")
+@Table(name = "orders")
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
 public class Order extends BaseEntity {
-    @ManyToOne
-    @JoinColumn(name = "address_id")
-    private Address address;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
@@ -42,8 +39,9 @@ public class Order extends BaseEntity {
     @Column(name = "total_pay", precision = 10, scale = 2)
     private BigDecimal totalPay;
 
-    @Column(name = "payment_method_type")
-    private Integer paymentMethodType;
+    @ManyToOne
+    @JoinColumn(name = "payment_method_type")
+    private PaymentMethod paymentMethod;
 
     @Column(name = "payment_status")
     private Integer paymentStatus;
@@ -57,8 +55,10 @@ public class Order extends BaseEntity {
     @Column(name = "code", length = 20, nullable = false,unique = true)
     private String code;
 
+    @Column(name = "order_type", length = 20, nullable = false,unique = true)
+    private String order_type;
+
     @Column(name = "status", nullable = false)
     private Integer status =1;
-
 
 }

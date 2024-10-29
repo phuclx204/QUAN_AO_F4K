@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
-
+@Repository
 public interface ColorRepository extends JpaRepository<Color, Long>,
 		JpaSpecificationExecutor<Color> {
 	boolean existsByName(String name);

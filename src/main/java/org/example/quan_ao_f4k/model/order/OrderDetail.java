@@ -15,16 +15,18 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @Getter
 @Setter
-@IdClass(OrderDetailId.class)
 public class OrderDetail {
-    @Id
+    @EmbeddedId
+    private OrderProductDetailKey orderProductDetailKey = new OrderProductDetailKey();
+
     @ManyToOne
-    @JoinColumn(name = "order_id")
+    @MapsId("orderId")
+    @JoinColumn(name = "order_id", nullable = false)
     private Order order;
 
-    @Id
     @ManyToOne
-    @JoinColumn(name = "id_parent")
+    @MapsId("productDetailId")
+    @JoinColumn(name = "id_parent", nullable = false)
     private ProductDetail productDetail;
 
 
