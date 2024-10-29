@@ -8,6 +8,9 @@ public class F4KConstants {
     public final static int STATUS_ON = 1;
     public final static int STATUS_OFF = 0;
 
+    public final static int TYPE_CASH = 1;
+    public final static int TYPE_PERCENT = 2;
+
     public final static String ROLE_ADMIN = "ADMIN";
     public final static String ROLE_USER = "USER";
 

@@ -1,9 +1,3 @@
-const BTN = {
-    UPDATE: '.btn-update',
-    DELETE: '.btn-delete',
-    CREATE: '.btn-create'
-}
-
 const girdOptionDefault = {
     datatype: "json",
     height: 300,
@@ -28,11 +22,11 @@ const girdOptionDefault = {
 
 function initCss($this, tableSize = 'table-md', haveBorder = false) {
     // $this.closest(".ui-jqgrid-bdiv").css({"overflow-x": "hidden"});
-
-    $this.closest(".ui-jqgrid").find('.ui-jqgrid-hdiv').css({
-        background: '#e9ecef'
-    });
-    $this.closest('.ui-jqgrid').find('thead').addClass('thead-light');
+    //
+    // $this.closest(".ui-jqgrid").find('.ui-jqgrid-hdiv').css({
+    //     background: '#e9ecef!important'
+    // });
+    // $this.closest('.ui-jqgrid').find('thead').addClass('thead-light');
     const table = $this.closest('.ui-jqgrid').find('.ui-jqgrid-btable')
     table.addClass('table-hover ' + tableSize)
     if (!haveBorder) table.removeClass('table-bordered');
@@ -49,13 +43,17 @@ function addStt(data) {
     }
 }
 
-function addButtonIcon(rowObject = {}, hasDelete = true) {
+function addButtonIcon(rowObject = {}, hasDelete = true, haseDetail = true) {
     let divStart = '<div class="d-flex">'
     let divEnd = '</div>'
-    const btnUpdate = '<a class="btn-update btn btn-icon text-primary" data-id="' + rowObject.id + '"><i class="icon-sm menu-icon ti-pencil-alt"></i></a>'
-    const btnDelete = '<a class="btn-delete btn btn-icon text-danger" data-id="' + rowObject.id + '"><i class="icon-sm menu-icon ti-trash"></i></a>'
+    const btnUpdate = '<button title="Chỉnh sửa" class="btn-update btn btn-icon text-primary" ' +
+        'data-id="' + rowObject.id + '"><i class="icon-sm menu-icon ti-pencil-alt"></i></button>'
+    const btnDelete = '<button title="Xóa" class="btn-remove btn btn-icon text-danger" ' +
+        'data-id="' + rowObject.id + '"><i class="icon-sm menu-icon ti-trash"></i></button>'
+    const btnDetail = '<button title="Xem chi tiết" class="btn-detail btn btn-icon text-success" ' +
+        'data-id="' + rowObject.id + '"><i class="icon-3xl menu-icon bx bx-show"></i></button>';
 
-    return divStart + btnUpdate + (hasDelete ? btnDelete : '') + divEnd
+    return divStart + btnUpdate + (hasDelete ? btnDelete : '') + (haseDetail ? btnDetail : '') + divEnd
 }
 
 class ResizeObserverManager {

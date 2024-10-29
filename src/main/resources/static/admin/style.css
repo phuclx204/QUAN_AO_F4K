@@ -1,5 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Poppins:wght@400;500;600;700&display=swap');
 
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@100..900&display=swap');
 * {
     margin: 0;
     padding: 0;
@@ -15,15 +16,23 @@ li {
 }
 
 :root {
+    /*set chiều dài của sidebar*/
+    --size-customes: 220px;
+
+    /*font chữ*/
     --poppins: 'Poppins', sans-serif;
     --lato: 'Lato', sans-serif;
+    --ct-body-font-family-custome: "Roboto Slab", serif;;
+    --ct-body-font-family: var(--ct-body-font-family-custome);
 
+    /*var css*/
     --light: #F9F9F9;
-    --blue: #3C91E6;
+    --blue: #00aeef;
     --light-blue: #CFE8FF;
     --grey: #eee;
+    --ct-body-bg: var(--grey);
     --dark-grey: #AAAAAA;
-    --dark: #342E37;
+    --dark: #424964;
     --red: #DB504A;
     --yellow: #FFCE26;
     --light-yellow: #FFF2C6;
@@ -31,6 +40,10 @@ li {
     --light-orange: #FFE0D3;
     --light-green: #99F763;
     --green: #70BD44;
+
+    --fc-border-color: var(--ct-border-color);
+    --fc-page-bg-color: var(--ct-secondary-bg);
+    --fc-neutral-bg-color: var(--ct-light);
 }
 
 html {
@@ -38,13 +51,88 @@ html {
 }
 
 body.dark {
-    --light: #0C0C1E;
-    --grey: #060714;
+    /*--light: #0C0C1E;*/
+    --light: #3a444e;
+    /*--grey: #060714;*/
+    --grey: #343a40;
     --dark: #FBFBFB;
+    --blue: #5bd2ff;
+}
+
+/*replace when toggle*/
+body.dark {
+    --ct-light: #464f5b;
+    --ct-light-rgb: 70, 79, 91;
+    --ct-dark: #f1f1f1;
+    --ct-dark-rgb: 241, 241, 241;
+    --ct-secondary: #6c757d;
+    --ct-secondary-rgb: 108, 117, 125;
+    --ct-input-bg: #404954;
+    --ct-box-shadow: 0px 0px 35px 0px rgba(49, 57, 66, 0.5);
+
+    color-scheme: dark;
+    --ct-body-color: #aab8c5;
+    --ct-body-color-rgb: 170, 184, 197;
+    --ct-body-bg: #343a40;
+    --ct-body-bg-rgb: 52, 58, 64;
+    --ct-emphasis-color: #dee2e6;
+    --ct-emphasis-color-rgb: 222, 226, 230;
+    --ct-secondary-color: #8391a2;
+    --ct-secondary-color-rgb: 131, 145, 162;
+    --ct-secondary-bg: #37404a;
+    --ct-secondary-bg-rgb: 55, 64, 74;
+    --ct-tertiary-color: #f1f1f1;
+    --ct-tertiary-color-rgb: 241, 241, 241;
+    --ct-tertiary-bg: #404954;
+    --ct-tertiary-bg-rgb: 64, 73, 84;
+    --ct-primary-text-emphasis: #aab0f9;
+    --ct-secondary-text-emphasis: #a7acb1;
+    --ct-success-text-emphasis: #6ce2c1;
+    --ct-info-text-emphasis: #88cfe3;
+    --ct-warning-text-emphasis: #ffdb9c;
+    --ct-danger-text-emphasis: #fc9db0;
+    --ct-light-text-emphasis: #f6f7fb;
+    --ct-dark-text-emphasis: #dee2e6;
+    --ct-primary-bg-subtle: rgba(114, 124, 245, 0.15);
+    --ct-secondary-bg-subtle: rgba(108, 117, 125, 0.15);
+    --ct-success-bg-subtle: rgba(10, 207, 151, 0.15);
+    --ct-info-bg-subtle: rgba(57, 175, 209, 0.15);
+    --ct-warning-bg-subtle: rgba(255, 195, 90, 0.15);
+    --ct-danger-bg-subtle: rgba(250, 92, 124, 0.15);
+    --ct-light-bg-subtle: rgba(var(--ct-light-rgb), 0.15);
+    --ct-dark-bg-subtle: rgba(var(--ct-dark-rgb), 0.15);
+    --ct-primary-border-subtle: #444a93;
+    --ct-secondary-border-subtle: #6c757d;
+    --ct-success-border-subtle: #067c5b;
+    --ct-info-border-subtle: #22697d;
+    --ct-warning-border-subtle: #997536;
+    --ct-danger-border-subtle: #96374a;
+    --ct-light-border-subtle: #6c757d;
+    --ct-dark-border-subtle: #a1a9b1;
+    --ct-heading-color: #aab8c5;
+    --ct-link-color: #aab0f9;
+    --ct-link-hover-color: #b7bcfa;
+    --ct-link-color-rgb: 170, 176, 249;
+    --ct-link-hover-color-rgb: 183, 188, 250;
+    --ct-code-color: #88cfe3;
+    --ct-highlight-color: #aab8c5;
+    --ct-highlight-bg: #664e24;
+    --ct-border-color: #464f5b;
+    --ct-border-color-translucent: #8391a2;
+    --ct-form-valid-color: #6ce2c1;
+    --ct-form-valid-border-color: #6ce2c1;
+    --ct-form-invalid-color: #fc9db0;
+    --ct-form-invalid-border-color: #fc9db0
+}
+
+body.dark .table-light {
+    --ct-table-color: var(--ct-body-color);
+    --ct-table-bg: var(--ct-light);
+    --ct-table-border-color: var(--ct-border-color)
 }
 
 body {
-    background: var(--grey);
+    background: var(--grey)!important;
     overflow-x: hidden;
 }
 
@@ -54,10 +142,10 @@ body {
     position: fixed;
     top: 0;
     left: 0;
-    width: 280px;
+    width: var(--size-customes);
     height: 100%;
     background: var(--light);
-    z-index: 2000;
+    z-index: 100;
     font-family: var(--lato);
     transition: .3s ease;
     overflow-x: hidden;
@@ -169,7 +257,12 @@ body {
     color: var(--red);
 }
 
+#sidebar a:hover {
+    text-decoration: none;
+}
+
 #sidebar .side-menu.top li a:hover {
+    text-decoration: none;
     color: var(--blue);
 }
 
@@ -189,6 +282,12 @@ body {
     list-style: none; /* Không có dấu đầu dòng */
     margin: 0; /* Không có margin */
 }
+
+#sidebar .side-menu ol, ul {
+    padding-left: 0!important;
+}
+
+/* SIDEBAR */
 
 .submenu li {
     padding: 10px; /* Padding cho từng mục trong submenu */
@@ -221,8 +320,8 @@ body {
 /* CONTENT */
 #content {
     position: relative;
-    width: calc(100% - 280px);
-    left: 280px;
+    width: calc(100% - var(--size-customes));
+    left: var(--size-customes);
     transition: .3s ease;
 }
 
@@ -442,7 +541,7 @@ body {
 #content main {
     width: 100%;
     padding: 36px 24px;
-    font-family: var(--poppins);
+    font-family: var(--ct-body-font-family), 'sans-serif';
     max-height: calc(100vh - 56px);
     overflow-y: auto;
 }
@@ -478,7 +577,7 @@ body {
 }
 
 #content main .head-title .left .breadcrumb li a.active {
-    color: var(--blue);
+    color: var(--blue)!important;
     pointer-events: unset;
 }
 
@@ -695,3 +794,134 @@ body {
     }
 }
 
+/* Modal styles */
+.ds-modal {
+    display: none; /* Ẩn modal mặc định */
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Bật cuộn nếu cần */
+    background-color: rgba(0, 0, 0, 0.6); /* Màu nền với độ trong suốt */
+}
+
+.ds-modal-content {
+    background-color: #fff; /* Màu nền cho modal */
+    border-radius: 8px; /* Bo góc cho modal */
+    margin: auto; /* Căn giữa */
+    padding: 20px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5); /* Đổ bóng cho modal */
+    width: 400px; /* Kích thước cố định cho modal */
+    position: relative; /* Để căn giữa */
+    top: 50%; /* Đặt từ phía trên */
+    transform: translateY(-50%); /* Đẩy lên một nửa chiều cao của modal */
+}
+
+.center-modal {
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+h2 {
+    margin: 0; /* Bỏ margin trên tiêu đề */
+}
+
+label {
+    display: block; /* Để label trên mỗi hàng */
+    margin-bottom: 5px; /* Khoảng cách dưới label */
+}
+
+/*input[type="text"] {*/
+/*    width: 100%; !* Full width cho input *!*/
+/*    padding: 10px; !* Padding cho input *!*/
+/*    border: 1px solid #ccc; !* Đường viền cho input *!*/
+/*    border-radius: 4px; !* Bo góc cho input *!*/
+/*}*/
+
+/*button {*/
+/*    background-color: #3C91E6; !* Màu nền cho nút *!*/
+/*    color: white; !* Màu chữ *!*/
+/*    border: none; !* Bỏ viền *!*/
+/*    margin-top: 10px;*/
+/*    padding: 10px 15px; !* Padding cho nút *!*/
+/*    border-radius: 4px; !* Bo góc cho nút *!*/
+/*    cursor: pointer; !* Con trỏ chuột thành hình bàn tay *!*/
+/*}*/
+
+/*button:hover {*/
+/*    background-color: #3C91E6; !* Màu nền khi hover *!*/
+/*}*/
+
+
+/*overwrite css bootstrap 4*/
+
+.btn-default {
+    background-color: #3C91E6;
+    color: var(--light);
+}
+
+.btn-default:hover {
+    background-color: #2E7DCC;
+    color: var(--dark);
+}
+
+.button-icon {
+    margin-right: 5px;
+}
+
+#content .breadcrumb {
+    background-color: transparent !important;
+    padding-left: 0;
+    font-size: 13px;
+}
+
+#content .main-pane {
+    margin-top: 24px;
+}
+
+#content .card {
+    border: none !important;
+    border-radius: 15px !important;
+}
+
+#content .card .card-body {
+    padding: 24px;
+}
+
+#content .card .card-title {
+    margin-right: auto;
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--dark);
+}
+
+/*#content a:hover {*/
+/*    text-decoration: underline*/
+/*}*/
+
+/*#content input:focus {*/
+/*    border-color: #3C91E6;*/
+/*    box-shadow: 0 0 5px rgba(60, 145, 230, 0.5);*/
+/*}*/
+
+.nav-underline .nav-link.active, .nav-underline .show>.nav-link {
+    font-weight: normal;
+    color: unset;
+    border-bottom-color: currentcolor;
+}
