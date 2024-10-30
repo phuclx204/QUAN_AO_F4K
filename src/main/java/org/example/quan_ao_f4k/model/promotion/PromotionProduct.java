@@ -1,15 +1,7 @@
 package org.example.quan_ao_f4k.model.promotion;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import jakarta.persistence.*;
+import lombok.*;
 import org.example.quan_ao_f4k.model.product.Product;
 
 import java.math.BigDecimal;
@@ -20,6 +12,8 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @Getter
 @Setter
+@Builder
+@IdClass(PromotionProductId.class)
 public class PromotionProduct {
     @Id
     @ManyToOne
@@ -34,14 +28,12 @@ public class PromotionProduct {
     @Column(name = "quantity")
     private Integer quantity;
 
-    @Column(name = "discount_value",precision = 10,scale = 2)
+    @Column(name = "discount_value", precision = 10, scale = 2)
     private BigDecimal discountValue;
 
     @Column(name = "status")
-    private Integer status;
+    private int status;
 
     @Column(name = "type")
     private Integer type;
-
-
 }

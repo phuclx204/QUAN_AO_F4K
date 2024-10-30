@@ -3,12 +3,10 @@ package org.example.quan_ao_f4k.model.promotion;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.example.quan_ao_f4k.model.BaseEntity;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Entity
@@ -17,6 +15,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @Getter
 @Setter
+@Builder
 public class Promotion extends BaseEntity {
     @Column(name = "name", nullable = false) // Tên cột "name", không cho phép null
     private String name;

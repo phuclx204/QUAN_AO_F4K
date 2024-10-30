@@ -1,6 +1,7 @@
 package org.example.quan_ao_f4k.dto.request.shop;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -14,6 +15,7 @@ public class ShopRequest {
     @Data
     @AllArgsConstructor
     @NoArgsConstructor
+    @Builder
     public static class RequestSearch implements Serializable {
         private int pageSize = 6;
         private int page = 0;
@@ -25,5 +27,13 @@ public class ShopRequest {
         private List<String> size;
         private List<String> color;
         private String orderBy = "asc";
+    }
+
+    @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class RequestProductDetail implements Serializable {
+        private String color;
+        private String size;
     }
 }

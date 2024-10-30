@@ -21,3 +21,7 @@
     transition: all .2s ease-in-out;
     background: #fdfdfd !important;
 }
+
+.form-check-custom.bg-dynamic {
+    --theme-form-checkbox-active-color: var(--bg-color);
+}

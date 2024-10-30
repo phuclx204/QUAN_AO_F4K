@@ -5,9 +5,11 @@ import org.example.quan_ao_f4k.dto.response.authentication.AuthenticationRespons
 import org.example.quan_ao_f4k.model.authentication.User;
 import org.springframework.stereotype.Service;
 
-@Service
+import java.util.List;
+
 public interface  AuthenticationService {
     User findByLogin(String login);
+    User getUserById(Long userId);
     AuthenticationResponse register(RegisterRequest request);
-    AuthenticationResponse login(RegisterRequest request);
+    List<User> getUsers();
 }

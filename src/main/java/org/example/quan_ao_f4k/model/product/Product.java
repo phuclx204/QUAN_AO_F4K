@@ -1,10 +1,7 @@
 package org.example.quan_ao_f4k.model.product;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.example.quan_ao_f4k.model.BaseEntity;
 
 @Entity
@@ -13,6 +10,7 @@ import org.example.quan_ao_f4k.model.BaseEntity;
 @NoArgsConstructor
 @Getter
 @Setter
+@Builder
 public class Product extends BaseEntity {
 
 	@Column(name = "name", nullable = false)
