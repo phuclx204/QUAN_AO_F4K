@@ -1,312 +1,277 @@
-$(document).ready(function () {
+import {getCommon, ref, buttonSpinner, validateForm, $ajax} from "/common/public.js";
 
-    loadComboBoxFilter();
-    loadProductDetails();
+const {getFormValuesByName, convert2Vnd} = getCommon();
 
+$(document).ready(async function () {
+    "use strict";
 
-    function loadProductDetails(page = 1, size = 5, search = '') {
-        const productId = $('#productId').val();
-        $.ajax({
-            url: '/admin/products/product-detail/' + productId + '/list',
-            method: 'GET',
-            data: {page: page, size: size, search: search},
-            beforeSend: function () {
-                $('#totalData').text('Đang tải dữ liệu...');
-            },
-            success: function (response) {
-                renderProductDetails(response.content);
-                setupPagination(response.totalPages, page);
-                $('#totalData').text(`${response.totalElements} lọai sản phẩm`);
-            },
-            error: function (error) {
-                console.error('Không thể tải dữ liệu:', error);
-                $('#totalData').text('Không thể tải dữ liệu!');
-            }
-        });
-    }
+    openLoading()
+    setTimeout(() => closeLoading(), 300)
+    const URL = '/admin/products/product-detail';
+    const productIdTmp = ref(document.querySelector('meta[name="product-id"]').getAttribute("content"));
+    const productNameTmp = ref(document.querySelector('meta[name="product-name"]').getAttribute("content"));
+    const productDetailId = ref(null);
+    const fileCreate = ref(null);
 
-    function setupPagination(totalPages, currentPage) {
-        const pagination = $('#pagination');
-        pagination.empty();
-
-        pagination.append(`
-        <button class="page-button" ${currentPage === 1 ? 'disabled' : ''} data-page="${currentPage - 1}">
-            Trước
-        </button>
-        `);
-
-        pagination.append(`
-        <input type="text" id="pageInput" value="${currentPage}" style="width: 50px; text-align: center;" />
-        <span> / ${totalPages}</span>
-        `);
-
-        pagination.append(`
-        <button class="page-button" ${currentPage === totalPages ? 'disabled' : ''} data-page="${currentPage + 1}">
-            Tiếp theo
-        </button>
-        `);
-
-        $('.page-button').on('click', function () {
-            const page = $(this).data('page');
-            loadProductDetails(page);
-        });
-
-        $('#pageInput').on('input', function () {
-            this.value = this.value.replace(/[^0-9]/g, '');
-        });
-
-        $('#pageInput').on('keypress', function (e) {
-            if (e.key === 'Enter') {
-                let inputPage = parseInt($(this).val());
-
-                if (isNaN(inputPage) || inputPage < 1) {
-                    inputPage = 1;
-                } else if (inputPage > totalPages) {
-                    inputPage = totalPages;
+    // init table
+    const table = $('#products-detail-table').DataTable({
+        serverSide: true,
+        ajax: {
+            url: '/admin/products/product-detail/' + productIdTmp.value + "/list",
+            type: 'GET'
+        },
+        columns: [
+            {
+                data: null,
+                title: "STT",
+                render: (data, type, full, meta) => {
+                    return meta.row + meta.settings._iDisplayStart + 1;
                 }
-                loadProductDetails(inputPage);
-            }
-        });
-    }
-
-    function renderProductDetails(datas) {
-        const tbody = $('tbody');
-        tbody.empty();
-
-        if (datas.length === 0) {
-            tbody.append(`
-            <tr>
-                <td colspan="8" style="text-align: center; color: red;">Không có dữ liệu!</td>
-            </tr>
-        `);
-            $('#pagination').hide();
-            return;
-        } else {
-            $('#pagination').show();
-        }
-
-        datas.forEach((item) => {
-            tbody.append(`
-        <tr>
-            <td>${item.product.name}</td>
-            <td>${item.product.category.name}</td>
-            <td>${item.product.brand.name}</td>
-            <td>${item.size.name}</td>
-            <td>${item.color.name}</td>
-            <td>${item.product.description}</td>
-            <td>${item.price}</td>
-            <td>${item.quantity}</td>
-            <td>${formatDate(item.createdAt)}</td>
-            <td>
-                <p style="cursor: pointer; display: inline-block; margin-right: 15px;" title="Chỉnh sửa">
-                    <i class='bx bx-edit' onclick="openEditModal(${item.id},${item.product.id},${item.color.id},
-                    ${item.size.id},${item.price},${item.quantity})"></i>
-                </p>
-                <p style="cursor: pointer; display: inline-block;" title="Xóa">
-                    <i class='bx bx-trash' onclick="deleteProductDetail(${item.product.id},${item.id})"></i>
-                </p>
-            </td>
-        </tr>
-    `);
-        });
-    }
-
-
-    window.openAddModal = function () {
-        $('#addModal').show();
-        $('#addForm')[0].reset();
-        loadComboBoxFilter();
-    }
-    window.openEditModal = function (id, productId, colorId, sizesId, price, quantity) {
-        $('#editProductDetailId').val(id);
-        $('#editProductId').val(productId);
-        loadComboBoxFilter(colorId, sizesId);
-        $('#editPrice').val(price);
-        $('#editQuantity').val(quantity);
-
-        $('#editModal').show();
-    }
-
-
-    // Hàm đóng modal
-    window.closeModal = function (modalId) {
-        $('#' + modalId).hide();
-    }
-
-    // Hàm tải các danh sách combo box
-    function loadComboBoxFilter(colorId = null, sizeId = null) {
-        $.when(
-            $.get('/admin/color/active'),
-            $.get('/admin/size/active')
-        ).done(function (colors, sizes) {
-            fillSelectBox('#selectColor, #selectAddColor, #selectEditColor', colors[0], colorId, '-- Màu sắc --');
-            fillSelectBox('#selectSize, #selectAddSize, #selectEditSize', sizes[0], sizeId, '-- Kích thước --');
-        });
-    }
-
-    // Hàm điền dữ liệu vào combo box
-    function fillSelectBox(selector, data, selectedId, placeholder) {
-        const select = $(selector);
-        select.empty();
-        select.append(`<option value="">${placeholder}</option>`);
-        data.forEach(item => {
-            const selected = item.id === selectedId ? 'selected' : '';
-            select.append(`<option value="${item.id}" ${selected}>${item.name}</option>`);
-        });
-    }
-
-
-    // Hàm thêm chi tiết sản phẩm
-    $('#addForm').on('submit', function (e) {
-        e.preventDefault();
-        const productId = $('#productId').val();
-        const data = {
-            productId: productId,
-            sizeId: $('#selectAddSize').val(),
-            colorId: $('#selectAddColor').val(),
-            price: $('#addPrice').val(),
-            quantity: $('#addQuantity').val()
-        };
-
-        $.ajax({
-            url: '/admin/products/product-detail/' + productId + '/add',
-            method: 'POST',
-            contentType: 'application/json',
-            data: JSON.stringify(data),
-            success: function () {
-                closeModal('addModal');
-                Swal.fire({
-                    title: 'Thông báo',
-                    text: 'Thêm mới thành công.',
-                    timer: 2000,
-                    timerProgressBar: true,
-                });
-                loadProductDetails();
             },
-            error: function (xhr) {
-                if (xhr.status === 400 && xhr.responseJSON) {
-                    displayErrors(xhr.responseJSON, 'add');
-                } else if (xhr.status === 409) {
-                    Swal.fire('Lỗi', xhr.responseText, 'warning')
-                } else {
-                    Swal.fire('Lỗi', 'Không thể thêm mới', 'error');
+            {data: 'product.name', title: 'Tên sản phẩm'},
+            {
+                data: 'price', title: 'Giá tiền', render: (data, type, row) => {
+                    return convert2Vnd(data + "")
                 }
-            }
-        });
-    });
-
-// Hàm cập nhật chi tiết sản phẩm
-    $('#editForm').on('submit', function (e) {
-        e.preventDefault();
-
-        const productId = $('#editProductId').val();
-        const id = $('#editProductDetailId').val();
-        const data = {
-            sizeId: $('#selectEditSize').val(),
-            colorId: $('#selectEditColor').val(),
-            price: $('#editPrice').val(),
-            quantity: $('#editQuantity').val(),
-            status: 1
-        };
-
-        $.ajax({
-            url: `/admin/products/product-detail/${productId}/update/${id}`,
-            method: 'PUT',
-            contentType: 'application/json',
-            data: JSON.stringify(data),
-            success: function () {
-                closeModal('editModal');
-                Swal.fire({
-                    title: 'Thông báo',
-                    text: 'Cập nhật thành công.',
-                    timer: 2000,
-                    timerProgressBar: true,
-                });
-                loadProductDetails();
             },
-            error: function (xhr) {
-                if (xhr.status === 400 && xhr.responseJSON) {
-                    displayErrors(xhr.responseJSON, 'edit');
-                } else if (xhr.status === 409) {
-                    Swal.fire('Lỗi', xhr.responseText, 'warning')
-                } else {
-                    Swal.fire('Lỗi', 'Không thể cập nhật', 'error');
-                }
-            }
-        });
-    });
+            {data: 'product.category.name', title: 'Danh mục'},
+            {data: 'product.brand.name', title: 'Thương hiệu'},
+            {data: 'color.name', title: 'Màu sắc'},
+            {data: 'size.name', title: 'Kích cỡ'},
+            {data: 'quantity', title: 'Số lượng'},
 
-    $('#addForm input, #addForm select').on('input change', function () {
-        const field = $(this).attr('name');
-        clearError(field, 'add');
-    });
-
-    $('#editForm input, #editForm select').on('input change', function () {
-        const field = $(this).attr('name');
-        clearError(field, 'edit');
-    });
-
-//     end cập nhật
-
-    function capitalize(str) {
-        return str.charAt(0).toUpperCase() + str.slice(1);
-    }
-
-    function displayErrors(errors, formType) {
-        $(`#${formType}Form .error`).html('');
-
-        errors.forEach(error => {
-            const field = error.field;
-            const message = error.defaultMessage;
-            $(`#${formType}${capitalize(field)}Error`).html(message).addClass('error');
-        });
-    }
-
-    function clearError(field, formType) {
-        $(`#${formType}${capitalize(field)}Error`).html('');
-    }
-
-    window.deleteProductDetail = function (idProduct, id) {
-        Swal.fire({
-            title: 'Bạn có chắc chắn muốn xóa không?',
-            showCancelButton: true,
-            confirmButtonText: 'Xóa',
-            cancelButtonText: 'Hủy'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                $.ajax({
-                    url: '/admin/products/product-detail/' + idProduct + '/delete/' + id,
-                    method: 'DELETE',
-                    success: function () {
-                        Swal.fire({
-                            title: 'Thông báo',
-                            text: 'Xóa thành công.',
-                            timer: 2000,
-                            timerProgressBar: true,
-                        });
-                        loadProductDetails();
-                    },
-                    error: function (xhr) {
-                        if (xhr.status === 409) {
-                            Swal.fire('Thông báo', xhr.responseText, 'info');
-                        } else {
-                            Swal.fire('Lỗi', 'Không thể xóa chi tiết sản phẩm.', 'error');
-                        }
+            {
+                data: 'status',
+                title: 'Trạng thái',
+                render: function (data, type, row) {
+                    if (row.quantity === 0) {
+                        return '<span class="badge bg-danger">Hết hàng</span>';
+                    } else if (row.quantity >= 1) {
+                        return '<span class="badge bg-success">Còn hàng</span>';
                     }
-                });
+                }
+            },
+            {
+                data: null,
+                title: 'Hành động',
+                render: function (data, type, row) {
+                    return `<td class="table-action">
+                             <a href="javascript:void(0);" class="action-icon action-view" data-id="${row.id}"> <i class="mdi mdi-eye"></i></a>
+                             <a href="javascript:void(0);" class="action-icon action-update" data-id="${row.id}"> <i class="mdi mdi-square-edit-outline"></i></a>
+                             <a href="javascript:void(0);" class="action-icon action-delete" data-id="${row.id}"> <i class="mdi mdi-delete"></i></a>
+                             </td>`;
+                }
             }
+        ]
+    });
+    const reloadTable = () => {
+        table.ajax.reload(null, false);
+    }
+
+    // event button
+    const modalSelector = document.getElementById('modal-create')
+    modalSelector.addEventListener('hide.bs.modal', event => {
+        // loadOptionsSelect()
+        $('#createQuantity').val("");
+        $('#createPrice').val("");
+        $('#createColor').val("");
+        $('#createSize').val("");
+        fileCreate.value.removeFiles();
+        productDetailId.value = null;
+        validateForm.clearValidation("formCreate")
+        fileCreate.value.destroy();
+    })
+
+    const setLabelModal = (text) => {
+        const label = $('#standard-modalCreateLabel');
+        label.empty()
+        label.text(text)
+    }
+    const closeModal = () => {
+        $('#modal-create').modal('hide');
+    }
+    const openModal = async (mode, $this) => {
+        $('#createName').text(productNameTmp.value)
+        fileCreate.value = FilePond.create(document.querySelector('#createFile'));
+        fileCreate.value.setOptions({
+            styleItemPanelAspectRatio: 4 / 3,
+        })
+
+        if (mode === "create") {
+            setLabelModal("Thêm mới sản phẩm")
+            loadOptionsSelect()
+            fileCreate.value.removeFiles();
+        } else if (mode === "update") {
+            setLabelModal("Cập nhật sản phẩm")
+            const id = $this.data("id");
+            productDetailId.value = id;
+            await $ajax.get('/admin/products/product-detail', {id: id}).then(data => {
+                $('#createSize').val(data.size.id)
+                $('#createColor').val(data.color.id)
+                $('#createPrice').val(data.price)
+                $('#createQuantity').val(data.quantity)
+
+                loadOptionsSelect(data.size.id, data.color.id)
+                if (data.images.length) {
+                    const file = data.images.map(el => {
+                        return {
+                            source: el.fileUrl,
+                            options: {
+                                type: 'remote',
+                                file: {
+                                    id: el.id,
+                                    name: el.nameFile,
+                                    size: 3000,
+                                    type: 'image/jpeg',
+                                },
+                                metadata: {
+                                    poster: el.fileUrl
+                                }
+                            }
+                        }
+                    })
+                    fileCreate.value.setOptions({
+                        files: file
+                    });
+                }
+            })
+        }
+        $('#modal-create').modal('show');
+    }
+
+    // // viewDetail
+    $(document).on("click", ".action-view", async function (e) {
+        e.preventDefault();
+        const id = $(this).data("id");
+
+        await $ajax.get('/admin/products/product-detail', {id: id}).then(data => {
+            $('#detailSize').text(data.size.name)
+            $('#detailColor').text(data.color.name)
+            $('#detailName').text(data.product.name)
+            $('#detailCategory').text(data.product.category.name)
+            $('#detailBrand').text(data.product.brand.name)
+            $('#detailQuantity').text(data.quantity)
+            $('#detailPrice').text(convert2Vnd(data.price))
+            $('#detailStatus').text(data.quantity > 0 ? 'Còn hàng' : 'Hết hàng')
+
+            $('#fancyboxImg').empty()
+            if (data.images.length) {
+                data.images.forEach(el => {
+                    $('#fancyboxImg').append(`
+                        <a data-fancybox="gallery" href="${el.fileUrl}">
+                             <img src="${el.fileUrl}" alt=""/>
+                        </a>
+                    `)
+                })
+
+                Fancybox.bind("[data-fancybox='gallery']");
+            }
+        })
+        $('#modal-detail').modal('show');
+    })
+    //view create
+    $(document).on("click", ".action-create", function (e) {
+        e.preventDefault();
+        openModal("create")
+    })
+    $(document).on("click", ".action-update", function (e) {
+        e.preventDefault();
+        openModal("update", $(this))
+    })
+    // onSave
+    const validationForm = {
+        'createSize': [
+            {
+                rule: (value) => value.trim() !== "",
+                message: "Kích thước bắt buộc",
+                type: 'list'
+            }
+        ],
+        'createColor': [
+            {
+                rule: (value) => value.trim() !== "",
+                message: "Màu bắt buộc",
+                type: 'list'
+            }
+        ],
+        'createPrice': [
+            {
+                rule: (value) => value.trim() !== "",
+                message: "Số tiền là bắt buộc",
+                type: 'text'
+            },
+            {
+                rule: (value) => !isNaN(value),
+                message: "Số tiền phải là kiểu số",
+                type: 'text'
+            },
+            {
+                rule: (value) => /^(\d{1,63}(\.\d{1,2})?)$/.test(value),
+                message: "Số tiền tối đa là 65 ký tự, bao gồm 63 số phần nguyên và 2 số phần thập phân",
+                type: 'text'
+            }
+        ],
+        'createQuantity': [
+            {
+                rule: (value) => value.trim() !== "",
+                message: "số lượng bắt buộc",
+                type: 'text'
+            },
+            {
+                rule: (value) => !isNaN(value),
+                message: "số lượng phải là kiểu số",
+                type: 'text'
+            }
+        ]
+    };
+    $(document).on("submit", "#formCreate", async e => {
+        e.preventDefault();
+        const isValid = await validateForm.getValidate('formCreate', validationForm);
+        if (isValid) {
+            try {
+                buttonSpinner.show();
+                const object = getFormValuesByName('formCreate');
+                object.oldFiles = [];
+                if (fileCreate.value.getFile() != null) {
+                    object.images = fileCreate.value.getFiles().filter(el => (!el.file.id)).map(el => el.file)
+                    object.oldFiles = fileCreate.value.getFiles().filter(el => (el.file.id)).map(el => el.file.id)
+                }
+                const method = productDetailId.value ? "PUT" : "POST";
+                const url = URL + '/' + productIdTmp.value + `${productDetailId.value ? '/update/' + productDetailId.value : '/add'}`;
+                await $ajax.callWithMultipartFile(url, method, object).then(() => {
+                    $alter("success", "Note", productDetailId.value ? "Cập nhật thành công" : "Thêm mới thành công")
+                    reloadTable();
+                    closeModal();
+                });
+            } catch (e) {
+                console.log(e)
+            } finally {
+                buttonSpinner.hidden();
+            }
+        } else {
+            console.log('Form không hợp lệ, vui lòng kiểm tra lại.');
+        }
+    })
+
+    // functions
+    const loadOptionsSelect = (sizeId = null, colorId = null) => {
+        const sizeSelect = $('#createSize');
+        const colorSelect = $('#createColor');
+        loadOption('/admin/size/active', sizeSelect, sizeId);
+        loadOption('/admin/color/active', colorSelect, colorId);
+    }
+    const loadOption = (endpoint, selectElement, selectedId = null) => {
+        $.get(endpoint, data => {
+            selectElement.empty().append(`<option value="">Vui lòng chọn</option>`);
+            data.forEach(item => {
+                const selected = item.id === selectedId ? 'selected' : '';
+                selectElement.append(`<option value="${item.id}" ${selected}>${item.name}</option>`);
+            });
         });
     }
 });
 
 
-function formatDate(dateString) {
-    const date = new Date(dateString);
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    const hours = String(date.getHours()).padStart(2, '0');
-    const minutes = String(date.getMinutes()).padStart(2, '0');
-    const seconds = String(date.getSeconds()).padStart(2, '0');
-    return `${hours}:${minutes}:${seconds} ${day}-${month}-${year}`;
-}
+
+
+

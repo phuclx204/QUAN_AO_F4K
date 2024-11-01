@@ -39,4 +39,6 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, Lo
 
 	@Query("SELECT pd FROM ProductDetail pd WHERE pd.product.id = ?1 and pd.color.name = ?2 order by pd.id asc limit 1")
 	Optional<ProductDetail> findProductDetailsByProductIdAndSizeAndColorId(Long id, String color);
+
+	void deleteAllByProductId(Long productId);
 }

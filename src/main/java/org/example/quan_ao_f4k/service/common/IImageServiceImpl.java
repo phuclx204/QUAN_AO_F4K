@@ -26,14 +26,12 @@ public class IImageServiceImpl implements IImageService {
         return String.format(imageUrl, name);
     }
 
-    @Override
-    public String save(MultipartFile file) throws IOException {
-        String folderName = "images/";
-
+    public String save(MultipartFile file, String pathFolder) throws IOException {
+        String path = "images/" + pathFolder + "/";
         Bucket bucket = StorageClient.getInstance().bucket();
         String name = generateFileName(file.getOriginalFilename());
-        bucket.create(folderName + name, file.getBytes(), file.getContentType());
-        return folderName + name;
+        bucket.create(path + name, file.getBytes(), file.getContentType());
+        return path + name;
     }
 
     @Override

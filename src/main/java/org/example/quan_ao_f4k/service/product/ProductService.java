@@ -12,5 +12,5 @@ public interface ProductService extends CrudService<Long, ProductRequest, Produc
 	void exportExcel(HttpServletResponse response) throws Exception;
 	void exportPdf(HttpServletResponse response) throws Exception;
 	boolean isAddExistProductByBrandAndCate(String name,Long brandId, Long categoryId);
-	boolean isUpdateExistProductByBrandAndCate(String name,Long brandId, Long categoryId,Long id);
+	boolean isUpdateExistProductByBrandAndCate(String name,Long brandId, Long categoryId, Long id);
 }

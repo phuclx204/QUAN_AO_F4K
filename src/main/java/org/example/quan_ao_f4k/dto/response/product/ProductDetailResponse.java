@@ -1,6 +1,8 @@
 package org.example.quan_ao_f4k.dto.response.product;
 
 import lombok.Data;
+import org.example.quan_ao_f4k.dto.response.general.ImageResponse;
+import org.example.quan_ao_f4k.model.general.Image;
 import org.example.quan_ao_f4k.model.product.Color;
 import org.example.quan_ao_f4k.model.product.Guarantee;
 import org.example.quan_ao_f4k.model.product.Product;
@@ -9,6 +11,7 @@ import org.example.quan_ao_f4k.model.product.Size;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 @Data
 public class ProductDetailResponse {
@@ -20,4 +23,5 @@ public class ProductDetailResponse {
     private Integer quantity;
     private Integer status;
     private LocalDateTime createdAt;
+    private List<ImageResponse> images;
 }
