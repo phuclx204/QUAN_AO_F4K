@@ -19,6 +19,8 @@ public class ProductResponse {
     private Integer status;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private String pathImg;
+    private String slug;
 }
 
 

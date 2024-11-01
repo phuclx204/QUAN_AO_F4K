@@ -1,3 +1,5 @@
+import { getCommon, $ajax } from "/common/public.js";
+
 const { removeNullProperties, getPagination, formatNumberByDot } = getCommon();
 
 const GET_LIST_API = URL + "/collections/list-product";
@@ -28,7 +30,7 @@ const objSearch = {...defaultObjSearch}
 
 const getListProduct = async (objSearch = {}) => {
     try {
-        const result = await $ajax.callApi($ajax.createUrl(GET_LIST_API, objSearch), GET);
+        const result = await $ajax.get(GET_LIST_API, objSearch);
         queryShowProduct.empty();
 
         objPagination.totalPages = result.totalPages;

@@ -1,166 +1,263 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+
 <head>
-    <th:block th:insert="admin/fragments/head :: head"></th:block>
-    <link rel="stylesheet" th:href="@{/admin/product/product-detail.css}">
-    <link rel="stylesheet" th:href="@{/admin/plugins/bootstrap4/mine.css}"/>
-    <link rel="stylesheet" th:href="@{/admin/dist/css/common.css}"/>
+    <link th:href="@{/admin/plugins/datatables/css/dataTables.bootstrap5.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/admin/plugins/datatables/css/responsive.bootstrap5.min.css}" rel="stylesheet" type="text/css"/>
+
+    <link th:href="@{/admin/plugins/filepond/filepond.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/admin/plugins/filepond/filepond-plugin-image-preview.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/admin/plugins/filepond/filepond-plugin-image-overlay.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/admin/plugins/filepond/filepond-plugin-file-poster.min.css}" rel="stylesheet" type="text/css"/>
+
     <link rel="stylesheet" th:href="@{/admin/plugins/sweetalert/sweetalert2.min.css}"/>
+    <link rel="stylesheet" th:href="@{/common/fancybox/jquery.fancybox.min.css}"/>
+
+
+    <link rel="stylesheet" th:href="@{/admin/dist/css/app-f4k.min.css}"/>
+    <th:block th:insert="admin/fragments/head :: head"></th:block>
+
+    <link rel="stylesheet" th:href="@{/admin/product/product-detail.css}">
+
+    <meta name="product-id" th:content="${productId}">
+    <meta name="product-name" th:content="${productName}">
 </head>
+
 <body>
 <div th:replace="admin/fragments/sidebar::sidebar"></div>
+<!-- Begin page -->
 <section id="content">
+    <div th:replace="admin/fragments/loading::div"></div>
     <div th:replace="admin/fragments/content::content"></div>
     <main>
-        <a th:href="@{/admin/products}">
-            <i class='bx bx-arrow-back'></i> Quay lại
-        </a>
-        <div class="head-title">
-            <div class="left">
-                <!--                <h1 style="margin: 10px">Sản phẩm chi tiết</h1>-->
-            </div>
-        </div>
-        <div class="table-data">
-            <div class="order">
-                <div class="head">
-                    <div class="title-container">
-                        <p title="Thêm mới">
-                            <a href="javascript:void(0);" onclick="openAddModal()">
-                                <i class='bx bx-plus'></i>
-                            </a>
-                        </p>
-                        <h4>Danh sách chi tiết sản phẩm</h4>
+        <!-- start page title -->
+        <div class="row">
+            <div class="col-12">
+                <div class="page-title-box">
+                    <div class="page-title-right">
+                        <ol class="breadcrumb m-0">
+                            <li class="breadcrumb-item"><a th:href="@{home}">Trang chủ</a></li>
+                            <li class="breadcrumb-item"><a th:href="@{/admin/products}">Sản phẩm</a></li>
+                            <li class="breadcrumb-item active">Sản phẩm chi tiết</li>
+                        </ol>
                     </div>
-
-                    <!--                    <div class="filters-wrapper">-->
-                    <!--                        <div class="filter-container hidden">-->
-                    <!--                            <select class="form-control" name="size" id="selectSize">-->
-                    <!--                                <option value="">Kích thước</option>-->
-                    <!--                            </select>-->
-                    <!--                            <select class="form-control" name="color" id="selectColor">-->
-                    <!--                                <option value="">Màu sắc</option>-->
-                    <!--                            </select>-->
-                    <!--                        </div>-->
-                    <!--                        <p title="Bộ lọc">-->
-                    <!--                            <i class='bx bx-filter filter-icon' onclick="toggleFilters()"></i>-->
-                    <!--                        </p>-->
-                    <!--                    </div>-->
-                </div>
-                <table>
-                    <thead>
-                    <tr>
-                        <th>Tên sản phẩm</th>
-                        <th>Danh mục</th>
-                        <th>Thương hiệu</th>
-                        <th>Kích thước</th>
-                        <th>Màu sắc</th>
-                        <th>Mô tả</th>
-                        <th>Giá</th>
-                        <th>Số lượng</th>
-                        <th>Thời gian tạo</th>
-                        <th>#</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-
-                    </tbody>
-                </table>
-                <span id="totalData"></span>
-                <!--                <div id="totalQuantity" style="margin-top: 10px;">Tổng số lượng: 0</div>-->
-                <div id="pagination" class="d-flex justify-content-center align-items-center gap-2">
-                    <button class="page-button" id="prevPage">Trước</button>
-                    <input type="text" id="pageInput" style="width: 50px; text-align: center; border: 1px solid #ced4da; border-radius: 5px;" />
-                    <span id="totalPagesText" style="font-weight: bold;"></span>
-                    <button class="page-button" id="nextPage">Tiếp theo</button>
+                    <h1 class="page-title">Sản phẩm chi tiết</h1>
                 </div>
             </div>
         </div>
+        <!-- end page title -->
+
+        <!-- start content here -->
+        <div class="main-pane row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row mb-2">
+                            <div class="col-sm-5">
+                                <a href="javascript:void(0);" class="btn btn-danger mb-2 action-create"
+                                   data-bs-toggle="modal"
+                                   data-bs-target="#modal-create"><i
+                                        class="mdi mdi-plus-circle me-2"></i> Thêm sản phẩm chi tiết</a>
+                            </div>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="table table-centered w-100 dt-responsive nowrap" id="products-detail-table">
+                                <thead class="table-light">
+                                <tr>
+                                    <th style="width: 50px;">STT</th>
+                                    <th>Tên sản phẩm</th>
+                                    <th>Giá tiền</th>
+                                    <th>Danh mục</th>
+                                    <th>Thương hiệu</th>
+                                    <th>Màu sắc</th>
+                                    <th>Kích thước</th>
+                                    <th>Số lượng</th>
+                                    <th>Trạng thái</th>
+                                    <th style="width: 150px">Thao tác</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div> <!-- end card-body-->
+                </div> <!-- end card-->
+            </div> <!-- end col -->
+        </div>
+        <!-- end content -->
     </main>
+
+    <!-- modal here -->
+
+    <!--    model create-->
+    <div id="modal-create" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalCreateLabel"
+         aria-hidden="true" data-bs-backdrop="static">
+        <div class="modal-dialog modal-xl">
+
+            <div class="modal-content">
+                <form id="formCreate" method="post" th:action="@{/admin/products}" class="needs-validation"
+                      enctype="multipart/form-data" novalidate>
+                    <div class="modal-header">
+                        <h4 class="modal-title" id="standard-modalCreateLabel">Thêm mới sản phẩm chi tiết</h4>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-hidden="true"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-6 mb-3">
+                                <label class="form-label" for="createName">Mặt hàng</label>
+                                <span id="createName">Nam sản phảm</span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-6 mb-3">
+                                <label class="form-label" for="createSize">Kích cỡ</label>
+                                <select class="form-control select2" data-toggle="select2" id="createSize"
+                                        name="sizeId">
+                                    <option>Select</option>
+                                </select>
+                                <div class="invalid-feedback"></div>
+                            </div>
+                            <div class="col-6 mb-3">
+                                <label class="form-label" for="createColor">Màu</label>
+                                <select class="form-control select2" data-toggle="select2" id="createColor"
+                                        name="colorId">
+                                    <option>Select</option>
+                                </select>
+                                <div class="invalid-feedback"></div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-6 mb-3">
+                                <label class="form-label" for="createName">Giá bán</label>
+                                <input type="text" class="form-control" id="createPrice" placeholder="Giá bán"
+                                       required name="price">
+                                <div class="invalid-feedback"></div>
+                            </div>
+                            <div class="col-6 mb-3">
+                                <label class="form-label" for="createName">Số lượng</label>
+                                <input type="text" class="form-control" id="createQuantity" placeholder="Số lượng"
+                                       required name="quantity">
+                                <div class="invalid-feedback"></div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <label class="form-label">Ảnh sản phẩm</label>
+                                <input type="file"
+                                       id="createFile"
+                                       class="filepond"
+                                       name="thumbnail"
+                                       multiple
+                                       data-allow-reorder="true"
+                                       data-max-file-size="3MB"
+                                       data-max-files="4">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer has-spinner justify-content-center">
+                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Đóng</button>
+                        <button type="submit" class="btn btn-primary action-save">Lưu</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!--    model detail-->
+    <div id="modal-detail" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalDetailLabel"
+         aria-hidden="true" data-bs-backdrop="static">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="standard-modalDetailLabel">sản phẩm chi tiết</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-hidden="true"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-6 mb-3 row">
+                            <label class="col-4 form-label">Mặt hàng</label>
+                            <div class="col-8"><span id="detailName"></span></div>
+                        </div>
+                        <div class="col-6  mb-3 row">
+                            <label class="col-4 form-label">Trạng thái</label>
+                            <div class="col-8"><span id="detailStatus"></span></div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-6 mb-3 row">
+                            <label class="col-4 form-label">Giá bán</label>
+                            <div class="col-8"><span id="detailPrice"></span></div>
+                        </div>
+                        <div class="col-6  mb-3 row">
+                            <label class="col-4 form-label">Số lượng</label>
+                            <div class="col-8"><span id="detailQuantity"></span></div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-6 mb-3 row">
+                            <label class="col-4 form-label">Thương hiệu</label>
+                            <div class="col-8"><span id="detailBrand"></span></div>
+                        </div>
+                        <div class="col-6 mb-3 row">
+                            <label class="col-4 form-label">Danh mục</label>
+                            <div class="col-8"><span id=detailCategory></span></div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-6 mb-3 row">
+                            <label class="col-4 form-label">Màu sắc</label>
+                            <div class="col-8"><span id="detailColor"></span></div>
+                        </div>
+                        <div class="col-6  mb-3 row">
+                            <label class="col-4 form-label">Kích thước</label>
+                            <div class="col-8"><span id="detailSize"></span></div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="image-gallery" id="fancyboxImg"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer has-spinner justify-content-center">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Đóng</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--    end modal-->
 </section>
-<input type="hidden" th:value="${productId}" id="productId">
-<!-- Modal thêm chi tiết sản phẩm -->
-<div id="editModal" class="modal">
-    <div class="modal-content center-modal">
-        <span class="close" onclick="closeModal('editModal')">&times;</span>
-        <h2>Chỉnh sửa chi tiết sản phẩm</h2>
-
-        <form id="editForm">
-            <input type="hidden" id="editProductDetailId" name="id">
-            <input type="hidden" id="editProductId" name="productId">
-            <div class="flex-container">
-                <select id="selectEditColor" name="colorId">
-                    <option value="">-- Màu Sắc --</option>
-                </select>
-
-                <select id="selectEditSize" name="sizeId">
-                    <option value="">-- Kích thước --</option>
-                </select>
-            </div>
-            <div id="editColorIdError" class="error" style="color: #f34349;"></div>
-            <div id="editSizeError" class="error" style="color: #f34349;"></div>
-
-            <label for="editPrice">Nhập giá:</label>
-            <input type="text" id="editPrice" name="price">
-            <div id="editPriceError" class="error" style="color: #f34349"></div>
-
-            <label for="editQuantity">Số lượng:</label>
-            <input type="number" id="editQuantity" name="quantity">
-            <div id="editQuantityError" class="error" style="color: #f34349"></div>
-
-            <button type="submit">Cập nhật</button>
-        </form>
-    </div>
-</div>
-
-<!-- Modal chỉnh sửa chi tiết sản phẩm -->
-<div id="addModal" class="modal">
-    <div class="modal-content center-modal">
-        <span class="close" onclick="closeModal('addModal')">&times;</span>
-        <h2>Thêm chi tiết sản phẩm</h2>
-
-        <form id="addForm">
-            <div class="flex-container">
-                <select id="selectAddColor" name="colorId">
-                    <option value="">-- Màu Sắc --</option>
-                </select>
-
-                <select id="selectAddSize" name="sizeId">
-                    <option value="">-- Kích thước --</option>
-                </select>
-            </div>
-            <div id="addColorError" class="error" style="color: #f34349"></div>
-            <div id="addSizeError" class="error" style="color: #f34349"></div>
-
-            <label for="addPrice">Nhập giá:</label>
-            <input type="text" id="addPrice" name="price">
-            <div id="addPriceError" class="error" style="color: #f34349"></div>
-
-
-            <label for="addQuantity">Số lượng:</label>
-            <input type="number" id="addQuantity" name="quantity">
-            <div id="addQuantityError" class="error" style="color: #f34349"></div>
-
-            <button type="submit">Lưu</button>
-        </form>
-    </div>
-</div>
-
+<!-- END wrapper -->
 
 <!--default script-->
 <script th:src="@{/admin/script.js}"></script>
-
 <!--jquery-->
-<script th:src="@{/admin/plugins/jquery/jquery.min.js}"></script>
-<!--plugin table-->
-<script th:src="@{/admin/plugins/jqgrid-5.7.0/common.js}"></script>
-<script th:src="@{/admin/plugins/jqgrid-5.7.0/jquery.jqGrid.min.js}"></script>
-<script th:src="@{/admin/plugins/jqgrid-5.7.0/grid.locale-vn.js}"></script>
-<!--alter-->
+<script th:src="@{/common/jquery/jquery.min.js}"></script>
+<script th:src="@{/common/fancybox/jquery.fancybox.min.js}"></script>
+<!--vendor custom-->
+<script th:src="@{/admin/dist/js/vendor.min.js}"></script>
+<!--datatables-->
+<script th:src="@{/admin/plugins/datatables/js/jquery.dataTables.min.js}"></script>
+<script th:src="@{/admin/plugins/datatables/js/dataTables.bootstrap5.min.js}"></script>
+<script th:src="@{/admin/plugins/datatables/js/dataTables.responsive.min.js}"></script>
+<script th:src="@{/admin/plugins/datatables/js/responsive.bootstrap5.min.js}"></script>
+<script th:src="@{/admin/plugins/datatables/common.js}"></script>
+<!--drop zone-->
+<script th:src="@{/admin/plugins/filepond/filepond.js}"></script>
+<script th:src="@{/admin/plugins/filepond/filepond.jquery.js}"></script>
+<script th:src="@{/admin/plugins/filepond/filepond-plugin-image-preview.js}"></script>
+<script th:src="@{/admin/plugins/filepond/filepond-plugin-file-validate-size.js}"></script>
+<script th:src="@{/admin/plugins/filepond/filepond-plugin-image-overlay.min.js}"></script>
+<script th:src="@{/admin/plugins/filepond/filepond-plugin-file-poster.min.js}"></script>
+<!--sweet alter-->
 <script th:src="@{/admin/plugins/sweetalert/common.js}"></script>
 <script th:src="@{/admin/plugins/sweetalert/sweetalert2.min.js}"></script>
-<!--bootstrap-->
-<script th:src="@{/admin/plugins/bootstrap4/bootstrap.bundle.js}"></script>
+<!--demo upload-->
+<script type="module" th:src="@{/admin/dist/js/ui/component.fileupload.js}"></script>
+<!--common-->
+<script type="module" th:src="@{/common/public.js}"></script>
 <!--custom script-->
-<script th:src="@{/admin/product/product-detail.js}"></script>
+<script type="module" th:src="@{/admin/product/product-detail.js}"></script>
 </body>
 </html>

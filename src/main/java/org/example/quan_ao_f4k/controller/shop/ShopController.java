@@ -27,7 +27,6 @@ public class ShopController {
     // home
     @GetMapping("/home")
     public String index() {
-        System.out.println("vao");
         return "/shop/pages/index";
     }
 

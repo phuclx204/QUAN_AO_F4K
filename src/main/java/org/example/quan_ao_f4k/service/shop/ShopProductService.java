@@ -72,7 +72,7 @@ public class ShopProductService {
                     .price(productDetail.getPrice())
                     .quantity(productDetail.getQuantity())
                     .product(productDetail.getProduct())
-                    .listImage(imageRepository.getImageByIdParent(productDetail.getId()))
+                    .listImage(imageRepository.getImageByIdParent(productDetail.getId(), F4KConstants.TableCode.PRODUCT_DETAIL))
                     .build();
             listData.add(objTmp);
         }
@@ -96,7 +96,7 @@ public class ShopProductService {
                 .findProductDetailsByProductIdAndSizeAndColorId(idProduct, colorName)
                 .orElse(new ProductDetail());
 
-        List<Image> listImage = imageRepository.getImageByIdParent(objTmp.getId());
+        List<Image> listImage = imageRepository.getImageByIdParent(objTmp.getId(), F4KConstants.TableCode.PRODUCT_DETAIL);
         List<Color> listColor = colorRepository.findByProductId(idProduct);
 
         List<Size> listSize = sizeRepository.findByProductIdAndColorName(idProduct, colorName);
@@ -147,7 +147,7 @@ public class ShopProductService {
 
             ShopResponse.CartDto objTmp = ShopResponse.CartDto
                     .builder()
-                    .image(imageRepository.findImageByIdParent(item.getProductDetail().getId()))
+                    .image(imageRepository.findImageByIdParent(item.getProductDetail().getId(), F4KConstants.TableCode.PRODUCT_DETAIL))
                     .productDetail(item.getProductDetail())
                     .quantity(item.getQuantity())
                     .total(total)
