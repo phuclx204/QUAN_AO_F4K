@@ -41,10 +41,6 @@ public class F4KUtils {
         return slug + "-" + generateRandomCode();
     }
 
-    public static void main(String[] args) {
-        System.out.println(toSlug("Phụ kiện Zara 2"));
-    }
-
     public static String generateRandomCode() {
         String character = "abcdefghijklmnopqrstuvwxyz0123456789-";
         SecureRandom random = new SecureRandom();

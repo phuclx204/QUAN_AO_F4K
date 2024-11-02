@@ -45,5 +45,7 @@ public interface SearchFields {
     List<String> EMPLOYEE = List.of(
             "user.name"
     );
+
+    List<String> PROMOTION = List.of("name", "status");
 }
 

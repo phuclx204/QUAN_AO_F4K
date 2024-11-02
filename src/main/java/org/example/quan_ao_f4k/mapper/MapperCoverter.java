@@ -8,8 +8,8 @@ import org.example.quan_ao_f4k.model.authentication.Role;
 import org.example.quan_ao_f4k.model.authentication.User;
 import org.example.quan_ao_f4k.model.order.Order;
 import org.example.quan_ao_f4k.model.order.PaymentMethod;
-import org.example.quan_ao_f4k.model.product.Brand;
-import org.example.quan_ao_f4k.model.product.Category;
+import org.example.quan_ao_f4k.model.product.*;
+import org.example.quan_ao_f4k.model.promotion.Promotion;
 import org.example.quan_ao_f4k.repository.address.AddressRepository;
 import org.example.quan_ao_f4k.repository.address.DistrictRepository;
 import org.example.quan_ao_f4k.repository.address.ProvinceRepository;
@@ -18,12 +18,8 @@ import org.example.quan_ao_f4k.repository.authentication.RoleRepository;
 import org.example.quan_ao_f4k.repository.authentication.UserRepository;
 import org.example.quan_ao_f4k.repository.order.OrderRepository;
 import org.example.quan_ao_f4k.repository.order.PaymentMethodRepository;
-import org.example.quan_ao_f4k.repository.product.BrandRepository;
-import org.example.quan_ao_f4k.repository.product.CategoryRepository;
-import org.example.quan_ao_f4k.repository.product.ProductDetailRepository;
-import org.example.quan_ao_f4k.repository.product.ProductRepository;
-import org.example.quan_ao_f4k.model.product.*;
 import org.example.quan_ao_f4k.repository.product.*;
+import org.example.quan_ao_f4k.repository.promotion.PromotionRepository;
 import org.mapstruct.Mapper;
 import org.mapstruct.Named;
 import org.mapstruct.ReportingPolicy;
@@ -60,6 +56,8 @@ public abstract class MapperCoverter {
     private PaymentMethodRepository paymentMethodRepository;
 	@Autowired
 	private OrderRepository orderRepository;
+    @Autowired
+    private PromotionRepository promotionRepository;
 
     @Named("convertToBrand")
     public Brand convertToBrand(Long id) {
@@ -142,6 +140,11 @@ public abstract class MapperCoverter {
     @Named("convertToOrder")
     public Order convertToOrder(Long id) {
         return orderRepository.findById(id).orElseThrow(() -> new RuntimeException("Loi tim order"));
+    }
+
+    @Named("convertToPromotion")
+    public Promotion convertToPromotion(Long id) {
+        return promotionRepository.findById(id).orElseThrow(() -> new RuntimeException("Lỗi tìm promotion"));
     }
 
 }

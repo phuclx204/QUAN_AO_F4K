@@ -2,6 +2,7 @@ package org.example.quan_ao_f4k.dto.response.promotion;
 
 import lombok.Builder;
 import lombok.Data;
+import org.example.quan_ao_f4k.dto.request.promotion.PromotionProductRequest;
 import org.example.quan_ao_f4k.model.promotion.PromotionProduct;
 
 import java.time.LocalDate;
@@ -15,5 +16,5 @@ public class PromotionResponse {
     private LocalDate dayStart;
     private LocalDate dayEnd;
     private int status;
-    private List<PromotionProduct> products;
+    private List<PromotionProductResponse> products;
 }

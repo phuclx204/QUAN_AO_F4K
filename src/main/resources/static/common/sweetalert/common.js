@@ -1,8 +1,8 @@
-function $alterTop(type = 'success' | 'warning' | 'error' | 'info' | 'question', title, width = 'auto') {
+function $alterTop(type = 'success' | 'warning' | 'error' | 'info' | 'question', title, position = 'top') {
     const Toast = Swal.mixin({
         toast: true,
-        width: width,
-        position: "top",
+        width: 'auto',
+        position: position,
         showConfirmButton: false,
         timer: 3000,
         timerProgressBar: true,

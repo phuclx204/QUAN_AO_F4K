@@ -46,7 +46,6 @@ Object.assign(DataTable.defaults, {
             return {
                 page: Math.floor(data.start / data.length) + 1,
                 size: data.length,
-                // sort: d.order[0] ? `${d.columns[d.order[0].column].data},${d.order[0].dir}` : 'id,desc',
                 sort: 'id,desc',
                 filter: "",
                 search: data.search.value,

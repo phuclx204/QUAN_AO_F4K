@@ -2,10 +2,8 @@
 <html xmlns:th="http://www.thymeleaf.org">
 
 <head>
-        <link rel="stylesheet" th:href="@{/admin/plugins/coreui/css/coreui.min.css}"/>
-<!--    <link rel="stylesheet" th:href="@{/admin/plugins/coreui/css/bootstrap.min.css}"/>-->
+    <link rel="stylesheet" th:href="@{/admin/plugins/coreui/css/coreui.min.css}"/>
     <link rel="stylesheet" th:href="@{/admin/plugins/sweetalert/sweetalert2.min.css}"/>
-    <!--    <link rel="stylesheet" th:href="@{/admin/plugins/bootstrap4/bootstrap.min.css}"/>-->
     <th:block th:insert="admin/fragments/head :: head"></th:block>
     <link rel="stylesheet" th:href="@{/admin/plugins/jqgrid-5.7.0/ui.jqgrid-bootstrap4.css}"/>
     <link rel="stylesheet" th:href="@{/admin/dist/css/common.css}"/>
@@ -14,7 +12,7 @@
 <body>
 <script th:inline="javascript">
     const listProducts = [[${listProducts}]];
-    localStorage.setItem("listProducts", JSON.stringify(listProducts));
+    localStorage.setItem("listData", JSON.stringify(listProducts));
 </script>
 <div th:replace="admin/fragments/sidebar::sidebar"></div>
 
@@ -107,11 +105,12 @@
                             <div class="col-md-6 mb-3">
                                 <label>Trạng thái</label>
                                 <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" id="createStatus1" name="status" checked />
+                                    <input class="form-check-input" type="radio" id="createStatus1" name="status"
+                                           checked/>
                                     <label class="form-check-label" for="createStatus1">Kích hoạt</label>
                                 </div>
                                 <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" id="createStatus2" name="status" />
+                                    <input class="form-check-input" type="radio" id="createStatus2" name="status"/>
                                     <label class="form-check-label" for="createStatus2">Hủy kích hoạt</label>
                                 </div>
                                 <div class="invalid-feedback"></div>
@@ -132,7 +131,6 @@
                                     <thead>
                                     <tr class="table-info">
                                         <th style="width: 300px">Sản phẩm</th>
-                                        <!--                                        <th>Số lượng</th>-->
                                         <th>Giá trị giảm</th>
                                         <th></th>
                                     </tr>
@@ -178,7 +176,8 @@
         </div>
     </div>
 
-    <div class="modal fade" id="modalPromotionDetail" aria-labelledby="promotionDetailLabel" tabindex="-1" aria-hidden="true">
+    <div class="modal fade" id="modalPromotionDetail" aria-labelledby="promotionDetailLabel" tabindex="-1"
+         aria-hidden="true">
         <div class="modal-dialog modal-xl">
             <div class="modal-content">
                 <div class="modal-header d-flex flex-column position-relative">
@@ -189,15 +188,22 @@
                     <div class="position-absolute bottom-0 w-50" style="left: 0">
                         <nav>
                             <div class="nav nav-underline nav-fill" id="nav-tab" role="tablist">
-                                <button class="nav-link active" id="nav-home-tab" data-coreui-toggle="tab" data-coreui-target="#nav-home" type="button" role="tab" aria-controls="nav-home" aria-selected="true">Thông tin khuyến mãi</button>
-                                <button class="nav-link" id="nav-profile-tab" data-coreui-toggle="tab" data-coreui-target="#nav-profile" type="button" role="tab" aria-controls="nav-profile" aria-selected="false">Lịch sử giao dịch</button>
+                                <button class="nav-link active" id="nav-home-tab" data-coreui-toggle="tab"
+                                        data-coreui-target="#nav-home" type="button" role="tab" aria-controls="nav-home"
+                                        aria-selected="true">Thông tin khuyến mãi
+                                </button>
+                                <button class="nav-link" id="nav-profile-tab" data-coreui-toggle="tab"
+                                        data-coreui-target="#nav-profile" type="button" role="tab"
+                                        aria-controls="nav-profile" aria-selected="false">Lịch sử giao dịch
+                                </button>
                             </div>
                         </nav>
                     </div>
                 </div>
                 <div class="modal-body">
                     <div class="tab-content" id="nav-tabContent">
-                        <div class="tab-pane fade show active container" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab" tabindex="0">
+                        <div class="tab-pane fade show active container" id="nav-home" role="tabpanel"
+                             aria-labelledby="nav-home-tab" tabindex="0">
                             <div class="container row">
                                 <div class="row align-items-center col-6 mb-3">
                                     <label class="col-sm-4 col-form-label">Tên chương trình:</label>
@@ -216,7 +222,7 @@
                                 <div class="row align-items-center col-6 mb-3">
                                     <label class="col-sm-4 col-form-label">Thời gian hiệu lực:</label>
                                     <div class="col-sm-8">
-                                        <span id="detailDate"></span>
+                                        <input type="text" name="daterange" value="01/01/2018 - 01/15/2018"/>>
                                     </div>
                                 </div>
                             </div>
@@ -239,7 +245,8 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab" tabindex="0">
+                        <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab"
+                             tabindex="0">
                             <table class="table">
                                 <thead>
                                 <tr>
@@ -293,13 +300,10 @@
 <script th:src="@{/common/sweetalert/common.js}"></script>
 <script th:src="@{/common/sweetalert/sweetalert2.min.js}"></script>
 <!--bootstrap-->
-<!--<script th:src="@{/admin/plugins/bootstrap4/bootstrap.bundle.js}"></script>-->
 <script th:src="@{/admin/plugins/coreui/js/coreui.bundle.min.js}"></script>
-<!--<script th:src="@{/admin/plugins/coreui/js/bootstrap.bundle.min.js}"></script>-->
-<!--<script th:src="@{/admin/plugins/coreui/js/popper.min.js}"></script>-->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.11.13/dayjs.min.js"></script>
 <!--custom script-->
-<script th:src="@{/common/public.js}"></script>
-<script th:src="@{/admin/promotion/index.js}"></script>
+<script type="module" th:src="@{/common/public.js}"></script>
+<script type="module" th:src="@{/admin/promotion/index.js}"></script>
 </body>
 </html>

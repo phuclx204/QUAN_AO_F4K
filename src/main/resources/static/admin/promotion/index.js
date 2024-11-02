@@ -1,3 +1,9 @@
+import {$ajax, buttonSpinner, getCommon, ref, validateForm} from "/common/public.js";
+
+const {getFormValuesByName} = getCommon();
+const {getValidate, clearValidation} = validateForm;
+
+
 (function () {
     'use strict'
 
@@ -239,7 +245,6 @@
         });
         return allFilled;
     }
-
     const getDataDynamic = () => {
         let data = [];
         $("#dynamicTable tbody tr").each(function () {
@@ -259,7 +264,6 @@
         });
         return data;
     };
-
     const getDynamicInputDefault = () => {
         return `<tr>
                 <input type="hidden" name="id[]" value="" />

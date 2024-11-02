@@ -22291,7 +22291,7 @@ div.dataTables_scrollBody>table>:not(:first-child) {
 }
 
 .daterangepicker {
-    z-index: 1000
+    z-index: 1056
 }
 
 [dir=rtl] .daterangepicker.opensright:after {
