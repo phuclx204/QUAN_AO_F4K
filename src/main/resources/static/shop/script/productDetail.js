@@ -1,3 +1,6 @@
+import { getCommon, $ajax } from "/common/public.js";
+import { URL, imageBlank } from "/shop/script/index.js";
+
 (function () {
     const {convert2Vnd} = getCommon();
     const price = document.getElementById('product-price').dataset.price;

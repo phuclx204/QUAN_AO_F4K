@@ -1,4 +1,5 @@
 import { getCommon, $ajax } from "/common/public.js";
+import { URL, imageBlank } from "/shop/script/index.js";
 
 const { removeNullProperties, getPagination, formatNumberByDot } = getCommon();
 
@@ -57,6 +58,7 @@ const getListProduct = async (objSearch = {}) => {
         console.log(e);
     }
 };
+console.log('here')
 getListProduct().catch(e => console.log(e))
 
 const resetSearchObject = () => {
