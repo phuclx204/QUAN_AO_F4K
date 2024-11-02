@@ -296,11 +296,11 @@ const $ajax = (() => {
         });
     }
 
-    const post = (url, params = null, data = null) => {
-        return callApi(url, "POST", data)
+    const post = (url, data = null, params = null) => {
+        return callApi(url, "POST", data, params)
     }
-    const put = (url, params = null, data = null) => {
-        return callApi(url, "PUT", data)
+    const put = (url, data = null, params = null) => {
+        return callApi(url, "PUT", data, params)
     }
     const get = (url, params = null, data = null) => {
         return callApi(url, "GET", data, params)

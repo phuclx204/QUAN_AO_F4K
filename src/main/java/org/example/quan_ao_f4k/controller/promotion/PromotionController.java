@@ -1,12 +1,10 @@
 package org.example.quan_ao_f4k.controller.promotion;
 
 import jakarta.validation.Valid;
+import lombok.AllArgsConstructor;
 import org.example.quan_ao_f4k.dto.request.promotion.PromotionRequest;
-import org.example.quan_ao_f4k.dto.response.promotion.PromotionProductResponse;
 import org.example.quan_ao_f4k.dto.response.promotion.PromotionResponse;
 import org.example.quan_ao_f4k.model.product.Product;
-import org.example.quan_ao_f4k.repository.product.ProductRepository;
-import org.example.quan_ao_f4k.repository.promotion.PromotionProductRepository;
 import org.example.quan_ao_f4k.repository.shop.CriteriaRepository;
 import org.example.quan_ao_f4k.service.pomotion.PromotionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,10 +16,9 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @Controller
 @RequestMapping("/admin/promotion")
+@AllArgsConstructor
 public class PromotionController {
 
     @Autowired
@@ -30,47 +27,44 @@ public class PromotionController {
     @Autowired
     private CriteriaRepository criteriaRepository;
 
-    @Autowired
-    private PromotionProductRepository productRepository;
-    @Autowired
-    private PromotionProductRepository promotionProductRepository;
 
     @GetMapping
     public String promotion(Model model) {
-        List<Product> listProduct = criteriaRepository.findAllByStatus(Product.class);
         model.addAttribute("listProducts", criteriaRepository.findAllByStatus(Product.class));
-        return "/admin/promotion/index";
+        return "/admin/promotion/promotion";
     }
 
-    @GetMapping("/get-list-promotion")
+    @GetMapping("/list")
     @ResponseBody
-    public Page<PromotionResponse> getListPromotion(@ModelAttribute PromotionRequest.RequestSearch request, Model model) {
-        return promotionService.getListPromotion(request);
+    public ResponseEntity<Page<PromotionResponse>> getListPromotion(@RequestParam(defaultValue = "1") int page,
+                                                                            @RequestParam(defaultValue = "5") int size,
+                                                                            @RequestParam(required = false) String search,
+                                                                            @RequestParam(required = false) Integer status,
+                                                                            @RequestParam(required = false) Integer effectiveDate
+    ) {
+        return ResponseEntity.ok(promotionService.searchPromotion(page, size, search, status, effectiveDate));
     }
 
-    @GetMapping("/promotion-detail")
+    @GetMapping("/detail")
     @ResponseBody
     public ResponseEntity<?> detailPromotion(@RequestParam Long id) {
-        return ResponseEntity.ok(promotionService.findDetail(id));
+        return ResponseEntity.ok(promotionService.findById(id));
     }
 
-
     @PostMapping
-    public ResponseEntity<?> createPromotion(@Valid @RequestBody PromotionRequest.Request request, BindingResult bindingResult) {
+    public ResponseEntity<?> createPromotion(@Valid @RequestBody PromotionRequest request, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(bindingResult.getAllErrors());
         }
 
-        return promotionService.createPromotion(request);
+        return ResponseEntity.ok(promotionService.save(request));
     }
 
     @PutMapping
-    public ResponseEntity<?> updatePromotion(@Valid @RequestBody PromotionRequest.Request request, BindingResult bindingResult) {
+    public ResponseEntity<?> updatePromotion(@Valid @RequestBody PromotionRequest request, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(bindingResult.getAllErrors());
         }
-
-        return promotionService.updatePromotion(request);
+        return ResponseEntity.ok(promotionService.save(request.getId(), request));
     }
-
 }
