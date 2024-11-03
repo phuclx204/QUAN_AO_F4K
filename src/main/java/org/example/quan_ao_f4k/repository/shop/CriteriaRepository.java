@@ -94,28 +94,6 @@ public class CriteriaRepository {
         return entityManager.createQuery(query).getResultList();
     }
 
-    public List<ProductDetail> getProductDetailsByIdParent(Long id) {
-        CriteriaBuilder builder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<ProductDetail> query = builder.createQuery(ProductDetail.class);
-        Root<ProductDetail> object = query.from(ProductDetail.class);
-
-        query.select(object)
-                .where(builder.equal(object.get("product").get("id"), id));
-
-        return entityManager.createQuery(query).getResultList();
-    }
-
-    public List<Image> getImgByProductDetailId(Long id) {
-        CriteriaBuilder builder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<Image> query = builder.createQuery(Image.class);
-        Root<Image> object = query.from(Image.class);
-
-        query.select(object)
-                .where(builder.equal(object.get("idParent"), id));
-
-        return entityManager.createQuery(query).getResultList();
-    }
-
     public <T> List<T> findProductByField(Class<T> clazz, String fieldName, Long id) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<T> query = cb.createQuery(clazz);
@@ -145,7 +123,6 @@ public class CriteriaRepository {
         TypedQuery<T> typedQuery = entityManager.createQuery(query);
         return pagination(typedQuery, 1, 30);
     }
-
 
     // not touch
     public <T> List<T> pagination(TypedQuery<T> query, int pageNumber, int pageSize) {
