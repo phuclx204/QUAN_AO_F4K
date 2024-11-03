@@ -96,27 +96,24 @@
                                     </div>
 
                                     <div class="form-group">
-                                        <label for="dob">Bình Dương</label>
+                                        <label for="dob">Quận</label>
                                         <select id="dob">
                                             <option value="Bình Dương" selected>Bình Dương</option>
                                         </select>
                                     </div>
                                     <div class="form-group">
-                                        <label for="district">Huyện Dầu Tiếng</label>
+                                        <label for="district">Huyện</label>
                                         <select id="district">
                                             <option selected>Huyện Dầu Tiếng</option>
                                         </select>
                                     </div>
                                     <div class="form-group">
-                                        <label for="city">Xã Minh Hoà</label>
+                                        <label for="city">Xã</label>
                                         <select id="city">
                                             <option selected>Xã Minh Hoà</option>
                                         </select>
                                     </div>
-                                    <div class="form-group wide">
-                                        <label for="address">Địa chỉ</label>
-                                        <input type="text" id="address" >
-                                    </div>
+
                                 </div>
                             </div>
                             <!-- Invoice and Summary Area -->
@@ -226,6 +223,7 @@
                         <th>Tên sản phẩm</th>
                         <th>Giá</th>
                         <th>Màu</th>
+                        <th>Số lượng</th>
                         <th>Thao tác</th>
                     </tr>
                     </thead>
@@ -262,6 +260,7 @@
 <script th:src="@{/admin/plugins/bootstrap4/bootstrap.bundle.js}"></script>
 <!--custom script-->
 <script th:src="@{/admin/shopping_offline/shopping.js}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/decimal.js/10.2.4/decimal.min.js"></script>
 
 <script></script>
 </body>

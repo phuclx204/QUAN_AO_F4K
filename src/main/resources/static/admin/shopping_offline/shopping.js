@@ -208,6 +208,24 @@ function getCurrentOrderId() {
     return orderId; // Trả về ID hóa đơn
 }
 
+
+function updateProductStock(productId, quantityToSubtract) {
+    $.ajax({
+        url: `/admin/shopping-offlinee/${productId}/quantity`,
+        method: 'PUT',
+        contentType: 'application/json',
+        data: JSON.stringify({ quantity: quantityToSubtract }), // JSON đúng với DTO
+        success: function(response) {
+            console.log("Số lượng kho đã được cập nhật thành công.");
+        },
+        error: function(xhr) {
+            console.error("Không thể cập nhật số lượng kho.", xhr);
+            Swal.fire('Lỗi', 'Không thể cập nhật số lượng kho.', 'error');
+        }
+    });
+}
+
+
 function addProductToInvoice(productId, productPrice) {
     const currentOrderId = getCurrentOrderId(); // Lấy ID hóa đơn hiện tại
 
@@ -215,43 +233,101 @@ function addProductToInvoice(productId, productPrice) {
         modal.style.display = "none";
         Swal.fire('Lỗi', 'Vui lòng chọn hóa đơn.', 'error');
         return;
-            }
+    }
 
-    const orderDetailData = {
-        orderId: currentOrderId,      // ID hóa đơn hiện tại
-        productDetailId: productId,   // ID sản phẩm từ nút nhấn
-        quantity: 1,                  // Đặt số lượng mặc định
-        price: productPrice           // Sử dụng giá sản phẩm được truyền vào
-    };
-
-    $.ajax({
-        url: '/admin/shopping-offline/add',
-        method: 'POST',
-        contentType: 'application/json',
-        data: JSON.stringify(orderDetailData),
-        success: function (response) {
-            modal.style.display = "none";
-            Swal.fire({
-                title: 'Thêm sản phẩm thành công!',
-                text: "Sản phẩm đã được thêm vào hóa đơn.",
-                icon: 'success',
-                timer: 2000,
-                timerProgressBar: true,
-                willClose: () => {
-                    location.reload(); // Tải lại hoặc cập nhật giao diện khi cần
-                }
-            });
-        },
-        error: function (xhr) {
-            modal.style.display = "none";
-            let errorMessage = 'Không thể thêm sản phẩm vào hóa đơn.';
-            if (xhr.status === 400 && xhr.responseJSON) {
-                errorMessage = xhr.responseJSON.map(error => error.defaultMessage).join(', ');
-            }
-            Swal.fire('Lỗi', errorMessage, 'error');
-        }
+    // Kiểm tra nếu sản phẩm đã có trong hóa đơn
+    const existingRow = $(`tr`).filter(function() {
+        return $(this).find(`input[type="hidden"][id="productDetailId"]`).val() == productId;
     });
+
+    if (existingRow.length > 0) {
+        // Nếu sản phẩm đã có, cập nhật số lượng
+        const quantityInput = existingRow.find('.quantity-input');
+        const currentQuantity = parseInt(quantityInput.val());
+        const newQuantity = currentQuantity + 1; // Tăng số lượng lên 1
+        quantityInput.val(newQuantity);
+
+        // Gửi yêu cầu cập nhật hóa đơn qua AJAX
+        const updateData = {
+            orderId: currentOrderId,
+            productDetailId: productId,
+            quantity: newQuantity,
+            price: productPrice
+        };
+
+        $.ajax({
+            url: `/admin/shopping-offline/${currentOrderId}/${productId}`,
+            method: 'PUT',
+            contentType: 'application/json',
+            data: JSON.stringify(updateData),
+            success: function(response) {
+                // Gọi API cập nhật kho sau khi cập nhật hóa đơn thành công
+                updateProductStock(productId, 1); // Trừ 1 sản phẩm từ kho
+
+                modal.style.display = "none";
+                Swal.fire({
+                    title: 'Thêm thành công vào giỏ hàng!',
+                    text: "Sản Phẩm đã được thêm vào Giỏ",
+                    icon: 'success',
+                    timer: 2000,
+                    timerProgressBar: true,
+                    willClose: () => {
+                        location.reload();
+                    }
+                });
+            },
+            error: function(xhr) {
+                let errorMessage = 'Không thể cập nhật số lượng.';
+                if (xhr.status === 400 && xhr.responseJSON) {
+                    errorMessage = xhr.responseJSON.map(error => error.defaultMessage).join(', ');
+                }
+                Swal.fire('Lỗi', errorMessage, 'error');
+            }
+        });
+    } else {
+        // Nếu sản phẩm chưa có, thêm mới vào hóa đơn
+        const orderDetailData = {
+            orderId: currentOrderId,
+            productDetailId: productId,
+            quantity: 1,
+            price: productPrice
+        };
+
+        $.ajax({
+            url: '/admin/shopping-offline/add',
+            method: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(orderDetailData),
+            success: function(response) {
+                // Gọi API cập nhật kho sau khi thêm sản phẩm vào hóa đơn thành công
+                updateProductStock(productId, 1); // Trừ 1 sản phẩm từ kho
+
+                modal.style.display = "none";
+                Swal.fire({
+                    title: 'Thêm sản phẩm thành công!',
+                    text: "Sản phẩm đã được thêm vào hóa đơn.",
+                    icon: 'success',
+                    timer: 2000,
+                    timerProgressBar: true,
+                    willClose: () => {
+                        location.reload();
+                    }
+                });
+            },
+            error: function(xhr) {
+                let errorMessage = 'Không thể thêm sản phẩm vào hóa đơn.';
+                if (xhr.status === 400 && xhr.responseJSON) {
+                    errorMessage = xhr.responseJSON.map(error => error.defaultMessage).join(', ');
+                }
+                Swal.fire('Lỗi', errorMessage, 'error');
+            }
+        });
+    }
 }
+
+
+
+
 
 function renderProductList(products) {
     const productList = document.getElementById('productList');
@@ -277,6 +353,7 @@ function renderProductList(products) {
             <td>
                 ${product.color ? `<span class="color-circle" style="background-color: ${product.color.hex}; display: inline-block; width: 20px; height: 20px; border-radius: 50%;"></span>` : ''}
             </td>
+            <td>${product.quantity}</td>
             <td>
                 <button class="new-btn-buy" onclick="addProductToInvoice(${product.id}, ${product.price})">Chọn Vào giỏ</button>
             </td>
@@ -357,17 +434,9 @@ $(document).ready(function () {
         }
     });
 
-    // Lấy giá sản phẩm từ ô td và định dạng lại
-    const productPrice = parseInt($('#productPrice').text().replace(/\D/g, ''), 10);
-    $('#productPrice').text(productPrice.toLocaleString() + ' ₫');
 });
 
-$(document).ready(function() {
-    // Lấy giá sản phẩm từ ô td
-    const productPrice = parseInt($('#productPrice').text().replace(/\D/g, ''), 10);
-    // Định dạng và cập nhật lại nội dung ô td
-    $('#productPrice').text(productPrice.toLocaleString() + ' ₫');
-});
+
 $(document).ready(function() {
     $('.delete-btn').on('click', function() {
         const orderId = $(this).data('order-id');
@@ -591,9 +660,8 @@ $(document).ready(function () {
             const orderId = row.find(`input[type="hidden"][id="orderId"]`).val(); // Tìm giá trị order ID
             const productDetailId = row.find(`input[type="hidden"][id="productDetailId"]`).val(); // Tìm giá trị product detail ID
 
-            // Lấy giá sản phẩm từ ô giá
-            const priceText = row.find('#productPrice').text().trim(); // Lấy giá từ ô sản phẩm
-            const productPrice = parseFloat(priceText.replace(/,/g, '').replace('đ', '').trim()); // Chuyển đổi giá thành số, loại bỏ dấu phẩy và 'đ' nếu có
+    const priceText = row.find('#productPrice').text().trim(); // Sử dụng jQuery để lấy giá
+             const productPrice = parseFloat(priceText.replace(/,/g, '').replace('₫', '').trim()); // Chuyển đổi thành số thực
 
             console.log("Order ID:", orderId);
             console.log("Product Detail ID:", productDetailId);

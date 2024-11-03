@@ -8,10 +8,13 @@ import org.example.quan_ao_f4k.list.ListResponse;
 import org.example.quan_ao_f4k.mapper.order.OrderDetailMapper;
 import org.example.quan_ao_f4k.model.order.OrderDetail;
 import org.example.quan_ao_f4k.model.order.OrderProductDetailKey;
+import org.example.quan_ao_f4k.model.product.ProductDetail;
 import org.example.quan_ao_f4k.repository.order.OrderDetailRepository;
+import org.example.quan_ao_f4k.repository.product.ProductDetailRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @AllArgsConstructor
 @Service
@@ -19,6 +22,7 @@ public class OrderDetailServiceimpl implements OrderDetailService {
 
     private final OrderDetailMapper orderDetailMapper;
     private final OrderDetailRepository orderDetailRepository;
+    private final ProductDetailRepository productDetailRepository;
 
     @Override
     public ListResponse<OrderDetailResponse> findAll(int page, int size, String sort, String filter, String search, boolean all) {
@@ -52,4 +56,24 @@ public class OrderDetailServiceimpl implements OrderDetailService {
     public void delete(List<OrderProductDetailKey> orderProductDetailKeys) {
         orderDetailRepository.deleteAllById(orderProductDetailKeys);
     }
+
+    public void updateQuantity(Long productId, int quantity) {
+        // Tìm thông tin chi tiết của sản phẩm theo productId
+        Optional<ProductDetail> optionalProductDetail = productDetailRepository.findById(productId);
+
+        if (optionalProductDetail.isPresent()) {
+            ProductDetail productDetail = optionalProductDetail.get();
+
+            int currentQuantity = productDetail.getQuantity();
+
+            int updatedQuantity = currentQuantity - quantity;
+
+            productDetail.setQuantity(updatedQuantity);
+
+            productDetailRepository.save(productDetail);
+        } else {
+            throw new RuntimeException("Không tìm thấy sản phẩm với ID: " + productId);
+        }
+    }
+
 }
