@@ -1,8 +1,3 @@
-// Giả định rằng bạn có hàm này để lấy số lượng hóa đơn hiện tại
-function getOrderCount() {
-    return $('.new-invoice-container button').length; // Lấy số lượng hóa đơn từ các nút trong invoice-container
-}
-
 
 function loadOptions(endpoint, selectElement, defaultOption, selectedId = null) {
     $.get(endpoint, function (data) {
@@ -22,9 +17,13 @@ function loadSelect(categoryId = null, brandId = null) {
     loadOptions('/admin/category/active', categorySelect, 'Tất cả', categoryId);
     loadOptions('/admin/brand/active', brandSelect, 'Tất cả', brandId);
 }
-
+function getOrderCount() {
+    return $('.new-invoice-container button').length; // Lấy số lượng hóa đơn từ các nút trong invoice-container
+}
 function confirmCreateInvoice() {
-    const orderCount = getOrderCount(); // Lấy số lượng hóa đơn hiện tại
+    alert("Create Invoice button clicked!"); // Placeholder for actual implementation
+
+    const orderCount = getOrderCount(); // Get the current invoice count
 
     if (orderCount >= 10) {
         Swal.fire({
@@ -34,7 +33,7 @@ function confirmCreateInvoice() {
             confirmButtonColor: '#3085d6',
             confirmButtonText: 'Đóng'
         });
-        return; // Ngăn không cho tiếp tục tạo hóa đơn
+        return; // Prevent further invoice creation
     }
 
     Swal.fire({
@@ -55,18 +54,22 @@ function confirmCreateInvoice() {
 
 function createInvoice() {
     const orderData = {
-        userId: 61,
-        code: generateUniqueCode(),
-        status: 1,
-        order_type: 'OFFLINE'
+        userId: 61, // User ID
+        code: generateUniqueCode(), // Generate unique invoice code
+        status: 1, // Invoice status
+        order_type: 'OFFLINE' // Invoice type is "OFFLINE"
     };
 
+    // Send AJAX request to create the invoice
     $.ajax({
-        url: '/admin/shopping-offline',
-        method: 'POST',
-        contentType: 'application/json',
-        data: JSON.stringify(orderData),
+        url: '/admin/shopping-offline', // API URL
+        method: 'POST', // Use POST method
+        contentType: 'application/json', // Sending data as JSON
+        data: JSON.stringify(orderData), // Convert invoice data to JSON string
         success: function (response) {
+            const newInvoiceId = response.id; // Assuming response contains the new invoice ID
+
+            // Show success message
             Swal.fire({
                 title: 'Tạo hóa đơn thành công!',
                 text: "Hóa đơn đã được tạo.",
@@ -74,28 +77,26 @@ function createInvoice() {
                 timer: 2000,
                 timerProgressBar: true,
                 willClose: () => {
-                    // Tải lại trang sau khi thông báo đóng
-                    location.reload();
+                    // Redirect to the new invoice page
+                    window.location.href = `/admin/shopping-offline/${newInvoiceId}`;
                 }
             });
         },
         error: function (xhr) {
+            // Handle error if invoice creation fails
             let errorMessage = 'Không thể tạo hóa đơn.';
             if (xhr.status === 400 && xhr.responseJSON) {
-                // Lấy thông báo lỗi từ phản hồi JSON
+                // Get error message from JSON response
                 errorMessage = xhr.responseJSON.map(error => error.defaultMessage).join(', ');
             }
-            Swal.fire('Lỗi', errorMessage, 'error');
+            Swal.fire('Lỗi', errorMessage, 'error'); // Display error message
         }
     });
 }
 
-// Giả định rằng bạn có một hàm để tạo mã duy nhất
-
-
 // Hàm để tạo mã duy nhất cho hóa đơn
 function generateUniqueCode() {
-    return 'INV-' + Date.now(); // Cách đơn giản để tạo mã duy nhất
+    return 'HD ' + Date.now(); // Cách đơn giản để tạo mã duy nhất
 }
 function cancelOrder(orderId) {
     Swal.fire({
@@ -153,9 +154,8 @@ function updateOrderStatus(orderId, status) {
 
 
 function viewInvoice(id) {
-        // Điều hướng đến trang chi tiết hóa đơn với ID tương ứng
         window.location.href = '/admin/shopping-offline/' + id;
-    }
+ }
 
     const modal = document.getElementById("productModal");
      const btnAddProduct = document.querySelector(".new-btn-add");
@@ -208,26 +208,24 @@ function getCurrentOrderId() {
     return orderId; // Trả về ID hóa đơn
 }
 
-function addProductToInvoice(productId) {
+function addProductToInvoice(productId, productPrice) {
     const currentOrderId = getCurrentOrderId(); // Lấy ID hóa đơn hiện tại
 
     if (!currentOrderId) {
         modal.style.display = "none";
         Swal.fire('Lỗi', 'Vui lòng chọn hóa đơn.', 'error');
-        return; // Thoát nếu không tìm thấy ID hóa đơn
-    }
+        return;
+            }
 
-    // Chuẩn bị dữ liệu để gửi tới máy chủ
     const orderDetailData = {
-        orderId: currentOrderId, // ID hóa đơn hiện tại
-        productDetailId: productId, // ID sản phẩm từ nút nhấn
-        quantity: 1, // Đặt số lượng mặc định
-        price: 3000000 // Lấy giá sản phẩm
+        orderId: currentOrderId,      // ID hóa đơn hiện tại
+        productDetailId: productId,   // ID sản phẩm từ nút nhấn
+        quantity: 1,                  // Đặt số lượng mặc định
+        price: productPrice           // Sử dụng giá sản phẩm được truyền vào
     };
 
-    // Gửi yêu cầu AJAX POST để thêm sản phẩm vào hóa đơn
     $.ajax({
-        url: '/admin/shopping-offline/add', // Đường dẫn tới endpoint để tạo OrderDetail
+        url: '/admin/shopping-offline/add',
         method: 'POST',
         contentType: 'application/json',
         data: JSON.stringify(orderDetailData),
@@ -254,6 +252,7 @@ function addProductToInvoice(productId) {
         }
     });
 }
+
 function renderProductList(products) {
     const productList = document.getElementById('productList');
     productList.innerHTML = ''; // Xóa nội dung trước đó
@@ -267,7 +266,7 @@ function renderProductList(products) {
         return;
     }
 
-    products.forEach((product,index) => {
+    products.forEach((product, index) => {
         const productRow = document.createElement('tr'); // Tạo hàng mới
 
         productRow.innerHTML = `
@@ -279,7 +278,7 @@ function renderProductList(products) {
                 ${product.color ? `<span class="color-circle" style="background-color: ${product.color.hex}; display: inline-block; width: 20px; height: 20px; border-radius: 50%;"></span>` : ''}
             </td>
             <td>
-                <button class="new-btn-buy" onclick="addProductToInvoice(${product.id})">Chọn Vào giỏ</button>
+                <button class="new-btn-buy" onclick="addProductToInvoice(${product.id}, ${product.price})">Chọn Vào giỏ</button>
             </td>
         `;
 
@@ -337,4 +336,310 @@ function setupPagination(totalPages, currentPage) {
         }
     });
 }
+$(document).ready(function () {
+    // Lấy tổng tiền từ `totalAmount`
+    const totalAmount = parseInt($('#totalAmount').text().replace(/\D/g, ''), 10);
+    $('#amountDue').text(totalAmount.toLocaleString() + ' ₫');
 
+    // Khi nhập vào ô "Tiền khách đưa"
+    $('#customerAmount').on('input', function () {
+        const customerAmount = parseInt($(this).val().replace(/\D/g, ''), 10) || 0; // Remove non-numeric characters
+        const changeAmount = customerAmount - totalAmount;
+
+        if (customerAmount >= totalAmount) {
+            // Đủ tiền
+            $('#statusMessage').text('Đủ tiền').css('color', 'green');
+            $('#changeAmount').text(changeAmount.toLocaleString() + ' ₫');
+        } else {
+            // Chưa đủ tiền
+            $('#statusMessage').text('Chưa đủ tiền').css('color', 'red');
+            $('#changeAmount').text('0 ₫');
+        }
+    });
+
+    // Lấy giá sản phẩm từ ô td và định dạng lại
+    const productPrice = parseInt($('#productPrice').text().replace(/\D/g, ''), 10);
+    $('#productPrice').text(productPrice.toLocaleString() + ' ₫');
+});
+
+$(document).ready(function() {
+    // Lấy giá sản phẩm từ ô td
+    const productPrice = parseInt($('#productPrice').text().replace(/\D/g, ''), 10);
+    // Định dạng và cập nhật lại nội dung ô td
+    $('#productPrice').text(productPrice.toLocaleString() + ' ₫');
+});
+$(document).ready(function() {
+    $('.delete-btn').on('click', function() {
+        const orderId = $(this).data('order-id');
+        const productDetailId = $(this).data('product-detail-id');
+
+        // Kiểm tra lại giá trị của orderId và productDetailId
+        console.log("Order ID:", orderId, "Product Detail ID:", productDetailId);
+
+        confirmDelete(orderId, productDetailId);
+    });
+});
+
+
+
+// Hàm confirmDelete sử dụng SweetAlert2
+function confirmDelete(orderId, productDetailId) {
+    console.log("Order ID:", orderId, "Product Detail ID:", productDetailId); // Kiểm tra log
+    Swal.fire({
+        title: 'Xác nhận xóa sản phẩm khỏi giỏ',
+        text: "Bạn có chắc chắn muốn bỏ sản phẩm này không?",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Có, xóa!',
+        cancelButtonText: 'Hủy'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            deleteOrderDetail(orderId, productDetailId);
+        }
+    });
+}
+function deleteOrderDetail(orderId, productDetailId) {
+    fetch('/admin/shopping-offlinee/order-detail/delete', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ orderId: orderId, productDetailId: productDetailId })
+    })
+    .then(response => {
+        console.log('Response:', response); // Log phản hồi
+        if (!response.ok) {
+            return response.text().then(text => { throw new Error(text) });
+        }
+        return response.text();
+    })
+    .then(data => {
+        Swal.fire('Đã xóa!', data, 'success').then(() => {
+            location.reload(); // Load lại trang sau khi xóa thành công
+        });
+    })
+    .catch(error => {
+        Swal.fire('Lỗi!', error.message, 'error');
+        console.error('Error:', error); // Log lỗi
+    });
+}
+function updateOrderStatus1(orderId, status, totalPay) {
+    const orderCode = document.getElementById('orderCode').innerText;
+    const toName = document.getElementById('name').value;
+    const toPhone = document.getElementById('phone').value;
+    const toAddress = document.getElementById('to_address').value;
+
+    const updateData = {
+        status: status,
+        code: orderCode,
+        toName: toName,
+        toPhone: toPhone,
+        toAddress: toAddress,
+        totalPay: totalPay, // Add totalPay to update data
+        paymentStatus: 3, // Example status for successful payment
+        order_type: 'OFFLINE'
+    };
+
+    $.ajax({
+        url: '/admin/shopping-offline/' + orderId,
+        method: 'PUT',
+        contentType: 'application/json',
+        data: JSON.stringify(updateData),
+        success: function (response) {
+            Swal.fire({
+                title: 'Thanh toán thành công!',
+                text: "Đơn hàng đã được thanh toán.",
+                icon: 'success',
+                timer: 2000,
+                timerProgressBar: true,
+                willClose: () => {
+                    location.reload();
+                }
+            });
+        },
+        error: function (xhr) {
+            let errorMessage = 'Không thể thanh toán đơn hàng.';
+            if (xhr.status === 400 && xhr.responseJSON) {
+                errorMessage = xhr.responseJSON.map(error => error.defaultMessage).join(', ');
+            }
+            Swal.fire('Lỗi', errorMessage, 'error');
+        }
+    });
+}
+
+function comfirmOrder(orderId) {
+    const totalAmount = parseInt($('#totalAmount').text().replace(/\D/g, ''), 10);
+    const customerAmount = parseInt($('#customerAmount').val().replace(/\D/g, ''), 10) || 0;
+
+    // Check if total amount is valid (greater than 0)
+    if (totalAmount <= 0) {
+        Swal.fire({
+            title: 'Lỗi',
+            text: 'Hãy thêm ít nhất 1 sản phẩm để thanh toán.',
+            icon: 'error',
+            confirmButtonColor: '#3085d6',
+            confirmButtonText: 'Đóng'
+        });
+        return;
+    }
+
+    // Validate if required fields are filled correctly
+    const toName = $('#name').val();
+    const toPhone = $('#phone').val();
+    const toAddress = $('#to_address').val();
+
+    // Check if name, phone, and address are valid
+    let validationMessage = '';
+    if (toName.length < 8) {
+        validationMessage += 'Tên cần ít nhất 8 ký tự. ';
+        $('#nameStatus').text('Tên cần ít nhất 8 ký tự').css('color', 'red');
+    }
+    if (!/^\d{10}$/.test(toPhone)) {
+        validationMessage += 'Số điện thoại phải có 10 chữ số. ';
+        $('#phoneStatus').text('Số điện thoại phải có 10 chữ số').css('color', 'red');
+    }
+    if (toAddress.trim() === '') {
+        validationMessage += 'Hãy nhập địa chỉ. ';
+        $('#addressStatus').text('Hãy nhập địa chỉ').css('color', 'red');
+    }
+
+    if (validationMessage) {
+        Swal.fire({
+            title: 'Thông tin không hợp lệ',
+            text: validationMessage,
+            icon: 'error',
+            confirmButtonColor: '#3085d6',
+            confirmButtonText: 'Đóng'
+        });
+        return;
+    }
+
+    // Check if customerAmount is enough
+    if (customerAmount < totalAmount) {
+        Swal.fire({
+            title: 'Lỗi',
+            text: 'Số tiền khách đưa không đủ để thanh toán.',
+            icon: 'error',
+            confirmButtonColor: '#3085d6',
+            confirmButtonText: 'Đóng'
+        });
+        return;
+    }
+
+    // Confirmation dialog
+    Swal.fire({
+        title: 'Xác nhận thanh toán',
+        text: "Bạn có chắc chắn muốn thanh toán đơn này không?",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Có, thanh toán!',
+        cancelButtonText: 'Hủy'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            updateOrderStatus1(orderId, 3, totalAmount); // Call update with total amount as totalPay
+        }
+    });
+}
+
+// Validation Logic for Name, Phone, and Address on Input
+$(document).ready(function () {
+    // Validate name input for at least 8 characters
+    $('#name').on('input', function () {
+        const nameLength = $(this).val().length;
+        if (nameLength >= 8) {
+            $('#nameStatus').text('Hợp lệ').css('color', 'green');
+        } else {
+            $('#nameStatus').text('Tên cần ít nhất 8 ký tự').css('color', 'red');
+        }
+    });
+
+    // Validate phone input for exactly 10 digits
+    $('#phone').on('input', function () {
+        const phoneNumber = $(this).val();
+        if (/^\d{10}$/.test(phoneNumber)) {
+            $('#phoneStatus').text('Hợp lệ').css('color', 'green');
+        } else {
+            $('#phoneStatus').text('Số điện thoại phải có 10 chữ số').css('color', 'red');
+        }
+    });
+
+    // Validate address input for non-empty value
+    $('#to_address').on('input', function () {
+        const address = $(this).val().trim();
+        if (address !== '') {
+            $('#addressStatus').text('Hợp lệ').css('color', 'green');
+        } else {
+            $('#addressStatus').text('Hãy nhập địa chỉ').css('color', 'red');
+        }
+    });
+});
+//update
+$(document).ready(function () {
+    // Lắng nghe sự kiện 'keydown' trên ô nhập số lượng
+    $('.quantity-input').on('keydown', function (event) {
+        // Kiểm tra nếu phím nhấn là Enter
+        if (event.key === 'Enter') {
+            event.preventDefault(); // Ngăn chặn hành vi mặc định của Enter
+
+            // Lấy giá trị số lượng
+            const quantity = parseInt($(this).val());
+
+            // Lấy ID order và productDetail từ các trường hidden
+            const row = $(this).closest('tr'); // Lấy dòng cha chứa input
+            const orderId = row.find(`input[type="hidden"][id="orderId"]`).val(); // Tìm giá trị order ID
+            const productDetailId = row.find(`input[type="hidden"][id="productDetailId"]`).val(); // Tìm giá trị product detail ID
+
+            // Lấy giá sản phẩm từ ô giá
+            const priceText = row.find('#productPrice').text().trim(); // Lấy giá từ ô sản phẩm
+            const productPrice = parseFloat(priceText.replace(/,/g, '').replace('đ', '').trim()); // Chuyển đổi giá thành số, loại bỏ dấu phẩy và 'đ' nếu có
+
+            console.log("Order ID:", orderId);
+            console.log("Product Detail ID:", productDetailId);
+            console.log("Product Price:", productPrice);
+            console.log("Quantity:", quantity);
+
+            // Kiểm tra số lượng hợp lệ
+            if (isNaN(quantity) || quantity <= 0) {
+                Swal.fire('Lỗi', 'Vui lòng nhập một số lượng hợp lệ.', 'error');
+                return;
+            }
+
+            // Kiểm tra xem các ID có giá trị hợp lệ không
+            if (!orderId || !productDetailId) {
+                Swal.fire('Lỗi', 'Không tìm thấy thông tin đơn hàng hoặc chi tiết sản phẩm.', 'error');
+                return;
+            }
+
+            // Tạo dữ liệu cần gửi đi
+            const updateData = {
+                orderId: orderId,
+                productDetailId: productDetailId,
+                quantity: quantity,
+                price: productPrice // Nếu bạn cần gửi giá sản phẩm
+            };
+
+            // Gửi dữ liệu qua API PUT để cập nhật số lượng sản phẩm
+            $.ajax({
+                url: `/admin/shopping-offline/${orderId}/${productDetailId}`,
+                method: 'PUT',
+                contentType: 'application/json',
+                data: JSON.stringify(updateData),
+                success: function (response) {
+                    Swal.fire('Thành công', 'Số lượng đã được cập nhật', 'success');
+                    location.reload(); // Tải lại trang để cập nhật thay đổi
+                },
+                error: function (xhr) {
+                    let errorMessage = 'Không thể cập nhật số lượng.';
+                    if (xhr.status === 400 && xhr.responseJSON) {
+                        errorMessage = Array.isArray(xhr.responseJSON) ?
+                            xhr.responseJSON.map(error => error.defaultMessage).join(', ') :
+                            xhr.responseJSON.error || errorMessage;
+                    }
+                    Swal.fire('Lỗi', errorMessage, 'error');
+                }
+            });
+        }
+    });
+});

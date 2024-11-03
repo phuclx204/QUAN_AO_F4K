@@ -15,10 +15,11 @@ import java.util.List;
 
 @AllArgsConstructor
 @Service
-public class OrderDetailServiceimpl implements OrderDetailService{
+public class OrderDetailServiceimpl implements OrderDetailService {
 
     private final OrderDetailMapper orderDetailMapper;
     private final OrderDetailRepository orderDetailRepository;
+
     @Override
     public ListResponse<OrderDetailResponse> findAll(int page, int size, String sort, String filter, String search, boolean all) {
         return null;
@@ -38,16 +39,17 @@ public class OrderDetailServiceimpl implements OrderDetailService{
 
     @Override
     public OrderDetailResponse save(OrderProductDetailKey orderProductDetailKey, OrderDetailRequest request) {
-        return null;
+        return defaultSave(orderProductDetailKey, request, orderDetailRepository, orderDetailMapper, "");
     }
 
     @Override
     public void delete(OrderProductDetailKey orderProductDetailKey) {
+        orderDetailRepository.deleteById(orderProductDetailKey);
 
     }
 
     @Override
     public void delete(List<OrderProductDetailKey> orderProductDetailKeys) {
-
+        orderDetailRepository.deleteAllById(orderProductDetailKeys);
     }
 }
