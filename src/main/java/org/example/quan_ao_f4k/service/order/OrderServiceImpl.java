@@ -7,6 +7,9 @@ import org.example.quan_ao_f4k.list.ListResponse;
 import org.example.quan_ao_f4k.mapper.order.OrderMapper;
 import org.example.quan_ao_f4k.model.order.Order;
 import org.example.quan_ao_f4k.model.order.OrderDetail;
+import org.example.quan_ao_f4k.repository.address.DistrictRepository;
+import org.example.quan_ao_f4k.repository.address.ProvinceRepository;
+import org.example.quan_ao_f4k.repository.address.WardRepository;
 import org.example.quan_ao_f4k.repository.order.OrderDetailRepository;
 import org.example.quan_ao_f4k.repository.order.OrderRepository;
 import org.example.quan_ao_f4k.service.product.ProductServiceImpl;
@@ -29,6 +32,9 @@ public class OrderServiceImpl implements OrderService {
 	private OrderRepository orderRepository;
 	private OrderDetailRepository orderDetailRepository;
 	private ProductServiceImpl productService;
+	private WardRepository wardRepository;
+	private DistrictRepository districtRepository;
+	private ProvinceRepository provinceRepository;
 
 	@Override
 	public ListResponse<OrderResponse> findAll(int page, int size, String sort, String filter, String search, boolean all) {
@@ -74,7 +80,9 @@ public class OrderServiceImpl implements OrderService {
 
 	public void addModelOrder(Model model) {
 		model.addAttribute("listOrder", this.findOrdersByOrderType("OFFLINE", 1));
-
+		model.addAttribute("wards", wardRepository.findAll());
+		model.addAttribute("districts", districtRepository.findAll());
+		model.addAttribute("provinces", provinceRepository.findAll());
 	}
 
 	@Override
@@ -92,6 +100,4 @@ public class OrderServiceImpl implements OrderService {
 
 		return new ListResponse<>(orderResponses, orders);
 	}
-
-
 }
