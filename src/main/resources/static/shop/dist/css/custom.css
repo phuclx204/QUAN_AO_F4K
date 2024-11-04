@@ -37,3 +37,9 @@
     height: 156px!important;
     object-fit: cover;
 }
+
+.card-product-detail-picture > picture > img {
+    width: 295px;
+    height: 394px;
+    object-fit: cover;
+}

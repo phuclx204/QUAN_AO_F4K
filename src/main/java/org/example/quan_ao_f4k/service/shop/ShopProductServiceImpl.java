@@ -9,17 +9,13 @@ import org.example.quan_ao_f4k.model.authentication.User;
 import org.example.quan_ao_f4k.model.general.Image;
 import org.example.quan_ao_f4k.model.order.Cart;
 import org.example.quan_ao_f4k.model.product.*;
-import org.example.quan_ao_f4k.repository.authentication.UserRepository;
 import org.example.quan_ao_f4k.repository.general.ImageRepository;
-import org.example.quan_ao_f4k.repository.order.CartProductRepository;
-import org.example.quan_ao_f4k.repository.order.CartRepository;
 import org.example.quan_ao_f4k.repository.product.ColorRepository;
 import org.example.quan_ao_f4k.repository.product.ProductDetailRepository;
 import org.example.quan_ao_f4k.repository.product.SizeRepository;
 import org.example.quan_ao_f4k.repository.shop.CriteriaRepository;
 import org.example.quan_ao_f4k.util.F4KConstants;
 import org.example.quan_ao_f4k.util.F4KUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -36,24 +32,12 @@ import java.util.function.Function;
 @AllArgsConstructor
 public class ShopProductServiceImpl implements ShopProductService {
     private final ProductDetailRepository productDetailRepository;
-    private final ShopProductMapper shopProductMapper;
     private final ColorRepository colorRepository;
     private final SizeRepository sizeRepository;
+    private final ImageRepository imageRepository;
+    private final CriteriaRepository criteriaRepository;
 
-    @Autowired
-    private CriteriaRepository criteriaRepository;
-
-    @Autowired
-    private ImageRepository imageRepository;
-
-    @Autowired
-    private CartRepository cartRepository;
-
-    @Autowired
-    private CartProductRepository cartProductRepository;
-
-    @Autowired
-    private UserRepository userRepository;
+    private final ShopProductMapper shopProductMapper;
 
     @Override
     public Page<ShopProductResponse.ProductDetailDto> searchProducts(ShopProductRequest.RequestSearch requestSearch) {

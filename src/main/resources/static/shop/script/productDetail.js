@@ -14,7 +14,7 @@ import { URL, imageBlank } from "/shop/script/index.js";
 
     $(".btn-color-picker").on("click", function (e) {
         const objSearch = {
-            color: $(this).val()
+            color: $(this).data('id')
         }
 
         const href = $ajax.createUrl(window.location.pathname, objSearch);

@@ -47,19 +47,18 @@ public class ShopController {
     }
 
 
-//
-//    // checkout
-//    @GetMapping("/checkout")
-//    public String checkout() {
-//        return "/shop/pages/checkout";
-//    }
-//
-//    // addCart
-//    @GetMapping("/cart")
-//    public String showCart(Model model) {
-//        return "/shop/pages/cart";
-//    }
-//
+    // checkout
+    @GetMapping("/checkout")
+    public String checkout() {
+        return "/shop/pages/checkout";
+    }
+
+    // cart
+    @GetMapping("/cart")
+    public String showCart(Model model) {
+        return "/shop/pages/cart";
+    }
+
 //    @GetMapping("/cart/list-cart")
 //    public ResponseEntity<ShopResponse.CartResponse> getListCart(@AuthenticationPrincipal UserDetails user) {
 //        return ResponseEntity.ok(shopProductService.getListCart(user));
