@@ -25,6 +25,7 @@ public class Image {
     @Column(name = "name_file")
     private String nameFile;
 
+    @JsonIgnore
     @Column(name = "path")
     private String path;
 
@@ -38,9 +39,11 @@ public class Image {
     @Column(name = "id_parent")
     private Long idParent;
 
+    @JsonIgnore
     @Column(name = "status", nullable = false)
     private Integer status =1;
 
+    @JsonIgnore
     @Column(name = "tabble_code", nullable = false)
     private String tableCode;
 }

@@ -1,7 +1,7 @@
 import { getCommon, $ajax } from "/common/public.js";
 import { URL, imageBlank } from "/shop/script/index.js";
 
-const { removeNullProperties, getPagination, formatNumberByDot } = getCommon();
+const { removeNullProperties, getPagination, formatNumberByDot, convert2Vnd } = getCommon();
 
 const GET_LIST_API = URL + "/collections/list-product";
 
@@ -16,7 +16,7 @@ let objPagination = {
 };
 
 const defaultObjSearch = {
-    pageSize: 6,
+    pageSize: 12,
     page: 0,
     name: null,
     brand: null,
@@ -42,23 +42,26 @@ const getListProduct = async (objSearch = {}) => {
         const data = result.content.map(el => {
             return {
                 id: el.id,
-                idParent: el.idParent,
+                idParent: el.product.id,
                 name: el.product.name,
+                slug: el.product.slug,
                 color: el.color.name,
                 size: el.size.name,
                 price: el.price,
                 discount: null,
-                listImg: el.listImage
+                listImg: el.images
             }
         })
 
         data.forEach(el => addDomListProduct(el));
         addDomPagination(result);
+
+        $('html, body').animate({ scrollTop: 200 }, 100);
     } catch (e) {
         console.log(e);
     }
 };
-console.log('here')
+
 getListProduct().catch(e => console.log(e))
 
 const resetSearchObject = () => {
@@ -67,7 +70,8 @@ const resetSearchObject = () => {
 
 const addDomListProduct = (item) => {
 
-    const hrefProduct = '/shop/product/' + item.idParent + `?color=${item.color}`;
+    console.log(item)
+    const hrefProduct = '/shop/product/' + item.slug;
     const hrefQuickAdd = '/shop/cart/add/' + item.id;
 
     const productCardHTML = `
@@ -83,7 +87,7 @@ const addDomListProduct = (item) => {
                 </div>
                 <div class="card-body px-0 text-center">
                     <a class="mb-0 mx-2 mx-md-4 fs-p link-cover text-decoration-none d-block text-center link-name-product" href="${hrefProduct}">${item.name}</a>
-                    <p class="fw-bolder m-0 mt-2">${item.price} VNĐ</p>
+                    <p class="fw-bolder m-0 mt-2">${convert2Vnd(item.price)}</p>
                 </div>
             </div>
         </div>
@@ -91,12 +95,12 @@ const addDomListProduct = (item) => {
     queryShowProduct.append(productCardHTML);
 };
 const getDomPicture = (srcImg, isFirst = true) => {
-    const path = srcImg?.path || imageBlank;
+    const path = srcImg?.fileUrl || imageBlank;
     return `
-        <picture class="${isFirst ? "position-relative overflow-hidden d-block bg-light h-100" : "position-absolute z-index-20 start-0 top-0 hover-show bg-light h-100"}">
+        <picture class="${isFirst ? "position-relative overflow-hidden d-block bg-light h-100 w-100" : "position-absolute z-index-20 start-0 top-0 hover-show bg-light h-100 w-100"}">
             <img class="${isFirst ? "w-100 img-fluid position-relative z-index-10 custom-img-product h-100" : "w-100 img-fluid custom-img-product h-100"}"
                  alt=""
-                 style="object-fit: cover"
+                 style="object-fit: cover; width: 100%!important; height: 362px!important"
                  src="${path}">
         </picture>
     `;

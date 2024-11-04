@@ -25,3 +25,15 @@
 .form-check-custom.bg-dynamic {
     --theme-form-checkbox-active-color: var(--bg-color);
 }
+
+.img-product-detail-show {
+    width: 600px!important;
+    height: 800px!important;
+    object-fit: cover!important;
+}
+
+.img-product-detail {
+    width: 117px!important;
+    height: 156px!important;
+    object-fit: cover;
+}

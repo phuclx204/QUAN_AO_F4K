@@ -34,7 +34,7 @@
                         <div class="swiper-wrapper">
                             <div class="swiper-slide bg-light bg-light h-auto" th:each="el,index : ${listImage}">
                                 <picture>
-                                    <img class="img-fluid mx-auto d-table" th:src="${el.path}"
+                                    <img class="img-fluid mx-auto d-table img-product-detail" th:src="${el.fileUrl}"
                                          alt="Bootstrap 5 Template by Pixel Rocket">
                                 </picture>
                             </div>
@@ -44,8 +44,8 @@
                         <div class="swiper-wrapper">
                             <div class="swiper-slide bg-white h-auto" th:each="el,index : ${listImage}">
                                 <picture>
-                                    <img class="img-fluid d-table mx-auto" th:src="${el.path}"
-                                         alt="Bootstrap 5 Template by Pixel Rocket" data-zoomable>
+                                    <img class="img-fluid d-table mx-auto img-product-detail-show" th:src="${el.fileUrl}"
+                                         alt="..." data-zoomable >
                                 </picture>
                             </div>
                         </div>

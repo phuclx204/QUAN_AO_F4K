@@ -1,5 +1,7 @@
 package org.example.quan_ao_f4k.repository.product;
 
+import org.example.quan_ao_f4k.dto.request.shop.ShopProductRequest;
+import org.example.quan_ao_f4k.dto.request.shop.ShopRequest;
 import org.example.quan_ao_f4k.model.product.ProductDetail;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -7,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -41,4 +44,38 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, Lo
 	Optional<ProductDetail> findProductDetailsByProductIdAndSizeAndColorId(Long id, String color);
 
 	void deleteAllByProductId(Long productId);
+
+	// ==== sonng - shop site - start ====
+	@Query("SELECT pd FROM ProductDetail pd " +
+			"WHERE pd.id = (" +
+			"   SELECT MAX(pdi.id) FROM ProductDetail pdi WHERE pdi.product.id = pd.product.id" +
+			") " +
+			"AND pd.product.status = 1 " +
+			"AND (:name IS NULL OR LOWER(pd.product.name) LIKE LOWER(CONCAT('%', :name, '%'))) " +
+			"AND (:brandIds IS NULL OR pd.product.brand.id IN :brandIds) " +
+			"AND (:categoryIds IS NULL OR pd.product.category.id IN :categoryIds) " +
+			"AND (:sizeIds IS NULL OR pd.size.id IN :sizeIds) " +
+			"AND (:colorIds IS NULL OR pd.color.id IN :colorIds) " +
+			"AND (:priceFrom IS NULL OR pd.price >= :priceFrom) " +
+			"AND (:priceTo IS NULL OR pd.price <= :priceTo) " +
+			"ORDER BY CASE WHEN :orderBy = 'desc' THEN pd.price END DESC, " +
+			"CASE WHEN :orderBy = 'asc' THEN pd.price END ASC")
+	List<ProductDetail> getListSearch(
+			@Param("name") String name,
+			@Param("brandIds") List<Long> brandIds,
+			@Param("categoryIds") List<Long> categoryIds,
+			@Param("sizeIds") List<Long> sizeIds,
+			@Param("colorIds") List<Long> colorIds,
+			@Param("priceFrom") BigDecimal priceFrom,
+			@Param("priceTo") BigDecimal priceTo,
+			@Param("orderBy") String orderBy
+	);
+
+	@Query("SELECT p FROM ProductDetail p " +
+			"Where p.product.slug = :slug " +
+			"AND (:colorHex IS NULL OR p.color.hex = :colorHex)" +
+			"AND (:sizeName IS NULL OR LOWER(p.size.name) = LOWER(:sizeName))" +
+			"order by p.id desc limit 1")
+	Optional<ProductDetail> findProductDetailBySlugProduct(@Param("slug") String slug, @Param("colorHex") String colorHex, @Param("sizeName") String sizeName);
+	// ==== sonng - shop site - end ====
 }

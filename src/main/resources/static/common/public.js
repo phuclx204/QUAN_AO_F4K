@@ -201,6 +201,15 @@ const $ajax = (() => {
         return url;
     }
 
+    function clearNullAndEmptyArrayFields(obj) {
+        for (const key in obj) {
+            if (obj[key] === null || (Array.isArray(obj[key]) && obj[key].length === 0)) {
+                delete obj[key];
+            }
+        }
+        return obj;
+    }
+
     /**
      *
      * @Param url is api name
@@ -219,7 +228,7 @@ const $ajax = (() => {
 
             let urlPath = url;
             if (params) {
-                urlPath = createUrl(url, params);
+                urlPath = createUrl(url, clearNullAndEmptyArrayFields(params));
             }
             $.ajax({
                 type: method.toUpperCase(),
