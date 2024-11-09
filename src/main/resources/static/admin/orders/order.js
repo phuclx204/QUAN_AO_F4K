@@ -58,29 +58,30 @@ $(document).ready(function () {
 
         orders.forEach((order, index) => {
             tbody.append(`
-            <tr>
-                <td>${index + 1}</td>
-                <td>${order.code}</td>
-                <td>${order.toName}</td>
-                <td>${formatDate(order.createdAt)}</td>
-                <td>${order.toPhone}</td>
-                <td>${order.totalPay}</td>
-                <td>
-                    <span class="badge ${order.order_type === 'ONLINE' ? 'online' : order.order_type === 'OFFLINE' ? 'offline' : 'null'}">
-                        ${order.order_type}
-                    </span>
-                </td>
-                <td>
-                    <span class="badge ${getStatusClass(order.status)}">
-                        ${getStatusText(order.status)}
-                    </span>
-                </td>
-                <td>
-                    <button class="btn detail-btn">Chi tiết</button>
-                </td>
-            </tr>
+                <tr>
+                    <td>${index + 1}</td>
+                    <td>${order.code}</td>
+                    <td>${order.toName}</td>
+                    <td>${formatDate(order.createdAt)}</td>
+                    <td>${order.toPhone}</td>
+                    <td>${order.totalPay}</td>
+                    <td>
+                        <span class="badge ${order.order_type === 'ONLINE' ? 'online' : order.order_type === 'OFFLINE' ? 'offline' : 'null'}">
+                            ${order.order_type}
+                        </span>
+                    </td>
+                    <td>
+                        <span class="badge ${getStatusClass(order.status)}">
+                            ${getStatusText(order.status)}
+                        </span>
+                    </td>
+                    <td>
+                        <a class="btn detail-btn" href="/admin/order-detail/${order.code}">Chi tiết</a>
+                    </td>
+                </tr>
             `);
         });
+
     }
 
     // Hàm lấy class hiển thị cho status

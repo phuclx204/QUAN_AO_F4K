@@ -2,6 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 
 <head>
+    <link rel="stylesheet" th:href="@{/admin/dist/css/app-f4k.min.css}"/>
     <th:block th:insert="admin/fragments/head :: head"></th:block>
     <link rel="stylesheet" th:href="@{/admin/orders/orderDetail.css}">
     <link rel="stylesheet" th:href="@{/admin/plugins/bootstrap4/mine.css}"/>
@@ -10,7 +11,6 @@
     <link rel="stylesheet" th:href="@{/admin/plugins/jqgrid-5.7.0/ui.jqgrid-bootstrap4.css}"/>
     <link rel="stylesheet" th:href="@{/admin/plugins/sweetalert/sweetalert2.min.css}"/>
 
-    <link rel="stylesheet" th:href="@{/admin/dist/css/app-f4k.min.css}"/>
 
 
 </head>
@@ -43,12 +43,13 @@
                                             <li class="breadcrumb-item active">Order Details</li>
                                         </ol>
                                     </div>
-                                    <h4 class="page-title">Order Details</h4>
+                                    <h4 class="page-title">Chi tiết đơn hàng</h4>
                                 </div>
                             </div>
                         </div>
                         <!-- end page title -->
-
+                        <div class="card">
+                            <div class="card-body">
                         <div class="row justify-content-center">
                             <div class="col-lg-7 col-md-10 col-sm-11">
 
@@ -61,15 +62,24 @@
                                             <span data-bs-toggle="tooltip" data-bs-placement="bottom" title="21/08/2018 11:32 AM">Packed</span>
                                         </div>
                                         <div class="step-item">
-                                            <span>Shipped</span>
+                                            <span>Chờ xác nhận</span>
                                         </div>
                                         <div class="step-item">
-                                            <span>Delivered</span>
+                                            <span>Chuẩn bị hàng</span>
                                         </div>
+                                        <div class="step-item">
+                                            <span>Đang giao hàng</span>
+                                        </div>
+                                        <div class="step-item">
+                                            <span>Hủy đơn</span>
+                                        </div>
+
                                     </div>
 
                                     <div class="process-line" style="width: 33%;"></div>
                                 </div>
+                            </div>
+                        </div>
                             </div>
                         </div>
                         <!-- end row -->
@@ -79,43 +89,36 @@
                             <div class="col-lg-8">
                                 <div class="card">
                                     <div class="card-body">
-                                        <h4 class="header-title mb-3">Items from Order #12537</h4>
+                                        <h4 class="header-title mb-3">Sản phẩm mua</h4>
 
                                         <div class="table-responsive">
                                             <table class="table mb-0">
                                                 <thead class="table-light">
                                                 <tr>
-                                                    <th>Item</th>
-                                                    <th>Quantity</th>
-                                                    <th>Price</th>
-                                                    <th>Total</th>
+                                                    <th>Sản phẩm</th>
+                                                    <th>Hình ảnh</th>
+                                                    <th>số lượng</th>
+                                                    <th>giá</th>
+                                                    <th>tổng giá</th>
                                                 </tr>
                                                 </thead>
                                                 <tbody>
-                                                <tr>
-                                                    <td>The Military Duffle Bag</td>
-                                                    <td>3</td>
-                                                    <td>$128</td>
-                                                    <td>$384</td>
+                                                <tr th:each="detail : ${orderDetails}">
+<!--                                                    <td>Ảnh</td>-->
+                                                    <td th:text="'Tên sản phẩm : ' + ${detail.productDetail.product.name} + ' Size : ' + ${detail.productDetail.size.name} + ' Màu : ' + ${detail.productDetail.color.name}"></td>
+                                                    <td>
+                                                        <img th:if="${detail.image}" th:src="@{${detail.image.fileUrl}}" alt="Product Image" width="100" height="100" />
+                                                    </td>
+                                                    <td>
+                                                        <input type="number" class="quantity-input form-control" th:value="${detail.quantity}">
+                                                        <input type="hidden" id="orderId" th:value="${detail.order.id}"> <!-- Đảm bảo không có ký tự thừa -->
+                                                        <input type="hidden" id="productDetailId" th:value="${detail.productDetail.id}"> <!-- Đảm bảo không có ký tự thừa -->
+                                                    </td>
+                                                    <td id="productPrice" th:text="${detail.productDetail.price}"></td>
+                                                    <td th:text="${detail.productDetail.price * detail.quantity}"></td>
+
                                                 </tr>
-                                                <tr>
-                                                    <td>Mountain Basket Ball</td>
-                                                    <td>1</td>
-                                                    <td>$199</td>
-                                                    <td>$199</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>Wavex Canvas Messenger Bag</td>
-                                                    <td>5</td>
-                                                    <td>$180</td>
-                                                    <td>$900</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>The Utility Shirt</td>
-                                                    <td>2</td>
-                                                    <td>$79</td>
-                                                    <td>$158</td>
-                                                </tr>
+
                                                 </tbody>
                                             </table>
                                         </div>
@@ -128,32 +131,27 @@
                             <div class="col-lg-4">
                                 <div class="card">
                                     <div class="card-body">
-                                        <h4 class="header-title mb-3">Order Summary</h4>
+                                        <h4 class="header-title mb-3">Đơn hàng</h4>
 
                                         <div class="table-responsive">
                                             <table class="table mb-0">
                                                 <thead class="table-light">
                                                 <tr>
-                                                    <th>Description</th>
-                                                    <th>Price</th>
+                                                    <th>Mã hóa đơn:</th>
+                                                    <th th:text="${order.code}">
+
+                                                    </th>
                                                 </tr>
                                                 </thead>
                                                 <tbody>
                                                 <tr>
-                                                    <td>Grand Total :</td>
+                                                    <td>Phí vận chuyển :</td>
                                                     <td>$1641</td>
                                                 </tr>
-                                                <tr>
-                                                    <td>Shipping Charge :</td>
-                                                    <td>$23</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>Estimated Tax : </td>
-                                                    <td>$19.22</td>
-                                                </tr>
+
                                                 <tr>
                                                     <th>Total :</th>
-                                                    <th>$1683.22</th>
+                                                    <th> <span th:text="${order.totalPay}"></span></th>
                                                 </tr>
                                                 </tbody>
                                             </table>
@@ -171,15 +169,16 @@
                             <div class="col-lg-4">
                                 <div class="card">
                                     <div class="card-body">
-                                        <h4 class="header-title mb-3">Shipping Information</h4>
+                                        <h4 class="header-title mb-3">Thông tin vận chuyển</h4>
 
-                                        <h5>Stanley Jones</h5>
+                                        <h5>Hà Nội</h5>
 
                                         <address class="mb-0 font-14 address-lg">
-                                            795 Folsom Ave, Suite 600<br>
-                                            San Francisco, CA 94107<br>
-                                            <abbr title="Phone">P:</abbr> (123) 456-7890 <br />
-                                            <abbr title="Mobile">M:</abbr> (+01) 12345 67890
+                                            Tên người nhận: <span th:text="${order.toName}"></span><br>
+                                            Số điện thoại: <span th:text="${order.toPhone}"></span><br>
+                                            Địa chỉ: <span th:text="${order.toAddress}"></span><br>
+                                            <br>
+
                                         </address>
 
                                     </div>
@@ -189,14 +188,12 @@
                             <div class="col-lg-4">
                                 <div class="card">
                                     <div class="card-body">
-                                        <h4 class="header-title mb-3">Billing Information</h4>
+                                        <h4 class="header-title mb-3">Thông tin thanh toán</h4>
 
                                         <ul class="list-unstyled mb-0">
                                             <li>
-                                                <p class="mb-2"><span class="fw-bold me-2">Payment Type:</span> Credit Card</p>
-                                                <p class="mb-2"><span class="fw-bold me-2">Provider:</span> Visa ending in 2851</p>
-                                                <p class="mb-2"><span class="fw-bold me-2">Valid Date:</span> 02/2020</p>
-                                                <p class="mb-0"><span class="fw-bold me-2">CVV:</span> xxx</p>
+                                                <p class="mb-2"><span class="fw-bold me-2">Thanh toán:</span> tiền mặt</p>
+                                                <p class="mb-2"><span class="fw-bold me-2">Trạng thái:</span> Đã thanh toán</p>
                                             </li>
                                         </ul>
 
@@ -207,11 +204,11 @@
                             <div class="col-lg-4">
                                 <div class="card">
                                     <div class="card-body">
-                                        <h4 class="header-title mb-3">Delivery Info</h4>
+                                        <h4 class="header-title mb-3">Thông tin giao hàng</h4>
 
                                         <div class="text-center">
                                             <i class="mdi mdi-truck-fast h2 text-muted"></i>
-                                            <h5><b>UPS Delivery</b></h5>
+                                            <h5><b>Giao Hàng Nhanh</b></h5>
                                             <p class="mb-1"><b>Order ID :</b> xxxx235</p>
                                             <p class="mb-0"><b>Payment Mode :</b> COD</p>
                                         </div>
@@ -255,6 +252,7 @@
 </section>
 <!--default script-->
 <script th:src="@{/admin/script.js}"></script>
+<script th:src="@{/admin/orders/orderDetail.js}"></script>
 
 <!--jquery-->
 <script th:src="@{/admin/plugins/jquery/jquery.min.js}"></script>
