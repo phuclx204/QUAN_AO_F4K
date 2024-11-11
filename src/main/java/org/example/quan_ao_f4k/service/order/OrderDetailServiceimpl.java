@@ -57,17 +57,18 @@ public class OrderDetailServiceimpl implements OrderDetailService {
         orderDetailRepository.deleteAllById(orderProductDetailKeys);
     }
 
-    public void updateQuantity(Long productId, int quantity) {
-        // Tìm thông tin chi tiết của sản phẩm theo productId
+    public void updateQuantity(Long productId, int quantity,boolean math ) {
         Optional<ProductDetail> optionalProductDetail = productDetailRepository.findById(productId);
 
         if (optionalProductDetail.isPresent()) {
             ProductDetail productDetail = optionalProductDetail.get();
-
             int currentQuantity = productDetail.getQuantity();
-
-            int updatedQuantity = currentQuantity - quantity;
-
+            int updatedQuantity=0;
+            if (math == false){
+                 updatedQuantity = currentQuantity - quantity;
+            }else {
+                 updatedQuantity = currentQuantity + quantity;
+            }
             productDetail.setQuantity(updatedQuantity);
 
             productDetailRepository.save(productDetail);
