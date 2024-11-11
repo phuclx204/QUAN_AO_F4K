@@ -5,7 +5,9 @@ import org.example.quan_ao_f4k.dto.response.orders.OrderResponse;
 import org.example.quan_ao_f4k.model.general.Image;
 import org.example.quan_ao_f4k.model.order.Order;
 import org.example.quan_ao_f4k.model.order.OrderDetail;
+import org.example.quan_ao_f4k.model.order.OrderHistory;
 import org.example.quan_ao_f4k.repository.general.ImageRepository;
+import org.example.quan_ao_f4k.repository.order.OrderHistoryRepository;
 import org.example.quan_ao_f4k.repository.order.OrderRepository;
 import org.example.quan_ao_f4k.service.order.OrderServiceImpl;
 import org.springframework.stereotype.Controller;
@@ -26,6 +28,7 @@ public class OrderDetailController {
 	private OrderServiceImpl orderService;
 	private OrderRepository orderRepository;
 	private ImageRepository imageRepository;
+	private OrderHistoryRepository orderHistoryRepository;
 	@GetMapping
 	public String orderDetail() {
 		return "/admin/orders/orderDetail";
@@ -37,19 +40,20 @@ public class OrderDetailController {
 		Order order = orderRepository.findOrderByOrderCode(code);
 
 		List<OrderDetail> orderDetails = orderService.findCart(order.getId());
+		List<OrderHistory> orderHistories = orderHistoryRepository.findByOrderId(order.getId());
 		List<Image> images = new ArrayList<>();
 		for (OrderDetail orderDetail : orderDetails) {
-			// Lấy hình ảnh của sản phẩm tương ứng với ProductDetail
+
 			List<Image> productImages = imageRepository.getImageByIdParent(orderDetail.getProductDetail().getId(), "PRODUCT_DETAIL");
 
-			// Lưu hình ảnh đầu tiên của sản phẩm vào OrderDetail (nếu có)
 			if (!productImages.isEmpty()) {
-				orderDetail.setImage(productImages.get(0));  // Giả sử OrderDetail có setter cho image
+				orderDetail.setImage(productImages.get(0));
 			}
 		}
 		model.addAttribute("orderDetails", orderDetails);
+		model.addAttribute("orderHistory", orderHistories);
 		model.addAttribute("order", order);
-		model.addAttribute("images", images); // Thêm hình ảnh vào model
+		model.addAttribute("images", images);
 
 		return "/admin/orders/orderDetail";
 	}

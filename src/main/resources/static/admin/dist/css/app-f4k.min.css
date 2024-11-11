@@ -20392,42 +20392,72 @@ input[data-switch=dark]:checked+label {
     align-items: center;
     width: 100%
 }
-
+/* General styling for the steps */
 .horizontal-steps .horizontal-steps-content .step-item {
     display: block;
     position: relative;
-    bottom: calc(100% + 1em);
     height: 8px;
     width: 8px;
     margin: 0 2em;
-    -webkit-box-sizing: content-box;
     box-sizing: content-box;
     color: var(--ct-primary);
     background-color: currentColor;
     border: .25em solid var(--ct-body-bg);
     border-radius: 50%;
-    z-index: 5
+    z-index: 5;
 }
 
+/* Add a line between the steps, not after the last one */
+.horizontal-steps .horizontal-steps-content .step-item:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 100%; /* Position it after each step */
+    width: calc(100% - 8px); /* Line width adjusted to fit between steps */
+    height: 1px;
+    background-color: var(--ct-primary);
+    transform: translateY(-50%);
+}
+
+/* Remove margin for the first step */
 .horizontal-steps .horizontal-steps-content .step-item:first-child {
-    margin-left: 0
+    margin-left: 0;
 }
 
-.horizontal-steps .horizontal-steps-content .step-item:last-child {
+/* Special styling for the last step, glowing effect */
+.horizontal-steps .horizontal-steps-content .step-item.last-step {
     margin-right: 0;
-    color: #0acf97
+    color: #0acf97; /* Color for the last step */
+    animation: glow 1.5s ease-out infinite; /* Glowing effect */
 }
 
+/* Animation for glowing effect on the last step */
+@keyframes glow {
+    0% {
+        box-shadow: 0 0 5px 2px rgba(10, 207, 151, 0.8); /* Glow color and intensity */
+        transform: scale(1); /* Normal scale */
+    }
+    50% {
+        box-shadow: 0 0 15px 6px rgba(10, 207, 151, 1); /* Increased glow */
+        transform: scale(1.2); /* Slightly increase the size */
+    }
+    100% {
+        box-shadow: 0 0 5px 2px rgba(10, 207, 151, 0.8); /* Glow returns to normal */
+        transform: scale(1); /* Normal scale */
+    }
+}
+
+/* Tooltip for the status text of each step */
 .horizontal-steps .horizontal-steps-content .step-item span {
     position: absolute;
     top: calc(100% + 1em);
     left: 50%;
-    -webkit-transform: translateX(-50%);
     transform: translateX(-50%);
     white-space: nowrap;
-    color: var(--ct-dark-border-subtle)
+    color: var(--ct-dark-border-subtle);
 }
 
+/* For the current step, apply custom styles */
 .horizontal-steps .horizontal-steps-content .step-item.current:before {
     content: "";
     display: block;
@@ -20439,19 +20469,25 @@ input[data-switch=dark]:checked+label {
     border-radius: 50%;
     opacity: 0;
     z-index: -1;
-    -webkit-animation-name: animation-steps-current;
     animation-name: animation-steps-current;
-    -webkit-animation-duration: 2s;
     animation-duration: 2s;
-    -webkit-animation-iteration-count: infinite;
     animation-iteration-count: infinite;
-    -webkit-animation-timing-function: ease-out;
-    animation-timing-function: ease-out
+    animation-timing-function: ease-out;
 }
 
+/* Current step status text color */
 .horizontal-steps .horizontal-steps-content .step-item.current span {
-    color: var(--ct-primary) !important
+    color: var(--ct-primary) !important;
 }
+
+/* Media query for small screens */
+@media (max-width: 767.98px) {
+    .horizontal-steps .horizontal-steps-content .step-item span {
+        white-space: inherit;
+    }
+}
+
+
 
 @-webkit-keyframes animation-steps-current {
     from {
@@ -20481,11 +20517,6 @@ input[data-switch=dark]:checked+label {
     }
 }
 
-@media (max-width:767.98px) {
-    .horizontal-steps .horizontal-steps-content .step-item span {
-        white-space: inherit
-    }
-}
 
 #preloader {
     position: fixed;

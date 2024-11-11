@@ -50,38 +50,21 @@
                         <!-- end page title -->
                         <div class="card">
                             <div class="card-body">
-                        <div class="row justify-content-center">
-                            <div class="col-lg-7 col-md-10 col-sm-11">
-
-                                <div class="horizontal-steps mt-4 mb-4 pb-5">
-                                    <div class="horizontal-steps-content">
-                                        <div class="step-item">
-                                            <span data-bs-toggle="tooltip" data-bs-placement="bottom" title="20/08/2018 07:24 PM">Order Placed</span>
+                                <div class="row justify-content-center">
+                                    <div class="col-lg-7 col-md-10 col-sm-11">
+                                        <div class="horizontal-steps mt-4 mb-4 pb-5">
+                                            <div class="process-line"></div> <!-- The glowing line -->
+                                            <div class="horizontal-steps-content" th:each="history, iterStat : ${orderHistory}">
+                                                <div class="step-item" th:classappend="${iterStat.index == orderHistory.size() - 1} ? 'last-step' : ''">
+                                                    <span data-bs-toggle="tooltip" data-bs-placement="bottom" title="20/08/2018 07:24 PM" th:text="${history.status}">Status Placeholder</span>
+                                                </div>
+                                            </div>
                                         </div>
-                                        <div class="step-item current">
-                                            <span data-bs-toggle="tooltip" data-bs-placement="bottom" title="21/08/2018 11:32 AM">Packed</span>
-                                        </div>
-                                        <div class="step-item">
-                                            <span>Chờ xác nhận</span>
-                                        </div>
-                                        <div class="step-item">
-                                            <span>Chuẩn bị hàng</span>
-                                        </div>
-                                        <div class="step-item">
-                                            <span>Đang giao hàng</span>
-                                        </div>
-                                        <div class="step-item">
-                                            <span>Hủy đơn</span>
-                                        </div>
-
                                     </div>
-
-                                    <div class="process-line" style="width: 33%;"></div>
                                 </div>
                             </div>
                         </div>
-                            </div>
-                        </div>
+
                         <!-- end row -->
 
 
@@ -89,7 +72,7 @@
                             <div class="col-lg-8">
                                 <div class="card">
                                     <div class="card-body">
-                                        <h4 class="header-title mb-3">Sản phẩm mua</h4>
+                                        <h4 class="header-title mb-3">Sản phẩm mua  <button th:if="${order.status == 5}" class="btn btn-info new-btn-add" >Thêm sản phẩm</button></h4>
 
                                         <div class="table-responsive">
                                             <table class="table mb-0">
@@ -110,12 +93,12 @@
                                                         <img th:if="${detail.image}" th:src="@{${detail.image.fileUrl}}" alt="Product Image" width="100" height="100" />
                                                     </td>
                                                     <td>
-                                                        <input type="number" class="quantity-input form-control" th:value="${detail.quantity}">
+                                                        <input type="number" class="quantity-input form-control" th:value="${detail.quantity}" th:attr="disabled=${order.status != 5 ? 'disabled' : null}">
                                                         <input type="hidden" id="orderId" th:value="${detail.order.id}"> <!-- Đảm bảo không có ký tự thừa -->
                                                         <input type="hidden" id="productDetailId" th:value="${detail.productDetail.id}"> <!-- Đảm bảo không có ký tự thừa -->
                                                     </td>
                                                     <td id="productPrice" th:text="${detail.productDetail.price}"></td>
-                                                    <td th:text="${detail.productDetail.price * detail.quantity}"></td>
+                                                    <td id="totalPrice" th:text="${detail.productDetail.price * detail.quantity}"></td>
 
                                                 </tr>
 
@@ -151,7 +134,7 @@
 
                                                 <tr>
                                                     <th>Total :</th>
-                                                    <th> <span th:text="${order.totalPay}"></span></th>
+                                                    <th> <span id="total" th:text="${order.totalPay}"></span></th>
                                                 </tr>
                                                 </tbody>
                                             </table>
@@ -169,7 +152,7 @@
                             <div class="col-lg-4">
                                 <div class="card">
                                     <div class="card-body">
-                                        <h4 class="header-title mb-3">Thông tin vận chuyển</h4>
+                                        <h4 class="header-title mb-3">Thông tin vận chuyển <button th:if="${order.status == 5}" class="btn btn-info">Thay đổi thông tin</button></h4>
 
                                         <h5>Hà Nội</h5>
 
@@ -247,12 +230,85 @@
             <!-- ============================================================== -->
             <!-- End Page content -->
             <!-- ============================================================== -->
-
+        <div id="productModal" class="new-product-modal">
+            <div class="new-product-modal-content">
+                <span class="new-close">&times;</span>
+                <header>
+                    <div class="new-header-top">
+                        <!--                    <input type="text" id="searchInput" placeholder="Nhập tên sản phẩm">-->
+                        <div class="new-header-actions">
+                            <form th:action="@{/admin/shopping-offline}" method="get" class="search-form" id="searchForm">
+                                <input type="text" name="search" placeholder="Nhập tên sản phẩm..."
+                                       th:value="${param.search}" id="searchInput" class="search-input"/>
+                                <button type="submit" class="new-btn-search">Tìm kiếm</button>
+                                <button class="new-btn-add">Làm mới</button>
+                            </form>
+                        </div>
+                    </div>
+                    <nav>
+                        <ul>
+                            <li>
+                                <label>Danh mục:</label>
+                                <select id="categorySelect">
+                                    <option value="">Tất cả</option>
+                                </select>
+                            </li>
+                            <li>
+                                <label>Thương Hiệu:</label>
+                                <select id="brandSelect">
+                                    <option value="">Tất cả</option>
+                                </select>
+                            </li>
+                            <li>
+                                <label>Màu sắc:</label>
+                                <select id="colorSelect">
+                                    <option value="">Tất cả</option>
+                                </select>
+                            </li>
+                            <li>
+                                <label>Kích Cỡ:</label>
+                                <select id="sizeSelect">
+                                    <option value="">Tất cả</option>
+                                </select>
+                            </li>
+                            <div class="slider">
+                                <label>Khoảng Giá:</label>
+                                <input type="range" id="priceRange" min="0" max="10000000">
+                            </div>
+                        </ul>
+                    </nav>
+                </header>
+                <main class="new-main-content">
+                    <table class="new-table" border="1">
+                        <thead>
+                        <tr>
+                            <th>STT</th>
+                            <th>Ảnh</th>
+                            <th>Tên sản phẩm</th>
+                            <th>Giá</th>
+                            <th>Màu</th>
+                            <th>Số lượng</th>
+                            <th>Thao tác</th>
+                        </tr>
+                        </thead>
+                        <tbody id="productList">
+                        <!-- Các sản phẩm sẽ được thêm vào đây -->
+                        </tbody>
+                    </table>
+                    <div id="pagination" class="d-flex justify-content-center align-items-center gap-2">
+                        <button class="page-button" id="prevPage">Trước</button>
+                        <input type="text" id="pageInput"
+                               style="width: 50px; text-align: center; border: 1px solid #ced4da; border-radius: 5px;"/>
+                        <span id="totalPagesText" style="font-weight: bold;"></span>
+                        <button class="page-button" id="nextPage">Tiếp theo</button>
+                    </div>
+                </main>
+            </div>
+        </div>
     </main>
 </section>
 <!--default script-->
 <script th:src="@{/admin/script.js}"></script>
-<script th:src="@{/admin/orders/orderDetail.js}"></script>
 
 <!--jquery-->
 <script th:src="@{/admin/plugins/jquery/jquery.min.js}"></script>
@@ -269,7 +325,8 @@
 <!--bootstrap-->
 <script th:src="@{/admin/plugins/bootstrap4/bootstrap.bundle.js}"></script>
 
-<!--custom script-->
+<!--custom script--><script th:src="@{/admin/orders/orderDetail.js}"></script>
+
 <!--<script th:src="@{/admin/orders/order.js}"></script>-->
 
 </body>
