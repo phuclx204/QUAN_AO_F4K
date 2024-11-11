@@ -80,7 +80,7 @@ public class ShoppingController {
 		model.addAttribute("order", orderResponse);
 		model.addAttribute("orderDetails", orderDetails);
 		model.addAttribute("total", df.format(totalAmount));
-		model.addAttribute("images", images); // Thêm hình ảnh vào model
+		model.addAttribute("images", images);
 
 		return "/shopping_offline/shopping";
 	}
