@@ -59,8 +59,8 @@ public abstract class MapperCoverter {
     private RoleRepository roleRepository;
     @Autowired
     private PaymentMethodRepository paymentMethodRepository;
-	@Autowired
-	private OrderRepository orderRepository;
+    @Autowired
+    private OrderRepository orderRepository;
     @Autowired
     private PromotionRepository promotionRepository;
     @Autowired
@@ -157,6 +157,11 @@ public abstract class MapperCoverter {
     @Named("convertToImageByProductDetail")
     public List<Image> convertToImageByProductDetail(Long id) {
         return imageRepository.getImageByIdParent(id, F4KConstants.TableCode.PRODUCT_DETAIL);
+    }
+
+    @Named("convertToImageByProduct")
+    public Image convertToImageByProduct(Long id) {
+        return imageRepository.findImageByIdParent(id, F4KConstants.TableCode.PRODUCT);
     }
 
 }

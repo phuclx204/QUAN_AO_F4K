@@ -96,12 +96,23 @@ const getCommon = () => {
         price = price.replaceAll("₫", "VNĐ")
         return price;
     }
+
+    const transformData = (mapBackendToFrontend, data) => {
+        const transformedData = {};
+        for (const key in data) {
+            const newKey = mapBackendToFrontend[key] || key;
+            transformedData[newKey] = data[key];
+        }
+        return transformedData;
+    }
+
     return {
         getFormValuesByName,
         removeNullProperties,
         formatNumberByDot,
         getPagination,
-        convert2Vnd
+        convert2Vnd,
+        transformData
     }
 }
 const validateForm = (() => {
@@ -321,5 +332,93 @@ const $ajax = (() => {
         createUrl, callApi, callWithMultipartFile, get, post, put, remove
     }
 })()
+
+// dùng khi  có một selector bọc ngoài thông qua id
+export const twoWayBinding = ({ selectorParent, dataObject, initialValues }) => {
+    const $selectorParent = document.getElementById(selectorParent);
+    console.log($selectorParent, ' - $selectorParent')
+    $selectorParent.addEventListener('input', (e) => {
+        const target = e.target;
+        const name = target.name;
+
+        if (!name) return;
+
+        if (target.type === 'checkbox') {
+            dataObject[name] = target.checked;
+        } else if (target.type === 'radio' && target.checked) {
+            dataObject[name] = target.value;
+        } else if (target.type === 'file') {
+            dataObject[name] = target.files;
+        } else {
+            dataObject[name] = target.value;
+        }
+    });
+
+    Object.keys(initialValues).forEach((key) => {
+        const element = $selectorParent.querySelector(`[name="${key}"]`);
+        if (element) {
+            if (element.type === 'checkbox') {
+                element.checked = initialValues[key];
+            } else if (element.type === 'radio' && element.value === initialValues[key]) {
+                element.checked = true;
+            } else {
+                element.value = initialValues[key];
+            }
+            dataObject[key] = initialValues[key];
+        }
+    });
+};
+
+export const syncFormWithDataObject = ({ selectorParent, dataObject, initialValues }) => {
+    const $selectorParent = document.getElementById(selectorParent);
+
+    $selectorParent.addEventListener('input', (e) => {
+        const target = e.target;
+        const name = target.name;
+
+        if (!name) return;
+
+        if (target.type === 'checkbox') {
+            dataObject[name] = target.checked;
+        } else if (target.type === 'radio' && target.checked) {
+            dataObject[name] = target.value;
+        } else if (target.type === 'file') {
+            dataObject[name] = target.files;
+        } else {
+            dataObject[name] = target.value;
+        }
+    });
+
+    Object.keys(initialValues).forEach((key) => {
+        const element = $selectorParent.querySelector(`[name="${key}"]`);
+        if (element) {
+            if (element.type === 'checkbox') {
+                element.checked = initialValues[key];
+            } else if (element.type === 'radio' && element.value === initialValues[key]) {
+                element.checked = true;
+            } else {
+                element.value = initialValues[key];
+            }
+            dataObject[key] = initialValues[key];
+        }
+    });
+
+    const updateFormUI = () => {
+        Object.keys(dataObject).forEach((key) => {
+            const element = $selectorParent.querySelector(`[name="${key}"]`);
+            if (element) {
+                if (element.type === 'checkbox') {
+                    element.checked = dataObject[key];
+                } else if (element.type === 'radio' && element.value === dataObject[key]) {
+                    element.checked = true;
+                } else {
+                    element.value = dataObject[key];
+                }
+            }
+        });
+    };
+
+    updateFormUI();
+};
 
 export { buttonSpinner, $ajax, ref, getCommon, validateForm };
