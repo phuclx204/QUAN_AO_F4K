@@ -75,7 +75,13 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, Lo
 			"Where p.product.slug = :slug " +
 			"AND (:colorHex IS NULL OR p.color.hex = :colorHex)" +
 			"AND (:sizeName IS NULL OR LOWER(p.size.name) = LOWER(:sizeName))" +
-			"order by p.id desc limit 1")
+			"order by p.id asc limit 1")
 	Optional<ProductDetail> findProductDetailBySlugProduct(@Param("slug") String slug, @Param("colorHex") String colorHex, @Param("sizeName") String sizeName);
+
+	@Query("SELECT p FROM ProductDetail p " +
+			"Where p.product.slug = :slug " +
+			"AND (:colorHex IS NULL OR p.color.hex = :colorHex)"
+	)
+	List<ProductDetail> findProductDetailBySlugProduct(@Param("slug") String slug, @Param("colorHex") String colorHex);
 	// ==== sonng - shop site - end ====
 }

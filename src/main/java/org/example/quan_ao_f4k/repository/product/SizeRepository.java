@@ -16,7 +16,10 @@ public interface SizeRepository extends JpaRepository<Size, Long>,
 	List<Size> findByStatus(int status);
 
 	// ==== sonng - shop site - start ====
-	@Query("select s from Size s left join ProductDetail p on s.id = p.size.id  where p.product.slug = :slug")
-	List<Size> findBySlugProduct(@Param("slug") String slug);
+	@Query("select s from Size s" +
+			" left join ProductDetail p on s.id = p.size.id" +
+			" where p.product.slug = :slug" +
+			" and p.color.hex = :color")
+	List<Size> findBySlugProduct(@Param("slug") String slug, @Param("color") String color);
 	// ==== sonng - shop site - end ====
 }
