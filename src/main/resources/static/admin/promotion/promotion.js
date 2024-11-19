@@ -7,7 +7,7 @@ $(document).ready(async function () {
     "use strict";
 
     const promotionId = ref(null);
-    const listProducts = JSON.parse(localStorage.getItem("listData"));
+    const listProducts = JSON.parse(localStorage.getItem("listProducts"));
 
     const URL = '/admin/promotion';
     const STATUS_ON = 1;
@@ -66,7 +66,7 @@ $(document).ready(async function () {
                 title: 'Thao tác',
                 render: function (data, type, row) {
                     return `<td class="table-action">
-                             <a href="/admin/products/product-detail/${row.id}" class="action-icon action-view" data-id="${row.id}"> <i class="mdi mdi-eye"></i></a>
+<!--                             <a href="javascript:void(0);" class="action-icon action-view" data-id="${row.id}"> <i class="mdi mdi-eye"></i></a>-->
                              <a href="javascript:void(0);" class="action-icon action-update" data-id="${row.id}"> <i class="mdi mdi-square-edit-outline"></i></a>
 <!--                             <a href="javascript:void(0);" class="action-icon action-delete" data-id="${row.id}"> <i class="mdi mdi-delete"></i></a>-->
                              </td>`;
@@ -118,7 +118,6 @@ $(document).ready(async function () {
 
         if (mode === "create") {
             setLabelModal("Thêm mới")
-            console.log(moment().startOf('day').format('DD/MM/YYYY'))
             setDateRange(moment().startOf('day'), moment().startOf('day'));
         } else if (mode === "update") {
             setLabelModal("Cập nhật")
@@ -239,30 +238,29 @@ $(document).ready(async function () {
         $("#dynamicTable tbody tr").each(function () {
             let product = $(this).find('select[name="products[]"]').val();
             let discount = $(this).find('input[name="discount[]"]').val();
-            let discountType = $(this).find('select[name="discountType[]"]').val();
+            // let discountType = $(this).find('select[name="discountType[]"]').val();
 
-            if (product && discount && discountType) {
+            if (product && discount) {
                 data.push({
                     product: product,
                     productId: product,
                     discountValue: discount,
-                    type: discountType
+                    type: TYPE_PERCENT
                 });
             }
         });
         return data;
     };
     const getDynamicInputDefault = () => {
+        // <option value="${TYPE_CASH}" selected>VNĐ</option>
+        // <option value="${TYPE_PERCENT}">%</option>
         return `<tr>
                 <input type="hidden" name="id[]" value="" />
                 <td>${getHtmlSelectProduct()}</td>
                 <td>
                     <div class="input-group">
                          <input type="text" name="discount[]" class="form-control" placeholder="Giá trị giảm" style="width: 65%">
-                         <select class="form-select" name="discountType[]">
-                              <option value="${TYPE_CASH}" selected>VNĐ</option>
-                              <option value="${TYPE_PERCENT}">%</option>
-                         </select>
+                         <span class="input-group-text">%</span>
                     </div>
                 </td>
                 <td>
@@ -273,7 +271,7 @@ $(document).ready(async function () {
             </tr>`
     }
     const getHtmlSelectProduct = (value = null) => {
-        const listItem = listProducts;
+        const listItem = JSON.parse(localStorage.getItem("listProducts"));
         const select = `<select class="form-select" name="products[]">`;
         let optionHtml = `<option value="" disabled selected>Chọn sản phẩm</option>`;
         listItem.forEach(el => {
@@ -284,6 +282,8 @@ $(document).ready(async function () {
     }
     const fillDynamicInput = (items) => {
         let newRow = items.length ? `` : getDynamicInputDefault();
+        // <option value="${TYPE_CASH}" ${el.type === TYPE_CASH ? 'selected' : ''}>VNĐ</option>
+        // <option value="${TYPE_PERCENT}" ${el.type === TYPE_PERCENT ? 'selected' : ''}>%</option>
         items.forEach(el => {
             newRow += `<tr>
                 <input type="hidden" name="id[]" value="${el.product?.id}" />
@@ -291,11 +291,9 @@ $(document).ready(async function () {
                 <td>
                     <div class="input-group">
                          <input type="text" name="discount[]" class="form-control" placeholder="Giá trị giảm" style="width: 65%" value="${el.discountValue}">
-                         <select class="form-select" name="discountType[]">
-                              <option value="${TYPE_CASH}" ${el.type === TYPE_CASH ? 'selected' : ''}>VNĐ</option>
-                              <option value="${TYPE_PERCENT}" ${el.type === TYPE_PERCENT ? 'selected' : ''}>%</option>
-                         </select>
+                         <span class="input-group-text">%</span>
                     </div>
+                </td>
                 </td>
                 <td>
                     <button type="button" class="btn btn-danger remove-row">
@@ -321,7 +319,9 @@ $(document).ready(async function () {
         $("#dynamicTableDetail tbody").html(newRow)
     }
     const resetDynamicInput = () => {
-        $("#dynamicTable tbody").html(getDynamicInputDefault())
+        $("#dynamicTable tbody").empty();
+        let newRow = getDynamicInputDefault();
+        $("#dynamicTable tbody").append(newRow)
     };
 
     $(document).on("click", ".remove-row", function () {

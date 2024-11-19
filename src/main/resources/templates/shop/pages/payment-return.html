@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="shop/fragments/header::head"></head>
+
+<body class="">
+
+<!-- Navbar -->
+<div th:replace="shop/fragments/navbar-2::navbar(isError = false)"></div>
+<!-- / Navbar-->
+
+<!-- Main Section-->
+<section class="mt-5 container ">
+    <!-- Page Content Goes Here -->
+
+    <span class="mb-6 display-5 fw-bold text-center"><h2>Thanh toán thành công!</h2><h3>Cảm ơn đã mua hàng</h3></span>
+
+    <div class="row g-4 g-md-8">
+        <div class="d-flex justify-content-center">
+            <a th:href="@{/shop/collections}" class="btn btn-success">Quay lại</a>
+        </div>
+    </div>
+
+    <!-- /Page Content -->
+</section>
+<!-- / Main Section-->
+
+<!-- Footer-->
+<footer th:replace="shop/fragments/footer::footer"></footer>
+<!-- / Footer-->
+
+<script th:replace="shop/fragments/script::div"></script>
+<script type="module" th:inline="javascript">
+    const deleteCart = [[${deleteCart}]]
+    if (deleteCart) {
+        $alterTop("success", "Đã xóa")
+    }
+</script>
+</body>
+</html>

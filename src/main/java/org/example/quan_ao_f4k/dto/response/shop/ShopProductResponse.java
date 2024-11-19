@@ -1,12 +1,9 @@
 package org.example.quan_ao_f4k.dto.response.shop;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.Column;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Data;
+import org.example.quan_ao_f4k.model.authentication.User;
 import org.example.quan_ao_f4k.model.general.Image;
 import org.example.quan_ao_f4k.model.product.*;
 
@@ -42,24 +39,11 @@ public class ShopProductResponse {
         List<Image> images;
     }
 
+    /// FOR CART
     @Data
     @Builder
-    public static class ProductListResponse {
-        private String id;
-        private String idParent;
-        private BigDecimal price;
-        private Integer quantity;
-        private Color color;
-        private Size size;
-        private Product product;
-        private List<Image> listImage;
-    }
-
-    @Data
-    @Builder
-    public static class CartDto {
-        private ProductDetail productDetail;
-        private Image image;
+    public static class CartProductDto {
+        private ProductDetailDto productDetailDto;
         private int quantity;
         private BigDecimal total;
     }
@@ -67,7 +51,25 @@ public class ShopProductResponse {
     @Data
     @Builder
     public static class CartResponse {
-        private List<CartDto> listData;
+        private List<CartProductDto> items;
         private BigDecimal subtotal;
+        private Integer itemCount;
+    }
+
+    ///FOR PAYMENT
+    @Data
+    @Builder
+    public static class ShippingInfoDto {
+        private Long id;
+        private String recipientName;
+        private String phoneNumber;
+        private String addressDetail;
+        private Long provinceId;
+        private String provinceName;
+        private Long districtId;
+        private String districtName;
+        private String wardCode;
+        private String wardName;
+        private Boolean isDefault = false;
     }
 }
