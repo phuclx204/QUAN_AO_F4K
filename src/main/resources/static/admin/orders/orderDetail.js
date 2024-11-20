@@ -116,6 +116,41 @@ $(document).ready(async function () {
 
         $('[data-bs-toggle="tooltip"]').tooltip();
     };
+    const updateHtmlTimelineOrder2 = (listTimelineOrder) => {
+        const $processLine = $('#process-line');
+        let process = 100;
+        if (listTimelineOrder.length === 1) process = 0;
+        const $timeLineOrder = $('#timeLineOrder');
+
+        // Xóa nội dung trước đó
+        $timeLineOrder.empty();
+
+        // Lặp qua từng phần tử trong listTimelineOrder
+        listTimelineOrder.forEach((el, index) => {
+            // Định dạng ngày giờ nếu có
+            let formatDate = '';
+            if (el.changeDate) {
+                formatDate = dayjs(el.changeDate).format('DD-MM-YYYY hh:mm:ss A');
+            }
+
+            // Xác định class của bước
+            let classTimeLine = 'step-item';
+            $processLine.css('width', process + '%');
+            if ((index + 1) === listTimelineOrder.length) {
+                classTimeLine += ' current';
+            }
+
+            // Tạo HTML mới cho mỗi bước
+            const $html = `
+            <div class="${classTimeLine}">
+                <span data-bs-toggle="tooltip" data-bs-placement="bottom" title="${formatDate}">${el.note}</span>
+            </div>
+        `;
+            $timeLineOrder.append($html);
+        });
+
+        $('[data-bs-toggle="tooltip"]').tooltip();
+    };
     const getStateOrderDetail = async () => {
         const url = window.location.href;
         const orderCode = url.substring(url.lastIndexOf('/') + 1);
@@ -123,11 +158,12 @@ $(document).ready(async function () {
         const res = await $ajax.get("/admin/order-detail/get-state/" + orderCode);
         if (!res.length) return
 
-        const currentOrder = transformData(orderDetailHistoryMapper, res.at(-1));
-
-        const states = getStateByPaymentMethod(currentOrder.orderType, currentOrder.status)
-        const listTimelineOrder = mapStatusWithDates(res, states);
-        updateHtmlTimelineOrder(listTimelineOrder, currentOrder)
+        // const currentOrder = transformData(orderDetailHistoryMapper, res.at(-1));
+        //
+        // const states = getStateByPaymentMethod(currentOrder.orderType, currentOrder.status)
+        // const listTimelineOrder = mapStatusWithDates(res, states);
+        // updateHtmlTimelineOrder(listTimelineOrder, currentOrder)
+        updateHtmlTimelineOrder2(res)
     }
 
     /** Xử lý của table giỏ hàng **/
