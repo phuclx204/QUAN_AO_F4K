@@ -2,6 +2,7 @@ package org.example.quan_ao_f4k.model.order;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.example.quan_ao_f4k.model.general.Image;
 import org.example.quan_ao_f4k.model.product.ProductDetail;
 
 import java.math.BigDecimal;
@@ -33,4 +34,7 @@ public class OrderDetail {
 
     @Column(name = "price", precision = 65, scale = 2)
     private BigDecimal price;
+
+    @Transient  // Đảm bảo thuộc tính này không được lưu vào database
+    private Image image;
 }

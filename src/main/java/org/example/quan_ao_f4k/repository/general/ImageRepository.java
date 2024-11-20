@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -15,6 +16,9 @@ public interface ImageRepository extends JpaRepository<Image, Long>,
 
 	@Query("SELECT a FROM Image a WHERE a.idParent = ?1 and a.tableCode = ?2")
 	List<Image> getImageByIdParent(Long id, String tableCode);
+
+	@Query("SELECT a FROM Image a left join ProductDetail p on a.idParent = p.id and p.color.id = :colorId where a.idParent = :productDetailId and a.tableCode = :tableCode")
+	List<Image> getImageProductDetail(@Param("productDetailId") Long productDetailId, @Param("colorId") Long colorId, @Param("tableCode") String tableCode);
 
 	@Query("SELECT a FROM Image a WHERE a.idParent = ?1 and a.tableCode = ?2 order by a.idParent asc limit 1")
 	Image findImageByIdParent(Long id, String tableCode);

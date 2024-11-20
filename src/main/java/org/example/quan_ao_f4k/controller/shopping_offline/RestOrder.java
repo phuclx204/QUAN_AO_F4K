@@ -29,7 +29,7 @@ public class RestOrder {
 
         try {
             // Gọi service cập nhật số lượng, lấy giá trị từ request DTO
-            orderDetailService.updateQuantity(productId, request.getQuantity());
+            orderDetailService.updateQuantity(productId, request.getQuantity(),true);
             return ResponseEntity.ok("Cập nhật số lượng thành công cho sản phẩm có ID: " + productId);
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());

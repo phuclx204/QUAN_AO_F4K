@@ -37,6 +37,12 @@ public class OrderDetailServiceimpl implements OrderDetailService {
     @Override
     public OrderDetailResponse save(OrderDetailRequest request) {
         OrderDetail orderDetail = orderDetailMapper.requestToEntity(request);
+
+        OrderProductDetailKey pk = new OrderProductDetailKey();
+        pk.setOrderId(orderDetail.getOrder().getId());
+        pk.setProductDetailId(orderDetail.getProductDetail().getId());
+        orderDetail.setOrderProductDetailKey(pk);
+
         OrderDetail savedOrderDetail = orderDetailRepository.save(orderDetail);
         return orderDetailMapper.entityToResponse(savedOrderDetail);
     }
@@ -57,17 +63,18 @@ public class OrderDetailServiceimpl implements OrderDetailService {
         orderDetailRepository.deleteAllById(orderProductDetailKeys);
     }
 
-    public void updateQuantity(Long productId, int quantity) {
-        // Tìm thông tin chi tiết của sản phẩm theo productId
+    public void updateQuantity(Long productId, int quantity,boolean math ) {
         Optional<ProductDetail> optionalProductDetail = productDetailRepository.findById(productId);
 
         if (optionalProductDetail.isPresent()) {
             ProductDetail productDetail = optionalProductDetail.get();
-
             int currentQuantity = productDetail.getQuantity();
-
-            int updatedQuantity = currentQuantity - quantity;
-
+            int updatedQuantity=0;
+            if (math == false){
+                 updatedQuantity = currentQuantity - quantity;
+            }else {
+                 updatedQuantity = currentQuantity + quantity;
+            }
             productDetail.setQuantity(updatedQuantity);
 
             productDetailRepository.save(productDetail);

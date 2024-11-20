@@ -21,6 +21,8 @@ import java.util.Optional;
 @Repository
 public interface OrderRepository extends JpaRepository<Order, Long>,
         JpaSpecificationExecutor<Order> {
+    @Query("SELECT o FROM Order o WHERE o.code = :code")
+    Order findOrderByOrderCode(@Param("code") String code);
 
     @Query("SELECT o FROM Order o WHERE o.order_type = :orderType AND o.status = :status")
     List<Order> findOrdersByStatus(@Param("orderType") String orderType, @Param("status") Integer status);

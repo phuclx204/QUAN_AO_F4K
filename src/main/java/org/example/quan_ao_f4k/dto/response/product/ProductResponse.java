@@ -1,6 +1,7 @@
 package org.example.quan_ao_f4k.dto.response.product;
 
 import lombok.*;
+import org.example.quan_ao_f4k.model.general.Image;
 import org.example.quan_ao_f4k.model.product.Brand;
 
 import java.time.LocalDateTime;
@@ -21,6 +22,7 @@ public class ProductResponse {
     private LocalDateTime updatedAt;
     private String pathImg;
     private String slug;
+    private Image image;
 }
 
 

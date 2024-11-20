@@ -6,8 +6,10 @@ import org.example.quan_ao_f4k.dto.request.order.OrderDetailRequest;
 import org.example.quan_ao_f4k.dto.request.order.OrderDetailResponse;
 import org.example.quan_ao_f4k.dto.request.order.OrderRequest;
 import org.example.quan_ao_f4k.dto.response.orders.OrderResponse;
+import org.example.quan_ao_f4k.model.general.Image;
 import org.example.quan_ao_f4k.model.order.OrderDetail;
 import org.example.quan_ao_f4k.model.order.OrderProductDetailKey;
+import org.example.quan_ao_f4k.repository.general.ImageRepository;
 import org.example.quan_ao_f4k.repository.order.OrderRepository;
 import org.example.quan_ao_f4k.service.order.OrderDetailServiceimpl;
 import org.example.quan_ao_f4k.service.order.OrderServiceImpl;
@@ -20,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -30,6 +33,7 @@ public class ShoppingController {
 	private final OrderServiceImpl orderService;
 	private final OrderRepository orderRepository;
 	private final OrderDetailServiceimpl orderDetailService;
+	private ImageRepository imageRepository;
 
 	@GetMapping({"","/"})
 	public String getOrdersWithStatusFive(Model model) {
@@ -56,7 +60,16 @@ public class ShoppingController {
 		OrderResponse orderResponse = orderService.findById(id);
 
 		List<OrderDetail> orderDetails = orderService.findCart(id);
+		List<Image> images = new ArrayList<>();
+		for (OrderDetail orderDetail : orderDetails) {
+			// Lấy hình ảnh của sản phẩm tương ứng với ProductDetail
+			List<Image> productImages = imageRepository.getImageByIdParent(orderDetail.getProductDetail().getId(), "PRODUCT_DETAIL");
 
+			// Lưu hình ảnh đầu tiên của sản phẩm vào OrderDetail (nếu có)
+			if (!productImages.isEmpty()) {
+				orderDetail.setImage(productImages.get(0));  // Giả sử OrderDetail có setter cho image
+			}
+		}
 		BigDecimal totalAmount = orderDetails.stream()
 				.map(detail -> detail.getPrice().multiply(BigDecimal.valueOf(detail.getQuantity())))
 				.reduce(BigDecimal.ZERO, BigDecimal::add);
@@ -67,6 +80,7 @@ public class ShoppingController {
 		model.addAttribute("order", orderResponse);
 		model.addAttribute("orderDetails", orderDetails);
 		model.addAttribute("total", df.format(totalAmount));
+		model.addAttribute("images", images);
 
 		return "/shopping_offline/shopping";
 	}

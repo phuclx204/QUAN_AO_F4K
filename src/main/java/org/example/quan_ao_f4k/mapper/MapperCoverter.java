@@ -164,4 +164,9 @@ public abstract class MapperCoverter {
         return imageRepository.findImageByIdParent(id, F4KConstants.TableCode.PRODUCT);
     }
 
+    @Named("getOrderType")
+    public String getOrderType(Order order) {
+        return order.getOrder_type();
+    }
+
 }

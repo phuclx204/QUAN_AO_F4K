@@ -1,4 +1,3 @@
-// set trạng thái cho các button đã chọn trên sidebar
 const allSideMenu = document.querySelectorAll("#sidebar .side-menu.top li a");
 
 allSideMenu.forEach((item) => {
