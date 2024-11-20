@@ -1,4 +1,7 @@
-const { removeNullProperties, getPagination, formatNumberByDot } = getCommon();
+import {getCommon, $ajax} from "/common/public.js";
+import {URL, imageBlank} from "/shop/script/index.js";
+
+const {removeNullProperties, getPagination, formatNumberByDot, convert2Vnd} = getCommon();
 
 const GET_LIST_API = URL + "/collections/list-product";
 
@@ -13,7 +16,7 @@ let objPagination = {
 };
 
 const defaultObjSearch = {
-    pageSize: 6,
+    pageSize: 12,
     page: 0,
     name: null,
     brand: null,
@@ -28,7 +31,7 @@ const objSearch = {...defaultObjSearch}
 
 const getListProduct = async (objSearch = {}) => {
     try {
-        const result = await $ajax.callApi($ajax.createUrl(GET_LIST_API, objSearch), GET);
+        const result = await $ajax.get(GET_LIST_API, objSearch);
         queryShowProduct.empty();
 
         objPagination.totalPages = result.totalPages;
@@ -39,22 +42,27 @@ const getListProduct = async (objSearch = {}) => {
         const data = result.content.map(el => {
             return {
                 id: el.id,
-                idParent: el.idParent,
+                idParent: el.product.id,
                 name: el.product.name,
+                slug: el.product.slug,
                 color: el.color.name,
+                colorHex: el.color.hex,
                 size: el.size.name,
                 price: el.price,
                 discount: null,
-                listImg: el.listImage
+                thumbnail: el.product.image
             }
         })
 
         data.forEach(el => addDomListProduct(el));
         addDomPagination(result);
+
+        // $('html, body').animate({scrollTop: 200}, 100);
     } catch (e) {
         console.log(e);
     }
 };
+
 getListProduct().catch(e => console.log(e))
 
 const resetSearchObject = () => {
@@ -62,16 +70,14 @@ const resetSearchObject = () => {
 };
 
 const addDomListProduct = (item) => {
-
-    const hrefProduct = '/shop/product/' + item.idParent + `?color=${item.color}`;
+    const hrefProduct = '/shop/product/' + item.slug + '?color=' + item.colorHex.replaceAll("#", '%23') + '&size=' + item.size;
     const hrefQuickAdd = '/shop/cart/add/' + item.id;
 
     const productCardHTML = `
         <div class="col-12 col-sm-6 col-md-4">
             <div class="card position-relative h-100 card-listing hover-trigger">
                 <div class="card-header h-100">
-                    ${getDomPicture(item.listImg[0])}
-                    ${getDomPicture(item.listImg[1], false)}
+                    ${getDomPicture(item.thumbnail)}
                     <div class="card-actions">
                         <a class="small text-uppercase tracking-wide fw-bolder text-center d-block btn-add-cart" href="${hrefQuickAdd}" data-id="${item.id}">Quick Add</a>
                         <div class="d-flex justify-content-center align-items-center flex-wrap mt-3"></div>
@@ -79,7 +85,7 @@ const addDomListProduct = (item) => {
                 </div>
                 <div class="card-body px-0 text-center">
                     <a class="mb-0 mx-2 mx-md-4 fs-p link-cover text-decoration-none d-block text-center link-name-product" href="${hrefProduct}">${item.name}</a>
-                    <p class="fw-bolder m-0 mt-2">${item.price} VNĐ</p>
+                    <p class="fw-bolder m-0 mt-2">${convert2Vnd(item.price)}</p>
                 </div>
             </div>
         </div>
@@ -87,12 +93,13 @@ const addDomListProduct = (item) => {
     queryShowProduct.append(productCardHTML);
 };
 const getDomPicture = (srcImg, isFirst = true) => {
-    const path = srcImg?.path || imageBlank;
+    if (!isFirst && !srcImg) return ''
+    const path = srcImg?.fileUrl || imageBlank;
     return `
-        <picture class="${isFirst ? "position-relative overflow-hidden d-block bg-light h-100" : "position-absolute z-index-20 start-0 top-0 hover-show bg-light h-100"}">
+        <picture class="${isFirst ? "position-relative overflow-hidden d-block bg-light h-100 w-100" : "position-absolute z-index-20 start-0 top-0 hover-show bg-light h-100 w-100"}">
             <img class="${isFirst ? "w-100 img-fluid position-relative z-index-10 custom-img-product h-100" : "w-100 img-fluid custom-img-product h-100"}"
                  alt=""
-                 style="object-fit: cover"
+                 style="object-fit: cover; width: 100%!important; height: 362px!important"
                  src="${path}">
         </picture>
     `;
@@ -152,17 +159,20 @@ $(document).on('click', '#btn-pagination-pre', async function (e) {
     e.preventDefault();
     const obj = getParamPagination(objPagination.currentPage - 1);
     await getListProduct(obj);
+    $('html, body').animate({scrollTop: 200}, 100);
 })
 $(document).on('click', '#btn-pagination-next', async function (e) {
     e.preventDefault();
     const obj = getParamPagination(objPagination.currentPage + 1);
     await getListProduct(obj);
+    $('html, body').animate({scrollTop: 200}, 100);
 })
 $(document).on('click', '.btn-page', async function (e) {
     e.preventDefault();
     const page = $(this).data("id");
 
     await getListProduct(getParamPagination(page));
+    $('html, body').animate({scrollTop: 200}, 100);
 })
 // btn pagination
 

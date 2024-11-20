@@ -4,12 +4,13 @@ import jakarta.validation.constraints.*;
 import lombok.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class ProductRequest {
+public class ProductRequest implements Serializable {
 
     @NotBlank(message = "Tên sản phẩm không được để trống.")
     @Size(max = 255, message = "Tên sản phẩm không được vượt quá 255 ký tự.")
@@ -22,6 +23,8 @@ public class ProductRequest {
     private Long brandId;
 
     private MultipartFile thumbnail;
+
+    private String slug;
 
     private String thumbnailName;
 

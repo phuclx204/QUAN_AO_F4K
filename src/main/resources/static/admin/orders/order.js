@@ -89,11 +89,11 @@ $(document).ready(function () {
             case 0: return 'cancel';
             case 5: return 'wait-confirm';
             case 2: return 'return';
-            case 3: return 'wait-pickup';
+            case 8: return 'wait-pickup';
             case 4: return 'wait-delivery';
             case 6: return 'in-delivery';
             case 7: return 'delivered';
-            case 8: return 'completed';
+            case 3: return 'completed';
             default: return 'undefined';
         }
     }
@@ -104,11 +104,11 @@ $(document).ready(function () {
             case 0: return 'Đã hủy';
             case 5: return 'Chờ xác nhận';
             case 2: return 'Trả hàng';
-            case 3: return 'Chờ lấy hàng';
+            case 8: return 'Chờ lấy hàng';
             case 4: return 'Chờ giao hàng';
             case 6: return 'Đang giao hàng';
             case 7: return 'Đã giao hàng';
-            case 8: return 'Hoàn thành';
+            case 3: return 'Hoàn thành';
             default: return 'Không xác định';
         }
     }

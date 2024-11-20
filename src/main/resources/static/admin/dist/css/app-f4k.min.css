@@ -22291,7 +22291,7 @@ div.dataTables_scrollBody>table>:not(:first-child) {
 }
 
 .daterangepicker {
-    z-index: 1000
+    z-index: 1056
 }
 
 [dir=rtl] .daterangepicker.opensright:after {
@@ -23868,6 +23868,11 @@ span.flatpickr-weekday {
 
 .gantt-container .popup-wrapper .pointer {
     display: none
+}
+
+.modal-footer .btn[disabled] {
+    opacity: 0.6;
+    cursor: not-allowed;
 }
 
 /*# sourceMappingURL=app-saas.min.css.map */

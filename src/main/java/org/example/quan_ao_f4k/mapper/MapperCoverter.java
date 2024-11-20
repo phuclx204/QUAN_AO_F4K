@@ -6,28 +6,29 @@ import org.example.quan_ao_f4k.model.address.Province;
 import org.example.quan_ao_f4k.model.address.Ward;
 import org.example.quan_ao_f4k.model.authentication.Role;
 import org.example.quan_ao_f4k.model.authentication.User;
+import org.example.quan_ao_f4k.model.general.Image;
 import org.example.quan_ao_f4k.model.order.Order;
 import org.example.quan_ao_f4k.model.order.PaymentMethod;
-import org.example.quan_ao_f4k.model.product.Brand;
-import org.example.quan_ao_f4k.model.product.Category;
+import org.example.quan_ao_f4k.model.product.*;
+import org.example.quan_ao_f4k.model.promotion.Promotion;
 import org.example.quan_ao_f4k.repository.address.AddressRepository;
 import org.example.quan_ao_f4k.repository.address.DistrictRepository;
 import org.example.quan_ao_f4k.repository.address.ProvinceRepository;
 import org.example.quan_ao_f4k.repository.address.WardRepository;
 import org.example.quan_ao_f4k.repository.authentication.RoleRepository;
 import org.example.quan_ao_f4k.repository.authentication.UserRepository;
+import org.example.quan_ao_f4k.repository.general.ImageRepository;
 import org.example.quan_ao_f4k.repository.order.OrderRepository;
 import org.example.quan_ao_f4k.repository.order.PaymentMethodRepository;
-import org.example.quan_ao_f4k.repository.product.BrandRepository;
-import org.example.quan_ao_f4k.repository.product.CategoryRepository;
-import org.example.quan_ao_f4k.repository.product.ProductDetailRepository;
-import org.example.quan_ao_f4k.repository.product.ProductRepository;
-import org.example.quan_ao_f4k.model.product.*;
 import org.example.quan_ao_f4k.repository.product.*;
+import org.example.quan_ao_f4k.repository.promotion.PromotionRepository;
+import org.example.quan_ao_f4k.util.F4KConstants;
 import org.mapstruct.Mapper;
 import org.mapstruct.Named;
 import org.mapstruct.ReportingPolicy;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.List;
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public abstract class MapperCoverter {
@@ -58,8 +59,12 @@ public abstract class MapperCoverter {
     private RoleRepository roleRepository;
     @Autowired
     private PaymentMethodRepository paymentMethodRepository;
-	@Autowired
-	private OrderRepository orderRepository;
+    @Autowired
+    private OrderRepository orderRepository;
+    @Autowired
+    private PromotionRepository promotionRepository;
+    @Autowired
+    private ImageRepository imageRepository;
 
     @Named("convertToBrand")
     public Brand convertToBrand(Long id) {
@@ -142,6 +147,21 @@ public abstract class MapperCoverter {
     @Named("convertToOrder")
     public Order convertToOrder(Long id) {
         return orderRepository.findById(id).orElseThrow(() -> new RuntimeException("Loi tim order"));
+    }
+
+    @Named("convertToPromotion")
+    public Promotion convertToPromotion(Long id) {
+        return promotionRepository.findById(id).orElseThrow(() -> new RuntimeException("Lỗi tìm promotion"));
+    }
+
+    @Named("convertToImageByProductDetail")
+    public List<Image> convertToImageByProductDetail(Long id) {
+        return imageRepository.getImageByIdParent(id, F4KConstants.TableCode.PRODUCT_DETAIL);
+    }
+
+    @Named("convertToImageByProduct")
+    public Image convertToImageByProduct(Long id) {
+        return imageRepository.findImageByIdParent(id, F4KConstants.TableCode.PRODUCT);
     }
 
 }

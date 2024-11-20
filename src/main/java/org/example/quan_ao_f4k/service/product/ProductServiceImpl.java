@@ -7,21 +7,35 @@ import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import lombok.Data;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.xssf.usermodel.*;
 import org.example.quan_ao_f4k.dto.request.product.ProductDetailRequest;
 import org.example.quan_ao_f4k.dto.request.product.ProductRequest;
 import org.example.quan_ao_f4k.dto.response.product.ProductDetailResponse;
 import org.example.quan_ao_f4k.dto.response.product.ProductResponse;
+import org.example.quan_ao_f4k.exception.BadRequestException;
 import org.example.quan_ao_f4k.list.ListResponse;
 import org.example.quan_ao_f4k.mapper.product.ProductMapper;
+import org.example.quan_ao_f4k.model.general.Image;
+import org.example.quan_ao_f4k.model.order.OrderDetail;
 import org.example.quan_ao_f4k.model.product.Product;
 import org.example.quan_ao_f4k.model.product.ProductDetail;
+import org.example.quan_ao_f4k.repository.general.ImageRepository;
+import org.example.quan_ao_f4k.repository.order.OrderDetailRepository;
+import org.example.quan_ao_f4k.repository.order.OrderRepository;
+import org.example.quan_ao_f4k.repository.product.ProductDetailRepository;
 import org.example.quan_ao_f4k.repository.product.ProductRepository;
+import org.example.quan_ao_f4k.service.common.IImageServiceImpl;
+import org.example.quan_ao_f4k.util.F4KConstants;
+import org.example.quan_ao_f4k.util.F4KUtils;
 import org.example.quan_ao_f4k.util.SearchFields;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,6 +44,10 @@ import java.util.Optional;
 public class ProductServiceImpl implements ProductService {
     private ProductMapper productMapper;
     private ProductRepository productRepository;
+    private ProductDetailRepository productDetailRepository;
+    private ImageRepository imageRepository;
+    private OrderDetailRepository orderDetailRepository;
+    private IImageServiceImpl iImageService;
 
     @Override
     public ListResponse<ProductResponse> findAll(int page, int size, String sort, String filter, String search, boolean all) {
@@ -39,47 +57,107 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductResponse findById(Long aLong) {
-        return defaultFindById(aLong, productRepository, productMapper, "");
+        ProductResponse response = defaultFindById(aLong, productRepository, productMapper, "");
+        Image image = imageRepository.findImageByIdParent(response.getId(), F4KConstants.TableCode.PRODUCT);
+        if (image != null) {
+            response.setPathImg(image.getFileUrl());
+            response.setThumbnail(image.getNameFile());
+        }
+        return response;
     }
 
     @Override
+    @Transactional
     public ProductResponse save(ProductRequest request) {
         Product product = productMapper.requestToEntity(request);
         Product savedProduct = productRepository.save(product);
+
+        if (request.getThumbnail() != null) {
+            try {
+                String fileName = iImageService.save(request.getThumbnail(), savedProduct.getSlug());
+                Image objImage = Image.builder()
+                        .idParent(savedProduct.getId())
+                        .nameFile(request.getThumbnail().getOriginalFilename())
+                        .size(request.getThumbnail().getSize())
+                        .status(F4KConstants.STATUS_ON)
+                        .tableCode(F4KConstants.TableCode.PRODUCT)
+                        .path(fileName)
+                        .fileUrl(iImageService.getPublicImageUrl(fileName))
+                        .build();
+
+                imageRepository.save(objImage);
+            } catch (IOException e) {
+                throw new BadRequestException("Gặp lỗi khi upload file!");
+            }
+        }
+
         return productMapper.entityToResponse(savedProduct);
     }
 
     @Override
+    @Transactional
     public ProductResponse save(Long id, ProductRequest request) {
-        Product existingProduct = productRepository.findById(id)
+        Product objProduct = productRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Sản phẩm không tồn tại"));
 
-        existingProduct.setName(request.getName());
-        existingProduct.setDescription(request.getDescription());
+        Product productDto = productMapper.requestToEntity(request);
+        objProduct.setName(productDto.getName());
+        objProduct.setBrand(productDto.getBrand());
+        objProduct.setCategory(productDto.getCategory());
+        objProduct.setDescription(productDto.getDescription());
+        objProduct.setStatus(productDto.getStatus());
+        objProduct.setUpdatedAt(LocalDateTime.now());
 
-        if (request.getThumbnailName() != null) {
-            existingProduct.setThumbnail(request.getThumbnailName());
+        Product response = productRepository.save(objProduct);
+        if (request.getThumbnail() != null) {
+            try {
+                Image image = imageRepository.findImageByIdParent(response.getId(), F4KConstants.TableCode.PRODUCT);
+                if (image != null) {
+                    imageRepository.deleteImageByIdParent(response.getId(), F4KConstants.TableCode.PRODUCT);
+                    iImageService.delete(image.getPath());
+                }
+                String fileName = iImageService.save(request.getThumbnail(), response.getSlug());
+                Image objImage = Image.builder()
+                        .idParent(response.getId())
+                        .nameFile(request.getThumbnail().getOriginalFilename())
+                        .size(request.getThumbnail().getSize())
+                        .status(F4KConstants.STATUS_ON)
+                        .tableCode(F4KConstants.TableCode.PRODUCT)
+                        .path(fileName)
+                        .fileUrl(iImageService.getPublicImageUrl(fileName))
+                        .build();
+
+                imageRepository.save(objImage);
+            } catch (IOException e) {
+                throw new BadRequestException("Gặp lỗi khi upload file!");
+            }
         }
-        Product updatedProduct = productRepository.save(existingProduct);
-
-        return productMapper.entityToResponse(updatedProduct);
+        return productMapper.entityToResponse(response);
     }
 
 
 
     @Override
+    @Transactional
     public void delete(Long aLong) {
-        productRepository.deleteById(aLong);
+        productRepository.findById(aLong)
+                .orElseThrow(() -> new RuntimeException("Không tồn tại đối tượng"));
+        if (orderDetailRepository.existsByProductDetailId(aLong)) {
+            throw new BadRequestException("sản phẩm hiện đã được bày bán, không thể xóa!");
+        }
 
+        productDetailRepository.deleteAllByProductId(aLong);
+        productRepository.deleteById(aLong);
     }
 
     @Override
+    @Transactional
     public void delete(List<Long> longs) {
         productRepository.deleteAllById(longs);
-
     }
 
     @Override
+    @Transactional
     public void updateStatus(Long id, int status) {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Không tồn tại đối tượng"));
@@ -208,7 +286,7 @@ public class ProductServiceImpl implements ProductService {
         document.open();
 
         // Đường dẫn đến font Roboto-Regular trên máy của cá nhân
-        String fontPath = "C:/Users/phuc/Máy tính/datn/QUAN_AO_F4K/QUAN_AO_F4K/src/main/resources/static/admin/fonts/RobotoSlab-Bold.ttf";
+        String fontPath = "src/main/resources/static/admin/fonts/Roboto-Medium.ttf";
 
         // Thêm font Roboto vào tài liệu PDF
         BaseFont baseFont = BaseFont.createFont(fontPath, BaseFont.IDENTITY_H, BaseFont.EMBEDDED);

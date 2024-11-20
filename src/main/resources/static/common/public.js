@@ -1,3 +1,26 @@
+const ref = (initialValue) => {
+    const obj = {
+        value: initialValue
+    };
+    return obj;
+}
+// disable và loading những button có trong thẻ div calss = modal-footer has-spinner, dùng với bostrap 4 hoặc 5 đều được
+// dùng với jquery
+const buttonSpinner = (() => {
+    const show = () => {
+        const $button = $('.modal-footer.has-spinner button');
+        $button.prop('disabled', true);
+        $button.prepend('<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>');
+    }
+
+    const hidden = () => {
+        const $button = $('.modal-footer.has-spinner button');
+        $button.prop('disabled', false);
+        $button.find('.spinner-border').remove();
+    }
+
+    return {show, hidden};
+})();
 const getCommon = () => {
     /**
      * @Param formId is name id <form></form>
@@ -10,11 +33,22 @@ const getCommon = () => {
 
         // Chọn tất cả các input có thuộc tính `name`
         const inputs = form.querySelectorAll('input[name]');
+        const selects = form.querySelectorAll('select[name]');
+        const texts = form.querySelectorAll('textarea[name]');
 
         const values = {};
+
         inputs.forEach(input => {
             values[input.name] = input.value;
         });
+
+        selects.forEach(el => {
+            values[el.name] = el.value
+        })
+
+        texts.forEach(el => {
+            values[el.name] = el.value
+        })
         return values;
     }
 
@@ -58,79 +92,95 @@ const getCommon = () => {
 
     const convert2Vnd = (value = "") => {
         let price = parseFloat(value);
-        price = price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+        price = price.toLocaleString('vi-VN', {style: 'currency', currency: 'VND'});
         price = price.replaceAll("₫", "VNĐ")
         return price;
     }
+
+    const transformData = (mapBackendToFrontend, data) => {
+        const transformedData = {};
+        for (const key in data) {
+            const newKey = mapBackendToFrontend[key] || key;
+            transformedData[newKey] = data[key];
+        }
+        return transformedData;
+    }
+
     return {
         getFormValuesByName,
         removeNullProperties,
         formatNumberByDot,
         getPagination,
-        convert2Vnd
+        convert2Vnd,
+        transformData
     }
 }
-
-// for validate
-const getValidate = () => {
-    /**
-     * @Param formId is name id <form></form>
-     * @Param validationRules is object { name:id-input: list object [{ rule: rule check, mess: mess when validate }] }
-     */
-    const validateForm = (formId, validationRules = {}) => {
+const validateForm = (() => {
+    const getValidate = (formId, validationRules = {}) => {
         const form = document.getElementById(formId);
-        const inputs = form.querySelectorAll('input');
+        if (form === null) {
+            console.log("ID form is wrong!");
+            return true;
+        }
         let isValid = true;
 
-        inputs.forEach(input => {
-            const rules = validationRules[input.id];
-            const invalidFeedback = input.parentElement.querySelector('.invalid-feedback');
-            // console.log(input, ' - ', invalidFeedback)
-            if (rules) {
-                for (let {rule, message, lib, type} of rules) {
-                    // console.log(input.value, ' value')
-                    if (!rule(input.value)) {
-                        invalidFeedback.textContent = message;
-                        input.setCustomValidity("Invalid");
-                        invalidFeedback.style.display = "block";
-                        isValid = false;
-                        break;
-                    } else {
-                        invalidFeedback.style.display = "none";
-                        invalidFeedback.textContent = "";
-                        input.setCustomValidity("");
-                    }
+        for (const field in validationRules) {
+            const input = form.querySelector(`#${field}`);
+
+            if (input) {
+                input.addEventListener('input', () => {
+                    validate(form, field, '', validationRules[field][0]);
+                });
+            }
+
+            for (const el of validationRules[field]) {
+                const validTmp = validate(form, field, '', el);
+                if (!validTmp) {
+                    isValid = false;
+                    break;
                 }
             }
-        });
-
+        }
         return isValid;
     };
 
-    // function validateBoostrap(rule, message) {
-    //     if (!rule(input.value)) {
-    //         invalidFeedback.textContent = message;
-    //         input.setCustomValidity("Invalid");
-    //         invalidFeedback.style.display = "block";
-    //         isValid = false;
-    //         break;
-    //     } else {
-    //         invalidFeedback.style.display = "none";
-    //         invalidFeedback.textContent = "";
-    //         input.setCustomValidity("");
-    //     }
-    // }
+    const validate = (form, selectorId, type, options) => {
+        let isValid = true;
+        const input = form.querySelector(`#${selectorId}`);
+        const rules = options.rule;
+        let invalidFeedback = null;
 
-    /**
-     *
-     * @Param formId is id form name
-     */
-    function clearValidation(formId) {
-        if (!formId.startsWith(".")) {
-            formId = "." + formId
+        try {
+            invalidFeedback = input.parentElement.querySelector('.invalid-feedback');
+        } catch (_e) {
+            console.log(`Thiếu thẻ <div class="invalid-feedback"></div> dưới phần tử có id = ${selectorId}`);
+        }
+
+        if (invalidFeedback == null) {
+            console.log('=== ERRRRRROR ===');
+            return true;
+        }
+
+        if (rules) {
+            if (!rules(input.value)) {
+                invalidFeedback.textContent = options.message;
+                input.setCustomValidity("Invalid");
+                invalidFeedback.style.display = "block";
+                isValid = false;
+            } else {
+                invalidFeedback.style.display = "none";
+                invalidFeedback.textContent = "";
+                input.setCustomValidity("");
+            }
+        }
+        return isValid;
+    };
+
+    const clearValidation = (formId) => {
+        if (!formId.startsWith("#")) {
+            formId = "#" + formId
         }
         const form = document.querySelector(formId)
-
         form.classList.remove('was-validated');
 
         const inputs = form.querySelectorAll('input, select, textarea');
@@ -144,20 +194,15 @@ const getValidate = () => {
             }
         });
     }
-
-    return {
-        validateForm,
-        clearValidation
-    }
-}
+    return { getValidate, clearValidation}
+})()
 
 // for ajax
 const POST = 'POST';
 const GET = 'GET';
 const PUT = 'PUT';
 const DELETE = 'DELETE';
-
-const $ajax = (function() {
+const $ajax = (() => {
     const createUrl = (url, params = {}) => {
         const queryString = new URLSearchParams(params).toString();
         if (queryString) {
@@ -167,25 +212,38 @@ const $ajax = (function() {
         return url;
     }
 
+    function clearNullAndEmptyArrayFields(obj) {
+        for (const key in obj) {
+            if (obj[key] === null || (Array.isArray(obj[key]) && obj[key].length === 0)) {
+                delete obj[key];
+            }
+        }
+        return obj;
+    }
+
     /**
      *
      * @Param url is api name
      * @Param method is rest method | post | put | delete | get
      * @Param data is data send to controller, in body
+     * @param params
      */
-    function callApi(url, method = 'POST', data = null) {
+    function callApi(url, method = 'POST', data = null, params = null) {
         return new Promise((resolve, reject) => {
             if (!url || typeof url !== 'string') {
                 return reject(new Error("URL is string"));
             }
-
             if (![GET, POST, DELETE, PUT].includes(method.toUpperCase())) {
                 return reject(new Error("Invalid HTTP method"));
             }
 
+            let urlPath = url;
+            if (params) {
+                urlPath = createUrl(url, clearNullAndEmptyArrayFields(params));
+            }
             $.ajax({
                 type: method.toUpperCase(),
-                url: url,
+                url: urlPath,
                 contentType: "application/json",
                 data: data ? JSON.stringify(data) : null,
                 success: function (response) {
@@ -193,7 +251,7 @@ const $ajax = (function() {
                 },
                 error: function (xhr) {
                     const objectError = xhr.responseJSON || {message: "An unknown error occurred"};
-                    if(Array.isArray(objectError)) {
+                    if (Array.isArray(objectError)) {
                         $alterTop('error', objectError[0].defaultMessage);
                         reject(objectError);
                     } else {
@@ -205,8 +263,162 @@ const $ajax = (function() {
         });
     }
 
+    function callWithMultipartFile(url, method = 'POST', data = null, params = null) {
+        return new Promise((resolve, reject) => {
+            if (!url || typeof url !== 'string') {
+                return reject(new Error("URL is string"));
+            }
+            if (![GET, POST, DELETE, PUT].includes(method.toUpperCase())) {
+                return reject(new Error("Invalid HTTP method"));
+            }
+
+            let urlPath = url;
+            if (params) {
+                urlPath += createUrl(url, params);
+            }
+
+            const dataForm = new FormData();
+            if (data) {
+                for (const filed in data) {
+                    if (!data[filed]) continue;
+                    if (Array.isArray(data[filed])) {
+                        data[filed].forEach(el => {
+                            dataForm.append(filed, el);
+                        });
+                    } else {
+                        dataForm.append(filed, data[filed])
+                    }
+                }
+            }
+
+            $.ajax({
+                type: method.toUpperCase(),
+                url: urlPath,
+                enctype: 'multipart/form-data',
+                processData: false,
+                contentType: false,
+                cache: false,
+                data: data ? dataForm : null,
+                success: function (response) {
+                    resolve(response);
+                },
+                error: function (xhr) {
+                    const objectError = xhr.responseJSON || {message: xhr.responseText || "An unknown error occurred"};
+                    if (Array.isArray(objectError)) {
+                        $alterTop('error', objectError[0].defaultMessage);
+                        reject(objectError);
+                    } else {
+                        $alterTop('error', objectError.message);
+                        reject(objectError);
+                    }
+                }
+            });
+        });
+    }
+
+    const post = (url, data = null, params = null) => {
+        return callApi(url, "POST", data, params)
+    }
+    const put = (url, data = null, params = null) => {
+        return callApi(url, "PUT", data, params)
+    }
+    const get = (url, params = null, data = null) => {
+        return callApi(url, "GET", data, params)
+    }
+    const remove = (url, params = null, data = null) => {
+        return callApi(url, "DELETE", data, params)
+    }
     return {
-        createUrl, callApi
+        createUrl, callApi, callWithMultipartFile, get, post, put, remove
     }
 })()
 
+// dùng khi  có một selector bọc ngoài thông qua id
+export const twoWayBinding = ({ selectorParent, dataObject, initialValues }) => {
+    const $selectorParent = document.getElementById(selectorParent);
+    console.log($selectorParent, ' - $selectorParent')
+    $selectorParent.addEventListener('input', (e) => {
+        const target = e.target;
+        const name = target.name;
+
+        if (!name) return;
+
+        if (target.type === 'checkbox') {
+            dataObject[name] = target.checked;
+        } else if (target.type === 'radio' && target.checked) {
+            dataObject[name] = target.value;
+        } else if (target.type === 'file') {
+            dataObject[name] = target.files;
+        } else {
+            dataObject[name] = target.value;
+        }
+    });
+
+    Object.keys(initialValues).forEach((key) => {
+        const element = $selectorParent.querySelector(`[name="${key}"]`);
+        if (element) {
+            if (element.type === 'checkbox') {
+                element.checked = initialValues[key];
+            } else if (element.type === 'radio' && element.value === initialValues[key]) {
+                element.checked = true;
+            } else {
+                element.value = initialValues[key];
+            }
+            dataObject[key] = initialValues[key];
+        }
+    });
+};
+
+export const syncFormWithDataObject = ({ selectorParent, dataObject, initialValues }) => {
+    const $selectorParent = document.getElementById(selectorParent);
+
+    $selectorParent.addEventListener('input', (e) => {
+        const target = e.target;
+        const name = target.name;
+
+        if (!name) return;
+
+        if (target.type === 'checkbox') {
+            dataObject[name] = target.checked;
+        } else if (target.type === 'radio' && target.checked) {
+            dataObject[name] = target.value;
+        } else if (target.type === 'file') {
+            dataObject[name] = target.files;
+        } else {
+            dataObject[name] = target.value;
+        }
+    });
+
+    Object.keys(initialValues).forEach((key) => {
+        const element = $selectorParent.querySelector(`[name="${key}"]`);
+        if (element) {
+            if (element.type === 'checkbox') {
+                element.checked = initialValues[key];
+            } else if (element.type === 'radio' && element.value === initialValues[key]) {
+                element.checked = true;
+            } else {
+                element.value = initialValues[key];
+            }
+            dataObject[key] = initialValues[key];
+        }
+    });
+
+    const updateFormUI = () => {
+        Object.keys(dataObject).forEach((key) => {
+            const element = $selectorParent.querySelector(`[name="${key}"]`);
+            if (element) {
+                if (element.type === 'checkbox') {
+                    element.checked = dataObject[key];
+                } else if (element.type === 'radio' && element.value === dataObject[key]) {
+                    element.checked = true;
+                } else {
+                    element.value = dataObject[key];
+                }
+            }
+        });
+    };
+
+    updateFormUI();
+};
+
+export { buttonSpinner, $ajax, ref, getCommon, validateForm };

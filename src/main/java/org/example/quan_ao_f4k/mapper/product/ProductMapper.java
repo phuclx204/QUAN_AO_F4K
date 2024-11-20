@@ -18,6 +18,7 @@ public interface ProductMapper extends GennericMapper<Product, ProductRequest, P
     @Mapping(source = "categoryId", target = "category", qualifiedByName = "convertToCategory")
     @Mapping(source = "brandId", target = "brand", qualifiedByName = "convertToBrand")
     @Mapping(source = "thumbnailName", target = "thumbnail")
+    @Mapping(source = "slug", target = "slug")
     Product requestToEntity(ProductRequest request);
 
     @Override

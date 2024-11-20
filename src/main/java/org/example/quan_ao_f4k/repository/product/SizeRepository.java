@@ -4,6 +4,7 @@ import org.example.quan_ao_f4k.model.product.Size;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -14,6 +15,11 @@ public interface SizeRepository extends JpaRepository<Size, Long>,
 	boolean existsByNameAndIdNot(String name,Long id);
 	List<Size> findByStatus(int status);
 
-	@Query("select s from Size s left join ProductDetail p on s.id = p.size.id where p.product.id = ?1 and p.color.name = ?2")
-	List<Size> findByProductIdAndColorName(Long id, String nameColor);
+	// ==== sonng - shop site - start ====
+	@Query("select s from Size s" +
+			" left join ProductDetail p on s.id = p.size.id" +
+			" where p.product.slug = :slug" +
+			" and p.color.hex = :color")
+	List<Size> findBySlugProduct(@Param("slug") String slug, @Param("color") String color);
+	// ==== sonng - shop site - end ====
 }

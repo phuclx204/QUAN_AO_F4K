@@ -29,6 +29,7 @@ public class F4KConstants {
         public static final String CATEGORY = "category";
         public static final String SIZE = "size";
         public static final String COLOR = "color";
-        public static final String PRODUCT_DETAIL = "ProductDetail";
+        public static final String PRODUCT = "PRODUCT";
+        public static final String PRODUCT_DETAIL = "PRODUCT_DETAIL";
     }
 }

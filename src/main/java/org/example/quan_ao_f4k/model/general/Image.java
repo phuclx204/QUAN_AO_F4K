@@ -7,10 +7,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Entity
 @Table(name = "image")
@@ -18,6 +15,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
+@Builder
 public class Image {
     @JsonIgnore
     @Id
@@ -27,8 +25,12 @@ public class Image {
     @Column(name = "name_file")
     private String nameFile;
 
+    @JsonIgnore
     @Column(name = "path")
     private String path;
+
+    @Column(name = "file_url")
+    private String fileUrl;
 
     @Column(name = "size", nullable = false)
     private Long size;
@@ -37,9 +39,11 @@ public class Image {
     @Column(name = "id_parent")
     private Long idParent;
 
+    @JsonIgnore
     @Column(name = "status", nullable = false)
     private Integer status =1;
 
+    @JsonIgnore
     @Column(name = "tabble_code", nullable = false)
     private String tableCode;
 }

@@ -30,4 +30,7 @@ public interface ProductRepository extends JpaRepository<Product, Long>,
 			@Param("name") String name,
 			@Param("brandId") Long brandId,
 			@Param("categoryId") Long categoryId);
+
+	@Query("select p from Product p inner join ProductDetail pd on pd.product.id = p.id where p.brand.id = :brandId and p.status = 1")
+	List<Product> findProductByBrandId(@Param("brandId") Long brandId);
 }

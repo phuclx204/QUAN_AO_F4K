@@ -1,0 +1,75 @@
+package org.example.quan_ao_f4k.dto.response.shop;
+
+import jakarta.persistence.*;
+import lombok.Builder;
+import lombok.Data;
+import org.example.quan_ao_f4k.model.authentication.User;
+import org.example.quan_ao_f4k.model.general.Image;
+import org.example.quan_ao_f4k.model.product.*;
+
+import java.math.BigDecimal;
+import java.util.List;
+
+@Data
+public class ShopProductResponse {
+
+    @Data
+    @Builder
+    public static class ProductDto {
+        private Long id;
+        private String name;
+        private Category category;
+        private Brand brand;
+        private String slug;
+        private String description;
+        private Integer status;
+        private Image image;
+    }
+
+    @Data
+    @Builder
+    public static class ProductDetailDto {
+        private Long id;
+        private ProductDto product;
+        private Size size;
+        private Color color;
+        private BigDecimal price;
+        private Integer quantity;
+        private Integer status;
+        List<Image> images;
+    }
+
+    /// FOR CART
+    @Data
+    @Builder
+    public static class CartProductDto {
+        private ProductDetailDto productDetailDto;
+        private int quantity;
+        private BigDecimal total;
+    }
+
+    @Data
+    @Builder
+    public static class CartResponse {
+        private List<CartProductDto> items;
+        private BigDecimal subtotal;
+        private Integer itemCount;
+    }
+
+    ///FOR PAYMENT
+    @Data
+    @Builder
+    public static class ShippingInfoDto {
+        private Long id;
+        private String recipientName;
+        private String phoneNumber;
+        private String addressDetail;
+        private Long provinceId;
+        private String provinceName;
+        private Long districtId;
+        private String districtName;
+        private String wardCode;
+        private String wardName;
+        private Boolean isDefault = false;
+    }
+}
