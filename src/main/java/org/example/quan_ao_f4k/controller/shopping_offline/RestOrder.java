@@ -4,8 +4,10 @@ import lombok.AllArgsConstructor;
 import org.example.quan_ao_f4k.dto.request.order.UpdateQuantityRequest;
 import org.example.quan_ao_f4k.model.order.OrderProductDetailKey;
 import org.example.quan_ao_f4k.repository.order.OrderRepository;
+import org.example.quan_ao_f4k.service.order.OrderDetailService;
 import org.example.quan_ao_f4k.service.order.OrderDetailServiceimpl;
 import org.example.quan_ao_f4k.service.order.OrderServiceImpl;
+import org.example.quan_ao_f4k.service.product.ProductDetailService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,7 +17,9 @@ import org.springframework.web.bind.annotation.*;
 public class RestOrder {
     private final OrderServiceImpl orderService;
     private final OrderRepository orderRepository;
-    private final OrderDetailServiceimpl orderDetailService;
+    private final OrderDetailService orderDetailService;
+    private final ProductDetailService productDetailService;
+
     @DeleteMapping("/order-detail/delete")
     public ResponseEntity<?> deleteOrderDetail(@RequestBody OrderProductDetailKey orderProductDetailKey) {
         System.out.println("Received: " + orderProductDetailKey); // Ghi log dữ liệu nhận
@@ -29,13 +33,30 @@ public class RestOrder {
 
         try {
             // Gọi service cập nhật số lượng, lấy giá trị từ request DTO
-            orderDetailService.updateQuantity(productId, request.getQuantity(),true);
+            orderDetailService.updateQuantity(productId, request.getQuantity());
+            return ResponseEntity.ok("Cập nhật số lượng thành công cho sản phẩm có ID: " + productId);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+    @PutMapping("/{productId}/quantity-plus")
+    public ResponseEntity<String> updateQuantity(
+            @PathVariable Long productId,
+            @RequestBody UpdateQuantityRequest request) {
+
+        try {
+            // Gọi service cập nhật số lượng, lấy giá trị từ request DTO
+            orderDetailService.updateQuantityPlus(productId, request.getQuantity());
             return ResponseEntity.ok("Cập nhật số lượng thành công cho sản phẩm có ID: " + productId);
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
-
-
+    @GetMapping("/{productDetailId}/product-detail-quantity")
+    public ResponseEntity<Integer> getQuantity(@PathVariable("productDetailId") Long productDetailId) {
+        Integer quantity = productDetailService.getQuantity(productDetailId);
+        return ResponseEntity.ok(quantity);
+    }
 }
+

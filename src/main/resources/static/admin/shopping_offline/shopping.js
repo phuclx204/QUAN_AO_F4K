@@ -1,3 +1,8 @@
+// Load data và hiện modal product detail khi click
+function addProductDetail() {
+    loadSelect();
+    fetchProductDetails();
+}
 
 function loadOptions(endpoint, selectElement, defaultOption, selectedId = null) {
     $.get(endpoint, function (data) {
@@ -9,22 +14,27 @@ function loadOptions(endpoint, selectElement, defaultOption, selectedId = null) 
     });
 }
 
-function loadSelect(categoryId = null, brandId = null) {
+// hàm đổ dữ liệu vào select
+function loadSelect(categoryId = null, brandId = null, colorId = null, sizeId = null) {
     const categorySelect = $('#categorySelect');
     const brandSelect = $('#brandSelect');
     const colorSelect = $('#colorSelect');
     const sizeSelect = $('#sizeSelect');
     loadOptions('/admin/category/active', categorySelect, 'Tất cả', categoryId);
+    loadOptions('/admin/color/active', colorSelect, 'Tất cả', colorId);
+    loadOptions('/admin/size/active', sizeSelect, 'Tất cả', sizeId);
     loadOptions('/admin/brand/active', brandSelect, 'Tất cả', brandId);
 }
 
+// hàm lấy số lượng hóa đơn chờ
 function getOrderCount() {
     return $('.new-invoice-container button').length; // Lấy số lượng hóa đơn từ các nút trong invoice-container
 }
-function confirmCreateInvoice() {
-    alert("Create Invoice button clicked!"); // Placeholder for actual implementation
 
-    const orderCount = getOrderCount(); // Get the current invoice count
+// xác nhận tạo hóa đơn và giới hạn 10 hóa đơn
+function confirmCreateInvoice() {
+
+    const orderCount = getOrderCount();
 
     if (orderCount >= 10) {
         Swal.fire({
@@ -34,7 +44,7 @@ function confirmCreateInvoice() {
             confirmButtonColor: '#3085d6',
             confirmButtonText: 'Đóng'
         });
-        return; // Prevent further invoice creation
+        return;
     }
 
     Swal.fire({
@@ -53,24 +63,23 @@ function confirmCreateInvoice() {
     });
 }
 
+// tạo hóa đơn với mã tự sinh, trạng thái 1,loại offline
 function createInvoice() {
     const orderData = {
-        userId: 61, // User ID
-        code: generateUniqueCode(), // Generate unique invoice code
-        status: 1, // Invoice status
-        order_type: 'OFFLINE' // Invoice type is "OFFLINE"
+        userId: 999,
+        code: generateUniqueCode(),
+        status: 1,
+        order_type: 'OFFLINE'
     };
 
-    // Send AJAX request to create the invoice
     $.ajax({
-        url: '/admin/shopping-offline', // API URL
-        method: 'POST', // Use POST method
-        contentType: 'application/json', // Sending data as JSON
-        data: JSON.stringify(orderData), // Convert invoice data to JSON string
+        url: '/admin/shopping-offline',
+        method: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify(orderData),
         success: function (response) {
-            const newInvoiceId = response.id; // Assuming response contains the new invoice ID
+            const newInvoiceId = response.id;
 
-            // Show success message
             Swal.fire({
                 title: 'Tạo hóa đơn thành công!',
                 text: "Hóa đơn đã được tạo.",
@@ -78,72 +87,12 @@ function createInvoice() {
                 timer: 2000,
                 timerProgressBar: true,
                 willClose: () => {
-                    // Redirect to the new invoice page
-                    window.location.href = `/admin/shopping-offline/${newInvoiceId}`;
+                    viewInvoice(newInvoiceId)
                 }
             });
         },
         error: function (xhr) {
-            // Handle error if invoice creation fails
             let errorMessage = 'Không thể tạo hóa đơn.';
-            if (xhr.status === 400 && xhr.responseJSON) {
-                // Get error message from JSON response
-                errorMessage = xhr.responseJSON.map(error => error.defaultMessage).join(', ');
-            }
-            Swal.fire('Lỗi', errorMessage, 'error'); // Display error message
-        }
-    });
-}
-
-// Hàm để tạo mã duy nhất cho hóa đơn
-function generateUniqueCode() {
-    return 'HD ' + Date.now(); // Cách đơn giản để tạo mã duy nhất
-}
-function cancelOrder(orderId) {
-    Swal.fire({
-        title: 'Xác nhận hủy đơn',
-        text: "Bạn có chắc chắn muốn hủy đơn này không?",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Có, hủy đơn!',
-        cancelButtonText: 'Hủy'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            // Gửi yêu cầu cập nhật trạng thái đơn hàng
-            updateOrderStatus(orderId, 0); // Gọi hàm updateOrderStatus với status = 0
-
-        }
-    });
-}
-function updateOrderStatus(orderId, status) {
-    const orderCode = document.getElementById('orderCode').innerText;
-
-    const updateData = {
-        status: status,
-        code: orderCode
-    }
-    // Gửi yêu cầu PUT để cập nhật trạng thái đơn hàng
-    $.ajax({
-        url: '/admin/shopping-offline/' + orderId, // URL cập nhật đơn hàng
-        method: 'PUT',
-        contentType: 'application/json',
-        data: JSON.stringify(updateData),
-        success: function (response) {
-            Swal.fire({
-                title: 'Hủy đơn thành công!',
-                text: "Đơn hàng đã được hủy.",
-                icon: 'success',
-                timer: 2000,
-                timerProgressBar: true,
-                willClose: () => {
-                    location.reload(); // Tải lại trang
-                }
-            });
-        },
-        error: function (xhr) {
-            let errorMessage = 'Không thể hủy đơn.';
             if (xhr.status === 400 && xhr.responseJSON) {
                 errorMessage = xhr.responseJSON.map(error => error.defaultMessage).join(', ');
             }
@@ -152,178 +101,141 @@ function updateOrderStatus(orderId, status) {
     });
 }
 
-
-
-function viewInvoice(id) {
-    window.location.href = '/admin/shopping-offline/' + id;
+// Hàm để tạo mã duy nhất cho hóa đơn
+function generateUniqueCode() {
+    return 'HD ' + Date.now();
 }
 
-const modal = document.getElementById("productModal");
-const btnAddProduct = document.querySelector(".new-btn-add");
-const spanClose = document.querySelector(".new-close");
-const productList = document.getElementById("productList");
-
-// Mở modal khi bấm nút "Thêm sản phẩm"
-btnAddProduct.onclick = function () {
-    modal.style.display = "block";
-    loadSelect();
-    fetchProductDetails(); // Call API when the modal opens
-}
-
-// Đóng modal khi bấm vào dấu "x"
-spanClose.onclick = function () {
-    modal.style.display = "none";
-}
-
-// Đóng modal khi bấm ra ngoài modal
-window.onclick = function (event) {
-    if (event.target == modal) {
-        modal.style.display = "none";
+// cập nhật trạng thái cho đơn hủy = 0
+function updateOrderStatus(orderId, status) {
+    const orderCode = document.getElementById('orderCode').innerText;
+    const updateData = {
+        status: status,
+        code: orderCode
     }
-}
 
-$('.search-form').on('submit', function (event) {
-    event.preventDefault();
-    const search = $('input[name="search"]').val();
-    fetchProductDetails(1, 5, 'id,desc', search);
-});
-// Function to fetch product details from the API
-function fetchProductDetails(page=1,size=5,sort='id,desc',search='') {
-    search = document.getElementById("searchInput").value;
-
-    fetch(`/admin/products/product-detail/list?page=${page}&size=${size}&sort=${sort}&search=${search}`)
-        .then(response => response.json())
-        .then(data => {
-            renderProductList(data.content);
-            setupPagination(data.totalPages,page)
-        })
-        .catch(error => {
-            console.error('Error fetching product details:', error);
-        });
-}
-
-function getCurrentOrderId() {
-    const orderIdInput = document.getElementById('currentOrderId');
-    const orderId = orderIdInput ? orderIdInput.value : null; // Lấy giá trị từ input ẩn
-    console.log('Current Order ID:', orderId); // Ghi lại để kiểm tra
-    return orderId;
-}
-
-
-function updateProductStock(productId, quantityToSubtract) {
+    // Gọi API lấy danh sách sản phẩm trong hóa đơn
     $.ajax({
-        url: `/admin/shopping-offlinee/${productId}/quantity`,
-        method: 'PUT',
-        contentType: 'application/json',
-        data: JSON.stringify({ quantity: quantityToSubtract }),
-        success: function(response) {
-            console.log("Số lượng kho đã được cập nhật thành công.");
+        url: `/admin/shopping-offline/` + orderId + `/order-details`, // API để lấy danh sách sản phẩm
+        method: 'GET',
+        success: function (response) {
+            // Tăng số lượng tồn kho cho từng sản phẩm
+            response.forEach(productDetail => {
+                updateProductQuantity(productDetail.productDetail.id, productDetail.quantity);
+            });
+
+            // Sau khi cập nhật tồn kho, thay đổi trạng thái đơn hàng
+            $.ajax({
+                url: '/admin/shopping-offline/' + orderId,
+                method: 'PUT',
+                contentType: 'application/json',
+                data: JSON.stringify(updateData),
+                success: function (response) {
+                    Swal.fire({
+                        title: 'Hủy đơn thành công!',
+                        text: "Đơn hàng đã được hủy.",
+                        icon: 'success',
+                        confirmButtonText: 'OK',
+                        timerProgressBar: true,
+                    });
+                    // Lấy danh sách hóa đơn còn lại
+                    const allOrders = document.querySelectorAll('.invoice-item');
+                    let nextOrderId = null;
+
+                    allOrders.forEach(order => {
+                        const idOrder = order.getAttribute('onclick').match(/\d+/)[0]; // Lấy ID từ onclick
+                        if (idOrder != orderId) {
+                            nextOrderId = idOrder;
+                            return false;
+                        }
+                    });
+
+                    // Chuyển hướng sang hóa đơn khác nếu tồn tại
+                    if (nextOrderId) {
+                        viewInvoice(nextOrderId);
+                    } else {
+                        Swal.fire({
+                            title: 'Thông báo',
+                            text: 'Không còn hóa đơn nào!',
+                            icon: 'info',
+                            confirmButtonText: 'OK',
+                        });
+                    }
+                },
+                error: function (xhr) {
+                    let errorMessage = 'Không thể hủy đơn.';
+                    if (xhr.status === 400 && xhr.responseJSON) {
+                        errorMessage = xhr.responseJSON.map(error => error.defaultMessage).join(', ');
+                    }
+                    Swal.fire('Lỗi', errorMessage, 'error');
+                }
+            });
+
         },
-        error: function(xhr) {
-            console.error("Không thể cập nhật số lượng kho.", xhr);
-            Swal.fire('Lỗi', 'Không thể cập nhật số lượng kho.', 'error');
+        error: function () {
+            Swal.fire('Lỗi', 'Không thể lấy danh sách sản phẩm trong hóa đơn.', 'error');
         }
     });
+
 }
 
+//view hóa đơn được chọn
+function viewInvoice(orderIds) {
+    window.location.href = "/admin/shopping-offline/" + orderIds
+}
 
-function addProductToInvoice(productId, productPrice) {
-    const currentOrderId = getCurrentOrderId(); // Lấy ID hóa đơn hiện tại
+//hàm xác nhận cho trường nhập tiền
+function isValidPrice(value) {
+    const num = parseFloat(value);
+    return !isNaN(num) && num >= 0;
+}
 
-    if (!currentOrderId) {
-        modal.style.display = "none";
-        Swal.fire('Lỗi', 'Vui lòng chọn hóa đơn.', 'error');
-        return;
-    }
+// tự động cho các trường nhập tiền chỉ được nhập số
+$(document).ready(function () {
+    $("#minPrice, #maxPrice,.quantity-input").on("input", function () {
+        // Lấy giá trị hiện tại và loại bỏ tất cả ký tự không phải số
+        let value = $(this).val().replace(/[^0-9]/g, '');
 
-    // Kiểm tra nếu sản phẩm đã có trong hóa đơn
-    const existingRow = $(`tr`).filter(function() {
-        return $(this).find(`input[type="hidden"][id="productDetailId"]`).val() == productId;
+        $(this).val(value);
     });
 
-    if (existingRow.length > 0) {
-        // Nếu sản phẩm đã có, cập nhật số lượng
-        const quantityInput = existingRow.find('.quantity-input');
-        const currentQuantity = parseInt(quantityInput.val());
-        const newQuantity = currentQuantity + 1; // Tăng số lượng lên 1
-        quantityInput.val(newQuantity);
+});
 
-        // Gửi yêu cầu cập nhật hóa đơn qua AJAX
-        const updateData = {
-            orderId: currentOrderId,
-            productDetailId: productId,
-            quantity: newQuantity,
-            price: productPrice
-        };
+// hàm lấy dữ liệu product detail
+function fetchProductDetails(page = 1, size = 5) {
+    const search = $("#searchInput").val(); // Lấy giá trị từ trường tìm kiếm
+    const brandIds = $("#brandSelect").val(); // Lấy giá trị từ trường chọn thương hiệu
+    const categoryIds = $("#categorySelect").val(); // Lấy giá trị từ trường chọn danh mục
+    const sizeIds = $("#sizeSelect").val(); // Lấy giá trị từ trường chọn kích cỡ
+    const colorIds = $("#colorSelect").val(); // Lấy giá trị từ trường chọn màu sắc
+    const priceFrom = parseFloat($("#minPrice").val()) || null;
+    const priceTo = parseFloat($("#maxPrice").val()) || null;
+    const orderBy = $("#sortSelect").val() || 'asc'; // Cách sắp xếp
 
-        $.ajax({
-            url: `/admin/shopping-offline/${currentOrderId}/${productId}`,
-            method: 'PUT',
-            contentType: 'application/json',
-            data: JSON.stringify(updateData),
-            success: function(response) {
-                // Gọi API cập nhật kho sau khi cập nhật hóa đơn thành công
-                updateProductStock(productId, 1); // Trừ 1 sản phẩm từ kho
-
-                modal.style.display = "none";
-                Swal.fire({
-                    title: 'Thêm thành công vào giỏ hàng!',
-                    text: "Sản Phẩm đã được thêm vào Giỏ",
-                    icon: 'success',
-                    timer: 2000,
-                    timerProgressBar: true,
-                    willClose: () => {
-                        location.reload();
-                    }
-                });
-            },
-            error: function(xhr) {
-                let errorMessage = 'Không thể cập nhật số lượng.';
-                if (xhr.status === 400 && xhr.responseJSON) {
-                    errorMessage = xhr.responseJSON.map(error => error.defaultMessage).join(', ');
-                }
-                Swal.fire('Lỗi', errorMessage, 'error');
-            }
+    $.ajax({
+        url: `/admin/shopping-offline/product-detail-list`,
+        method: 'GET', // Phương thức HTTP
+        data: {
+            page: page,
+            size: size,
+            nameProduct: search,
+            brandIds: brandIds ? brandIds : [], // Chuyển đổi thành mảng
+            categoryIds: categoryIds ? categoryIds : [], // Chuyển đổi thành mảng
+            sizeIds: sizeIds ? sizeIds : [], // Chuyển đổi thành mảng
+            colorIds: colorIds ? colorIds : [], // Chuyển đổi thành mảng
+            priceFrom: priceFrom,
+            priceTo: priceTo,
+            orderBy: orderBy
+        },
+        dataType: 'json'
+    })
+        .done(function (data) {
+            renderProductList(data.content);
+            setupPagination(data.totalPages, page);
+        })
+        .fail(function (jqXHR, textStatus, errorThrown) {
+            console.error('Error fetching product details:', textStatus, errorThrown); // Xử lý lỗi
         });
-    } else {
-        // Nếu sản phẩm chưa có, thêm mới vào hóa đơn
-        const orderDetailData = {
-            orderId: currentOrderId,
-            productDetailId: productId,
-            quantity: 1,
-            price: productPrice
-        };
-
-        $.ajax({
-            url: '/admin/shopping-offline/add',
-            method: 'POST',
-            contentType: 'application/json',
-            data: JSON.stringify(orderDetailData),
-            success: function(response) {
-                // Gọi API cập nhật kho sau khi thêm sản phẩm vào hóa đơn thành công
-                updateProductStock(productId, 1); // Trừ 1 sản phẩm từ kho
-
-                modal.style.display = "none";
-                Swal.fire({
-                    title: 'Thêm sản phẩm thành công!',
-                    text: "Sản phẩm đã được thêm vào hóa đơn.",
-                    icon: 'success',
-                    timer: 2000,
-                    timerProgressBar: true,
-                    willClose: () => {
-                        location.reload();
-                    }
-                });
-            },
-            error: function(xhr) {
-                let errorMessage = 'Không thể thêm sản phẩm vào hóa đơn.';
-                if (xhr.status === 400 && xhr.responseJSON) {
-                    errorMessage = xhr.responseJSON.map(error => error.defaultMessage).join(', ');
-                }
-                Swal.fire('Lỗi', errorMessage, 'error');
-            }
-        });
-    }
 }
 
 function renderProductList(products) {
@@ -339,69 +251,83 @@ function renderProductList(products) {
         return;
     }
 
-        products.forEach((product, index) => {
-            const productRow = document.createElement('tr');
+    products.forEach((prd, index) => {
+        const productRow = document.createElement('tr');
 
-            productRow.innerHTML = `
-                <td>${index + 1}</td>
-                <td>
-                           <img src="${product.imageUrl}" alt="${product.product.name}" style="width: 50px; height: 50px;">
-                       </td>
-                <td>${product.product.name}</td>
-                <td>${product.price} VND</td>
-                <td>
-                    ${product.color ? `<span class="color-circle" style="background-color: ${product.color.hex}; display: inline-block; width: 20px; height: 20px; border-radius: 50%;"></span>` : ''}
-                </td>
-                <td>${product.quantity}</td>
-                <td>
-                    <button class="new-btn-buy" onclick="addProductToInvoice(${product.id}, ${product.price})">Chọn Vào giỏ</button>
-                </td>
-            `;
-
-            productList.appendChild(productRow); // Thêm hàng vào bảng
-        });
+        productRow.innerHTML = `
+            <td><img src="${prd.product.thumbnail}" alt="${prd.product.name}" style="width: 50px; height: 50px;"></td>
+            <td>${prd.product.name}</td>
+            <td>${prd.price}</td>
+            <td>
+                ${prd.color ? `<span class="color-circle" style="background-color: ${prd.color.hex}; display: inline-block; width: 20px; height: 20px; border-radius: 50%;"></span>` : ''}
+            </td>
+            <td>${prd.size.name}</td>
+            <td>${prd.quantity}</td>
+           <td>
+                <button 
+                    class="btn ${prd.quantity === 0 ? 'btn-secondary' : 'btn-success'}" 
+                    ${prd.quantity === 0 ? 'disabled' : ''} 
+                    onclick="addProductToInvoice(${prd.id})">
+                    ${prd.quantity === 0 ? 'Đang cập nhật' : 'Chọn vào giỏ'}
+                </button>
+            </td>
+        `;
+        productList.appendChild(productRow);
+    });
 }
 
+//hàm thiết lập phân trang cho product detail
 function setupPagination(totalPages, currentPage) {
     const pagination = $('#pagination');
+
+    // Ẩn phân trang nếu không có trang nào
     if (totalPages === 0) {
         pagination.hide();
         return;
-    } else {
-        pagination.show();
     }
+
+    pagination.show(); // Hiện phân trang nếu có trang
     pagination.empty();
 
+    // Thêm nút "Trước"
     pagination.append(`
         <button class="page-button" ${currentPage === 1 ? 'disabled' : ''} data-page="${currentPage - 1}">
             Trước
         </button>
-        `);
+    `);
 
+    // Thêm input cho trang hiện tại
     pagination.append(`
         <input type="text" id="pageInput" value="${currentPage}" style="width: 50px; text-align: center;" />
         <span> / ${totalPages}</span>
-        `);
+    `);
 
+    // Thêm nút "Tiếp theo"
     pagination.append(`
         <button class="page-button" ${currentPage === totalPages ? 'disabled' : ''} data-page="${currentPage + 1}">
             Tiếp theo
         </button>
-        `);
+    `);
 
+    // Sự kiện cho nút phân trang
     $('.page-button').on('click', function () {
         const page = $(this).data('page');
-        fetchProductDetails(page);
+        if (page >= 1 && page <= totalPages) {
+            fetchProductDetails(page);
+        }
     });
 
+    // Kiểm tra và chỉ cho phép nhập số trong input
     $('#pageInput').on('input', function () {
         this.value = this.value.replace(/[^0-9]/g, '');
     });
 
+    // Xử lý sự kiện khi nhấn Enter trong input
     $('#pageInput').on('keypress', function (e) {
         if (e.key === 'Enter') {
             let inputPage = parseInt($(this).val());
 
+            // Kiểm tra trang nhập vào
             if (isNaN(inputPage) || inputPage < 1) {
                 inputPage = 1;
             } else if (inputPage > totalPages) {
@@ -412,85 +338,194 @@ function setupPagination(totalPages, currentPage) {
         }
     });
 }
+
+// Gọi hàm lấy dữ liệu product detail khi Tìm kiếm
+$("#searchButton").on("click", function () {
+    fetchProductDetails();
+});
+
+// Gọi hàm lấy dữ liệu product detail khi nhấn nút Reset
+$("#resetButton").on("click", function () {
+    // Đặt lại giá trị của các trường nhập
+    $("#searchInput").val("");
+    $("#minPrice").val("");
+    $("#maxPrice").val("");
+    $("#sortSelect").val("");
+    $("#brandSelect").val(null); // Hoặc giá trị mặc định nếu cần
+    $("#categorySelect").val(null); // Hoặc giá trị mặc định nếu cần
+    $("#sizeSelect").val(null); // Hoặc giá trị mặc định nếu cần
+    $("#colorSelect").val(null); // Hoặc giá trị mặc định nếu cần
+
+    // Gọi hàm tìm kiếm để cập nhật danh sách sản phẩm
+    fetchProductDetails();
+});
+
+//hàm lấy id hóa đơn đang chọn
+function getCurrentOrderId() {
+    const orderIdInput = document.getElementById('currentOrderId');
+    return orderIdInput ? orderIdInput.value : null;
+}
+
+//hàm cập nhật số lượng của giỏ hàng vào product detail
+function updateProductStock(productId, quantityToSubtract) {
+    $.ajax({
+        url: `/admin/shopping-offlinee/${productId}/quantity`,
+        method: 'PUT',
+        contentType: 'application/json',
+        data: JSON.stringify({quantity: quantityToSubtract}),
+        success: function (response) {
+            console.log("Số lượng kho đã được cập nhật thành công.");
+        },
+        error: function (xhr) {
+            console.error("Không thể cập nhật số lượng kho.", xhr);
+            Swal.fire('Lỗi', 'Không thể cập nhật số lượng kho.', 'error');
+        }
+    });
+}
+
+//hàm cập nhật số lượng của giỏ hàng và product detail
+function updateProductQuantity(productId, quantityToSubtract) {
+    $.ajax({
+        url: `/admin/shopping-offlinee/${productId}/quantity-plus`,
+        method: 'PUT',
+        contentType: 'application/json',
+        data: JSON.stringify({quantity: quantityToSubtract}),
+        success: function (response) {
+            console.log("Số lượng kho đã được cập nhật thành công.");
+        },
+        error: function (xhr) {
+            console.error("Không thể cập nhật số lượng kho.", xhr);
+            Swal.fire('Lỗi', 'Không thể cập nhật số lượng kho.', 'error');
+        }
+    });
+}
+
+// thêm product detail vào giỏ hàng
+function addProductToInvoice(productDetailId) {
+    const currentOrderId = getCurrentOrderId();
+
+    if (!currentOrderId) {
+        Swal.fire('Lỗi', 'Vui lòng chọn hóa đơn.', 'error');
+        return;
+    }
+
+    // Tìm sản phẩm trong giỏ hàng bằng input hidden productDetailId
+    const existingProduct = $(`input#productDetailId[value="${productDetailId}"]`).closest('tr');
+
+    if (existingProduct.length > 0) {
+        // Sản phẩm đã tồn tại trong giỏ
+        const price = existingProduct.find('.priceInput').val(); // Lấy giá từ input có class priceInput
+        const currentQty = parseInt(existingProduct.find('.quantity-input').val()) || 0; // Lấy số lượng từ input có class quantity-input
+        const newQty = currentQty + 1;
+
+        // Gọi API cập nhật
+        $.ajax({
+            url: `/admin/shopping-offline/${currentOrderId}/${productDetailId}`,
+            type: 'PUT',
+            contentType: 'application/json',
+            data: JSON.stringify({
+                orderId: currentOrderId,
+                productDetailId: productDetailId,
+                quantity: newQty,
+                price: parseFloat(price)
+            }),
+            success: function (response) {
+                if (response) {
+                    updateProductStock(productDetailId, 1);
+                    Swal.fire('Thành công', 'Cập nhật sản phẩm thành công', 'success')
+                        .then(() => {
+                            location.reload();
+                        });
+                } else {
+                    Swal.fire('Lỗi', 'Không thể cập nhật sản phẩm', 'error');
+                }
+            },
+            error: function (xhr) {
+                Swal.fire('Lỗi', 'Đã xảy ra lỗi khi cập nhật sản phẩm', 'error');
+            }
+        });
+    } else {
+        // Sản phẩm chưa có trong giỏ - thêm mới
+        const productRow = $(`button[onclick="addProductToInvoice(${productDetailId})"]`).closest('tr');
+        const price = productRow.find('td:nth-child(3)').text().trim(); // Lấy giá từ bảng sản phẩm
+
+        $.ajax({
+            url: '/admin/shopping-offline/add',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({
+                orderId: currentOrderId,
+                productDetailId: productDetailId,
+                quantity: 1,
+                price: parseFloat(price)
+            }),
+            success: function (response) {
+                if (response) {
+                    updateProductStock(productDetailId, 1)
+                    Swal.fire('Thành công', 'Thêm sản phẩm thành công', 'success')
+                        .then(() => {
+                            location.reload();
+                        });
+                } else {
+                    Swal.fire('Lỗi', 'Không thể thêm sản phẩm', 'error');
+                }
+            },
+            error: function (xhr) {
+                Swal.fire('Lỗi', 'Đã xảy ra lỗi khi thêm sản phẩm', 'error');
+            }
+        });
+    }
+}
+
+// định dạng nhập tiền khách đưa chưa làm được--------------------------------------------------BUG---------------------
 $(document).ready(function () {
-    // Lấy tổng tiền từ `totalAmount`
-    const totalAmount = parseInt($('#totalAmount').text().replace(/\D/g, ''), 10);
-    $('#amountDue').text(totalAmount.toLocaleString() + ' ₫');
+    const totalAmount = parseFloat($('#totalAmount').text().replace(/\D/g, ''), 10);
+    $('#totalAmount').text(totalAmount.toLocaleString() + ' ₫');
 
     // Khi nhập vào ô "Tiền khách đưa"
     $('#customerAmount').on('input', function () {
-        const customerAmount = parseInt($(this).val().replace(/\D/g, ''), 10) || 0; // Remove non-numeric characters
-        const changeAmount = customerAmount - totalAmount;
-
-        if (customerAmount >= totalAmount) {
-            // Đủ tiền
-            $('#statusMessage').text('Đủ tiền').css('color', 'green');
-            $('#changeAmount').text(changeAmount.toLocaleString() + ' ₫');
+        const inputElement = $(this).val();
+        let formattedValue = number_format(inputElement, 0, ".", ",")
+        $(this).val(formattedValue);
+        // Tính toán số tiền thừa và cập nhật thông tin
+        const changeAmount = inputElement - totalAmount;
+        if (totalAmount > 0) {
+            if (inputElement >= totalAmount) {
+                $('#changeAmount').text(changeAmount.toLocaleString() + ' ₫');
+                $('#statusMessage').text('');
+            } else {
+                $('#statusMessage').text('Chưa đủ tiền').css('color', 'red');
+                $('#changeAmount').text('0 ₫');
+            }
         } else {
-            // Chưa đủ tiền
-            $('#statusMessage').text('Chưa đủ tiền').css('color', 'red');
             $('#changeAmount').text('0 ₫');
         }
     });
 
+    function number_format(inputValue, decimalPlaces = 0, decimalSeparator = '.', thousandSeparator = ',') {
+        // Chuyển giá trị thành số thực để xử lý
+        const number = parseFloat(inputValue);
+
+        // Kiểm tra nếu giá trị không hợp lệ, trả về 0
+        if (isNaN(number)) return '0';
+
+        // Làm tròn giá trị đến số thập phân cần thiết
+        const fixedNumber = number.toFixed(decimalPlaces);
+
+        // Phân tách phần nguyên và phần thập phân
+        const [integerPart, decimalPart] = fixedNumber.split('.');
+
+        // Định dạng phần nguyên với dấu phân cách hàng nghìn
+        const formattedInteger = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, thousandSeparator);
+
+        // Kết hợp phần nguyên và phần thập phân (nếu có)
+        return decimalPlaces > 0
+            ? `${formattedInteger}${decimalSeparator}${decimalPart}`
+            : formattedInteger;
+    }
+
 });
 
-
-$(document).ready(function() {
-    $('.delete-btn').on('click', function() {
-        const orderId = $(this).data('order-id');
-        const productDetailId = $(this).data('product-detail-id');
-
-        // Kiểm tra lại giá trị của orderId và productDetailId
-        console.log("Order ID:", orderId, "Product Detail ID:", productDetailId);
-
-        confirmDelete(orderId, productDetailId);
-    });
-});
-
-
-
-// Hàm confirmDelete sử dụng SweetAlert2
-function confirmDelete(orderId, productDetailId) {
-    console.log("Order ID:", orderId, "Product Detail ID:", productDetailId); // Kiểm tra log
-    Swal.fire({
-        title: 'Xác nhận xóa sản phẩm khỏi giỏ',
-        text: "Bạn có chắc chắn muốn bỏ sản phẩm này không?",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Có, xóa!',
-        cancelButtonText: 'Hủy'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            deleteOrderDetail(orderId, productDetailId);
-        }
-    });
-}
-function deleteOrderDetail(orderId, productDetailId) {
-    fetch('/admin/shopping-offlinee/order-detail/delete', {
-        method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ orderId: orderId, productDetailId: productDetailId })
-    })
-        .then(response => {
-            console.log('Response:', response); // Log phản hồi
-            if (!response.ok) {
-                return response.text().then(text => { throw new Error(text) });
-            }
-            return response.text();
-        })
-        .then(data => {
-            Swal.fire('Đã xóa!', data, 'success').then(() => {
-                location.reload(); // Load lại trang sau khi xóa thành công
-            });
-        })
-        .catch(error => {
-            Swal.fire('Lỗi!', error.message, 'error');
-            console.error('Error:', error); // Log lỗi
-        });
-}
 function updateOrderStatus1(orderId, status, totalPay) {
     const orderCode = document.getElementById('orderCode').innerText;
     const toName = document.getElementById('name').value;
@@ -503,8 +538,8 @@ function updateOrderStatus1(orderId, status, totalPay) {
         toName: toName,
         toPhone: toPhone,
         toAddress: toAddress,
-        totalPay: totalPay, // Add totalPay to update data
-        paymentStatus: 3, // Example status for successful payment
+        totalPay: totalPay,
+        paymentStatus: 3,
         order_type: 'OFFLINE'
     };
 
@@ -521,7 +556,8 @@ function updateOrderStatus1(orderId, status, totalPay) {
                 timer: 2000,
                 timerProgressBar: true,
                 willClose: () => {
-                    location.reload();
+                    const firstOrderId = document.querySelector('#currentOrderId').value;
+                    viewInvoice(firstOrderId);
                 }
             });
         },
@@ -552,8 +588,8 @@ function comfirmOrder(orderId) {
     }
 
     // Validate if required fields are filled correctly
-    const toName = $('#name').val();
-    const toPhone = $('#phone').val();
+    const toName = $('#name').val().trim();
+    const toPhone = $('#phone').val().trim();
     const toAddress = $('#to_address').val();
 
     // Check if name, phone, and address are valid
@@ -611,6 +647,24 @@ function comfirmOrder(orderId) {
     });
 }
 
+// hủy hóa đơn đang chọn
+function cancelOrder(orderId) {
+    Swal.fire({
+        title: 'Xác nhận hủy đơn',
+        text: "Bạn có chắc chắn muốn hủy đơn này không?",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Xác nhận',
+        cancelButtonText: 'Hủy bỏ'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            updateOrderStatus(orderId, 0); // Gọi hàm updateOrderStatus với status = 0
+        }
+    });
+}
+
 // Validation Logic for Name, Phone, and Address on Input
 $(document).ready(function () {
     // Validate name input for at least 8 characters
@@ -643,85 +697,227 @@ $(document).ready(function () {
         }
     });
 });
-//update
+
 $(document).ready(function () {
+    // Lắng nghe sự kiện click của nút xóa
+    $('.delete-btn').on('click', function () {
+        const orderId = $(this).data('order-id');
+        const productDetailId = $(this).data('product-detail-id');
+        const currentQty = $(this).data('current-qty');
+
+        confirmDelete(orderId, productDetailId, currentQty);
+    });
+});
+
+// Hàm xác nhận xóa sản phẩm khỏi giỏ trả lại số lượng
+function confirmDelete(orderId, productDetailId, currentQty) {
+
+    Swal.fire({
+        title: 'Xác nhận xóa sản phẩm khỏi giỏ ?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Xóa!',
+        cancelButtonText: 'Hủy'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            $.ajax({
+                url: '/admin/shopping-offlinee/order-detail/delete',
+                method: 'DELETE',
+                contentType: 'application/json',
+                data: JSON.stringify({orderId: orderId, productDetailId: productDetailId}),
+                success: function (data) {
+                    updateProductQuantity(productDetailId, currentQty)
+                    Swal.fire('Đã xóa!', data, 'success').then(() => {
+                        location.reload();
+                    });
+                },
+                error: function (xhr, status, error) {
+                    // Swal.fire('Lỗi!', xhr.responseText || 'Có lỗi xảy ra.', 'error');
+                    console.error('Error:', error); // Log lỗi
+                }
+            });
+        }
+    });
+}
+
+function getProductQuantity(productDetailId) {
+    return $.ajax({
+        url: `/admin/shopping-offlinee/${productDetailId}/product-detail-quantity`,
+        method: 'GET',
+        success: function (response) {
+            console.log(`Số lượng sản phẩm: ${response}`);
+        },
+        error: function (xhr) {
+            console.error(`Không thể lấy số lượng sản phẩm: ${xhr.responseText}`);
+        }
+    });
+}
+
+//update quantity from cart
+$(document).ready(function () {
+    $('.quantity-input').each(function () {
+        // Lưu giá trị ban đầu
+        $(this).data('originalValue', $(this).val());
+    });
+
     // Lắng nghe sự kiện 'keydown' trên ô nhập số lượng
     $('.quantity-input').on('keydown', function (event) {
+        const row = $(this).closest('tr'); // Lấy dòng cha chứa input
+        const orderId = row.find(`input[type="hidden"][id="orderId"]`).val();
+        const productDetailId = row.find(`input[type="hidden"][id="productDetailId"]`).val();
+        const existingProduct = $(`input#productDetailId[value="${productDetailId}"]`).closest('tr');
+        const productPrice = existingProduct.find('.priceInput').val();
+
         // Kiểm tra nếu phím nhấn là Enter
         if (event.key === 'Enter') {
             event.preventDefault();
-
-            // Lấy giá trị số lượng
             const quantity = parseInt($(this).val());
 
-            // Lấy ID order và productDetail từ các trường hidden
-            const row = $(this).closest('tr'); // Lấy dòng cha chứa input
-            const orderId = row.find(`input[type="hidden"][id="orderId"]`).val(); // Tìm giá trị order ID
-            const productDetailId = row.find(`input[type="hidden"][id="productDetailId"]`).val(); // Tìm giá trị product detail ID
+            // nếu bỏ trống số lượng và ấn enter thì giá trị ko đổi
+            if ($(this).val().trim() === "") {
+                const originalValue = $(this).data('originalValue');
+                const currentValue = $(this).val();
 
-            const priceText = row.find('#productPrice').text().trim(); // Sử dụng jQuery để lấy giá
-            const productPrice = parseFloat(priceText.replace(/,/g, '').replace('₫', '').trim()); // Chuyển đổi thành số thực
-
-            console.log("Order ID:", orderId);
-            console.log("Product Detail ID:", productDetailId);
-            console.log("Product Price:", productPrice);
-            console.log("Quantity:", quantity);
-
-            // Kiểm tra số lượng hợp lệ
-            if (isNaN(quantity) || quantity <= 0) {
-                Swal.fire({
-                    title: 'Lỗi',
-                    text: 'Vui lòng nhập một số lượng hợp lệ.',
-                    icon: 'error',
-                    timer: 2000,
-                    showConfirmButton: false
-                }).then(() => {
-                    location.reload();
-                });
+                // Nếu không có thay đổi, khôi phục lại giá trị ban đầu
+                if (currentValue !== originalValue) {
+                    $(this).val(originalValue);
+                }
+                return;
+            }
+            // nếu nhập vào số lượng bằng 0 thì xóa sản phẩm đó khỏi giỏ
+            if (quantity === 0) {
+                //
+                const originalQuantity = $(this).data('originalValue');
+                confirmDelete(orderId, productDetailId, originalQuantity);
                 return;
             }
 
-            // Kiểm tra xem các ID có giá trị hợp lệ không
-            if (!orderId || !productDetailId) {
-                Swal.fire('Lỗi', 'Không tìm thấy thông tin đơn hàng hoặc chi tiết sản phẩm.', 'error');
-                return;
-            }
+            Swal.fire({
+                title: 'Xác nhận thay đổi số lượng',
+                text: "Cập nhật số lượng?",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Xác nhận',
+                cancelButtonText: 'Hủy'
+            }).then((result) => {
+                console.log("Order ID:", orderId);
+                console.log("Product Detail ID:", productDetailId);
+                console.log("Product Price:", productPrice);
+                console.log("Quantity:", quantity);
 
-            // Tạo dữ liệu cần gửi đi
-            const updateData = {
-                orderId: orderId,
-                productDetailId: productDetailId,
-                quantity: quantity,
-                price: productPrice // Nếu bạn cần gửi giá sản phẩm
-            };
-
-            // Gửi dữ liệu qua API PUT để cập nhật số lượng sản phẩm
-            $.ajax({
-                url: `/admin/shopping-offline/${orderId}/${productDetailId}`,
-                method: 'PUT',
-                contentType: 'application/json',
-                data: JSON.stringify(updateData),
-                success: function (response) {
-                    Swal.fire({
-                        title: 'Thành công',
-                        text: 'Số lượng đã được cập nhật',
-                        icon: 'success',
-                        timer: 1000, // Thời gian hiển thị thông báo (2000ms = 2 giây)
-                        showConfirmButton: false // Ẩn nút xác nhận
-                    }).then(() => {
-                        location.reload(); // Tải lại trang sau khi thông báo đã ẩn
-                    });
-                },
-                error: function (xhr) {
-                    let errorMessage = 'Không thể cập nhật số lượng.';
-                    if (xhr.status === 400 && xhr.responseJSON) {
-                        errorMessage = Array.isArray(xhr.responseJSON) ?
-                            xhr.responseJSON.map(error => error.defaultMessage).join(', ') :
-                            xhr.responseJSON.error || errorMessage;
+                if (result.isConfirmed) {
+                    if (!orderId || !productDetailId) {
+                        Swal.fire('Lỗi', 'Không tìm thấy thông tin đơn hàng hoặc chi tiết sản phẩm.', 'error');
+                        return;
                     }
-                    Swal.fire('Lỗi', errorMessage, 'error');
+
+                    // Tạo dữ liệu cần gửi đi
+                    const updateData = {
+                        orderId: orderId,
+                        productDetailId: productDetailId,
+                        quantity: quantity,
+                        price: productPrice
+                    };
+
+                    const originalQuantity = $(this).data('originalValue'); //số lượng trên giỏ
+                    const quantityMinus = quantity - originalQuantity;
+                    const quantityPlus = originalQuantity - quantity;
+
+                    //quantity là số lượng nhập vào muốn thay đổi
+                    //nếu số nhập vào lớn hơn số lượng sản phẩm trong giỏ hiện tại
+                    if (quantity > originalQuantity) {
+                        // Lấy số lượng sản phẩm trong kho
+                        getProductQuantity(productDetailId).then(function (res) {
+                            if (res === 0 || (res - quantityMinus) < 0) {
+                                Swal.fire({
+                                    title: 'Thông báo',
+                                    text: 'Sản phẩm trong kho không đủ '+ quantity + ' sản phẩm',
+                                    icon: 'warning',
+                                    showConfirmButton: true
+                                })
+                                return;
+                            }
+                            $.ajax({
+                                url: `/admin/shopping-offline/${orderId}/${productDetailId}`,
+                                method: 'PUT',
+                                contentType: 'application/json',
+                                data: JSON.stringify(updateData),
+                                success: function (response) {
+                                    Swal.fire({
+                                        title: 'Thành công',
+                                        text: 'Số lượng đã được cập nhật',
+                                        icon: 'success',
+                                        timer: 1000,
+                                        showConfirmButton: false
+                                    }).then(() => {
+                                        updateProductStock(productDetailId, quantityMinus);
+                                        location.reload();
+                                    });
+                                },
+                                error: function (xhr) {
+                                    let errorMessage = 'Không thể cập nhật số lượng.';
+                                    if (xhr.status === 400 && xhr.responseJSON) {
+                                        errorMessage = Array.isArray(xhr.responseJSON) ?
+                                            xhr.responseJSON.map(error => error.defaultMessage).join(', ') :
+                                            xhr.responseJSON.error || errorMessage;
+                                    }
+                                    Swal.fire('Lỗi', errorMessage, 'error');
+                                }
+                            });
+                        });
+
+
+                    } else if (quantity < originalQuantity) {
+                        $.ajax({
+                            url: `/admin/shopping-offline/${orderId}/${productDetailId}`,
+                            method: 'PUT',
+                            contentType: 'application/json',
+                            data: JSON.stringify(updateData),
+                            success: function (response) {
+                                Swal.fire({
+                                    title: 'Thành công',
+                                    text: 'Số lượng đã được cập nhật',
+                                    icon: 'success',
+                                    timer: 1000,
+                                    showConfirmButton: false
+                                }).then(() => {
+                                    updateProductQuantity(productDetailId, quantityPlus);
+                                    location.reload();
+                                });
+                            },
+                            error: function (xhr) {
+                                let errorMessage = 'Không thể cập nhật số lượng.';
+                                if (xhr.status === 400 && xhr.responseJSON) {
+                                    errorMessage = Array.isArray(xhr.responseJSON) ?
+                                        xhr.responseJSON.map(error => error.defaultMessage).join(', ') :
+                                        xhr.responseJSON.error || errorMessage;
+                                }
+                                Swal.fire('Lỗi', errorMessage, 'error');
+                            }
+                        });
+                    }
+
+                } else {
+                    // Nếu không xác nhận, khôi phục giá trị cũ
+                    $(this).val($(this).data('originalValue'));
+                }
+            });
+        } else {
+            // Lắng nghe sự kiện 'blur' | Ấn ra chỗ khác ngoài ô nhập số lượng
+            $('.quantity-input').on('blur', function () {
+                const originalValue = $(this).data('originalValue');
+                const currentValue = $(this).val();
+
+                // Nếu không có thay đổi, khôi phục lại giá trị ban đầu
+                if (currentValue !== originalValue) {
+                    $(this).val(originalValue);
                 }
             });
         }
     });
 });
+

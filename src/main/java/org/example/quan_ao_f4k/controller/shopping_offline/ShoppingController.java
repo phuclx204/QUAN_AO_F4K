@@ -6,14 +6,22 @@ import org.example.quan_ao_f4k.dto.request.order.OrderDetailRequest;
 import org.example.quan_ao_f4k.dto.request.order.OrderDetailResponse;
 import org.example.quan_ao_f4k.dto.request.order.OrderRequest;
 import org.example.quan_ao_f4k.dto.response.orders.OrderResponse;
+import org.example.quan_ao_f4k.dto.response.product.ProductDetailResponse;
+import org.example.quan_ao_f4k.dto.response.promotion.PromotionResponse;
+import org.example.quan_ao_f4k.model.general.Image;
 import org.example.quan_ao_f4k.model.general.Image;
 import org.example.quan_ao_f4k.model.order.OrderDetail;
 import org.example.quan_ao_f4k.model.order.OrderProductDetailKey;
+import org.example.quan_ao_f4k.model.product.ProductDetail;
+import org.example.quan_ao_f4k.repository.general.ImageRepository;
 import org.example.quan_ao_f4k.repository.general.ImageRepository;
 import org.example.quan_ao_f4k.repository.order.OrderRepository;
 import org.example.quan_ao_f4k.service.order.OrderDetailServiceimpl;
 import org.example.quan_ao_f4k.service.order.OrderServiceImpl;
 
+import org.example.quan_ao_f4k.service.product.ProductDetailService;
+import org.example.quan_ao_f4k.service.product.ProductDetailServiceImpl;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -33,7 +41,9 @@ public class ShoppingController {
 	private final OrderServiceImpl orderService;
 	private final OrderRepository orderRepository;
 	private final OrderDetailServiceimpl orderDetailService;
-	private ImageRepository imageRepository;
+	private final ProductDetailServiceImpl productDetailServiceImpl;
+	private final ProductDetailService productDetailService;
+	private final ImageRepository imageRepository;
 
 	@GetMapping({"","/"})
 	public String getOrdersWithStatusFive(Model model) {
@@ -58,7 +68,9 @@ public class ShoppingController {
 	@GetMapping("/{id}")
 	public String getOrderById(@PathVariable Long id, Model model) {
 		OrderResponse orderResponse = orderService.findById(id);
-
+		if(orderResponse == null) {
+			return "/error/error_404";
+		}
 		List<OrderDetail> orderDetails = orderService.findCart(id);
 		List<Image> images = new ArrayList<>();
 		for (OrderDetail orderDetail : orderDetails) {
@@ -78,6 +90,7 @@ public class ShoppingController {
 		orderService.addModelOrder(model);
 		System.out.println("Total Amount: " + totalAmount);
 		model.addAttribute("order", orderResponse);
+		model.addAttribute("currentOrderId", orderResponse.getId());
 		model.addAttribute("orderDetails", orderDetails);
 		model.addAttribute("total", df.format(totalAmount));
 		model.addAttribute("images", images);
@@ -110,5 +123,27 @@ public class ShoppingController {
 		OrderDetailResponse response = orderDetailService.save(key, request);
 
 		return ResponseEntity.ok(response);
+	}
+
+	@GetMapping("/product-detail-list")
+	public ResponseEntity<Page<ProductDetailResponse>> getProductDetailList(
+			@RequestParam(defaultValue = "1") int page,
+			@RequestParam(defaultValue = "5") int size,
+			@RequestParam(required = false) String nameProduct,
+			@RequestParam(required = false) List<Long> brandIds,
+			@RequestParam(required = false) List<Long> categoryIds,
+			@RequestParam(required = false) List<Long> sizeIds,
+			@RequestParam(required = false) List<Long> colorIds,
+			@RequestParam(required = false) BigDecimal priceFrom,
+			@RequestParam(required = false) BigDecimal priceTo,
+			@RequestParam(defaultValue = "asc") String orderBy
+	) {
+		return ResponseEntity.ok(productDetailService.searchProductDetail(page, size, nameProduct, brandIds, categoryIds, sizeIds, colorIds, priceFrom, priceTo, orderBy));
+	}
+
+	@GetMapping("/{orderId}/order-details")
+	public ResponseEntity<List<OrderDetail>> getProductDetailsByOrderId(@PathVariable Long orderId) {
+		List<OrderDetail> productDetails = orderDetailService.getProductDetailsByOrderId(orderId);
+		return ResponseEntity.ok(productDetails);
 	}
 }
