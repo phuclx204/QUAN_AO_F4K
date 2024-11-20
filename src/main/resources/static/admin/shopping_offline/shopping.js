@@ -755,6 +755,46 @@ function getProductQuantity(productDetailId) {
     });
 }
 
+$(document).ready(function () {
+    // Load provinces
+    $.get('/admin/shopping-offlinee/provinces', function (data) {
+        populateSelect('#province', data);
+    });
+
+    // Khi chọn tỉnh/thành phố
+    $('#province').change(function () {
+        const provinceId = $(this).val();
+        if (provinceId) {
+            $.get(`/admin/shopping-offlinee/districts/${provinceId}`, function (data) {
+                populateSelect('#district', data);
+                $('#ward').empty().append('<option value="">Chọn xã/phường</option>');
+            });
+        } else {
+            $('#district, #ward').empty().append('<option value="">Chọn tỉnh/thành phố</option>');
+        }
+    });
+
+    // Khi chọn quận/huyện
+    $('#district').change(function () {
+        const districtId = $(this).val();
+        if (districtId) {
+            $.get(`/admin/shopping-offlinee/wards/${districtId}`, function (data) {
+                populateSelect('#ward', data);
+            });
+        } else {
+            $('#ward').empty().append('<option value="">Chọn xã/phường</option>');
+        }
+    });
+});
+
+function populateSelect(selector, items) {
+    const $select = $(selector);
+    $select.empty().append('<option value="">Chọn</option>');
+    items.forEach(item => {
+        $select.append(`<option value="${item.id}">${item.name}</option>`);
+    });
+}
+
 //update quantity from cart
 $(document).ready(function () {
     $('.quantity-input').each(function () {
