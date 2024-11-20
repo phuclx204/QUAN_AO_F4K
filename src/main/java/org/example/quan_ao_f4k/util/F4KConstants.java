@@ -31,5 +31,6 @@ public class F4KConstants {
         public static final String COLOR = "color";
         public static final String PRODUCT = "PRODUCT";
         public static final String PRODUCT_DETAIL = "PRODUCT_DETAIL";
+        public static final String ORDER_HISTORY = "ORDER_HISTORY";
     }
 }

@@ -78,11 +78,11 @@ public class ShopCheckOutServiceImpl implements ShopCheckOutService {
         model.addAttribute("user", user);
 
         List<OrderDetail> status_all = orderDetailRepository.findAllByOrderUserIdAndOrderStatus(user.getId(), null);
-        List<OrderDetail> status_wait_confirm = orderDetailRepository.findAllByOrderUserIdAndOrderStatus(user.getId(), HoaDonUtils.TrangThaiHoaDon.CHO_XAC_NHAN);
-        List<OrderDetail> status_wait_delivery = orderDetailRepository.findAllByOrderUserIdAndOrderStatus(user.getId(), HoaDonUtils.TrangThaiHoaDon.CHO_GIAO_HANG);
-        List<OrderDetail> status_on_delivery = orderDetailRepository.findAllByOrderUserIdAndOrderStatus(user.getId(), HoaDonUtils.TrangThaiHoaDon.DANG_GIAO_HANG);
-        List<OrderDetail> status_complete = orderDetailRepository.findAllByOrderUserIdAndOrderStatus(user.getId(), HoaDonUtils.TrangThaiHoaDon.HOAN_TAT);
-        List<OrderDetail> status_cancel = orderDetailRepository.findAllByOrderUserIdAndOrderStatus(user.getId(), HoaDonUtils.TrangThaiHoaDon.HUY_DON);
+        List<OrderDetail> status_wait_confirm = orderDetailRepository.findAllByOrderUserIdAndOrderStatus(user.getId(), HoaDonUtils.TrangThaiHoaDon.CHO_XAC_NHAN.getStatus());
+        List<OrderDetail> status_wait_delivery = orderDetailRepository.findAllByOrderUserIdAndOrderStatus(user.getId(), HoaDonUtils.TrangThaiHoaDon.CHO_GIAO_HANG.getStatus());
+        List<OrderDetail> status_on_delivery = orderDetailRepository.findAllByOrderUserIdAndOrderStatus(user.getId(), HoaDonUtils.TrangThaiHoaDon.DANG_GIAO_HANG.getStatus());
+        List<OrderDetail> status_complete = orderDetailRepository.findAllByOrderUserIdAndOrderStatus(user.getId(), HoaDonUtils.TrangThaiHoaDon.HOAN_TAT.getStatus());
+        List<OrderDetail> status_cancel = orderDetailRepository.findAllByOrderUserIdAndOrderStatus(user.getId(), HoaDonUtils.TrangThaiHoaDon.HUY_DON.getStatus());
 
         model.addAttribute("status_all", status_all);
         model.addAttribute("status_wait_confirm", status_wait_confirm);
@@ -151,7 +151,7 @@ public class ShopCheckOutServiceImpl implements ShopCheckOutService {
         order.setOrder_type(HoaDonUtils.LoaiHoaDon.ONLINE);
         order.setCreatedAt(LocalDateTime.now());
         order.setUser(user);
-        order.setStatus(HoaDonUtils.TrangThaiHoaDon.CHO_XAC_NHAN);
+        order.setStatus(HoaDonUtils.TrangThaiHoaDon.CHO_XAC_NHAN.getStatus());
         order.setPaymentStatus(HoaDonUtils.TrangThaiThanhToan.CHUA_THANH_TOAN);
 
         order.setToName(shippingInfo.getRecipientName());

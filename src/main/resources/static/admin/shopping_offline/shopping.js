@@ -339,25 +339,27 @@ function renderProductList(products) {
         return;
     }
 
-    products.forEach((product, index) => {
-        const productRow = document.createElement('tr');
+        products.forEach((product, index) => {
+            const productRow = document.createElement('tr');
 
-        productRow.innerHTML = `
-            <td>${index + 1}</td>
-            <td><img src="${product.product.imageUrl}" alt="${product.product.name}" style="width: 50px; height: 50px;"></td>
-            <td>${product.product.name}</td>
-            <td>${product.price} VND</td>
-            <td>
-                ${product.color ? `<span class="color-circle" style="background-color: ${product.color.hex}; display: inline-block; width: 20px; height: 20px; border-radius: 50%;"></span>` : ''}
-            </td>
-            <td>${product.quantity}</td>
-            <td>
-                <button class="new-btn-buy" onclick="addProductToInvoice(${product.id}, ${product.price})">Chọn Vào giỏ</button>
-            </td>
-        `;
+            productRow.innerHTML = `
+                <td>${index + 1}</td>
+                <td>
+                           <img src="${product.imageUrl}" alt="${product.product.name}" style="width: 50px; height: 50px;">
+                       </td>
+                <td>${product.product.name}</td>
+                <td>${product.price} VND</td>
+                <td>
+                    ${product.color ? `<span class="color-circle" style="background-color: ${product.color.hex}; display: inline-block; width: 20px; height: 20px; border-radius: 50%;"></span>` : ''}
+                </td>
+                <td>${product.quantity}</td>
+                <td>
+                    <button class="new-btn-buy" onclick="addProductToInvoice(${product.id}, ${product.price})">Chọn Vào giỏ</button>
+                </td>
+            `;
 
-        productList.appendChild(productRow); // Thêm hàng vào bảng
-    });
+            productList.appendChild(productRow); // Thêm hàng vào bảng
+        });
 }
 
 function setupPagination(totalPages, currentPage) {
