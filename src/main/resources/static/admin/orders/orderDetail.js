@@ -59,7 +59,9 @@ $(document).ready(async function () {
             }
         }
 
-        return stateOnline.map(el => {
+        const states = phuongThuc.trim() === 'online' ? stateOnline : stateOffline;
+
+        return states.map(el => {
             const currentItem = trangThaiHoaDon.find(item => item.status === el);
             return {
                 status: currentItem.status,
