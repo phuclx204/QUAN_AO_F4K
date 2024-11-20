@@ -22,34 +22,6 @@
     max-width: 1000px; /* Giới hạn chiều rộng tối đa */
 }
 
-/* CSS cho nút đóng modal */
-.new-close {
-    color: #aaa;
-    float: right;
-    font-size: 28px;
-    font-weight: bold;
-}
-
-.new-close:hover,
-.new-close:focus {
-    color: black;
-    text-decoration: none;
-    cursor: pointer;
-}
-
-/* CSS cho vùng đầu modal */
-.new-header-top {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-/* CSS cho các hành động trong header */
-.new-header-actions {
-    display: flex;
-    gap: 10px;
-}
-
 /* CSS cho slider giá */
 .new-slider {
     margin-top: 10px;
@@ -64,14 +36,14 @@
 }
 
 /* CSS cho các nút tìm kiếm và làm mới */
-.new-btn-search, .new-btn-add {
-    background-color: #00be60; /* Màu xanh */
-    color: white;
-    border: none;
-    border-radius: 5px;
-    padding: 10px;
-    cursor: pointer;
-}
+/*.new-btn-search, .new-btn-add {*/
+/*    background-color: #00be60; !* Màu xanh *!*/
+/*    color: white;*/
+/*    border: none;*/
+/*    border-radius: 5px;*/
+/*    padding: 10px;*/
+/*    cursor: pointer;*/
+/*}*/
 
 /* CSS cho phần thông báo */
 .new-invoice-switch {
@@ -258,4 +230,47 @@ input[type="range"] {
 .page-button:disabled {
     display: none;
 }
+
 /*end paging*/
+
+/*@media (min-width: 1200px) {*/
+/*    .modal-dialog {*/
+/*        max-width: 100%;*/
+/*        margin-right: auto;*/
+/*        margin-left: auto;*/
+/*    }*/
+/*}*/
+
+/* ------------- */
+#content main {
+    max-height: calc(100vh - 76px);
+}
+
+.ellipsis span{
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 200px;
+    display: inline-block;
+}
+
+.icon-md{font-size:1.875rem}
+
+.product-image {
+    aspect-ratio: 1 / 1;
+    width: 70px;
+    object-fit: cover;
+}
+
+.flex-align-center {
+    display: flex;
+    align-items: center;
+}
+
+@media (max-width: 1200px) {
+    .modal-dialog {
+        max-width: 100%;
+        margin-right: auto;
+        margin-left: auto;
+    }
+}

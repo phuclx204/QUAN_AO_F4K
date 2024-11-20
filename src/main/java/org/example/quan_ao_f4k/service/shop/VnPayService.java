@@ -99,7 +99,7 @@ public class VnPayService {
 
         // Cập nhật trạng thái đơn hàng dựa trên kết quả thanh toán
         if (vnPayStatusResponse.isSuccess()) {
-            order.setStatus(HoaDonUtils.TrangThaiHoaDon.CHO_XAC_NHAN);
+            order.setStatus(HoaDonUtils.TrangThaiHoaDon.CHO_XAC_NHAN.getStatus());
             order.setPaymentStatus(HoaDonUtils.TrangThaiThanhToan.DA_THANH_TOAN);
             order.setNote(vnPayStatusResponse.getMessage());
 
@@ -107,7 +107,7 @@ public class VnPayService {
             shopCheckOutService.clearCart(f4KUtils.getUser());
             redirectAttributes.addFlashAttribute("createOrderSuccess", true);
         } else {
-            order.setStatus(HoaDonUtils.TrangThaiHoaDon.HUY_DON);
+            order.setStatus(HoaDonUtils.TrangThaiHoaDon.HUY_DON.getStatus());
             order.setPaymentStatus(HoaDonUtils.TrangThaiThanhToan.CHUA_THANH_TOAN);
             order.setNote(vnPayStatusResponse.getMessage());
             log.error("Thanh toán thất bại. Giữ lại giỏ hàng.");

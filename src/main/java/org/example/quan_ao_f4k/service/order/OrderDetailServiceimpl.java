@@ -37,6 +37,12 @@ public class OrderDetailServiceimpl implements OrderDetailService {
     @Override
     public OrderDetailResponse save(OrderDetailRequest request) {
         OrderDetail orderDetail = orderDetailMapper.requestToEntity(request);
+
+        OrderProductDetailKey pk = new OrderProductDetailKey();
+        pk.setOrderId(orderDetail.getOrder().getId());
+        pk.setProductDetailId(orderDetail.getProductDetail().getId());
+        orderDetail.setOrderProductDetailKey(pk);
+
         OrderDetail savedOrderDetail = orderDetailRepository.save(orderDetail);
         return orderDetailMapper.entityToResponse(savedOrderDetail);
     }

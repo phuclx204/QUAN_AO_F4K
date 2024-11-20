@@ -14,6 +14,6 @@ import java.util.List;
 public interface OrderHistoryRepository extends JpaRepository<OrderHistory, Long>,
         JpaSpecificationExecutor<OrderHistory> {
 
-    @Query("SELECT h FROM OrderHistory h WHERE h.order.id = :orderId")
+    @Query("SELECT h FROM OrderHistory h WHERE h.order.id = :orderId order by h.id asc")
     List<OrderHistory> findByOrderId(@Param("orderId") Long orderId);
 }
