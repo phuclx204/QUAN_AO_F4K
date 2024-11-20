@@ -443,11 +443,20 @@ $(document).ready(async function () {
     }
 
     function setupPagination(totalPages, currentPage) {
+        console.log(totalPages, currentPage)
         $('#totalPagesText').text(`Trang ${currentPage} / ${totalPages}`);
         // Cập nhật nút "Trước" và "Tiếp theo" nếu có
-        $('#prevPage').prop('disabled', currentPage === 1);
-        $('#nextPage').prop('disabled', currentPage === totalPages);
+        const $prevPage = $('#prevPage');
+        const $nextPage = $('#nextPage');
+        $prevPage.prop('disabled', currentPage === 1);
+        $prevPage.data("pre", currentPage - 1);
+        $nextPage.prop('disabled', currentPage === totalPages);
+        $nextPage.data("next", currentPage + 1);
     }
+
+    $(document).on("click", "#nextPage", function (e) {
+        console.log('vao')
+    })
 
     const fetchProductDetails = async (page = 1, size = 5, sort = 'id,desc', search = '') => {
         try {
