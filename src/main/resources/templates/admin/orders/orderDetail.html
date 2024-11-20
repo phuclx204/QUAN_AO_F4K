@@ -125,8 +125,10 @@
                                             <!--action columns-->
                                             <td>
                                                 <span data-bs-toggle="tooltip" title="Xóa khỏi giỏ hàng">
-                                                    <a href="javascript:void(0)" class="btn-remove-cart" th:data-id="${detail.productDetail.id}">
-                                                        <i class="mdi mdi-delete text-danger" style="font-size:1.2rem"></i>
+                                                    <a href="javascript:void(0)" class="btn-remove-cart"
+                                                       th:data-id="${detail.productDetail.id}">
+                                                        <i class="mdi mdi-delete text-danger"
+                                                           style="font-size:1.2rem"></i>
                                                     </a>
                                                 </span>
                                             </td>
@@ -246,76 +248,73 @@
      data-bs-backdrop="static">
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
-<!--            <form id="formCreate" method="post" th:action="@{/admin/products}" class="needs-validation"-->
-<!--                  enctype="multipart/form-data" novalidate>-->
-                <div class="modal-header">
-                    <div class="modal-title">
-                        <div>
-                            <input type="text" name="search" placeholder="Nhập tên sản phẩm..."
-                                   th:value="${param.search}" id="searchInput" class="search-input"/>
-                            <button type="button" class="btn btn-info new-btn-search" id="searchButton">Tìm kiếm
-                            </button>
-                            <button type="button" class="btn btn-info new-btn-add" id="resetModalButton">Làm mới
-                            </button>
-                        </div>
-                    </div>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="row">
-                        <div class="col-md-6 col-lg-2">
-                            <label for="categorySelect">Danh mục:</label>
-                            <select id="categorySelect" class="form-select select-modal-search">
-                                <option value="">Tất cả</option>
-                            </select>
-                        </div>
-                        <div class="col-md-6 col-lg-2">
-                            <label for="brandSelect">Thương Hiệu:</label>
-                            <select id="brandSelect" class="form-select select-modal-search">
-                                <option value="">Tất cả</option>
-                            </select>
-                        </div>
-                        <div class="col-md-6 col-lg-2">
-                            <label for="colorSelect">Màu sắc:</label>
-                            <select id="colorSelect" class="form-select select-modal-search">
-                                <option value="">Tất cả</option>
-                            </select>
-                        </div>
-                        <div class="col-md-6 col-lg-2">
-                            <label for="sizeSelect">Kích Cỡ:</label>
-                            <select id="sizeSelect" class="form-select select-modal-search">
-                                <option value="">Tất cả</option>
-                            </select>
-                        </div>
-                    </div>
+            <div class="modal-header">
+                <div class="modal-title">
                     <div>
-                        <table class="new-table" border="1">
-                            <thead>
-                            <tr>
-                                <th>STT</th>
-                                <th style="width: 70px;">Ảnh</th>
-                                <th>Tên sản phẩm</th>
-                                <th>Giá</th>
-                                <th style="width: 50px;">Màu</th>
-                                <th>Cỡ</th>
-                                <th>Số lượng</th>
-                                <th>Thao tác</th>
-                            </tr>
-                            </thead>
-                            <tbody id="productList">
-                            <!-- Các sản phẩm sẽ được thêm vào đây -->
-                            </tbody>
-                        </table>
-                        <div id="pagination" class="d-flex justify-content-center align-items-center gap-2">
-                            <button class="page-button" id="prevPage">Trước</button>
-                            <input type="text" id="pageInput"
-                                   style="width: 50px; text-align: center; border: 1px solid #ced4da; border-radius: 5px;"/>
-                            <span id="totalPagesText" style="font-weight: bold;"></span>
-                            <button class="page-button" id="nextPage">Tiếp theo</button>
-                        </div>
+                        <input type="text" name="search" placeholder="Nhập tên sản phẩm..."
+                               th:value="${param.search}" id="searchInput" class="search-input"/>
+                        <button type="button" class="btn btn-info new-btn-search" id="searchButton">Tìm kiếm
+                        </button>
+                        <button type="button" class="btn btn-info new-btn-add" id="resetModalButton">Làm mới
+                        </button>
                     </div>
                 </div>
-<!--            </form>-->
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6 col-lg-2">
+                        <label for="categorySelect">Danh mục:</label>
+                        <select id="categorySelect" class="form-select select-modal-search">
+                            <option value="">Tất cả</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6 col-lg-2">
+                        <label for="brandSelect">Thương Hiệu:</label>
+                        <select id="brandSelect" class="form-select select-modal-search">
+                            <option value="">Tất cả</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6 col-lg-2">
+                        <label for="colorSelect">Màu sắc:</label>
+                        <select id="colorSelect" class="form-select select-modal-search">
+                            <option value="">Tất cả</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6 col-lg-2">
+                        <label for="sizeSelect">Kích Cỡ:</label>
+                        <select id="sizeSelect" class="form-select select-modal-search">
+                            <option value="">Tất cả</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <table class="new-table" border="1">
+                        <thead>
+                        <tr>
+                            <th>STT</th>
+                            <th style="width: 70px;">Ảnh</th>
+                            <th>Tên sản phẩm</th>
+                            <th>Giá</th>
+                            <th style="width: 50px;">Màu</th>
+                            <th>Cỡ</th>
+                            <th>Số lượng</th>
+                            <th>Thao tác</th>
+                        </tr>
+                        </thead>
+                        <tbody id="productList">
+                        <!-- Các sản phẩm sẽ được thêm vào đây -->
+                        </tbody>
+                    </table>
+                    <div id="pagination" class="d-flex justify-content-center align-items-center gap-2">
+                        <button class="page-button" id="prevPage">Trước</button>
+                        <input type="number" id="pageInput" min="1" class="form-control input-pagination"
+                               style="width: 80px; text-align: center; border: 1px solid #ced4da; border-radius: 5px;"/>
+                        <span id="totalPagesText" style="font-weight: bold;"></span>
+                        <button class="page-button" id="nextPage">Tiếp theo</button>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>

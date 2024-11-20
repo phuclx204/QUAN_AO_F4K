@@ -420,11 +420,12 @@ $(document).ready(async function () {
 
         products.forEach((productDetail, index) => {
             const {product} = productDetail;
+            const fileUrl = product?.image?.fileUrl
             const productRow = document.createElement('tr');
             productRow.innerHTML = `
                 <td>${index + 1}</td>
                 <td>
-                    <img class="rounded img-thumbnail product-image" src="${product.image.fileUrl}" alt="${product.name}" style="width: 60px;">
+                    <img class="rounded img-thumbnail product-image" src="${fileUrl}" alt="${product.name}" style="width: 60px;">
                 </td>
                 <td>${product.name}</td>
                 <td>${convert2Vnd(productDetail.price)}</td>
@@ -443,20 +444,48 @@ $(document).ready(async function () {
     }
 
     function setupPagination(totalPages, currentPage) {
-        console.log(totalPages, currentPage)
         $('#totalPagesText').text(`Trang ${currentPage} / ${totalPages}`);
         // Cập nhật nút "Trước" và "Tiếp theo" nếu có
         const $prevPage = $('#prevPage');
         const $nextPage = $('#nextPage');
+        const $pageInput = $("#pageInput");
         $prevPage.prop('disabled', currentPage === 1);
-        $prevPage.data("pre", currentPage - 1);
+        $prevPage.data("value", currentPage - 1);
         $nextPage.prop('disabled', currentPage === totalPages);
-        $nextPage.data("next", currentPage + 1);
+        $nextPage.data("value", currentPage + 1);
+
+        $pageInput.data("value", totalPages)
+        $pageInput.val("")
     }
 
-    $(document).on("click", "#nextPage", function (e) {
-        console.log('vao')
+    $(document).on("click", "#nextPage", async function (e) {
+        await fetchProductDetails($(this).data("value"))
     })
+
+    $(document).on("click", "#prevPage", async function (e) {
+        await fetchProductDetails($(this).data("value"))
+    })
+
+    $(document).on("keydown", "#pageInput", async function (e) {
+        if (e.key === "Enter") {
+            const maxPage = $(this).data("value");
+            let pages = $(this).val();
+            console.log(!isNaN(pages))
+            console.log(typeof pages)
+            if (isNaN(pages)) {
+                pages = 1;
+            }
+            if (pages > maxPage) {
+                $(this).val(maxPage)
+                pages = maxPage
+            }
+            if (pages <= 1) {
+                pages = 1;
+                $(this).val(1)
+            }
+            await fetchProductDetails(pages)
+        }
+    });
 
     const fetchProductDetails = async (page = 1, size = 5, sort = 'id,desc', search = '') => {
         try {

@@ -274,3 +274,14 @@ input[type="range"] {
         margin-left: auto;
     }
 }
+
+.input-pagination::-webkit-inner-spin-button,
+.input-pagination::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.input-pagination {
+    -moz-appearance: textfield;
+    appearance: textfield;
+}
