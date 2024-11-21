@@ -1,4 +1,7 @@
-
+/*ẩn thông tin đặt hàng ở bán tại quầy*/
+.hidden {
+    display: none;
+}
 /*css màu hiển thị trong bảng thêm sản phẩm*/
 .color-circle {
     display: inline-block;
@@ -60,7 +63,6 @@
     user-select: none;
 }
 
-
 .invoice-item.active {
     border-color: #007bff; /* Màu viền cho hóa đơn đang chọn */
     color: #3fc3ee;
@@ -106,37 +108,4 @@
         flex-direction: column; /* Xếp chồng các phần tử trên màn hình nhỏ */
     }
 }
-/*css tìm kiếm khách hàng*/
-.search-results {
-    border: 1px solid #ddd;
-    max-height: 200px;
-    overflow-y: auto;
-    position: absolute;
-    width: calc(100% - 3rem);
-    background-color: #b4dbed;
-    z-index: 1000;
-}
 
-.search-result-item {
-    padding: 10px;
-    cursor: pointer;
-}
-
-.search-result-item:hover {
-    background-color: #fff3cd;
-}
-
-.selected-customer {
-    display: inline-block;
-    margin: 5px;
-    padding: 5px 10px;
-    background-color: #e9ecef;
-    border-radius: 5px;
-}
-
-.remove-customer {
-    cursor: pointer;
-    margin-left: 5px;
-    color: red;
-}
-/*end css tìm kiếm khách hàng*/

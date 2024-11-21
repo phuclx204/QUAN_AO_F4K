@@ -165,11 +165,11 @@ public class ShopCheckOutServiceImpl implements ShopCheckOutService {
 
         switch (phuongThucMuaHang) {
             case CHUYEN_TIEN -> {
-                order.setPaymentMethod(paymentMethodRepository.findById(2L).get());
+                order.setPaymentMethodType(paymentMethodRepository.findById(2L).get());
                 order.setNote(HoaDonUtils.ORDER_NOTE_ONLINE);
             }
             case THANH_TOAN_SAU_NHAN_HANG -> {
-                order.setPaymentMethod(paymentMethodRepository.findById(3L).get());
+                order.setPaymentMethodType(paymentMethodRepository.findById(3L).get());
                 order.setNote(HoaDonUtils.ORDER_NOTE);
             }
         }

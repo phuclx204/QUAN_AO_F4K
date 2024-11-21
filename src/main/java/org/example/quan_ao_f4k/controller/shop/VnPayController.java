@@ -27,7 +27,6 @@ public class VnPayController {
     @GetMapping("/submit-order")
     public String submidOrder(@RequestParam("amount") int orderTotal,
                               @RequestParam("orderInfo") String orderInfo,
-                              @RequestParam("cartId") int cartId,
                               HttpServletRequest request) {
         String baseUrl = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
         String vnpayUrl = vnPayService.createOrder(request, orderTotal, orderInfo, baseUrl);
