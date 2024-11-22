@@ -96,12 +96,23 @@ const getCommon = () => {
         price = price.replaceAll("₫", "VNĐ")
         return price;
     }
+
+    const transformData = (mapBackendToFrontend, data) => {
+        const transformedData = {};
+        for (const key in data) {
+            const newKey = mapBackendToFrontend[key] || key;
+            transformedData[newKey] = data[key];
+        }
+        return transformedData;
+    }
+
     return {
         getFormValuesByName,
         removeNullProperties,
         formatNumberByDot,
         getPagination,
-        convert2Vnd
+        convert2Vnd,
+        transformData
     }
 }
 const validateForm = (() => {
@@ -216,8 +227,9 @@ const $ajax = (() => {
      * @Param method is rest method | post | put | delete | get
      * @Param data is data send to controller, in body
      * @param params
+     * @param showErrMess
      */
-    function callApi(url, method = 'POST', data = null, params = null) {
+    function callApi(url, method = 'POST', data = null, params = null, showErrMess = true) {
         return new Promise((resolve, reject) => {
             if (!url || typeof url !== 'string') {
                 return reject(new Error("URL is string"));
@@ -240,12 +252,14 @@ const $ajax = (() => {
                 },
                 error: function (xhr) {
                     const objectError = xhr.responseJSON || {message: "An unknown error occurred"};
-                    if (Array.isArray(objectError)) {
-                        $alterTop('error', objectError[0].defaultMessage);
-                        reject(objectError);
-                    } else {
-                        $alterTop('error', objectError.message);
-                        reject(objectError);
+                    if (showErrMess) {
+                        if (Array.isArray(objectError)) {
+                            $alterTop('error', objectError[0].defaultMessage);
+                            reject(objectError);
+                        } else {
+                            $alterTop('error', objectError.message);
+                            reject(objectError);
+                        }
                     }
                 }
             });
@@ -305,21 +319,109 @@ const $ajax = (() => {
         });
     }
 
-    const post = (url, data = null, params = null) => {
-        return callApi(url, "POST", data, params)
+    const post = (url, data = null, params = null, showErrMess = true) => {
+        return callApi(url, "POST", data, params, showErrMess)
     }
-    const put = (url, data = null, params = null) => {
-        return callApi(url, "PUT", data, params)
+    const put = (url, data = null, params = null, showErrMess = true) => {
+        return callApi(url, "PUT", data, params, showErrMess)
     }
-    const get = (url, params = null, data = null) => {
-        return callApi(url, "GET", data, params)
+    const get = (url, params = null, data = null, showErrMess = true) => {
+        return callApi(url, "GET", data, params, showErrMess)
     }
-    const remove = (url, params = null, data = null) => {
-        return callApi(url, "DELETE", data, params)
+    const remove = (url, params = null, data = null, showErrMess = true) => {
+        return callApi(url, "DELETE", data, params, showErrMess)
     }
     return {
         createUrl, callApi, callWithMultipartFile, get, post, put, remove
     }
 })()
+
+// dùng khi  có một selector bọc ngoài thông qua id
+export const twoWayBinding = ({ selectorParent, dataObject, initialValues }) => {
+    const $selectorParent = document.getElementById(selectorParent);
+    console.log($selectorParent, ' - $selectorParent')
+    $selectorParent.addEventListener('input', (e) => {
+        const target = e.target;
+        const name = target.name;
+
+        if (!name) return;
+
+        if (target.type === 'checkbox') {
+            dataObject[name] = target.checked;
+        } else if (target.type === 'radio' && target.checked) {
+            dataObject[name] = target.value;
+        } else if (target.type === 'file') {
+            dataObject[name] = target.files;
+        } else {
+            dataObject[name] = target.value;
+        }
+    });
+
+    Object.keys(initialValues).forEach((key) => {
+        const element = $selectorParent.querySelector(`[name="${key}"]`);
+        if (element) {
+            if (element.type === 'checkbox') {
+                element.checked = initialValues[key];
+            } else if (element.type === 'radio' && element.value === initialValues[key]) {
+                element.checked = true;
+            } else {
+                element.value = initialValues[key];
+            }
+            dataObject[key] = initialValues[key];
+        }
+    });
+};
+
+export const syncFormWithDataObject = ({ selectorParent, dataObject, initialValues }) => {
+    const $selectorParent = document.getElementById(selectorParent);
+
+    $selectorParent.addEventListener('input', (e) => {
+        const target = e.target;
+        const name = target.name;
+
+        if (!name) return;
+
+        if (target.type === 'checkbox') {
+            dataObject[name] = target.checked;
+        } else if (target.type === 'radio' && target.checked) {
+            dataObject[name] = target.value;
+        } else if (target.type === 'file') {
+            dataObject[name] = target.files;
+        } else {
+            dataObject[name] = target.value;
+        }
+    });
+
+    Object.keys(initialValues).forEach((key) => {
+        const element = $selectorParent.querySelector(`[name="${key}"]`);
+        if (element) {
+            if (element.type === 'checkbox') {
+                element.checked = initialValues[key];
+            } else if (element.type === 'radio' && element.value === initialValues[key]) {
+                element.checked = true;
+            } else {
+                element.value = initialValues[key];
+            }
+            dataObject[key] = initialValues[key];
+        }
+    });
+
+    const updateFormUI = () => {
+        Object.keys(dataObject).forEach((key) => {
+            const element = $selectorParent.querySelector(`[name="${key}"]`);
+            if (element) {
+                if (element.type === 'checkbox') {
+                    element.checked = dataObject[key];
+                } else if (element.type === 'radio' && element.value === dataObject[key]) {
+                    element.checked = true;
+                } else {
+                    element.value = dataObject[key];
+                }
+            }
+        });
+    };
+
+    updateFormUI();
+};
 
 export { buttonSpinner, $ajax, ref, getCommon, validateForm };

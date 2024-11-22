@@ -14,6 +14,7 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface OrderRepository extends JpaRepository<Order, Long>,
@@ -39,5 +40,8 @@ public interface OrderRepository extends JpaRepository<Order, Long>,
                              @Param("search") String search,
                              @Param("status") Integer status);
 
+    // sonng - shop site
+    @Query("select o from Order o where o.code = :orderCode and o.user.id = :userId")
+    Optional<Order> findByCodeAAndUser_Id(@Param("orderCode") String orderCode, @Param("userId") Long userId);
 
 }

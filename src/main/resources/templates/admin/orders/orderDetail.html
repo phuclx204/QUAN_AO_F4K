@@ -2,292 +2,302 @@
 <html xmlns:th="http://www.thymeleaf.org">
 
 <head>
+    <link th:href="@{/admin/plugins/datatables/css/dataTables.bootstrap5.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/admin/plugins/datatables/css/responsive.bootstrap5.min.css}" rel="stylesheet" type="text/css"/>
     <link rel="stylesheet" th:href="@{/admin/dist/css/app-f4k.min.css}"/>
     <th:block th:insert="admin/fragments/head :: head"></th:block>
-    <link rel="stylesheet" th:href="@{/admin/orders/orderDetail.css}">
-    <link rel="stylesheet" th:href="@{/admin/plugins/bootstrap4/mine.css}"/>
     <link rel="stylesheet" th:href="@{/admin/dist/css/common.css}"/>
-
     <link rel="stylesheet" th:href="@{/admin/plugins/jqgrid-5.7.0/ui.jqgrid-bootstrap4.css}"/>
     <link rel="stylesheet" th:href="@{/admin/plugins/sweetalert/sweetalert2.min.css}"/>
 
-
-
+    <link rel="stylesheet" th:href="@{/admin/orders/orderDetail.css}">
+    <meta name="order-id" th:content="${order.id}">
+    <meta name="order-status" th:content="${order.status}">
 </head>
-
 <body>
 <div th:replace="admin/fragments/sidebar::sidebar"></div>
-
 <section id="content">
+    <div th:replace="admin/fragments/loading::div"></div>
     <div th:replace="admin/fragments/content::content"></div>
     <main>
-            <!-- ========== Left Sidebar End ========== -->
-
-            <!-- ============================================================== -->
-            <!-- Start Page Content here -->
-            <!-- ============================================================== -->
-<!--            <div class="content-page">-->
-                <div class="content">
-
-                    <!-- Start Content-->
-                    <div class="container-fluid">
-
-                        <!-- start page title -->
-                        <div class="row">
-                            <div class="col-12">
-                                <div class="page-title-box">
-                                    <div class="page-title-right">
-                                        <ol class="breadcrumb m-0">
-                                            <li class="breadcrumb-item"><a href="javascript: void(0);">Home</a></li>
-                                            <li class="breadcrumb-item"><a href="javascript: void(0);">Order</a></li>
-                                            <li class="breadcrumb-item active">Order Details</li>
-                                        </ol>
-                                    </div>
-                                    <h4 class="page-title">Chi tiết đơn hàng</h4>
-                                </div>
+        <div class="content">
+            <!-- Start Content-->
+            <div class="container-fluid">
+                <!-- start page title -->
+                <div class="row">
+                    <div class="col-12">
+                        <div class="page-title-box">
+                            <div class="page-title-right">
+                                <ol class="breadcrumb m-0">
+                                    <li class="breadcrumb-item"><a href="javascript: void(0);">Home</a></li>
+                                    <li class="breadcrumb-item"><a th:href="@{/admin/orders}">Order</a></li>
+                                    <li class="breadcrumb-item active">Order Details</li>
+                                </ol>
+                            </div>
+                            <div class="d-flex align-items-center w-50">
+                                <a th:href="@{/admin/orders}"><i
+                                        class="mdi icon-md mdi-keyboard-backspace me-2"></i></a>
+                                <h4 class="page-title">Chi tiết đơn hàng</h4>
                             </div>
                         </div>
-                        <!-- end page title -->
+                    </div>
+                </div>
+                <!-- end page title -->
+                <div class="row justify-content-center">
+                    <div class="col-lg-7 col-md-10 col-sm-11">
+                        <div class="horizontal-steps mt-4 mb-4 pb-5">
+                            <div class="horizontal-steps-content" id="timeLineOrder">
+                            </div>
+
+                            <div class="process-line" id="process-line"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xl-8">
                         <div class="card">
                             <div class="card-body">
-                                <div class="row justify-content-center">
-                                    <div class="col-lg-7 col-md-10 col-sm-11">
-                                        <div class="horizontal-steps mt-4 mb-4 pb-5">
-                                            <div class="process-line"></div> <!-- The glowing line -->
-                                            <div class="horizontal-steps-content" th:each="history, iterStat : ${orderHistory}">
-                                                <div class="step-item" th:classappend="${iterStat.index == orderHistory.size() - 1} ? 'last-step' : ''">
-                                                    <span data-bs-toggle="tooltip" data-bs-placement="bottom" title="20/08/2018 07:24 PM" th:text="${history.status}">Status Placeholder</span>
+                                <div class="header-title mb-3 d-flex align-items-center">
+                                    <h5 class="me-2">Giỏ hàng</h5>
+                                    <a th:if="${order.status == 5}" href="javascript:void(0);" class="btn btn-info"
+                                       id="openModalProduct">
+                                        <i class="mdi mdi-plus-circle me-1"></i>
+                                        Thêm sản phẩm
+                                    </a>
+                                </div>
+                                <div>
+                                    <table class="table table-centered w-100 dt-responsive nowrap"
+                                           id="products-datatable">
+                                        <thead class="table-light">
+                                        <tr>
+                                            <th>Sản phẩm</th>
+                                            <th>Hình ảnh</th>
+                                            <th>Số lượng</th>
+                                            <th>Giá</th>
+                                            <th>Tổng giá</th>
+                                            <th></th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr th:each="detail : ${orderDetails}">
+                                            <td>
+                                                <div class="d-flex flex-column ellipsis">
+                                                    <span data-bs-toggle="tooltip"
+                                                          th:title="${detail.productDetail.product.name}">
+                                                        [[${detail.productDetail.product.name}]]
+                                                    </span>
+                                                    <span>
+                                                        Size : [[${detail.productDetail.size.name}]]
+                                                    </span>
+                                                    <span>
+                                                        Màu: [[${detail.productDetail.color.name}]]
+                                                    </span>
                                                 </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- end row -->
-
-
-                        <div class="row">
-                            <div class="col-lg-8">
-                                <div class="card">
-                                    <div class="card-body">
-                                        <h4 class="header-title mb-3">Sản phẩm mua  <button th:if="${order.status == 5}" class="btn btn-info new-btn-add" >Thêm sản phẩm</button></h4>
-
-                                        <div class="table-responsive">
-                                            <table class="table mb-0">
-                                                <thead class="table-light">
-                                                <tr>
-                                                    <th>Sản phẩm</th>
-                                                    <th>Hình ảnh</th>
-                                                    <th>số lượng</th>
-                                                    <th>giá</th>
-                                                    <th>tổng giá</th>
-                                                </tr>
-                                                </thead>
-                                                <tbody>
-                                                <tr th:each="detail : ${orderDetails}">
-<!--                                                    <td>Ảnh</td>-->
-                                                    <td th:text="'Tên sản phẩm : ' + ${detail.productDetail.product.name} + ' Size : ' + ${detail.productDetail.size.name} + ' Màu : ' + ${detail.productDetail.color.name}"></td>
-                                                    <td>
-                                                        <img th:if="${detail.image}" th:src="@{${detail.image.fileUrl}}" alt="Product Image" width="100" height="100" />
-                                                    </td>
-                                                    <td>
-                                                        <input type="number" class="quantity-input form-control" th:value="${detail.quantity}" th:attr="disabled=${order.status != 5 ? 'disabled' : null}">
-                                                        <input type="hidden" id="orderId" th:value="${detail.order.id}"> <!-- Đảm bảo không có ký tự thừa -->
-                                                        <input type="hidden" id="productDetailId" th:value="${detail.productDetail.id}"> <!-- Đảm bảo không có ký tự thừa -->
-                                                    </td>
-                                                    <td id="productPrice" th:text="${detail.productDetail.price}"></td>
-                                                    <td id="totalPrice" th:text="${detail.productDetail.price * detail.quantity}"></td>
-
-                                                </tr>
-
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                        <!-- end table-responsive -->
-
-                                    </div>
-                                </div>
-                            </div> <!-- end col -->
-
-                            <div class="col-lg-4">
-                                <div class="card">
-                                    <div class="card-body">
-                                        <h4 class="header-title mb-3">Đơn hàng</h4>
-
-                                        <div class="table-responsive">
-                                            <table class="table mb-0">
-                                                <thead class="table-light">
-                                                <tr>
-                                                    <th><input type="text" id="currentOrderId" th:value="${order.id}"/></th>
-                                                    <th>Mã hóa đơn:</th>
-                                                    <th th:text="${order.code}">
-
-                                                    </th>
-                                                </tr>
-                                                </thead>
-                                                <tbody>
-                                                <tr>
-                                                    <td>Phí vận chuyển :</td>
-                                                    <td>$1641</td>
-                                                </tr>
-
-                                                <tr>
-                                                    <th>Total :</th>
-                                                    <th> <span id="total" th:text="${order.totalPay}"></span></th>
-                                                </tr>
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                        <!-- end table-responsive -->
-
-                                    </div>
-                                </div>
-                            </div> <!-- end col -->
-                        </div>
-                        <!-- end row -->
-
-
-                        <div class="row">
-                            <div class="col-lg-4">
-                                <div class="card">
-                                    <div class="card-body">
-                                        <h4 class="header-title mb-3">Thông tin vận chuyển <button th:if="${order.status == 5}" class="btn btn-info">Thay đổi thông tin</button></h4>
-
-                                        <h5>Hà Nội</h5>
-
-                                        <address class="mb-0 font-14 address-lg">
-                                            Tên người nhận: <span th:text="${order.toName}"></span><br>
-                                            Số điện thoại: <span th:text="${order.toPhone}"></span><br>
-                                            Địa chỉ: <span th:text="${order.toAddress}"></span><br>
-                                            <br>
-
-                                        </address>
-
-                                    </div>
-                                </div>
-                            </div> <!-- end col -->
-
-                            <div class="col-lg-4">
-                                <div class="card">
-                                    <div class="card-body">
-                                        <h4 class="header-title mb-3">Thông tin thanh toán</h4>
-
-                                        <ul class="list-unstyled mb-0">
-                                            <li>
-                                                <p class="mb-2"><span class="fw-bold me-2">Thanh toán:</span> tiền mặt</p>
-                                                <p class="mb-2"><span class="fw-bold me-2">Trạng thái:</span> Đã thanh toán</p>
-                                            </li>
-                                        </ul>
-
-                                    </div>
-                                </div>
-                            </div> <!-- end col -->
-
-                            <div class="col-lg-4">
-                                <div class="card">
-                                    <div class="card-body">
-                                        <h4 class="header-title mb-3">Thông tin giao hàng</h4>
-
-                                        <div class="text-center">
-                                            <i class="mdi mdi-truck-fast h2 text-muted"></i>
-                                            <h5><b>Giao Hàng Nhanh</b></h5>
-                                            <p class="mb-1"><b>Order ID :</b> xxxx235</p>
-                                            <p class="mb-0"><b>Payment Mode :</b> COD</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div> <!-- end col -->
-                        </div>
-                        <!-- end row -->
-
-
-                    </div> <!-- container -->
-
-                </div> <!-- content -->
-
-                <!-- Footer Start -->
-                <footer class="footer">
-                    <div class="container-fluid">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <script>document.write(new Date().getFullYear())</script> © F4K Store
-                            </div>
-                            <div class="col-md-6">
-                                <div class="text-md-end footer-links d-none d-md-block">
-                                    <a href="javascript: void(0);">About</a>
-                                    <a href="javascript: void(0);">Support</a>
-                                    <a href="javascript: void(0);">Contact Us</a>
+                                            </td>
+                                            <td>
+                                                <img th:if="${detail.image}" th:src="@{${detail.image.fileUrl}}"
+                                                     alt="Product Image"
+                                                     class="rounded-circle img-thumbnail product-image" width="50px"/>
+                                            </td>
+                                            <td th:if="${order.status == 5}" style="width: 130px; min-width: 130px"
+                                                class="has-spinner">
+                                                <span name="showQuantityProduct"
+                                                      th:data-value="${detail.productDetail.quantity}">Còn [[${detail.productDetail.quantity} - ${detail.quantity}]] sản phẩm</span>
+                                                <input name="inputQuantityProduct"
+                                                       data-toggle="touchspin"
+                                                       type="text"
+                                                       th:value="${detail.quantity}"
+                                                       data-min="1"
+                                                       th:data-max="${detail.productDetail.quantity}"
+                                                       data-step="1"
+                                                       th:data-id="${detail.productDetail.id}"
+                                                       th:data-revalue="${detail.quantity}"
+                                                       th:attr="disabled=${order.status != 5 ? 'disabled' : null}"
+                                                >
+                                            </td>
+                                            <td th:if="${order.status != 5}" style="width: 130px; min-width: 130px">
+                                                <span>[[${detail.quantity}]]</span>
+                                            </td>
+                                            <td id="productPrice" th:text="${detail.productDetail.price}"></td>
+                                            <td id="totalPrice"
+                                                th:text="${detail.productDetail.price * detail.quantity}"></td>
+                                            <!--action columns-->
+                                            <td>
+                                                <span data-bs-toggle="tooltip" title="Xóa khỏi giỏ hàng">
+                                                    <a href="javascript:void(0)" class="btn-remove-cart"
+                                                       th:data-id="${detail.productDetail.id}">
+                                                        <i class="mdi mdi-delete text-danger"
+                                                           style="font-size:1.2rem"></i>
+                                                    </a>
+                                                </span>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </footer>
-                <!-- end Footer -->
 
-<!--            </div>-->
+                    <div class="col-xl-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="header-title mb-3 d-flex align-items-center">
+                                    <h5 class="me-2">Đơn hàng: [[${order.code}]]</h5>
+                                </div>
+                                <div class="table-responsive">
+                                    <table class="table mb-0">
+                                        <thead class="table-light">
+                                        <tr>
+                                            <th>Mô tả</th>
+                                            <th>Giá</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr>
+                                            <td>Phí vận chuyển :</td>
+                                            <td>$1641</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Grand Total :</td>
+                                            <td>$1641</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Shipping Charge :</td>
+                                            <td>$23</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Total :</th>
+                                            <th><span id="total" th:text="${order.totalPay}"></span></th>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <!-- end table-responsive -->
 
-            <!-- ============================================================== -->
-            <!-- End Page content -->
-            <!-- ============================================================== -->
-        <div id="productModal" class="new-product-modal">
-            <div class="new-product-modal-content">
-                <span class="new-close">&times;</span>
-                <header>
-                    <div class="new-header-top">
-                        <!--                    <input type="text" id="searchInput" placeholder="Nhập tên sản phẩm">-->
-                        <div class="new-header-actions">
-                            <form th:action="@{/admin/shopping-offline}" method="get" class="search-form" id="searchForm">
-                                <input type="text" name="search" placeholder="Nhập tên sản phẩm..."
-                                       th:value="${param.search}" id="searchInput" class="search-input"/>
-                                <button type="submit" class="new-btn-search">Tìm kiếm</button>
-                                <button class="new-btn-add">Làm mới</button>
-                            </form>
+                            </div>
                         </div>
                     </div>
-                    <nav>
-                        <ul>
-                            <li>
-                                <label>Danh mục:</label>
-                                <select id="categorySelect">
-                                    <option value="">Tất cả</option>
-                                </select>
-                            </li>
-                            <li>
-                                <label>Thương Hiệu:</label>
-                                <select id="brandSelect">
-                                    <option value="">Tất cả</option>
-                                </select>
-                            </li>
-                            <li>
-                                <label>Màu sắc:</label>
-                                <select id="colorSelect">
-                                    <option value="">Tất cả</option>
-                                </select>
-                            </li>
-                            <li>
-                                <label>Kích Cỡ:</label>
-                                <select id="sizeSelect">
-                                    <option value="">Tất cả</option>
-                                </select>
-                            </li>
-                            <div class="slider">
-                                <label>Khoảng Giá:</label>
-                                <input type="range" id="priceRange" min="0" max="10000000">
+                </div>
+                <!-- end row -->
+                <div class="row">
+                    <div class="col-lg-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <h4 class="header-title mb-3">Thông tin vận chuyển
+                                    <button th:if="${order.status == 5}" class="btn btn-info">Thay đổi thông tin
+                                    </button>
+                                </h4>
+
+                                <h5>Hà Nội</h5>
+
+                                <address class="mb-0 font-14 address-lg">
+                                    Tên người nhận: <span th:text="${order.toName}"></span><br>
+                                    Số điện thoại: <span th:text="${order.toPhone}"></span><br>
+                                    Địa chỉ: <span th:text="${order.toAddress}"></span><br>
+                                    <br>
+
+                                </address>
+
                             </div>
-                        </ul>
-                    </nav>
-                </header>
-                <main class="new-main-content">
+                        </div>
+                    </div> <!-- end col -->
+
+                    <div class="col-lg-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <h4 class="header-title mb-3">Thông tin thanh toán</h4>
+                                <ul class="list-unstyled mb-0">
+                                    <li>
+                                        <p class="mb-2"><span class="fw-bold me-2">Phương thức:</span>
+                                            [[${order.paymentMethod.name}]]</p>
+                                        <span class="mb-2">
+                                            <span class="fw-bold me-2">Trạng thái: </span>
+                                            <span th:data-id="${order.paymentStatus}" id="paymentStatus"></span>
+                                        </span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div> <!-- end col -->
+
+                    <div class="col-lg-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <h4 class="header-title mb-3">Thông tin giao hàng</h4>
+
+                                <div class="text-center">
+                                    <i class="mdi mdi-truck-fast h2 text-muted"></i>
+                                    <h5><b>Giao Hàng Nhanh</b></h5>
+                                    <p class="mb-1"><b>Order ID :</b> xxxx235</p>
+                                    <p class="mb-0"><b>Payment Mode :</b> COD</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div> <!-- end col -->
+                </div>
+                <!-- end row -->
+            </div> <!-- container -->
+
+        </div> <!-- content -->
+    </main>
+</section>
+<!-- modal product-->
+<div id="productModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalCreateLabel"
+     data-bs-backdrop="static">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">
+                    <div>
+                        <input type="text" name="search" placeholder="Nhập tên sản phẩm..."
+                               th:value="${param.search}" id="searchInput" class="search-input"/>
+                        <button type="button" class="btn btn-info new-btn-search" id="searchButton">Tìm kiếm
+                        </button>
+                        <button type="button" class="btn btn-info new-btn-add" id="resetModalButton">Làm mới
+                        </button>
+                    </div>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6 col-lg-2">
+                        <label for="categorySelect">Danh mục:</label>
+                        <select id="categorySelect" class="form-select select-modal-search">
+                            <option value="">Tất cả</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6 col-lg-2">
+                        <label for="brandSelect">Thương Hiệu:</label>
+                        <select id="brandSelect" class="form-select select-modal-search">
+                            <option value="">Tất cả</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6 col-lg-2">
+                        <label for="colorSelect">Màu sắc:</label>
+                        <select id="colorSelect" class="form-select select-modal-search">
+                            <option value="">Tất cả</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6 col-lg-2">
+                        <label for="sizeSelect">Kích Cỡ:</label>
+                        <select id="sizeSelect" class="form-select select-modal-search">
+                            <option value="">Tất cả</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
                     <table class="new-table" border="1">
                         <thead>
                         <tr>
                             <th>STT</th>
-                            <th>Ảnh</th>
+                            <th style="width: 70px;">Ảnh</th>
                             <th>Tên sản phẩm</th>
                             <th>Giá</th>
-                            <th>Màu</th>
+                            <th style="width: 50px;">Màu</th>
+                            <th>Cỡ</th>
                             <th>Số lượng</th>
                             <th>Thao tác</th>
                         </tr>
@@ -298,29 +308,39 @@
                     </table>
                     <div id="pagination" class="d-flex justify-content-center align-items-center gap-2">
                         <button class="page-button" id="prevPage">Trước</button>
-                        <input type="text" id="pageInput"
-                               style="width: 50px; text-align: center; border: 1px solid #ced4da; border-radius: 5px;"/>
+                        <input type="number" id="pageInput" min="1" class="form-control input-pagination"
+                               style="width: 80px; text-align: center; border: 1px solid #ced4da; border-radius: 5px;"/>
                         <span id="totalPagesText" style="font-weight: bold;"></span>
                         <button class="page-button" id="nextPage">Tiếp theo</button>
                     </div>
-                </main>
+                </div>
             </div>
         </div>
-    </main>
-</section>
+    </div>
+</div>
+<!-- end modal product-->
 <!--default script-->
 <!--jquery-->
 <script th:src="@{/common/jquery/jquery.min.js}"></script>
+<script th:src="@{/common/dayjs/dayjs.min.js}"></script>
+
 <script th:src="@{/admin/script.js}"></script>
 <script th:src="@{/admin/dist/js/vendor.min.js}"></script>
-<script th:src="@{/admin/plugins/jqgrid-5.7.0/common.js}"></script>
-<script th:src="@{/admin/plugins/jqgrid-5.7.0/jquery.jqGrid.min.js}"></script>
-<script th:src="@{/admin/plugins/jqgrid-5.7.0/grid.locale-vn.js}"></script>
+<script th:src="@{/admin/dist/js/app.min.js}"></script>
+
 <script th:src="@{/admin/plugins/sweetalert/common.js}"></script>
 <script th:src="@{/admin/plugins/sweetalert/sweetalert2.min.js}"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/decimal.js/10.2.4/decimal.min.js"></script>
 
-<!--custom script--><script th:src="@{/admin/orders/orderDetail.js}"></script>
+<!--datatables-->
+<script th:src="@{/admin/plugins/datatables/js/jquery.dataTables.min.js}"></script>
+<script th:src="@{/admin/plugins/datatables/js/dataTables.bootstrap5.min.js}"></script>
+<script th:src="@{/admin/plugins/datatables/js/dataTables.responsive.min.js}"></script>
+<script th:src="@{/admin/plugins/datatables/js/responsive.bootstrap5.min.js}"></script>
+<script th:src="@{/admin/plugins/datatables/js/dataTables.checkboxes.min.js}"></script>
+
+<!--custom script-->
+<script type="module" th:src="@{/admin/orders/orderDetail.js}"></script>
 
 </body>
 </html>

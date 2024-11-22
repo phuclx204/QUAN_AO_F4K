@@ -1,10 +1,7 @@
 package org.example.quan_ao_f4k.model.order;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.example.quan_ao_f4k.model.general.Image;
 import org.example.quan_ao_f4k.model.product.ProductDetail;
 
@@ -16,6 +13,7 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @Getter
 @Setter
+@Builder
 public class OrderDetail {
     @EmbeddedId
     private OrderProductDetailKey orderProductDetailKey = new OrderProductDetailKey();
@@ -36,6 +34,7 @@ public class OrderDetail {
 
     @Column(name = "price", precision = 65, scale = 2)
     private BigDecimal price;
+
     @Transient  // Đảm bảo thuộc tính này không được lưu vào database
     private Image image;
 }
