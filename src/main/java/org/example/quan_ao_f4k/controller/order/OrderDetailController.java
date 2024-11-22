@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Controller
-@RequestMapping("/admin/order-detail")
+@RequestMapping("${api.prefix}/admin/order-detail")
 @AllArgsConstructor
 public class OrderDetailController {
 	private OrderServiceImpl orderService;

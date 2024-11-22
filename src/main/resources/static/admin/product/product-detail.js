@@ -7,7 +7,7 @@ $(document).ready(async function () {
 
     openLoading()
     setTimeout(() => closeLoading(), 300)
-    const URL = '/admin/products/product-detail';
+    const URL = '/api/v1/admin/products/product-detail';
     const productIdTmp = ref(document.querySelector('meta[name="product-id"]').getAttribute("content"));
     const productNameTmp = ref(document.querySelector('meta[name="product-name"]').getAttribute("content"));
     const productDetailId = ref(null);
@@ -17,7 +17,7 @@ $(document).ready(async function () {
     const table = $('#products-detail-table').DataTable({
         serverSide: true,
         ajax: {
-            url: '/admin/products/product-detail/' + productIdTmp.value + "/list",
+            url: '/api/v1/admin/products/product-detail/' + productIdTmp.value + "/list",
             type: 'GET'
         },
         columns: [
@@ -105,7 +105,7 @@ $(document).ready(async function () {
             setLabelModal("Cập nhật sản phẩm")
             const id = $this.data("id");
             productDetailId.value = id;
-            await $ajax.get('/admin/products/product-detail', {id: id}).then(data => {
+            await $ajax.get('/api/v1/admin/products/product-detail', {id: id}).then(data => {
                 $('#createSize').val(data.size.id)
                 $('#createColor').val(data.color.id)
                 $('#createPrice').val(data.price)
@@ -144,7 +144,7 @@ $(document).ready(async function () {
         e.preventDefault();
         const id = $(this).data("id");
 
-        await $ajax.get('/admin/products/product-detail', {id: id}).then(data => {
+        await $ajax.get('/api/v1/admin/products/product-detail', {id: id}).then(data => {
             $('#detailSize').text(data.size.name)
             $('#detailColor').text(data.color.name)
             $('#detailName').text(data.product.name)
@@ -257,8 +257,8 @@ $(document).ready(async function () {
     const loadOptionsSelect = (sizeId = null, colorId = null) => {
         const sizeSelect = $('#createSize');
         const colorSelect = $('#createColor');
-        loadOption('/admin/size/active', sizeSelect, sizeId);
-        loadOption('/admin/color/active', colorSelect, colorId);
+        loadOption('/api/v1/admin/size/active', sizeSelect, sizeId);
+        loadOption('/api/v1/admin/color/active', colorSelect, colorId);
     }
     const loadOption = (endpoint, selectElement, selectedId = null) => {
         $.get(endpoint, data => {

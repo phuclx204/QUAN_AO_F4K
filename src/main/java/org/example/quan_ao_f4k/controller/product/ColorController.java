@@ -18,17 +18,12 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Controller
-@RequestMapping("/admin/color")
+@RestController
+@RequestMapping("${api.prefix}/admin/color")
 @AllArgsConstructor
 public class ColorController extends GenericController<ColorRequest, ColorResponse> {
 
     private final ColorService brandService;
-
-    @GetMapping
-    public String getAllBrandsPage() {
-        return "/admin/product/color";
-    }
 
     // Lấy danh sách thương hiệu với phân trang và sắp xếp
     @GetMapping("/list")

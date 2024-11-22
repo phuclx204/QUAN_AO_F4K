@@ -15,7 +15,7 @@ $(document).ready(async function () {
     const table = $('#products-table').DataTable({
         serverSide: true,
         ajax: {
-            url: '/admin/products/list',
+            url: '/api/v1/admin/products/list',
             type: 'GET'
         },
         columns: [
@@ -52,7 +52,7 @@ $(document).ready(async function () {
                 title: 'Hành động',
                 render: function (data, type, row) {
                     return `<td class="table-action">
-                             <a href="/admin/products/product-detail/${row.id}" class="action-icon action-view" data-id="${row.id}"> <i class="mdi mdi-eye"></i></a>
+                             <a href="/api/v1/admin/products/product-detail/${row.id}" class="action-icon action-view" data-id="${row.id}"> <i class="mdi mdi-eye"></i></a>
                              <a href="javascript:void(0);" class="action-icon action-update" data-id="${row.id}"> <i class="mdi mdi-square-edit-outline"></i></a>
 <!--                             <a href="javascript:void(0);" class="action-icon action-delete" data-id="${row.id}"> <i class="mdi mdi-delete"></i></a>-->
                              </td>`;
@@ -83,7 +83,7 @@ $(document).ready(async function () {
             setLabelModal("Cập nhật sản phẩm")
             const id = $this.data("id");
             productIdTmp.value = id;
-            $ajax.get("/admin/products/" + id).then(data => {
+            $ajax.get("/api/v1/admin/products/" + id).then(data => {
                 $('#createName').val(data.name)
                 $('#createDescription').val(data.description)
                 $('#createBrand').val(data.brand.id)
@@ -124,8 +124,8 @@ $(document).ready(async function () {
     const loadOptionsSelect = (categoryId = null, brandId = null) => {
         const categorySelect = $('#createCategory');
         const brandSelect = $('#createBrand');
-        loadOption('/admin/category/active', categorySelect, categoryId);
-        loadOption('/admin/brand/active', brandSelect, brandId);
+        loadOption('/api/v1/admin/category/active', categorySelect, categoryId);
+        loadOption('/api/v1/admin/brand/active', brandSelect, brandId);
     }
     const loadOption = (endpoint, selectElement, selectedId = null) => {
         $.get(endpoint, data => {
@@ -211,7 +211,7 @@ $(document).ready(async function () {
                 }
                 object.status = $('#createStatus1').is(":checked") ? '1' : '0';
                 const method = productIdTmp.value ? "PUT" : "POST";
-                const url = productIdTmp.value ? '/admin/products/' + productIdTmp.value : '/admin/products';
+                const url = productIdTmp.value ? '/api/v1/admin/products/' + productIdTmp.value : '/api/v1/admin/products';
                 await $ajax.callWithMultipartFile(url, method, object).then(() => {
                     $alter("success", "Note", productIdTmp.value ? "Cập nhật thành công" : "Thêm mới thành công")
                     reloadTable();

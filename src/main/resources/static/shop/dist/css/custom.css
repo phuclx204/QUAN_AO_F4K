@@ -43,3 +43,29 @@
     height: 394px;
     object-fit: cover;
 }
+
+
+.invalid-feedback {
+    display: none;  /* Mặc định ẩn thông báo lỗi */
+    color: #dc3545;  /* Màu đỏ cho thông báo lỗi */
+    font-size: 0.875rem;  /* Kích thước font nhỏ hơn một chút */
+    font-weight: 400;  /* Độ đậm của chữ */
+    margin-top: 5px;  /* Khoảng cách phía trên */
+}
+
+.invalid-feedback.d-block {
+    display: block;  /* Hiển thị khi có lỗi */
+}
+
+.invalid-feedback {
+    padding: 5px 10px; /* Thêm padding cho thông báo lỗi */
+    border-radius: 4px; /* Bo góc */
+    background-color: rgba(220, 53, 69, 0.1); /* Màu nền nhạt */
+}
+
+.invalid-feedback:before {
+    /*content: "\f071";  !* Thêm icon lỗi vào trước thông báo (thích hợp với font awesome hoặc icon khác) *!*/
+    font-family: "Font Awesome 5 Free"; /* Sử dụng Font Awesome */
+    font-weight: 900;
+    margin-right: 5px;
+}

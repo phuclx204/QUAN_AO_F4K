@@ -8,10 +8,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.example.quan_ao_f4k.model.BaseEntity;
 
 import java.time.LocalDateTime;
@@ -22,15 +19,16 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Getter
 @Setter
+@Builder
 public class RefreshToken extends BaseEntity {
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @Column(name = "token", nullable = false)
+    @Column(name = "token", nullable = false,length = 500)
     private String token;
 
-    @Column(name = "expire_at", nullable = false)
+    @Column(name = "expired_at", nullable = false)
     private LocalDateTime expireAt;
 }

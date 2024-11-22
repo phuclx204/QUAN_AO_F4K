@@ -17,16 +17,11 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RequestMapping(value = "/admin/category")
-@Controller
+@RequestMapping(value = "${api.prefix}/admin/category")
+@RestController
 @AllArgsConstructor
 public class CategoryController {
 	private final CategoryService categoryService;
-
-	@GetMapping
-	public String getAllBrandsPage() {
-		return "/admin/product/category";
-	}
 
 	@GetMapping("/list")
 	public ResponseEntity<ListResponse<CategoryResponse>> getAllBrands(

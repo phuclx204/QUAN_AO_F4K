@@ -50,13 +50,13 @@
                                             <p class="text-center mt-4 mb-2">Or sign in with</p>
                                         </div>
                                     </div>
-                                    <form id="loginForm" th:action="@{/login}" method="post" class="registerForm needs-validation" novalidate>
+                                    <form id="loginForm" th:action="@{/auth/authen}" method="post" class="registerForm needs-validation" novalidate>
                                         <div class="row gy-3 overflow-hidden">
                                             <div class="col-12">
                                                 <div class="form-floating">
                                                     <input id="login-username" name="username"  type="text" class="form-control" placeholder="">
                                                     <label class="form-label">Username</label>
-                                                    <div class="invalid-feedback"></div>
+                                                    <div class="invalid-feedback" id="usernameError"></div>
                                                 </div>
                                             </div>
 
@@ -64,7 +64,7 @@
                                                 <div class="form-floating">
                                                     <input id="login-password" name="password" type="password" class="form-control" placeholder="" >
                                                     <label class="form-label">Password</label>
-                                                    <div class="invalid-feedback"></div>
+                                                    <div class="invalid-feedback" id="passwordError"></div>
                                                 </div>
                                             </div>
 
@@ -78,6 +78,7 @@
                                                     </label>
                                                 </div>
                                             </div>
+                                            <div class="invalid-feedback" id="serverError"></div>
                                             <div class="col-12">
                                                 <div class="d-grid">
                                                     <button class="btn btn-dark btn-lg" type="submit">Log in
@@ -109,8 +110,7 @@
 </section>
 
 <script th:src="@{/common/jquery/jquery.min.js}"></script>
-
-<script th:src="@{/common/public.js}"></script>
+<!--<script th:src="@{/common/public.js}"></script>-->
 <script th:src="@{/common/sweetalert/common.js}"></script>
 <script th:src="@{/common/sweetalert/sweetalert2.min.js}"></script>
 

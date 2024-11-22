@@ -6,19 +6,19 @@
     </a>
     <ul class="side-menu top">
         <li>
-            <a th:href="@{/admin/home}">
+            <a th:href="@{/dashboard/admin/}">
                 <i class='bx bxs-home'></i>
                 <span class="text">Trang chủ</span>
             </a>
         </li>
         <li>
-            <a th:href="@{/admin/statistical}">
+            <a th:href="@{/dashboard/admin/statistical}">
                 <i class='bx bxs-dashboard'></i>
                 <span class="text">Thống kê</span>
             </a>
         </li>
         <li>
-            <a th:href="@{/admin/shopping-offline}">
+            <a th:href="@{/api/v1/admin/shopping-offline/12}">
                 <i class='bx bxs-shopping-bag-alt'></i>
                 <span class="text">Bán tại quầy</span>
             </a>
@@ -32,31 +32,31 @@
             </a>
             <ul class="submenu">
                 <li>
-                    <a th:href="@{/admin/products}">
+                    <a th:href="@{/dashboard/admin/products}">
                         <i class='bx bxs-doughnut-chart'></i>
                         <span class="text">Sản phẩm</span>
                     </a>
                 </li>
                 <li>
-                    <a th:href="@{/admin/brand}">
+                    <a th:href="@{/dashboard/admin/brand}">
                         <i class='bx bx-building'></i>
                         <span class="text">Thương hiệu</span>
                     </a>
                 </li>
                 <li>
-                    <a th:href="@{/admin/category}">
+                    <a th:href="@{/dashboard/admin/category}">
                         <i class='bx bx-category'></i>
                         <span class="text">Danh mục</span>
                     </a>
                 </li>
                 <li>
-                    <a th:href="@{/admin/size}">
+                    <a th:href="@{/dashboard/admin/size}">
                         <i class='bx bx-expand'></i>
                         <span class="text">Kích thước</span>
                     </a>
                 </li>
                 <li>
-                    <a th:href="@{/admin/color}">
+                    <a th:href="@{/dashboard/admin/color}">
                         <i class='bx bx-palette'></i>
                         <span class="text">Màu sắc</span>
                     </a>
@@ -66,25 +66,25 @@
 
         <!--        Hóa đơn-->
         <li>
-            <a th:href="@{/admin/orders}">
+            <a th:href="@{/dashboard/admin/orders}">
                 <i class='bx bx-receipt'></i>
                 <span class="text">Hóa đơn</span>
             </a>
         </li>
         <li>
-            <a th:href="@{/admin/promotion}">
+            <a th:href="@{/api/v1/admin/promotion}">
                 <i class='bx bx-gift'></i>
                 <span class="text">Khuyến mãi</span>
             </a>
         </li>
         <li>
-            <a th:href="@{/admin/customer}">
+            <a th:href="@{/dashboard/admin/customer}">
                 <i class='bx bx-user-check'></i>
                 <span class="text">Khách hàng</span>
             </a>
         </li>
         <li>
-            <a th:href="@{/admin/employee}">
+            <a th:href="@{/dashboard/admin/employee}">
                 <i class='bx bxs-group'></i>
                 <span class="text">Nhân viên</span>
             </a>
@@ -98,7 +98,7 @@
             </a>
         </li>
         <li>
-            <a th:href="@{/account/logout}">
+            <a th:href="@{/auth/logout}">
                 <i class='bx bxs-log-out-circle'></i>
                 <span class="text">Đăng xuất</span>
             </a>

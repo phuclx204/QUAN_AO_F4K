@@ -21,8 +21,8 @@ const validationRegister = {
             message: "Mật khẩu bắt buộc"
         },
         {
-            rule: (value) => value.length >= 8,
-            message: "Mật khẩu phải có ít nhất 8 ký tự."
+            rule: (value) => value.length >= 6,
+            message: "Mật khẩu phải có ít nhất 6 ký tự."
         }
     ],
     'register-repeat-password': [

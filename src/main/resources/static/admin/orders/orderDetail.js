@@ -1,5 +1,4 @@
 $(document).ready(function () {
-    // Hàm định dạng tiền tệ Việt Nam (VND)
     function formatCurrency(amount) {
         return amount.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
     }
@@ -22,11 +21,10 @@ $(document).ready(function () {
     // Mở modal khi bấm nút "Làm mới"
     btnAddProduct.onclick = function () {
         modal.style.display = "block";
-        loadSelect(); // Gọi hàm load dữ liệu chọn sản phẩm
-        fetchProductDetails(); // Gọi API khi mở modal
+        loadSelect();
+        fetchProductDetails();
     };
 
-    // Đóng modal khi bấm vào dấu "x"
     spanClose.onclick = function () {
         modal.style.display = "none";
     };
@@ -54,8 +52,8 @@ function loadSelect(categoryId = null, brandId = null) {
     const brandSelect = $('#brandSelect');
     const colorSelect = $('#colorSelect');
     const sizeSelect = $('#sizeSelect');
-    loadOptions('/admin/category/active', categorySelect, 'Tất cả', categoryId);
-    loadOptions('/admin/brand/active', brandSelect, 'Tất cả', brandId);
+    loadOptions('/api/v1/admin/category/active', categorySelect, 'Tất cả', categoryId);
+    loadOptions('/api/v1/admin/brand/active', brandSelect, 'Tất cả', brandId);
 }
     // Hàm hiển thị danh sách sản phẩm
 function renderProductList(products) {
@@ -90,7 +88,7 @@ function renderProductList(products) {
                 </td>
             `;
 
-            productList.appendChild(productRow); // Thêm sản phẩm vào bảng
+            productList.appendChild(productRow);
         });
     }
 
@@ -103,13 +101,13 @@ function renderProductList(products) {
 
     // Fetch sản phẩm từ API
     function fetchProductDetails(page = 1, size = 5, sort = 'id,desc', search = '') {
-        search = $('input[name="search"]').val(); // Lấy giá trị tìm kiếm từ input
+        search = $('input[name="search"]').val();
 
-        fetch(`/admin/products/product-detail/list?page=${page}&size=${size}&sort=${sort}&search=${search}`)
+        fetch(`/api/v1/admin/products/product-detail/list?page=${page}&size=${size}&sort=${sort}&search=${search}`)
             .then(response => response.json())
             .then(data => {
-                renderProductList(data.content); // Hiển thị sản phẩm
-                setupPagination(data.totalPages, page); // Cập nhật phân trang
+                renderProductList(data.content);
+                setupPagination(data.totalPages, page);
             })
             .catch(error => {
                 console.error('Error fetching product details:', error);
@@ -127,7 +125,7 @@ function renderProductList(products) {
 
 function updateProductStock(productId, quantityToSubtract) {
     $.ajax({
-        url: `/admin/shopping-offlinee/${productId}/quantity`,
+        url: `/api/v1/admin/shopping-offlinee/${productId}/quantity`,
         method: 'PUT',
         contentType: 'application/json',
         data: JSON.stringify({ quantity: quantityToSubtract }),
@@ -179,7 +177,7 @@ function addProductToInvoice(productId, productPrice) {
         };
 
         $.ajax({
-            url: `/admin/shopping-offline/${currentOrderId}/${productId}`,
+            url: `/api/v1/admin/shopping-offline/${currentOrderId}/${productId}`,
             method: 'PUT',
             contentType: 'application/json',
             data: JSON.stringify(updateData),
@@ -218,7 +216,7 @@ function addProductToInvoice(productId, productPrice) {
         };
 
         $.ajax({
-            url: '/admin/shopping-offline/add',
+            url: '/api/v1/admin/shopping-offline/add',
             method: 'POST',
             contentType: 'application/json',
             data: JSON.stringify(orderDetailData),
@@ -303,7 +301,7 @@ $(document).ready(function () {
 
             // Gửi dữ liệu qua API PUT để cập nhật số lượng sản phẩm
             $.ajax({
-                url: `/admin/shopping-offline/${orderId}/${productDetailId}`,
+                url: `/api/v1/admin/shopping-offline/${orderId}/${productDetailId}`,
                 method: 'PUT',
                 contentType: 'application/json',
                 data: JSON.stringify(updateData),

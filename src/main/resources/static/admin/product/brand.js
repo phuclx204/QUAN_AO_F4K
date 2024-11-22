@@ -23,7 +23,7 @@ $(document).ready(function () {
 
     function loadDatas(page = 1, size = 5, sort = 'id,desc', search = '') {
         $.ajax({
-            url: '/admin/brand/list',
+            url: '/api/v1/admin/brand/list',
             method: 'GET',
             data: { page: page, size: size, sort: sort, search: search },
             success: function (response) {
@@ -122,7 +122,7 @@ $(document).ready(function () {
 
         const dataName = $('#addName').val();
         $.ajax({
-            url: '/admin/brand',
+            url: '/api/v1/admin/brand',
             method: 'POST',
             contentType: 'application/json',
             data: JSON.stringify({ name: dataName }),
@@ -154,7 +154,7 @@ $(document).ready(function () {
         const id = $('#editId').val();
         const dataName = $('#editName').val();
         $.ajax({
-            url: `/admin/brand/${id}`,
+            url: `/api/v1/admin/brand/${id}`,
             method: 'PUT',
             contentType: 'application/json',
             data: JSON.stringify({ name: dataName }),
@@ -188,7 +188,7 @@ function submitStatusForm(checkbox) {
     const status = checkbox.checked ? 1 : 0;
 
     $.ajax({
-        url: `/admin/brand/${id}`,
+        url: `/api/v1/admin/brand/${id}`,
         method: 'PATCH',
         contentType: 'application/json',
         data: JSON.stringify({ status: status }),

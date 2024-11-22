@@ -24,7 +24,7 @@ $(document).ready(function () {
 
     function loadDatas(page = 1, size = 5, sort = 'id,desc', search = '') {
         $.ajax({
-            url: '/admin/category/list',
+            url: '/api/v1/admin/category/list',
             method: 'GET', // Phương thức HTTP
             data: {page: page, size: size, sort: sort, search: search},
             success: function (response) {
@@ -126,7 +126,7 @@ $(document).ready(function () {
         const dataName = $('#addName').val();
         const dataDescription = $('#desciptionName').val();
         $.ajax({
-            url: '/admin/category',
+            url: '/api/v1/admin/category',
             method: 'POST',
             contentType: 'application/json',
             data: JSON.stringify({name: dataName,description:dataDescription}),
@@ -159,7 +159,7 @@ $(document).ready(function () {
         const dataName = $('#editName').val();
         const dataDescription = $('#editDescription').val();
         $.ajax({
-            url: `/admin/category/${id}`,
+            url: `/api/v1/admin/category/${id}`,
             method: 'PUT',
             contentType: 'application/json',
             data: JSON.stringify({name: dataName,description:dataDescription}),
@@ -193,7 +193,7 @@ function submitStatusForm(checkbox) {
     const status = checkbox.checked ? 1 : 0;
 
     $.ajax({
-        url: `/admin/category/${id}`,
+        url: `/api/v1/admin/category/${id}`,
         method: 'PATCH',
         contentType: 'application/json',
         data: JSON.stringify({status: status}),

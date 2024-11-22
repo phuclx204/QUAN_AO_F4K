@@ -9,7 +9,7 @@ $(document).ready(async function () {
     const promotionId = ref(null);
     const listProducts = JSON.parse(localStorage.getItem("listData"));
 
-    const URL = '/admin/promotion';
+    const URL = '/api/v1/admin/promotion';
     const STATUS_ON = 1;
     const STATUS_OFF = 0;
     const TYPE_CASH = 1;
@@ -66,7 +66,7 @@ $(document).ready(async function () {
                 title: 'Thao tác',
                 render: function (data, type, row) {
                     return `<td class="table-action">
-                             <a href="/admin/products/product-detail/${row.id}" class="action-icon action-view" data-id="${row.id}"> <i class="mdi mdi-eye"></i></a>
+                             <a href="/api/v1/admin/products/product-detail/${row.id}" class="action-icon action-view" data-id="${row.id}"> <i class="mdi mdi-eye"></i></a>
                              <a href="javascript:void(0);" class="action-icon action-update" data-id="${row.id}"> <i class="mdi mdi-square-edit-outline"></i></a>
 <!--                             <a href="javascript:void(0);" class="action-icon action-delete" data-id="${row.id}"> <i class="mdi mdi-delete"></i></a>-->
                              </td>`;
@@ -124,7 +124,7 @@ $(document).ready(async function () {
             setLabelModal("Cập nhật")
             const id = $this.data("id");
             promotionId.value = id;
-            $ajax.get("/admin/promotion/detail", {id: id}).then(data => {
+            $ajax.get("/api/v1/admin/promotion/detail", {id: id}).then(data => {
                 $('#createName').val(data.name)
                 if (data.status === 1) {
                     $('#createStatus1').prop("checked", true)

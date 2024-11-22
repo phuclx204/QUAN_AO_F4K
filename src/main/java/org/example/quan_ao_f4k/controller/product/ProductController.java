@@ -20,17 +20,13 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 
-@RequestMapping(value = "/admin/products")
-@Controller
+@RequestMapping(value = "${api.prefix}/admin/products")
+@RestController
 @AllArgsConstructor
 public class ProductController {
     private final ProductService productService;
     private final ImageRepository imageRepository;
 
-    @GetMapping()
-    public String getProduct() {
-        return "/admin/product/products";
-    }
 
     // Lấy danh sách với phân trang và sắp xếp
     @GetMapping("/list")

@@ -27,7 +27,7 @@ import java.util.List;
 
 
 @Controller
-@RequestMapping("/admin/shopping-offline")
+@RequestMapping("${api.prefix}/admin/shopping-offline")
 @AllArgsConstructor
 public class ShoppingController {
 	private final OrderServiceImpl orderService;
@@ -35,14 +35,14 @@ public class ShoppingController {
 	private final OrderDetailServiceimpl orderDetailService;
 	private ImageRepository imageRepository;
 
-	@GetMapping({"","/"})
+	@GetMapping({"shopping-offline/","shopping-offline"})
 	public String getOrdersWithStatusFive(Model model) {
 		try {
 			orderService.addModelOrder(model);
 		} catch (Exception e) {
 			return "error";
 		}
-		return "/shopping_offline/shopping";
+		return "/admin/shopping_offline/shopping";
 	}
 	@PostMapping()
 	public ResponseEntity<?> add(@RequestBody OrderRequest request) {

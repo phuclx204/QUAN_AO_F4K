@@ -15,14 +15,14 @@ import org.mapstruct.ReportingPolicy;
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE
 		,uses = {MapperCoverter.class, AddressMapper.class,RoleMapper.class})
-public interface UserMapper extends GennericMapper<User, RegisterRequest, UserDto> {
+public interface UserMapper extends GennericMapper<User, UserRequest, UserDto> {
 	@Override
 	@Mapping(source = "addressId", target = "address", qualifiedByName = "convertToAddress")
 	@Mapping(source = "roleId", target = "role", qualifiedByName = "convertToRole")
-	User requestToEntity(RegisterRequest request);
+	User requestToEntity(UserRequest request);
 
 	@Override
 	@Mapping(source = "addressId", target = "address", qualifiedByName = "convertToAddress")
 	@Mapping(source = "roleId", target = "role", qualifiedByName = "convertToRole")
-	User partialUpdate(@MappingTarget User user, RegisterRequest request);
+	User partialUpdate(@MappingTarget User user, UserRequest request);
 }

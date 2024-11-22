@@ -14,8 +14,8 @@ function loadSelect(categoryId = null, brandId = null) {
     const brandSelect = $('#brandSelect');
     const colorSelect = $('#colorSelect');
     const sizeSelect = $('#sizeSelect');
-    loadOptions('/admin/category/active', categorySelect, 'Tất cả', categoryId);
-    loadOptions('/admin/brand/active', brandSelect, 'Tất cả', brandId);
+    loadOptions('/api/v1/admin/category/active', categorySelect, 'Tất cả', categoryId);
+    loadOptions('/api/v1/admin/brand/active', brandSelect, 'Tất cả', brandId);
 }
 
 function getOrderCount() {
@@ -63,7 +63,7 @@ function createInvoice() {
 
     // Send AJAX request to create the invoice
     $.ajax({
-        url: '/admin/shopping-offline', // API URL
+        url: '/api/v1/admin/shopping-offline', // API URL
         method: 'POST', // Use POST method
         contentType: 'application/json', // Sending data as JSON
         data: JSON.stringify(orderData), // Convert invoice data to JSON string
@@ -126,7 +126,7 @@ function updateOrderStatus(orderId, status) {
     }
     // Gửi yêu cầu PUT để cập nhật trạng thái đơn hàng
     $.ajax({
-        url: '/admin/shopping-offline/' + orderId, // URL cập nhật đơn hàng
+        url: '/api/v1/admin/shopping-offline/' + orderId, // URL cập nhật đơn hàng
         method: 'PUT',
         contentType: 'application/json',
         data: JSON.stringify(updateData),
@@ -155,7 +155,7 @@ function updateOrderStatus(orderId, status) {
 
 
 function viewInvoice(id) {
-    window.location.href = '/admin/shopping-offline/' + id;
+    window.location.href = '/api/v1/admin/shopping-offline/' + id;
 }
 
 const modal = document.getElementById("productModal");
@@ -191,7 +191,7 @@ $('.search-form').on('submit', function (event) {
 function fetchProductDetails(page=1,size=5,sort='id,desc',search='') {
     search = document.getElementById("searchInput").value;
 
-    fetch(`/admin/products/product-detail/list?page=${page}&size=${size}&sort=${sort}&search=${search}`)
+    fetch(`/api/v1/admin/products/product-detail/list?page=${page}&size=${size}&sort=${sort}&search=${search}`)
         .then(response => response.json())
         .then(data => {
             renderProductList(data.content);
@@ -212,7 +212,7 @@ function getCurrentOrderId() {
 
 function updateProductStock(productId, quantityToSubtract) {
     $.ajax({
-        url: `/admin/shopping-offlinee/${productId}/quantity`,
+        url: `/api/v1/admin/shopping-offlinee/${productId}/quantity`,
         method: 'PUT',
         contentType: 'application/json',
         data: JSON.stringify({ quantity: quantityToSubtract }),
@@ -257,7 +257,7 @@ function addProductToInvoice(productId, productPrice) {
         };
 
         $.ajax({
-            url: `/admin/shopping-offline/${currentOrderId}/${productId}`,
+            url: `/api/v1/admin/shopping-offline/${currentOrderId}/${productId}`,
             method: 'PUT',
             contentType: 'application/json',
             data: JSON.stringify(updateData),
@@ -295,7 +295,7 @@ function addProductToInvoice(productId, productPrice) {
         };
 
         $.ajax({
-            url: '/admin/shopping-offline/add',
+            url: '/api/v1/admin/shopping-offline/add',
             method: 'POST',
             contentType: 'application/json',
             data: JSON.stringify(orderDetailData),
@@ -469,7 +469,7 @@ function confirmDelete(orderId, productDetailId) {
     });
 }
 function deleteOrderDetail(orderId, productDetailId) {
-    fetch('/admin/shopping-offlinee/order-detail/delete', {
+    fetch('/api/v1/admin/shopping-offlinee/order-detail/delete', {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ orderId: orderId, productDetailId: productDetailId })
@@ -509,7 +509,7 @@ function updateOrderStatus1(orderId, status, totalPay) {
     };
 
     $.ajax({
-        url: '/admin/shopping-offline/' + orderId,
+        url: '/api/v1/admin/shopping-offline/' + orderId,
         method: 'PUT',
         contentType: 'application/json',
         data: JSON.stringify(updateData),
@@ -552,9 +552,9 @@ function comfirmOrder(orderId) {
     }
 
     // Validate if required fields are filled correctly
-    const toName = $('#name').val();
-    const toPhone = $('#phone').val();
-    const toAddress = $('#to_address').val();
+    const toName = $('#name').val().trim();
+    const toPhone = $('#phone').val().trim();
+    const toAddress = $('#to_address').val().trim();
 
     // Check if name, phone, and address are valid
     let validationMessage = '';
@@ -566,7 +566,7 @@ function comfirmOrder(orderId) {
         validationMessage += 'Số điện thoại phải có 10 chữ số. ';
         $('#phoneStatus').text('Số điện thoại phải có 10 chữ số').css('color', 'red');
     }
-    if (toAddress.trim() === '') {
+    if (toAddress === '') {
         validationMessage += 'Hãy nhập địa chỉ. ';
         $('#addressStatus').text('Hãy nhập địa chỉ').css('color', 'red');
     }
@@ -697,7 +697,7 @@ $(document).ready(function () {
 
             // Gửi dữ liệu qua API PUT để cập nhật số lượng sản phẩm
             $.ajax({
-                url: `/admin/shopping-offline/${orderId}/${productDetailId}`,
+                url: `/api/v1/admin/shopping-offline/${orderId}/${productDetailId}`,
                 method: 'PUT',
                 contentType: 'application/json',
                 data: JSON.stringify(updateData),

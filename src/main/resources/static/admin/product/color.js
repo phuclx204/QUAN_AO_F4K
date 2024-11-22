@@ -68,7 +68,7 @@ $(document).ready(function () {
                 interaction: {
                     hex: true,
                     input: true,
-                    save: false // Không cần nút lưu
+                    save: false
                 }
             }
         });
@@ -90,7 +90,7 @@ $(document).ready(function () {
 
     function loadDatas(page = 1, size = 5, sort = 'id,desc', search = '') {
         $.ajax({
-            url: '/admin/color/list',
+            url: '/api/v1/admin/color/list',
             method: 'GET',
             data: {page: page, size: size, sort: sort, search: search},
             success: function (response) {
@@ -203,7 +203,7 @@ $(document).ready(function () {
         }
 
         $.ajax({
-            url: '/admin/color',
+            url: '/api/v1/admin/color',
             method: 'POST',
             contentType: 'application/json',
             data: JSON.stringify({name: dataName,hex:dataHex}),
@@ -236,7 +236,7 @@ $(document).ready(function () {
         const dataName = $('#editName').val();
         const dataHex = $('#editHex').val();
         $.ajax({
-            url: `/admin/color/${id}`,
+            url: `/api/v1/admin/color/${id}`,
             method: 'PUT',
             contentType: 'application/json',
             data: JSON.stringify({name: dataName,hex:dataHex}),
@@ -270,7 +270,7 @@ function submitStatusForm(checkbox) {
     const status = checkbox.checked ? 1 : 0;
 
     $.ajax({
-        url: `/admin/color/${id}`,
+        url: `/api/v1/admin/color/${id}`,
         method: 'PATCH',
         contentType: 'application/json',
         data: JSON.stringify({status: status}),

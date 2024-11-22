@@ -1,28 +1,26 @@
 $(document).ready(function () {
-    loadOrders(); // Tải đơn hàng ban đầu
+    loadOrders();
 
-    // Xử lý tìm kiếm
     $('#searchForm').on('submit', function (event) {
-        event.preventDefault(); // Ngăn chặn hành vi mặc định của form
-        loadOrders(); // Gọi lại hàm loadOrders để lấy dữ liệu
+        event.preventDefault();
+        loadOrders();
     });
 
-    // Xử lý click tab để lọc theo status
     $('.tab').on('click', function () {
-        const status = $(this).data('status'); // Lấy status từ data attribute của tab
-        loadOrders(1, 10, status); // Gọi lại hàm loadOrders với page và size mặc định
-        $('.tab').removeClass('active'); // Cập nhật trạng thái tab
+        const status = $(this).data('status');
+        loadOrders(1, 10, status);
+        $('.tab').removeClass('active');
         $(this).addClass('active');
     });
 
     // Hàm tải dữ liệu đơn hàng từ server
     function loadOrders(page = 1, size = 10, status = null) {
-        const search = $('#searchInput').val(); // Lấy giá trị tìm kiếm
-        const startDate = $('#startDate').val(); // Lấy ngày bắt đầu
-        const endDate = $('#endDate').val(); // Lấy ngày kết thúc
+        const search = $('#searchInput').val();
+        const startDate = $('#startDate').val();
+        const endDate = $('#endDate').val();
 
         $.ajax({
-            url: '/admin/orders/all',
+            url: '/api/v1/admin/orders/all',
             method: 'GET',
             data: {
                 page: page,
@@ -33,8 +31,8 @@ $(document).ready(function () {
                 status: status
             },
             success: function (response) {
-                renderOrder(response.content); // Hiển thị đơn hàng
-                setupPagination(response.totalPages, page); // Thiết lập phân trang
+                renderOrder(response.content);
+                setupPagination(response.totalPages, page);
             },
             error: function (error) {
                 console.error('Không thể tải dữ liệu:', error);
@@ -42,7 +40,6 @@ $(document).ready(function () {
         });
     }
 
-    // Hàm hiển thị dữ liệu đơn hàng vào bảng
     function renderOrder(orders) {
         const tbody = $('tbody');
         tbody.empty();
@@ -76,7 +73,7 @@ $(document).ready(function () {
                         </span>
                     </td>
                     <td>
-                        <a class="btn detail-btn" href="/admin/order-detail/${order.code}">Chi tiết</a>
+                        <a class="btn detail-btn" href="/api/v1/admin/order-detail/${order.code}">Chi tiết</a>
                     </td>
                 </tr>
             `);

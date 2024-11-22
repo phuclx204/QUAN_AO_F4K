@@ -3,7 +3,7 @@ import { URL, imageBlank } from "/shop/script/index.js";
 
 const { removeNullProperties, getPagination, formatNumberByDot, convert2Vnd } = getCommon();
 
-const GET_LIST_API = URL + "/collections/list-product";
+const GET_LIST_API = URL + "/api/v1/collections/list-product";
 
 const queryShowProduct = $('#product-show-list');
 const queryPagination = $('#pagination-product')
@@ -71,8 +71,8 @@ const resetSearchObject = () => {
 const addDomListProduct = (item) => {
 
     console.log(item)
-    const hrefProduct = '/shop/product/' + item.slug;
-    const hrefQuickAdd = '/shop/cart/add/' + item.id;
+    const hrefProduct = '/api/v1/shop/product/' + item.slug;
+    const hrefQuickAdd = '/api/v1/shop/cart/add/' + item.id;
 
     const productCardHTML = `
         <div class="col-12 col-sm-6 col-md-4">

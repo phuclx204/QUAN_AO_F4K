@@ -12,7 +12,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 @Controller
-@RequestMapping("shop")
+@RequestMapping("${api.prefix}/shop")
 public class ShopController {
 
     @Autowired

@@ -17,23 +17,21 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 @Controller
-@RequestMapping("/admin/promotion")
+@RequestMapping("${api.prefix}/admin/promotion")
 @AllArgsConstructor
 public class PromotionController {
 
     @Autowired
     private PromotionService promotionService;
+	@Autowired
+	private CriteriaRepository criteriaRepository;
 
-    @Autowired
-    private CriteriaRepository criteriaRepository;
 
-
-    @GetMapping
+    @GetMapping({"promotion/","promotion/"})
     public String promotion(Model model) {
         model.addAttribute("listProducts", criteriaRepository.findAllByStatus(Product.class));
         return "/admin/promotion/promotion";
     }
-
     @GetMapping("/list")
     @ResponseBody
     public ResponseEntity<Page<PromotionResponse>> getListPromotion(@RequestParam(defaultValue = "1") int page,

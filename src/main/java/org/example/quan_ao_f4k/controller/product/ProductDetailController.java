@@ -22,7 +22,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.Optional;
 
-@RequestMapping(value = "/admin/products/product-detail")
+@RequestMapping(value = "${api.prefix}/admin/products/product-detail")
 @AllArgsConstructor
 @Controller
 public class ProductDetailController {

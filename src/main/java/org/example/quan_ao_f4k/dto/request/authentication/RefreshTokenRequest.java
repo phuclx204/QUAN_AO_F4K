@@ -1,4 +1,4 @@
-package org.example.quan_ao_f4k.dto.response.authentication;
+package org.example.quan_ao_f4k.dto.request.authentication;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,7 +9,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class AuthenticationResponse {
-    private String accessToken;
-    private String refreshToken;
+public class RefreshTokenRequest {
+    private String token;
 }

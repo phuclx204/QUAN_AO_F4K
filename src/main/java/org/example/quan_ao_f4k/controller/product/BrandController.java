@@ -16,17 +16,13 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Controller
-@RequestMapping("/admin/brand")
+@RestController
+@RequestMapping("${api.prefix}/admin/brand")
 @AllArgsConstructor
 public class BrandController extends GenericController<BrandRequest, BrandResponse> {
 
 	private final BrandService brandService;
 
-	@GetMapping
-	public String getAllBrandsPage() {
-		return "/admin/product/brand";
-	}
 
 	// Lấy danh sách thương hiệu với phân trang và sắp xếp
 	@GetMapping("/list")

@@ -15,16 +15,11 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RequestMapping(value = "/admin/size")
-@Controller
+@RequestMapping(value = "${api.prefix}/admin/size")
+@RestController
 @AllArgsConstructor
 public class SizeController {
 	private SizeService sizeService;
-
-	@GetMapping
-	public String getAllBrandsPage() {
-		return "/admin/product/size";
-	}
 
 	// Lấy danh sách , phân trang và sắp xếp
 	@GetMapping("/list")
