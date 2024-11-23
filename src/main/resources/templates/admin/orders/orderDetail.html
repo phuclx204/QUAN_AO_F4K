@@ -50,11 +50,66 @@
                             </div>
 
                             <div class="process-line" id="process-line"></div>
+
+
                         </div>
+
                     </div>
+                    <div>
+                        <!-- Hiển thị dòng chữ "Đã hủy đơn hàng" khi order.status = 0 -->
+                        <div th:if="${order.status == 0}" style="color: red; font-weight: bold;">
+                            Đã hủy đơn hàng
+                        </div>
+
+                        <!-- Kiểm tra nếu đơn hàng đã hủy (status == 0), không hiển thị bất kỳ nút nào -->
+                        <div th:if="${order.status != 0}">
+                            <!-- Nút Xác Nhận -->
+                            <button type="button" class="btn btn-primary btn-change-status"
+                                    th:if="${order.status == 5}"
+                                    th:data-order-id="${order.id}"
+                                    th:data-new-status="8">
+                                <i class="bx bx-check-circle"></i> Xác Nhận
+                            </button>
+
+                            <button type="button" class="btn btn-primary btn-change-status"
+                                    th:if="${order.status == 8}"
+                                    th:data-order-id="${order.id}"
+                                    th:data-new-status="4">
+                                <i class="bx bx-truck"></i> Chờ Vận Chuyển
+                            </button>
+
+                            <!-- Nút Vận Chuyển -->
+                            <button type="button" class="btn btn-primary btn-change-status"
+                                    th:if="${order.status == 4}"
+                                    th:data-order-id="${order.id}"
+                                    th:data-new-status="6">
+                                <i class="bx bx-package"></i> Vận Chuyển
+                            </button>
+
+                            <!-- Nút Quay Lại -->
+                            <button type="button" class="btn btn-warning btn-go-back"
+                                    th:if="${order.status != 3 && order.status != 0}"
+                                    th:data-order-id="${order.id}"
+                                    th:data-previous-status="${order.status - 1}">
+                                <i class="bx bx-undo"></i> Quay Lại
+                            </button>
+
+                            <!-- Nút Hủy Đơn -->
+                            <button type="button" class="btn btn-danger btn-cancel-order"
+                                    th:if="${order.status != 3}"
+                                    th:data-order-id="${order.id}">
+                                <i class="bx bx-trash"></i> Hủy Hóa Đơn
+                            </button>
+
+                        </div>
+
+
+                    </div>
+
                 </div>
 
-                <div class="row">
+                <div class="row mt-2">
+
                     <div class="col-xl-8">
                         <div class="card">
                             <div class="card-body">
@@ -144,7 +199,9 @@
                         <div class="card">
                             <div class="card-body">
                                 <div class="header-title mb-3 d-flex align-items-center">
-                                    <h5 class="me-2">Đơn hàng: [[${order.code}]]</h5>
+                                    <h5>MÃ ĐƠN : </h5><h5 class="me-2" id="orderCode"> [[${order.code}]]</h5>
+                                    <h5>MÃ ĐƠN : </h5><h5 class="me-2" id="orderType"> [[${order.order_type}]]</h5>
+
                                 </div>
                                 <div class="table-responsive">
                                     <table class="table mb-0">
@@ -191,14 +248,14 @@
                                 </h4>
 
                                 <h5>Hà Nội</h5>
-
                                 <address class="mb-0 font-14 address-lg">
-                                    Tên người nhận: <span th:text="${order.toName}"></span><br>
-                                    Số điện thoại: <span th:text="${order.toPhone}"></span><br>
-                                    Địa chỉ: <span th:text="${order.toAddress}"></span><br>
-                                    <br>
-
+                                    Tên người nhận: <span id="toName" th:text="${order.toName}"></span><br>
+                                    Số điện thoại: <span id="toPhone" th:text="${order.toPhone}"></span><br>
+                                    Địa chỉ: <span id="toAddress" th:text="${order.toAddress}"></span><br>
+                                    Ghi chú: <span id="orderNote" th:text="${order.note}"></span><br>
+                                    PTTT: <span id="payment_status" th:text="${order.paymentMethod.id}"></span><br>
                                 </address>
+
 
                             </div>
                         </div>

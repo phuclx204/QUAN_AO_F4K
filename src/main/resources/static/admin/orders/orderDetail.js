@@ -143,7 +143,7 @@ $(document).ready(async function () {
             // Tạo HTML mới cho mỗi bước
             const $html = `
             <div class="${classTimeLine}">
-                <span data-bs-toggle="tooltip" data-bs-placement="bottom" title="${formatDate}">${el.note}</span>
+                <span data-bs-toggle="tooltip" data-bs-placement="bottom" title="${formatDate}">${el.status}</span>
             </div>
         `;
             $timeLineOrder.append($html);
@@ -557,7 +557,7 @@ $(document).ready(async function () {
             }
         });
 
-        // update tt thanh toán
+//         update tt thanh toán
         $('#paymentStatus').each(function () {
             const status = $(this).data("id");
             $(this).text($(this).text() + getTrangThaiThanhToan(status))
@@ -565,4 +565,203 @@ $(document).ready(async function () {
 
         closeLoading();
     })
+function updateOrderStatus(orderId, status) {
+    // Lấy thông tin từ các phần tử HTML
+    const orderCode = $('#orderCode').text()?.trim() || ''; // Lấy mã đơn hàng, nếu không có thì gán giá trị mặc định ''
+    const toName = $('#toName').text()?.trim() || ''; // Lấy tên người nhận
+    const toAddress = $('#toAddress').text()?.trim() || ''; // Lấy địa chỉ
+    const toPhone = $('#toPhone').text()?.trim() || ''; // Lấy số điện thoại
+    let totalPay = $('#total').text()?.trim() || ''; // Lấy tổng tiền thanh toán
+    const paymentMethod = $('#paymentMethodId').text()?.trim() || ''; // Lấy phương thức thanh toán
+    const note = $('#note').val()?.trim() || ''; // Lấy ghi chú (nếu có)
+    const orderType = $('#orderType').val()?.trim() || ''; // Lấy loại đơn hàng (nếu có)
+
+    // Xử lý tổng tiền thanh toán: loại bỏ ký tự không phải số (như VNĐ)
+    totalPay = totalPay.replace(/[^0-9.-]/g, '');
+
+    // Kiểm tra các giá trị quan trọng có rỗng không
+    if (!orderCode || !toName || !toAddress || !toPhone || !totalPay) {
+        Swal.fire('Lỗi', 'Vui lòng kiểm tra lại thông tin đơn hàng!', 'error');
+        return; // Dừng việc gửi yêu cầu nếu thiếu thông tin quan trọng
+    }
+
+    const orderDetails = [];
+
+    // Lặp qua các chi tiết đơn hàng để lấy thông tin sản phẩm, số lượng, giá...
+    $('#products-datatable tbody tr').each(function() {
+        const productId = $(this).find('[name="productId"]').val();
+        const productName = $(this).find('.product-name').text()?.trim() || ''; // Sử dụng optional chaining
+        const quantity = $(this).find('[name="quantity"]').val()?.trim() || ''; // Sử dụng optional chaining
+        let price = $(this).find('[name="price"]').text()?.trim() || ''; // Sử dụng optional chaining
+        let totalPrice = $(this).find('[name="totalPrice"]').text()?.trim() || ''; // Sử dụng optional chaining
+
+        // Loại bỏ ký tự không phải số trong giá và tổng giá
+        price = price.replace(/[^0-9.-]/g, '');
+        totalPrice = totalPrice.replace(/[^0-9.-]/g, '');
+
+        orderDetails.push({
+            productId: productId,
+            productName: productName,
+            quantity: quantity,
+            price: price,
+            totalPrice: totalPrice
+        });
+    });
+
+    const updateData = {
+        orderId: orderId,
+        status: status,
+        code: orderCode,
+        toName: toName,
+        toAddress: toAddress,
+        toPhone: toPhone,
+        totalPay: totalPay,  // Đảm bảo chỉ chứa giá trị số
+        paymentMethod: paymentMethod,
+        note: note,
+        orderType: orderType,
+        orderDetails: orderDetails
+    };
+
+    // Gửi yêu cầu PUT để cập nhật trạng thái đơn hàng
+    $.ajax({
+        url: '/admin/shopping-offline/' + orderId, // URL cập nhật đơn hàng
+        method: 'PUT',
+        contentType: 'application/json',
+        data: JSON.stringify(updateData), // Gửi tất cả dữ liệu cập nhật
+        success: function(response) {
+            // Xử lý thành công
+            Swal.fire({
+                title: 'Cập nhật trạng thái đơn hàng thành công!',
+                text: "Đơn hàng đã được cập nhật.",
+                icon: 'success',
+                timer: 2000,
+                timerProgressBar: true,
+                willClose: () => {
+                    location.reload(); // Tải lại trang sau khi cập nhật
+                }
+            });
+
+            // Gọi hàm createOrderHistory để tạo lịch sử đơn hàng
+            createOrderHistory(orderId, status);
+        },
+        error: function(xhr) {
+            let errorMessage = 'Không thể cập nhật trạng thái đơn hàng.';
+            if (xhr.status === 400 && xhr.responseJSON) {
+                if (Array.isArray(xhr.responseJSON)) {
+                    errorMessage = xhr.responseJSON.map(error => error.defaultMessage).join(', ');
+                } else if (xhr.responseJSON.message) {
+                    errorMessage = xhr.responseJSON.message;
+                }
+            } else if (xhr.status === 500) {
+                errorMessage = 'Lỗi máy chủ, vui lòng thử lại sau.';
+            } else if (xhr.status === 0) {
+                errorMessage = 'Lỗi kết nối, vui lòng kiểm tra lại internet.';
+            }
+            Swal.fire('Lỗi', errorMessage, 'error');
+        }
+    });
+}
+
+// Function to create order history (Second API call)
+function createOrderHistory(orderId, status) {
+    const historyData = {
+        orderId: orderId,
+        status: status // Assuming we send the new status to the API
+    };
+
+    $.ajax({
+        url: '/admin/order-history', // API endpoint to create order history
+        method: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify(historyData),
+        success: function (response) {
+            console.log("Order history created successfully", response);
+        },
+        error: function (xhr) {
+            let errorMessage = 'Không thể tạo lịch sử đơn hàng.';
+            if (xhr.status === 400 && xhr.responseJSON) {
+                if (Array.isArray(xhr.responseJSON)) {
+                    errorMessage = xhr.responseJSON.map(error => error.defaultMessage).join(', ');
+                } else if (typeof xhr.responseJSON === 'object' && xhr.responseJSON.message) {
+                    errorMessage = xhr.responseJSON.message;
+                } else {
+                    errorMessage = 'Đã xảy ra lỗi không xác định.';
+                }
+            }
+            Swal.fire('Lỗi', errorMessage, 'error');
+        }
+    });
+}
+
+function cancelOrder(orderId) {
+    Swal.fire({
+        title: 'Xác nhận hủy đơn',
+        text: "Bạn có chắc chắn muốn hủy đơn này không?",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Có, hủy đơn!',
+        cancelButtonText: 'Hủy'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Call updateOrderStatus with status = 0 to cancel the order
+            updateOrderStatus(orderId, 0);
+        }
+    });
+}
+
+
+
+// Event listener for the cancel order button
+$(document).on('click', '.btn-cancel-order', function () {
+    const orderId = $(this).data('order-id'); // Get the order ID from the data-order-id attribute
+    cancelOrder(orderId);
+});
+
+function changeOrderStatus(orderId, newStatus) {
+    const statusLabel = getStatusLabel(newStatus); // Lấy tên trạng thái từ mã trạng thái
+    Swal.fire({
+        title: 'Xác nhận',
+        text: `Bạn có chắc chắn muốn thay đổi trạng thái đơn hàng sang "${statusLabel}"?`,
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Đồng ý',
+        cancelButtonText: 'Hủy'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            updateOrderStatus(orderId, newStatus); // Gọi hàm cập nhật trạng thái
+        }
+    });
+}
+
+// Hàm lấy tên trạng thái từ mã trạng thái
+function getStatusLabel(status) {
+    const statusMap = {
+        5: 'Xác Nhận',
+        8: 'Chờ Vận Chuyển',
+        4: 'Vận Chuyển',
+        3: 'Hoàn Thành',
+        0: 'Hủy Đơn'
+    };
+    return statusMap[status] || 'Không xác định';
+}
+
+// Sự kiện nút thay đổi trạng thái
+$(document).on('click', '.btn-change-status', function () {
+    const orderId = $(this).data('order-id'); // Lấy ID đơn hàng
+    const newStatus = $(this).data('new-status'); // Lấy trạng thái mới
+    changeOrderStatus(orderId, newStatus); // Gọi hàm đổi trạng thái
+});
+
+// Sự kiện nút "Quay Lại" trạng thái
+$(document).on('click', '.btn-go-back', function () {
+    const orderId = $(this).data('order-id'); // Lấy ID đơn hàng
+    const previousStatus = $(this).data('previous-status'); // Lấy trạng thái trước đó
+    changeOrderStatus(orderId, previousStatus); // Gọi hàm đổi trạng thái
+});
+
+
 });
