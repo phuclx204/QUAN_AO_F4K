@@ -218,7 +218,6 @@ $(document).ready(async function () {
         }
     })
 
-
     // create dynamic input
     function allRowsFilled() {
         let allFilled = true;

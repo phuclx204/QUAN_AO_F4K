@@ -63,18 +63,18 @@ public class OrderDetailServiceimpl implements OrderDetailService {
         orderDetailRepository.deleteAllById(orderProductDetailKeys);
     }
 
-    public void updateQuantity(Long productId, int quantity,boolean math ) {
+    @Override
+    public void updateQuantity(Long productId, int quantity) {
+        // Tìm thông tin chi tiết của sản phẩm theo productId
         Optional<ProductDetail> optionalProductDetail = productDetailRepository.findById(productId);
 
         if (optionalProductDetail.isPresent()) {
             ProductDetail productDetail = optionalProductDetail.get();
+
             int currentQuantity = productDetail.getQuantity();
-            int updatedQuantity=0;
-            if (math == false){
-                 updatedQuantity = currentQuantity - quantity;
-            }else {
-                 updatedQuantity = currentQuantity + quantity;
-            }
+
+            int updatedQuantity = currentQuantity - quantity;
+
             productDetail.setQuantity(updatedQuantity);
 
             productDetailRepository.save(productDetail);
@@ -83,4 +83,30 @@ public class OrderDetailServiceimpl implements OrderDetailService {
         }
     }
 
+    @Override
+    public void updateQuantityPlus(Long productId, int quantity) {
+        // Tìm thông tin chi tiết của sản phẩm theo productId
+        Optional<ProductDetail> optionalProductDetail = productDetailRepository.findById(productId);
+
+        if (optionalProductDetail.isPresent()) {
+            ProductDetail productDetail = optionalProductDetail.get();
+
+            int currentQuantity = productDetail.getQuantity();
+
+            int updatedQuantity = currentQuantity + quantity;
+
+            productDetail.setQuantity(updatedQuantity);
+
+            productDetailRepository.save(productDetail);
+        } else {
+            throw new RuntimeException("Không tìm thấy sản phẩm với ID: " + productId);
+        }
+    }
+
+    @Override
+    public List<OrderDetail> getProductDetailsByOrderId(Long orderId) {
+        return orderDetailRepository.findProductDetailsByOrderId(orderId);
+    }
+
 }
+
