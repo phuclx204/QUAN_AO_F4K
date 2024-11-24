@@ -121,6 +121,9 @@ $(document).ready(async function () {
         $modalAddAttributes.modal("show");
     })
 
+    $("#action-close").on("click", function (e) {
+        window.location.href = '/admin/products';
+    })
     // Lấy giá value và hiện thị hex code
     $('#changeColor').on('input', function () {
         const selectedColor = $(this).val();

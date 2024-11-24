@@ -116,7 +116,9 @@ $(document).ready(async function () {
         const selectedColor = $(this).val();
         $('#hexCode').text(selectedColor);
     });
-
+    $("#action-close").on("click", function (e) {
+        window.location.href = '/admin/products';
+    })
     // Xử lý đóng modal
     document.getElementById("modalAddAttributes").addEventListener('hide.bs.modal', event => {
         clearValidation('formAddAttributes');

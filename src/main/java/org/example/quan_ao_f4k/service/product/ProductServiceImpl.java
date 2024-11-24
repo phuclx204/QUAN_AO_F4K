@@ -405,11 +405,11 @@ public class ProductServiceImpl implements ProductService {
         Product savedProduct = productRepository.save(product);
 
         if (request.getThumbnail() != null) {
-            saveOrUpdateImage(request.getThumbnail(), savedProduct);
+            saveOrUpdateImage(request.getThumbnail(), savedProduct, F4KConstants.TableCode.PRODUCT);
         }
 
         if (request.getImages() != null) {
-            request.getImages().forEach(el -> saveOrUpdateImage(el, product));
+            request.getImages().forEach(el -> saveOrUpdateImage(el, product, F4KConstants.TableCode.PRODUCT_DETAIL));
         }
     }
 
@@ -426,7 +426,7 @@ public class ProductServiceImpl implements ProductService {
 
         if (request.getThumbnail() != null) {
             imageRepository.deleteImageByIdParent(id, F4KConstants.TableCode.PRODUCT);
-            saveOrUpdateImage(request.getThumbnail(), product);
+            saveOrUpdateImage(request.getThumbnail(), product, F4KConstants.TableCode.PRODUCT);
         }
 
         if (request.getOldFiles() != null) {
@@ -434,7 +434,7 @@ public class ProductServiceImpl implements ProductService {
         }
 
         if (request.getImages() != null) {
-            request.getImages().forEach(el -> saveOrUpdateImage(el, savedProduct));
+            request.getImages().forEach(el -> saveOrUpdateImage(el, savedProduct, F4KConstants.TableCode.PRODUCT_DETAIL));
         }
     }
 
@@ -457,7 +457,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
 
-    private void saveOrUpdateImage(MultipartFile file, Product product) {
+    private void saveOrUpdateImage(MultipartFile file, Product product, String tableCode) {
         try {
             String fileName = iImageService.save(file, product.getSlug());
             Image objImage = Image.builder()
@@ -465,7 +465,7 @@ public class ProductServiceImpl implements ProductService {
                     .nameFile(file.getOriginalFilename())
                     .size(file.getSize())
                     .status(F4KConstants.STATUS_ON)
-                    .tableCode(F4KConstants.TableCode.PRODUCT_DETAIL)
+                    .tableCode(tableCode)
                     .path(fileName)
                     .fileUrl(iImageService.getPublicImageUrl(fileName))
                     .build();
