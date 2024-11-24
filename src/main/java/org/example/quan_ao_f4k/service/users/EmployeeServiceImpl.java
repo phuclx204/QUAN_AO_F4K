@@ -1,13 +1,17 @@
-package org.example.quan_ao_f4k.service.employee;
+package org.example.quan_ao_f4k.service.users;
 
-import org.example.quan_ao_f4k.dto.request.employee.EmployeeRequest;
-import org.example.quan_ao_f4k.dto.response.employee.EmployeeResponse;
+import org.example.quan_ao_f4k.dto.request.users.EmployeeRequest;
+import org.example.quan_ao_f4k.dto.response.users.EmployeeResponse;
 import org.example.quan_ao_f4k.list.ListResponse;
-import org.example.quan_ao_f4k.mapper.employee.EmployeeMapper;
-import org.example.quan_ao_f4k.model.employee.Employee;
-import org.example.quan_ao_f4k.repository.employee.EmployeeRepository;
+import org.example.quan_ao_f4k.mapper.users.EmployeeMapper;
+import org.example.quan_ao_f4k.model.authentication.Employee;
+import org.example.quan_ao_f4k.repository.users.EmployeeRepository;
+import org.example.quan_ao_f4k.util.F4KUtils;
 import org.example.quan_ao_f4k.util.SearchFields;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -50,7 +54,9 @@ public class EmployeeServiceImpl implements EmployeeService{
 	}
 
 	@Override
-	public List<Employee> findEmployeesByStaffRole() {
-		return employeeRepository.findEmployeesByStaffRole();
+	public Page<EmployeeResponse> findEmployeesByStaffRole(int page, int size, String search) {
+		Pageable pageable = PageRequest.of(page - 1, size);
+		List<Employee> list =employeeRepository.findEmployeesByStaffRole(search);
+		return F4KUtils.toPage(employeeMapper.entityToResponse(list),pageable);
 	}
 }

@@ -1,21 +1,31 @@
 package org.example.quan_ao_f4k.service.address;
 
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.example.quan_ao_f4k.dto.request.address.AddressRequest;
 import org.example.quan_ao_f4k.dto.response.address.AddressResponse;
 import org.example.quan_ao_f4k.list.ListResponse;
 import org.example.quan_ao_f4k.mapper.address.AddressMapper;
+import org.example.quan_ao_f4k.model.address.District;
+import org.example.quan_ao_f4k.model.address.Province;
+import org.example.quan_ao_f4k.model.address.Ward;
 import org.example.quan_ao_f4k.repository.address.AddressRepository;
+import org.example.quan_ao_f4k.repository.address.DistrictRepository;
+import org.example.quan_ao_f4k.repository.address.ProvinceRepository;
+import org.example.quan_ao_f4k.repository.address.WardRepository;
 import org.example.quan_ao_f4k.util.SearchFields;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class AddressServiceImpl implements AddressService {
-	private AddressMapper addressMapper;
-	private AddressRepository addressRepository;
+	private final ProvinceRepository provinceRepository;
+	private final DistrictRepository districtRepository;
+	private final WardRepository wardRepository;
+	private final AddressMapper addressMapper;
+	private final AddressRepository addressRepository;
 
 	@Override
 	public ListResponse<AddressResponse> findAll(int page, int size, String sort, String filter, String search, boolean all) {
@@ -45,5 +55,17 @@ public class AddressServiceImpl implements AddressService {
 	@Override
 	public void delete(List<Long> longs) {
 		addressRepository.deleteAllById(longs);
+	}
+
+	public List<Province> getAllProvinces() {
+		return provinceRepository.findAllProvinces();
+	}
+
+	public List<District> getDistrictsByProvince(Long provinceId) {
+		return districtRepository.findByProvinceId(provinceId);
+	}
+
+	public List<Ward> getWardsByDistrict(Long districtId) {
+		return wardRepository.findByDistrictId(districtId);
 	}
 }

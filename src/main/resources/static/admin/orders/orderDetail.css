@@ -1,110 +1,5 @@
 
-/* CSS cho modal sản phẩm */
-.new-product-modal {
-    display: none; /* Ẩn modal mặc định */
-    position: fixed;
-    z-index: 9999;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    overflow: auto;
-    background-color: rgba(0, 0, 0, 0.5);
-}
-
-/* CSS cho nội dung modal sản phẩm */
-.new-product-modal-content {
-    background-color: #fefefe;
-    margin: 15% auto;
-    padding: 15px;
-    border: 1px solid #888;
-    width: 100%; /* Chiều rộng modal */
-    max-width: 1000px; /* Giới hạn chiều rộng tối đa */
-}
-
-/* CSS cho slider giá */
-.new-slider {
-    margin-top: 10px;
-}
-
-/* CSS cho danh sách sản phẩm trong modal */
-.new-product-list {
-    margin-top: 15px;
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-    gap: 15px;
-}
-
-/* CSS cho các nút tìm kiếm và làm mới */
-/*.new-btn-search, .new-btn-add {*/
-/*    background-color: #00be60; !* Màu xanh *!*/
-/*    color: white;*/
-/*    border: none;*/
-/*    border-radius: 5px;*/
-/*    padding: 10px;*/
-/*    cursor: pointer;*/
-/*}*/
-
-/* CSS cho phần thông báo */
-.new-invoice-switch {
-    display: flex;
-    align-items: center;
-    margin-top: 15px;
-}
-
-/* CSS cho checkbox */
-.new-invoice-switch input[type="checkbox"] {
-    margin-right: 5px;
-}
-
-
-/* CSS cho vùng nội dung chính */
-.new-main-content {
-    max-height: 400px;
-    overflow-y: auto;
-}
-
-
-/* CSS cho bảng sản phẩm */
-.new-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin: 20px 0;
-}
-
-.new-table thead {
-    background-color: #f2f2f2;
-}
-
-.new-table th, .new-table td {
-    border: 1px solid #ddd;
-    padding: 12px;
-    text-align: left;
-}
-
-.new-table tr:nth-child(even) {
-    background-color: #f9f9f9;
-}
-
-.new-table tr:hover {
-    background-color: #f1f1f1;
-}
-
-.new-btn-buy {
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    padding: 10px 15px;
-    text-align: center;
-    display: inline-block;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-.new-btn-buy:hover {
-    background-color: #45a049;
-}
-
+/*css màu hiển thị trong bảng thêm sản phẩm*/
 .color-circle {
     display: inline-block;
     width: 20px;
@@ -112,103 +7,13 @@
     border-radius: 50%;
     border: 1px solid #ddd;
 }
-
-
-/* CSS cho tiêu đề modal */
-.new-product-modal-content header {
-    margin-bottom: 20px; /* Khoảng cách dưới tiêu đề */
-}
-
-/* CSS cho vùng đầu tiên của modal */
-.new-header-top {
-    display: flex;
-    justify-content: space-between;
-    align-items: center; /* Căn giữa */
-    margin-bottom: 15px; /* Khoảng cách dưới header */
-}
-
-/* CSS cho ô tìm kiếm */
-#searchInput {
-    flex: 1; /* Chiếm không gian còn lại */
-    padding: 8px; /* Khoảng cách nội dung */
-    border: 1px solid #ccc; /* Đường viền */
-    border-radius: 4px; /* Bo góc */
-    margin-right: 10px; /* Khoảng cách bên phải */
-}
-
-/* CSS cho nút tìm kiếm và làm mới */
-.new-header-actions button {
-    background-color: #007bff; /* Màu xanh */
-    color: white; /* Màu chữ */
-    border: none;
-    border-radius: 4px; /* Bo góc */
-    padding: 8px 12px; /* Khoảng cách nội dung */
-    cursor: pointer; /* Con trỏ khi hover */
-    transition: background-color 0.3s; /* Hiệu ứng chuyển màu */
-}
-
-.new-header-actions button:hover {
-    background-color: #0056b3; /* Màu xanh tối hơn khi hover */
-}
-
-/* CSS cho vùng danh sách lọc */
-nav {
-    display: flex; /* Sử dụng Flexbox */
-    flex-wrap: wrap; /* Cho phép các mục lọc xuống dòng nếu không đủ chỗ */
-    margin-bottom: 20px; /* Khoảng cách dưới vùng lọc */
-}
-
-/* CSS cho danh sách các mục lọc */
-nav ul {
-    list-style-type: none; /* Bỏ dấu chấm */
-    padding: 0; /* Bỏ padding */
-    display: flex; /* Sử dụng Flexbox cho các mục */
-    gap: 20px; /* Khoảng cách giữa các mục lọc */
-}
-
-/* CSS cho các mục lọc */
-nav ul li {
-    flex: 1; /* Mỗi mục chiếm không gian bằng nhau */
-    min-width: 150px; /* Chiều rộng tối thiểu để đảm bảo không quá nhỏ */
-}
-
-/* CSS cho các nhãn mục lọc */
-nav label {
-    font-weight: bold; /* Chữ đậm */
-    display: block; /* Hiển thị dưới dạng khối */
-}
-
-/* CSS cho các ô chọn */
-nav select {
-    width: 100%; /* Chiếm chiều rộng 100% */
-    padding: 8px; /* Khoảng cách nội dung */
-    border: 1px solid #ccc; /* Đường viền */
-    border-radius: 4px; /* Bo góc */
-}
-
-/* CSS cho ô tìm kiếm */
-#searchInput {
-    padding: 8px; /* Khoảng cách nội dung */
-    border: 1px solid #ccc; /* Đường viền */
-    border-radius: 4px; /* Bo góc */
-}
-
-/* CSS cho thanh trượt giá */
-.slider {
-    margin-top: 10px; /* Khoảng cách trên thanh trượt */
-}
-
-/* CSS cho thanh trượt giá */
-input[type="range"] {
-    width: 100%; /* Chiếm chiều rộng 100% */
-}
-
 /*paging*/
 #pagination input[type="text"] {
     height: 35px;
     font-size: 16px;
     padding: 0 5px;
     margin: 10px;
+    user-select: none;
 }
 
 .page-button {
@@ -221,27 +26,55 @@ input[type="range"] {
     font-weight: bold;
     transition: background-color 0.2s ease-in-out;
     margin: 15px;
+    user-select: none;
 }
 
 .page-button:hover {
     background-color: #0056b3;
 }
-
-.page-button:disabled {
-    display: none;
-}
-
 /*end paging*/
 
-/*@media (min-width: 1200px) {*/
-/*    .modal-dialog {*/
-/*        max-width: 100%;*/
-/*        margin-right: auto;*/
-/*        margin-left: auto;*/
-/*    }*/
-/*}*/
+/*css bộ lọc tìm kiếm của modal sản phẩm*/
+#searchForm {
+    max-width: 800px; /* Chiều rộng tối đa cho form */
+    margin: 0 auto; /* Center form */
+    padding: 10px; /* Padding cho form */
+    background-color: #f9f9f9; /* Màu nền nhẹ */
+    border-radius: 5px; /* Bo tròn các góc */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Đổ bóng cho form */
+}
 
-/* ------------- */
+.form-row {
+    display: flex; /* Sử dụng Flexbox */
+    flex-wrap: wrap; /* Cho phép wrap khi không đủ chỗ */
+    gap: 10px; /* Khoảng cách giữa các phần tử */
+}
+
+.form-group {
+    flex: 1; /* Mỗi phần tử chiếm không gian bằng nhau */
+}
+
+.form-control {
+    font-size: 14px; /* Kích thước chữ nhỏ hơn */
+    padding: 8px; /* Padding nhỏ hơn cho input và select */
+}
+
+.btn {
+    font-size: 14px; /* Kích thước chữ cho nút nhỏ hơn */
+    padding: 8px 12px; /* Padding cho nút */
+}
+
+/* Đảm bảo responsive */
+@media (max-width: 600px) {
+    #searchForm {
+        width: 100%; /* Chiều rộng 100% trên màn hình nhỏ */
+    }
+    .form-row {
+        flex-direction: column; /* Xếp chồng các phần tử trên màn hình nhỏ */
+    }
+}
+
+/*end css modal sản phẩm*/
 #content main {
     max-height: calc(100vh - 76px);
 }

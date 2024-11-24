@@ -26,7 +26,7 @@ public class Ward extends BaseEntity {
     @Column(name = "code")
     private int code;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne()
     @JoinColumn(name = "district_id", nullable = false)
     private District district;
 }

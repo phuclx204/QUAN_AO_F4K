@@ -8,6 +8,9 @@ import lombok.NoArgsConstructor;
 import org.example.quan_ao_f4k.model.BaseEntity;
 import org.example.quan_ao_f4k.model.address.Address;
 
+import java.time.LocalDate;
+import java.util.Date;
+
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
@@ -31,6 +34,18 @@ public class User extends BaseEntity {
 
     @Column(name = "number_phone", length = 20)
     private String numberPhone;
+
+    @Column(name = "full_name")
+    private String fullName;
+
+    @Column(name = "gender")
+    private Integer gender;
+
+    @Column(name = "birth_date")
+    private LocalDate birthDate;
+
+    @Column(name = "avatar_url")
+    private String avatarUrl;
 
     @Column(name = "status")
     private Integer status=1;

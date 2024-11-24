@@ -3,7 +3,6 @@ package org.example.quan_ao_f4k.service.product;
 import jakarta.transaction.Transactional;
 import org.example.quan_ao_f4k.dto.request.product.ProductDetailRequest;
 import org.example.quan_ao_f4k.dto.response.product.ProductDetailResponse;
-import org.example.quan_ao_f4k.dto.response.product.ProductResponse;
 import org.example.quan_ao_f4k.exception.BadRequestException;
 import org.example.quan_ao_f4k.list.ListResponse;
 import org.example.quan_ao_f4k.mapper.general.ImageMapper;
@@ -22,14 +21,18 @@ import org.example.quan_ao_f4k.repository.product.ProductRepository;
 import org.example.quan_ao_f4k.repository.product.SizeRepository;
 import org.example.quan_ao_f4k.service.common.IImageServiceImpl;
 import org.example.quan_ao_f4k.util.F4KConstants;
+import org.example.quan_ao_f4k.util.F4KUtils;
 import org.example.quan_ao_f4k.util.SearchFields;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -92,7 +95,10 @@ public class ProductDetailServiceImpl implements ProductDetailService {
     public void delete(List<Long> longs) {
 
     }
-
+    @Override
+    public Integer getQuantity(Long productDetailId) {
+        return productDetailRepository.findQuantityByProductDetailId(productDetailId);
+    }
 
     @Override
     public ListResponse<ProductDetailResponse> getProductDetailByProductId(
@@ -180,4 +186,10 @@ public class ProductDetailServiceImpl implements ProductDetailService {
         return (orderCount > 0 || cartCount > 0);
     }
 
+    @Override
+    public Page<ProductDetailResponse> searchProductDetail(int page, int size, String name, List<Long> brandIds, List<Long> categoryIds, List<Long> sizeIds, List<Long> colorIds, BigDecimal priceFrom, BigDecimal priceTo, String orderBy) {
+        List<ProductDetail> productDetails = productDetailRepository.getListSearch(name, brandIds, categoryIds, sizeIds, colorIds, priceFrom, priceTo, orderBy);
+        Pageable pageable = PageRequest.of(page - 1, size);
+        return F4KUtils.toPage(productDetailMapper.entityToResponse(productDetails), pageable);
+    }
 }

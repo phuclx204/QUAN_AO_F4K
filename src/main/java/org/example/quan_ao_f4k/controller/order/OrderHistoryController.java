@@ -1,0 +1,84 @@
+package org.example.quan_ao_f4k.controller.order;
+
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.example.quan_ao_f4k.dto.request.order.OrderHistoryRequest;
+import org.example.quan_ao_f4k.dto.response.orders.OrderHistoryResponse;
+import org.example.quan_ao_f4k.mapper.order.OrderHistoryMapper;
+import org.example.quan_ao_f4k.model.order.OrderHistory;
+import org.example.quan_ao_f4k.repository.order.OrderHistoryRepository;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/admin/order-history")
+@AllArgsConstructor
+@Slf4j
+public class OrderHistoryController {
+
+    private final OrderHistoryMapper orderHistoryMapper; // Mapper cho OrderHistory
+    private final OrderHistoryRepository orderHistoryRepository; // Repository cho OrderHistory
+
+    // Lấy danh sách tất cả lịch sử đơn hàng
+    @GetMapping
+    public ResponseEntity<List<OrderHistoryResponse>> getAllOrderHistories() {
+        log.info("Fetching all order histories");
+        List<OrderHistory> orderHistories = orderHistoryRepository.findAll(); // Lấy tất cả lịch sử đơn hàng từ DB
+        List<OrderHistoryResponse> orderHistoryDtos = orderHistoryMapper.entityToResponse(orderHistories); // Chuyển thành DTO
+        return ResponseEntity.ok(orderHistoryDtos); // Trả về danh sách OrderHistoryResponse
+    }
+
+    // Lấy thông tin chi tiết của một lịch sử đơn hàng theo ID
+    @GetMapping("/{id}")
+    public ResponseEntity<OrderHistoryResponse> getOrderHistoryById(@PathVariable Long id) {
+        log.info("Fetching order history with ID: {}", id);
+        return orderHistoryRepository.findById(id)
+                .map(orderHistory -> ResponseEntity.ok(orderHistoryMapper.entityToResponse(orderHistory)))
+                .orElseGet(() -> {
+                    log.error("Order history with ID: {} not found", id);
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); // Trả về lỗi 404 nếu không tìm thấy
+                });
+    }
+
+    // Thêm mới lịch sử đơn hàng
+    @PostMapping
+    public ResponseEntity<OrderHistoryResponse> createOrderHistory(@RequestBody OrderHistoryRequest orderHistoryRequest) {
+        log.info("Creating new order history");
+        OrderHistory orderHistory = orderHistoryMapper.requestToEntity(orderHistoryRequest); // Chuyển đổi từ request sang entity
+        OrderHistory savedOrderHistory = orderHistoryRepository.save(orderHistory); // Lưu vào DB
+        return ResponseEntity.status(HttpStatus.CREATED).body(orderHistoryMapper.entityToResponse(savedOrderHistory)); // Trả về entity đã lưu dưới dạng DTO
+    }
+
+    // Cập nhật lịch sử đơn hàng
+    @PutMapping("/{id}")
+    public ResponseEntity<OrderHistoryResponse> updateOrderHistory(@PathVariable Long id, @RequestBody OrderHistoryRequest orderHistoryRequest) {
+        log.info("Updating order history with ID: {}", id);
+        return orderHistoryRepository.findById(id)
+                .map(existingOrderHistory -> {
+                    // Cập nhật entity với dữ liệu từ request
+                    OrderHistory updatedOrderHistory = orderHistoryMapper.partialUpdate(existingOrderHistory, orderHistoryRequest);
+                    orderHistoryRepository.save(updatedOrderHistory); // Lưu entity đã cập nhật
+                    return ResponseEntity.ok(orderHistoryMapper.entityToResponse(updatedOrderHistory)); // Trả về thông tin đã cập nhật
+                })
+                .orElseGet(() -> {
+                    log.error("Order history with ID: {} not found", id);
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); // Trả về lỗi 404 nếu không tìm thấy
+                });
+    }
+
+    // Xóa lịch sử đơn hàng
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteOrderHistory(@PathVariable Long id) {
+        log.info("Deleting order history with ID: {}", id);
+        if (orderHistoryRepository.existsById(id)) {
+            orderHistoryRepository.deleteById(id); // Xóa lịch sử đơn hàng
+            return ResponseEntity.noContent().build(); // Trả về status 204 No Content khi xóa thành công
+        } else {
+            log.error("Order history with ID: {} not found", id);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); // Trả về lỗi 404 nếu không tìm thấy
+        }
+    }
+}
