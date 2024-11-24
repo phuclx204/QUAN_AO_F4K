@@ -35,12 +35,12 @@ public class ProductController {
 
     @GetMapping()
     public String getProduct() {
-        return "/admin/product/product-list";
+        return "admin/product/products-list";
     }
 
     @GetMapping("/add-product")
     public String addProduct(Model model) {
-        return "/admin/product/product-add";
+        return "admin/product/products-add";
     }
 
     @GetMapping("/get-detail")
@@ -55,7 +55,7 @@ public class ProductController {
             return "/error/error_404";
         }
         model.addAttribute("productId", product.getId());
-        return "/admin/product/product-update";
+        return "admin/product/products-update";
     }
 
     @PostMapping("/add-product")

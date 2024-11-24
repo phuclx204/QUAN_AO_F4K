@@ -37,7 +37,4 @@ public class ProductDetailRequest {
     private Integer status = 1;
 
     private LocalDateTime createdAt = LocalDateTime.now();
-
-    private List<MultipartFile> images;
-    private List<Long> oldFiles;
 }

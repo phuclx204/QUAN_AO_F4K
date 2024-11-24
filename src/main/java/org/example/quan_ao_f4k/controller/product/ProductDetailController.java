@@ -3,9 +3,7 @@ package org.example.quan_ao_f4k.controller.product;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.example.quan_ao_f4k.dto.request.product.ProductDetailRequest;
-import org.example.quan_ao_f4k.dto.response.product.CategoryResponse;
 import org.example.quan_ao_f4k.dto.response.product.ProductDetailResponse;
-import org.example.quan_ao_f4k.dto.response.product.ProductResponse;
 import org.example.quan_ao_f4k.exception.BadRequestException;
 import org.example.quan_ao_f4k.list.ListResponse;
 import org.example.quan_ao_f4k.model.product.Product;
@@ -14,15 +12,12 @@ import org.example.quan_ao_f4k.repository.product.ProductDetailRepository;
 import org.example.quan_ao_f4k.repository.product.ProductRepository;
 import org.example.quan_ao_f4k.service.product.ProductDetailService;
 import org.example.quan_ao_f4k.util.F4KConstants;
-import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.Optional;
 
@@ -46,18 +41,6 @@ public class ProductDetailController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/{productId}")
-    public String getProductDetails(@PathVariable("productId") Long productId, Model model) {
-        Optional<Product> product = productRepository.findById(productId);
-        if (product.isPresent()) {
-            model.addAttribute("productId", product.get().getId());
-            model.addAttribute("productName", product.get().getName());
-            return "admin/product/product-detail-list";
-        } else {
-            return "error/error_404";
-        }
-    }
-
     @GetMapping
     public ResponseEntity<?> getDetail(@RequestParam("id") Long id) {
         return ResponseEntity.ok(productDetailService.findById(id));
@@ -79,7 +62,7 @@ public class ProductDetailController {
 
     @PostMapping("/{productId}/add")
     public ResponseEntity<?> addProductDetail(@PathVariable("productId") Long productId,
-                                              @Valid @ModelAttribute ProductDetailRequest productDetailRequest,
+                                              @Valid @RequestBody ProductDetailRequest productDetailRequest,
                                               BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(bindingResult.getAllErrors());
@@ -90,7 +73,7 @@ public class ProductDetailController {
     @PutMapping("/{productId}/update/{id}")
     public ResponseEntity<?> updateProductDetail(@PathVariable("productId") Long productId,
                                                  @PathVariable("id") Long id,
-                                                 @Valid @ModelAttribute ProductDetailRequest productDetailRequest,
+                                                 @Valid @RequestBody ProductDetailRequest productDetailRequest,
                                                  BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(bindingResult.getAllErrors());
@@ -126,15 +109,44 @@ public class ProductDetailController {
         }
     }
 
+    @GetMapping("/{productId}")
+    public String getProductDetails(@PathVariable("productId") Long productId, Model model) {
+        Optional<Product> product = productRepository.findById(productId);
+        if (product.isPresent()) {
+            model.addAttribute("productId", product.get().getId());
+            model.addAttribute("productName", product.get().getName());
+            return "admin/product/product-detail-list";
+        } else {
+            return "error/error_404";
+        }
+    }
+
     @GetMapping("/{productId}/create")
     public String createProductDetail(@PathVariable Long productId, Model model) {
         Optional<Product> product = productRepository.findById(productId);
         if (product.isPresent()) {
             model.addAttribute("productId", product.get().getId());
             model.addAttribute("productName", product.get().getName());
+            model.addAttribute("product", product.get());
             return "admin/product/product-detail-add";
         } else {
             return "error/error_404";
         }
+    }
+
+    @GetMapping("/{productId}/update/{id}")
+    public String updateProductDetail(@PathVariable Long productId, @PathVariable Long id, Model model) {
+        Product product = productRepository.findById(productId).orElse(null);
+        ProductDetail productDetail = productDetailRepository.findById(id).orElseThrow(null);
+
+        if (product == null || productDetail == null) {
+            return "error/error_404";
+        }
+        model.addAttribute("productId", product.getId());
+        model.addAttribute("productName", product.getName());
+        model.addAttribute("product", product);
+        model.addAttribute("productDetail", productDetail);
+
+        return "admin/product/product-detail-update";
     }
 }

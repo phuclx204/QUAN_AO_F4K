@@ -108,7 +108,7 @@ $(document).ready(async function () {
 
                     return `<td class="table-action">
                               <span data-bs-toggle="tooltip" title="Cập nhật">
-                                <a href="/admin/products/update-product/${row.id}" class="action-icon action-update" data-id="${row.id}"> <i class="text-warning mdi mdi-square-edit-outline"></i></a>
+                                <a href="/admin/products/product-detail/${productId}/update/${row.id}" class="action-icon action-update" data-id="${row.id}"> <i class="text-warning mdi mdi-square-edit-outline"></i></a>
                               </span>
                               ${htmlAction}
                              </td>`;
