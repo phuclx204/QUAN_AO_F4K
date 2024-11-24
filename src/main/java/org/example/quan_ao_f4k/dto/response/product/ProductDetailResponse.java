@@ -23,5 +23,5 @@ public class ProductDetailResponse {
     private Integer quantity;
     private Integer status;
     private LocalDateTime createdAt;
-    private List<ImageResponse> images;
+    private List<Image> images;
 }

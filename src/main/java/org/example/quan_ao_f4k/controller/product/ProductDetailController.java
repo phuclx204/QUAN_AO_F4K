@@ -6,11 +6,15 @@ import org.example.quan_ao_f4k.dto.request.product.ProductDetailRequest;
 import org.example.quan_ao_f4k.dto.response.product.CategoryResponse;
 import org.example.quan_ao_f4k.dto.response.product.ProductDetailResponse;
 import org.example.quan_ao_f4k.dto.response.product.ProductResponse;
+import org.example.quan_ao_f4k.exception.BadRequestException;
 import org.example.quan_ao_f4k.list.ListResponse;
 import org.example.quan_ao_f4k.model.product.Product;
 import org.example.quan_ao_f4k.model.product.ProductDetail;
+import org.example.quan_ao_f4k.repository.product.ProductDetailRepository;
 import org.example.quan_ao_f4k.repository.product.ProductRepository;
 import org.example.quan_ao_f4k.service.product.ProductDetailService;
+import org.example.quan_ao_f4k.util.F4KConstants;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -29,6 +33,7 @@ public class ProductDetailController {
 
     private final ProductDetailService productDetailService;
     private final ProductRepository productRepository;
+    private final ProductDetailRepository productDetailRepository;
 
     @GetMapping("list")
     public ResponseEntity<ListResponse<ProductDetailResponse>> getAllBrands(
@@ -47,9 +52,9 @@ public class ProductDetailController {
         if (product.isPresent()) {
             model.addAttribute("productId", product.get().getId());
             model.addAttribute("productName", product.get().getName());
-            return "admin/product/product-detail";
+            return "admin/product/product-detail-list";
         } else {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found");
+            return "error/error_404";
         }
     }
 
@@ -103,4 +108,33 @@ public class ProductDetailController {
         return ResponseEntity.ok("Chi tiết sản phẩm đã được xóa thành công");
     }
 
+    @GetMapping("/{productId}/update-status/{id}")
+    public ResponseEntity<?> updateStatusProductDetail(@PathVariable("productId") Long productId,
+                                                 @PathVariable("id") Long id,
+                                                 @RequestParam("status") Integer status) {
+        Optional<Product> product = productRepository.findById(productId);
+        if (product.isPresent()) {
+            ProductDetail productDetail = productDetailRepository.findById(id).orElseThrow(
+                    () -> new BadRequestException(F4KConstants.ErrCode.NOT_FOUND, id, F4KConstants.TableCode.PRODUCT_DETAIL)
+            );
+            if (status != F4KConstants.STATUS_ON && status != F4KConstants.STATUS_OFF) status = F4KConstants.STATUS_OFF;
+            productDetail.setStatus(status);
+            productDetailRepository.save(productDetail);
+            return ResponseEntity.ok().build();
+        } else {
+            throw new BadRequestException(F4KConstants.ErrCode.NOT_FOUND, productId, F4KConstants.TableCode.PRODUCT);
+        }
+    }
+
+    @GetMapping("/{productId}/create")
+    public String createProductDetail(@PathVariable Long productId, Model model) {
+        Optional<Product> product = productRepository.findById(productId);
+        if (product.isPresent()) {
+            model.addAttribute("productId", product.get().getId());
+            model.addAttribute("productName", product.get().getName());
+            return "admin/product/product-detail-add";
+        } else {
+            return "error/error_404";
+        }
+    }
 }

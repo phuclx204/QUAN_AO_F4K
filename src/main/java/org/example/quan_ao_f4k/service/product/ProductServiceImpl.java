@@ -16,8 +16,10 @@ import org.example.quan_ao_f4k.dto.request.product.ProductDetailRequest;
 import org.example.quan_ao_f4k.dto.request.product.ProductRequest;
 import org.example.quan_ao_f4k.dto.response.product.ProductDetailResponse;
 import org.example.quan_ao_f4k.dto.response.product.ProductResponse;
+import org.example.quan_ao_f4k.dto.response.shop.ShopProductResponse;
 import org.example.quan_ao_f4k.exception.BadRequestException;
 import org.example.quan_ao_f4k.list.ListResponse;
+import org.example.quan_ao_f4k.mapper.product.ProductDetailMapper;
 import org.example.quan_ao_f4k.mapper.product.ProductMapper;
 import org.example.quan_ao_f4k.model.general.Image;
 import org.example.quan_ao_f4k.model.order.OrderDetail;
@@ -32,7 +34,11 @@ import org.example.quan_ao_f4k.service.common.IImageServiceImpl;
 import org.example.quan_ao_f4k.util.F4KConstants;
 import org.example.quan_ao_f4k.util.F4KUtils;
 import org.example.quan_ao_f4k.util.SearchFields;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -42,12 +48,15 @@ import java.util.Optional;
 @Service
 @AllArgsConstructor
 public class ProductServiceImpl implements ProductService {
-    private ProductMapper productMapper;
+    private final ProductDetailService productDetailService;
     private ProductRepository productRepository;
     private ProductDetailRepository productDetailRepository;
     private ImageRepository imageRepository;
     private OrderDetailRepository orderDetailRepository;
     private IImageServiceImpl iImageService;
+
+    private ProductMapper productMapper;
+    private ProductDetailMapper productDetailMapper;
 
     @Override
     public ListResponse<ProductResponse> findAll(int page, int size, String sort, String filter, String search, boolean all) {
@@ -134,7 +143,6 @@ public class ProductServiceImpl implements ProductService {
         }
         return productMapper.entityToResponse(response);
     }
-
 
 
     @Override
@@ -375,12 +383,96 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public boolean isUpdateExistProductByBrandAndCate(String name, Long brandId, Long categoryId,Long id) {
-        return productRepository.isUpdateExistProductByBrandAndCate(name,brandId, categoryId,id);
-    }
-    @Override
-    public boolean isAddExistProductByBrandAndCate(String name, Long brandId, Long categoryId) {
-        return productRepository.isAddExistProductByBrandAndCate(name,brandId, categoryId);
+    public boolean isUpdateExistProductByBrandAndCate(String name, Long brandId, Long categoryId, Long id) {
+        return productRepository.isUpdateExistProductByBrandAndCate(name, brandId, categoryId, id);
     }
 
+
+
+    /////
+    @Override
+    public Page<ProductResponse> searchProducts(int page, int size, String search, Integer status, Long categoryId, Long brandId) {
+        List<Product> productList = productRepository.getListSearch(search, status, categoryId, brandId);
+        List<ProductResponse> listResponse = productMapper.entityToResponse(productList);
+
+        Pageable pageable = PageRequest.of(page - 1, size);
+        return F4KUtils.toPage(listResponse, pageable);
+    }
+
+    @Override
+    public void addProduct(ProductRequest request) {
+        Product product = productMapper.requestToEntity(request);
+        Product savedProduct = productRepository.save(product);
+
+        if (request.getThumbnail() != null) {
+            saveOrUpdateImage(request.getThumbnail(), savedProduct);
+        }
+
+        if (request.getImages() != null) {
+            request.getImages().forEach(el -> saveOrUpdateImage(el, product));
+        }
+    }
+
+    @Override
+    @Transactional
+    public void updateProduct(Long id, ProductRequest request) {
+        Product product = productRepository.findById(id).orElseThrow(
+                () -> new BadRequestException("Không tồn tại sản phẩm")
+        );
+
+        Product productRequest = productMapper.requestToEntity(request);
+        productRequest.setId(id);
+        Product savedProduct = productRepository.save(productRequest);
+
+        if (request.getThumbnail() != null) {
+            imageRepository.deleteImageByIdParent(id, F4KConstants.TableCode.PRODUCT);
+            saveOrUpdateImage(request.getThumbnail(), product);
+        }
+
+        if (request.getOldFiles() != null) {
+            imageRepository.deleteImagesByParentIdAndTableCodeNotIn(productRequest.getId(), F4KConstants.TableCode.PRODUCT_DETAIL, request.getOldFiles());
+        }
+
+        if (request.getImages() != null) {
+            request.getImages().forEach(el -> saveOrUpdateImage(el, savedProduct));
+        }
+    }
+
+    @Override
+    public ProductResponse getDetail(Long id) {
+        Product product = productRepository.findById(id).orElseThrow(
+                () -> new BadRequestException(F4KConstants.ErrCode.NOT_FOUND, id, F4KConstants.TableCode.PRODUCT)
+        );
+        ProductResponse productResponse = productMapper.entityToResponse(product);
+        List<ProductDetail> productDetailList = productDetailRepository.findProductDetailsByProductId(product.getId());
+        List<ProductDetailResponse> productResponses = productDetailMapper.entityToResponse(productDetailList);
+        productResponse.setDetailResponseList(productResponses);
+        return productResponse;
+    }
+
+
+    @Override
+    public boolean isAddExistProductByBrandAndCate(String name, Long brandId, Long categoryId) {
+        return productRepository.isAddExistProductByBrandAndCate(name, brandId, categoryId);
+    }
+
+
+    private void saveOrUpdateImage(MultipartFile file, Product product) {
+        try {
+            String fileName = iImageService.save(file, product.getSlug());
+            Image objImage = Image.builder()
+                    .idParent(product.getId())
+                    .nameFile(file.getOriginalFilename())
+                    .size(file.getSize())
+                    .status(F4KConstants.STATUS_ON)
+                    .tableCode(F4KConstants.TableCode.PRODUCT_DETAIL)
+                    .path(fileName)
+                    .fileUrl(iImageService.getPublicImageUrl(fileName))
+                    .build();
+
+            imageRepository.save(objImage);
+        } catch (IOException e) {
+            throw new BadRequestException("Gặp lỗi khi upload file!");
+        }
+    }
 }

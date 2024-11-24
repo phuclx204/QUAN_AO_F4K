@@ -17,6 +17,8 @@ public class ProductDetailRequest {
 
     private Long productId;
 
+    private Long id;
+
     @NotNull(message = "Vui lòng chọn kích cỡ")
     private Long sizeId;
 

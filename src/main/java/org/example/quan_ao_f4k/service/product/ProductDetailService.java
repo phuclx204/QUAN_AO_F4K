@@ -2,8 +2,10 @@ package org.example.quan_ao_f4k.service.product;
 
 import org.example.quan_ao_f4k.dto.request.product.ProductDetailRequest;
 import org.example.quan_ao_f4k.dto.response.product.ProductDetailResponse;
+import org.example.quan_ao_f4k.dto.response.product.ProductResponse;
 import org.example.quan_ao_f4k.list.ListResponse;
 import org.example.quan_ao_f4k.service.CrudService;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -15,4 +17,6 @@ public interface ProductDetailService extends CrudService<Long, ProductDetailReq
 	boolean isAddExistsByProductSizeAndColor(Long productId,Long sizeId, Long colorId);
 	boolean isUpdateExistsByProductSizeAndColor(Long productId,Long sizeId, Long colorId,Long id);
 	boolean deleteProductDetail(Long productId, Long id);
+
+//	Page<ProductResponse> searchProductDetail(int page, int size, String search, Integer status, Long categoryId, Long brandId);
 }

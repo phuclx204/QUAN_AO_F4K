@@ -8,13 +8,26 @@ const ref = (initialValue) => {
 // dùng với jquery
 const buttonSpinner = (() => {
     const show = () => {
-        const $button = $('.modal-footer.has-spinner button');
+        const $button = $('.has-spinner button');
         $button.prop('disabled', true);
         $button.prepend('<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>');
     }
 
     const hidden = () => {
-        const $button = $('.modal-footer.has-spinner button');
+        const $button = $('.has-spinner button');
+        $button.prop('disabled', false);
+        $button.find('.spinner-border').remove();
+    }
+
+    return {show, hidden};
+})();
+const buttonSpinner2 = (() => {
+    const show = ($button) => {
+        $button.prop('disabled', true);
+        $button.prepend('<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>');
+    }
+
+    const hidden = ($button) => {
         $button.prop('disabled', false);
         $button.find('.spinner-border').remove();
     }
@@ -116,6 +129,34 @@ const getCommon = () => {
     }
 }
 const validateForm = (() => {
+    const addEventElement = (elementForm, field, elementInput, options) => {
+        if (options.type === 'select2' && $(elementInput).hasClass('select2')) {
+            $(elementInput).on('change', () => {
+                validate(elementForm, field, options);
+            });
+        } else {
+            elementInput.addEventListener('input', () => {
+                validate(elementForm, field, options);
+            });
+        }
+    }
+    const getFeedback = (elementForm, options) => {
+        let invalidFeedback = null;
+        if (options?.feedBackDiv) {
+            invalidFeedback = elementForm.closest('.valid-div').querySelector('.invalid-feedback');
+        } else {
+            invalidFeedback = elementForm.parentElement.querySelector('.invalid-feedback');
+        }
+        return invalidFeedback;
+    }
+    const getInputVal = (elementForm, options) => {
+        let inputValue = elementForm.value;
+        if (options?.type === "select2") {
+            inputValue = $(elementForm).val()
+        }
+        return inputValue;
+    }
+
     const getValidate = (formId, validationRules = {}) => {
         const form = document.getElementById(formId);
         if (form === null) {
@@ -126,15 +167,14 @@ const validateForm = (() => {
 
         for (const field in validationRules) {
             const input = form.querySelector(`#${field}`);
-
             if (input) {
-                input.addEventListener('input', () => {
-                    validate(form, field, '', validationRules[field][0]);
-                });
+                const validationRule = validationRules[field][0];
+
+                addEventElement(form, field, input, validationRule);
             }
 
             for (const el of validationRules[field]) {
-                const validTmp = validate(form, field, '', el);
+                const validTmp = validate(form, field, el);
                 if (!validTmp) {
                     isValid = false;
                     break;
@@ -143,26 +183,24 @@ const validateForm = (() => {
         }
         return isValid;
     };
-
-    const validate = (form, selectorId, type, options) => {
+    const validate = (form, selectorId, options) => {
         let isValid = true;
         const input = form.querySelector(`#${selectorId}`);
         const rules = options.rule;
         let invalidFeedback = null;
 
         try {
-            invalidFeedback = input.parentElement.querySelector('.invalid-feedback');
+            invalidFeedback = getFeedback(input, options)
         } catch (_e) {
             console.log(`Thiếu thẻ <div class="invalid-feedback"></div> dưới phần tử có id = ${selectorId}`);
         }
 
-        if (invalidFeedback == null) {
-            console.log('=== ERRRRRROR ===');
-            return true;
-        }
+        if (invalidFeedback == null) return true
 
         if (rules) {
-            if (!rules(input.value)) {
+            let inputValue = getInputVal(input, options)
+
+            if (!rules(inputValue)) {
                 invalidFeedback.textContent = options.message;
                 input.setCustomValidity("Invalid");
                 invalidFeedback.style.display = "block";
@@ -188,13 +226,17 @@ const validateForm = (() => {
             input.value = '';
             input.classList.remove('is-invalid', 'is-valid');
 
+            if ($(input).hasClass('select2')) {
+                $(input).val(null).trigger('change');
+            }
+
             const invalidFeedback = input.parentElement.querySelector('.invalid-feedback');
             if (invalidFeedback) {
                 invalidFeedback.style.display = "none";
             }
         });
     }
-    return { getValidate, clearValidation}
+    return {getValidate, clearValidation}
 })()
 
 // for ajax
@@ -202,6 +244,7 @@ const POST = 'POST';
 const GET = 'GET';
 const PUT = 'PUT';
 const DELETE = 'DELETE';
+const PATCH = 'PATCH';
 const $ajax = (() => {
     const createUrl = (url, params = {}) => {
         const queryString = new URLSearchParams(params).toString();
@@ -234,7 +277,7 @@ const $ajax = (() => {
             if (!url || typeof url !== 'string') {
                 return reject(new Error("URL is string"));
             }
-            if (![GET, POST, DELETE, PUT].includes(method.toUpperCase())) {
+            if (![GET, POST, DELETE, PUT, PATCH].includes(method.toUpperCase())) {
                 return reject(new Error("Invalid HTTP method"));
             }
 
@@ -251,7 +294,8 @@ const $ajax = (() => {
                     resolve(response);
                 },
                 error: function (xhr) {
-                    const objectError = xhr.responseJSON || {message: "An unknown error occurred"};
+                    console.log(xhr.responseText)
+                    const objectError = xhr.responseJSON || {message: xhr.responseText} || {message: "Không thể thao tác"};
                     if (showErrMess) {
                         if (Array.isArray(objectError)) {
                             $alterTop('error', objectError[0].defaultMessage);
@@ -266,12 +310,51 @@ const $ajax = (() => {
         });
     }
 
+    // function buildFormData(formData, data, parentKey = '') {
+    //     if (data && typeof data === 'object' && !(data instanceof File)) {
+    //         Object.keys(data).forEach(key => {
+    //             const value = data[key];
+    //             const fullKey = parentKey ? `${parentKey}[${key}]` : key;
+    //
+    //             if (Array.isArray(value)) {
+    //                 value.forEach((v, index) => {
+    //                     buildFormData(formData, v, `${fullKey}[${index}]`);
+    //                 });
+    //             } else {
+    //                 buildFormData(formData, value, fullKey);
+    //             }
+    //         });
+    //     } else {
+    //         formData.append(parentKey, data);
+    //     }
+    // }
+
+    function buildFormData(formData, data, parentKey = '') {
+        if (data && typeof data === 'object' && !(data instanceof File)) {
+            Object.keys(data).forEach(key => {
+                const value = data[key];
+                const fullKey = parentKey ? `${parentKey}.${key}` : key;
+
+                if (Array.isArray(value)) {
+                    value.forEach((v, index) => {
+                        buildFormData(formData, v, `${fullKey}[${index}]`);
+                    });
+                } else {
+                    buildFormData(formData, value, fullKey);
+                }
+            });
+        } else {
+            formData.append(parentKey, data);
+        }
+    }
+
+
     function callWithMultipartFile(url, method = 'POST', data = null, params = null) {
         return new Promise((resolve, reject) => {
             if (!url || typeof url !== 'string') {
                 return reject(new Error("URL is string"));
             }
-            if (![GET, POST, DELETE, PUT].includes(method.toUpperCase())) {
+            if (![GET, POST, DELETE, PUT, PATCH].includes(method.toUpperCase())) {
                 return reject(new Error("Invalid HTTP method"));
             }
 
@@ -282,16 +365,7 @@ const $ajax = (() => {
 
             const dataForm = new FormData();
             if (data) {
-                for (const filed in data) {
-                    if (!data[filed]) continue;
-                    if (Array.isArray(data[filed])) {
-                        data[filed].forEach(el => {
-                            dataForm.append(filed, el);
-                        });
-                    } else {
-                        dataForm.append(filed, data[filed])
-                    }
-                }
+                buildFormData(dataForm, data);
             }
 
             $.ajax({
@@ -331,13 +405,16 @@ const $ajax = (() => {
     const remove = (url, params = null, data = null, showErrMess = true) => {
         return callApi(url, "DELETE", data, params, showErrMess)
     }
+    const patch = (url, data = null, params = null, showErrMess = true) => {
+        return callApi(url, "PATCH", data, params, showErrMess)
+    }
     return {
-        createUrl, callApi, callWithMultipartFile, get, post, put, remove
+        createUrl, callApi, callWithMultipartFile, get, post, put, remove, patch
     }
 })()
 
 // dùng khi  có một selector bọc ngoài thông qua id
-export const twoWayBinding = ({ selectorParent, dataObject, initialValues }) => {
+export const twoWayBinding = ({selectorParent, dataObject, initialValues}) => {
     const $selectorParent = document.getElementById(selectorParent);
     console.log($selectorParent, ' - $selectorParent')
     $selectorParent.addEventListener('input', (e) => {
@@ -372,7 +449,7 @@ export const twoWayBinding = ({ selectorParent, dataObject, initialValues }) => 
     });
 };
 
-export const syncFormWithDataObject = ({ selectorParent, dataObject, initialValues }) => {
+export const syncFormWithDataObject = ({selectorParent, dataObject, initialValues}) => {
     const $selectorParent = document.getElementById(selectorParent);
 
     $selectorParent.addEventListener('input', (e) => {
@@ -424,4 +501,4 @@ export const syncFormWithDataObject = ({ selectorParent, dataObject, initialValu
     updateFormUI();
 };
 
-export { buttonSpinner, $ajax, ref, getCommon, validateForm };
+export {buttonSpinner, $ajax, ref, getCommon, validateForm, buttonSpinner2};

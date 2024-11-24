@@ -69,7 +69,7 @@ public class ProductDetailServiceImpl implements ProductDetailService {
         );
         ProductDetailResponse productDetailResponse = productDetailMapper.entityToResponse(productDetail);
         List<Image> images = imageRepository.getImageByIdParent(productDetail.getId(), F4KConstants.TableCode.PRODUCT_DETAIL);
-        productDetailResponse.setImages(imageMapper.entityToResponse(images));
+        productDetailResponse.setImages(images);
         return productDetailResponse;
     }
 
@@ -113,11 +113,7 @@ public class ProductDetailServiceImpl implements ProductDetailService {
         }
         productRepository.findById(productId);
         request.setProductId(productId);
-        ProductDetailResponse response = defaultSave(request, productDetailRepository, productDetailMapper);
-        if (request.getImages() != null) {
-            request.getImages().forEach(el -> saveOrUpdateImage(el, response));
-        }
-        return response;
+        return defaultSave(request, productDetailRepository, productDetailMapper);
     }
 
     @Override
@@ -143,13 +139,6 @@ public class ProductDetailServiceImpl implements ProductDetailService {
         productDetail.setStatus(request.getStatus());
 
         ProductDetail obj = productDetailRepository.save(productDetail);
-
-        if (request.getOldFiles() != null) {
-            imageRepository.deleteImagesByParentIdAndTableCodeNotIn(productDetail.getId(), F4KConstants.TableCode.PRODUCT_DETAIL, request.getOldFiles());
-        }
-        if (request.getImages() != null) {
-            request.getImages().forEach(el -> saveOrUpdateImage(el, productDetailMapper.entityToResponse(obj)));
-        }
 
         return productDetailMapper.entityToResponse(obj);
     }
@@ -182,26 +171,6 @@ public class ProductDetailServiceImpl implements ProductDetailService {
             }
         }
         return false;
-    }
-
-
-    private void saveOrUpdateImage(MultipartFile file, ProductDetailResponse productDetail) {
-        try {
-            String fileName = iImageService.save(file, productDetail.getProduct().getSlug());
-            Image objImage = Image.builder()
-                    .idParent(productDetail.getId())
-                    .nameFile(file.getOriginalFilename())
-                    .size(file.getSize())
-                    .status(F4KConstants.STATUS_ON)
-                    .tableCode(F4KConstants.TableCode.PRODUCT_DETAIL)
-                    .path(fileName)
-                    .fileUrl(iImageService.getPublicImageUrl(fileName))
-                    .build();
-
-            imageRepository.save(objImage);
-        } catch (IOException e) {
-            throw new BadRequestException("Gặp lỗi khi upload file!");
-        }
     }
 
     private boolean checkConstraints(Long isParent) {
