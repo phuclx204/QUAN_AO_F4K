@@ -105,7 +105,7 @@ function createInvoice() {
 
 // Hàm để tạo mã duy nhất cho hóa đơn
 function generateUniqueCode() {
-    return 'HD ' + Date.now();
+    return 'HD' + Date.now();
 }
 
 // cập nhật trạng thái cho đơn hủy = 0

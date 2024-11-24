@@ -62,7 +62,6 @@ public class OrderDetailServiceimpl implements OrderDetailService {
     public void delete(List<OrderProductDetailKey> orderProductDetailKeys) {
         orderDetailRepository.deleteAllById(orderProductDetailKeys);
     }
-
     @Override
     public void updateQuantity(Long productId, int quantity) {
         // Tìm thông tin chi tiết của sản phẩm theo productId
@@ -102,11 +101,10 @@ public class OrderDetailServiceimpl implements OrderDetailService {
             throw new RuntimeException("Không tìm thấy sản phẩm với ID: " + productId);
         }
     }
-
     @Override
     public List<OrderDetail> getProductDetailsByOrderId(Long orderId) {
         return orderDetailRepository.findProductDetailsByOrderId(orderId);
     }
 
-}
 
+}

@@ -41,7 +41,7 @@ public class Order extends BaseEntity {
 
     @ManyToOne
     @JoinColumn(name = "payment_method_type")
-    private PaymentMethod paymentMethodType;
+    private PaymentMethod paymentMethod;
 
     @Column(name = "payment_status")
     private Integer paymentStatus;

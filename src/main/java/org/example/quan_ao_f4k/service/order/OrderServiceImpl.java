@@ -85,8 +85,6 @@ public class OrderServiceImpl implements OrderService {
 		model.addAttribute("districts", districtRepository.findAll());
 		model.addAttribute("provinces", provinceRepository.findAll());
 	}
-
-
 	// Tính số tiền cho từng chi tiết đơn hàng
 	private BigDecimal calculateAmount(OrderDetail detail) {
 		BigDecimal price = detail.getPrice();
@@ -100,7 +98,6 @@ public class OrderServiceImpl implements OrderService {
 				.map(this::calculateAmount)
 				.reduce(BigDecimal.ZERO, BigDecimal::add);
 	}
-
 	@Override
 	public ListResponse<OrderResponse> searchOrders(int page, int size, String sort, LocalDateTime startDate, LocalDateTime endDate,
 	                                                String search, Integer status) {

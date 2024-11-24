@@ -19,13 +19,12 @@ import org.mapstruct.ReportingPolicy;
 public interface OrderMapper extends GennericMapper<Order, OrderRequest, OrderResponse> {
     @Override
     @Mapping(source = "order_type", target = "order_type")
-    @Mapping(source = "paymentMethodType", target = "paymentMethodType", qualifiedByName = "convertToPayment")
 //    @Mapping(source = "userId", target = "user", qualifiedByName = "convertToUser")
     Order requestToEntity(OrderRequest request);
 
     @Override
     @Mapping(source = "order_type", target = "order_type")
 //    @Mapping(source = "userId", target = "user", qualifiedByName = "convertToUser")
-    @Mapping(source = "paymentMethodType", target = "paymentMethodType", qualifiedByName = "convertToPayment")
+//    @Mapping(source = "paymentMethodId", target = "paymentMethod", qualifiedByName = "convertToPayment")
     Order partialUpdate(@MappingTarget Order entity, OrderRequest request);
 }

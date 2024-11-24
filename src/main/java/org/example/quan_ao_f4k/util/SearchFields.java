@@ -44,7 +44,9 @@ public interface SearchFields {
             "quantity"
     );
     List<String> EMPLOYEE = List.of(
-            "user.name"
+            "user.fullName",
+            "user.numberPhone",
+            "user.email"
     );
     List<String> CUSTOMERS = List.of(
             "fullName","numberPhone","email"

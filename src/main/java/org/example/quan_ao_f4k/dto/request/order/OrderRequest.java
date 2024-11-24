@@ -15,7 +15,8 @@ public class OrderRequest {
     private String toAddress;
     private String toPhone;
     private BigDecimal totalPay;
-    private Long paymentMethodType=1L;
+    @Nullable
+    private Long paymentMethodId;
     private Integer paymentStatus;
     private String note;
     private BigDecimal tax;

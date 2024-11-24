@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import org.example.quan_ao_f4k.model.BaseEntity;
 import org.example.quan_ao_f4k.model.address.Address;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 @Entity
@@ -41,7 +42,7 @@ public class User extends BaseEntity {
     private Integer gender;
 
     @Column(name = "birth_date")
-    private Date birthDate;
+    private LocalDate birthDate;
 
     @Column(name = "avatar_url")
     private String avatarUrl;
