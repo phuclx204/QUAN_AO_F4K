@@ -78,12 +78,7 @@ public class ShopProductServiceImpl implements ShopProductService {
 
         List<Size> listSize = sizeRepository.findBySlugProduct(slug, productDetail.getColor().getHex());
 
-        List<Image> listImage = new ArrayList<>();
-        if (colorHex == null) {
-            listImage = imageRepository.getImageByIdParent(productDetail.getId(), F4KConstants.TableCode.PRODUCT_DETAIL);
-        } else {
-            getImagesProductDetail(listImage, slug, colorHex);
-        }
+        List<Image> listImage = imageRepository.getImageByIdParent(productDetail.getProduct().getId(), F4KConstants.TableCode.PRODUCT_DETAIL);
 
         ShopProductRequest.RequestSearch requestSearch = ShopProductRequest.RequestSearch
                 .builder()

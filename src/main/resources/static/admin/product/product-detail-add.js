@@ -197,10 +197,11 @@ $(document).ready(async function () {
         openLoading();
         buttonSpinner.show();
 
+        const priceValue = parseFloat((objectCreateProduct.price + '').replace(/\./g, '')) || 0;
         const data = {
             colorId: objectCreateProduct.colorId,
             sizeId: objectCreateProduct.sizeId,
-            price: objectCreateProduct.price,
+            price: priceValue,
             quantity: objectCreateProduct.quantity,
             status: '1'
         }

@@ -10,7 +10,7 @@
     <link rel="stylesheet" th:href="@{/admin/dist/css/app-f4k.min.css}"/>
     <th:block th:insert="admin/fragments/head :: head"></th:block>
     <link rel="stylesheet" th:href="@{/admin/plugins/sweetalert/sweetalert2.min.css}"/>
-    <link rel="stylesheet" th:href="@{/admin/product/product-add.css}">
+<!--    <link rel="stylesheet" th:href="@{/admin/product/product-add.css}">-->
 </head>
 
 <body>
@@ -83,7 +83,7 @@
                                         </div>
                                     </div>
                                     <div class="row mb-3">
-                                        <div class="col-lg-6 mb-3">
+                                        <div class="col-lg-6 mb-3" id="product-image">
                                             <label for="createDescription" class="form-label">Ảnh sản phẩm</label>
                                             <input type="file"
                                                    id="createFile"
