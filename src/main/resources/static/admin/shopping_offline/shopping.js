@@ -4,6 +4,22 @@ function addProductDetail() {
     fetchProductDetails();
 }
 
+document.addEventListener('DOMContentLoaded', function () {
+    const notificationMessage = document.getElementById('notificationMessage');
+    if (notificationMessage) {
+        const message = notificationMessage.innerText;
+        if (message) {
+            Swal.fire({
+                title: 'Thông báo',
+                text: message,
+                icon: 'info',
+                showConfirmButton: true
+            });
+        }
+
+    }
+});
+
 function loadOptions(endpoint, selectElement, defaultOption, selectedId = null) {
     $.get(endpoint, function (data) {
         selectElement.empty().append(`<option value="">${defaultOption}</option>`);
@@ -752,7 +768,7 @@ const formatCurrency = (value) => {
 };
 
 // sự kiện change cho phương thức thanh toán
-document.querySelectorAll('input[name="paymentMethod"]').forEach((radio) => {
+document.querySelectorAll('input[name="paymentMethodType"]').forEach((radio) => {
     radio.addEventListener('change', () => {
         const inputField = document.getElementById("customerAmount");
         const changeAmount = document.getElementById("changeAmount");
@@ -779,6 +795,7 @@ const totalAmountElement = document.getElementById("totalAmount");
 const changeAmount = document.getElementById("changeAmount");
 const statusMessage = document.getElementById("statusMessage");
 
+
 const totalAmount = parseInt(totalAmountElement.textContent.replace(/\D/g, ""), 10) || 0;
 totalAmountElement.textContent = formatCurrency(totalAmount);
 
@@ -795,7 +812,7 @@ inputField.addEventListener("input", () => {
 function confirmOrder(orderId) {
     const customerAmount = parseInt(inputField.value.replace(/\D/g, ""), 10) || 0;
     const totalPay = totalAmount;
-    const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked').value;
+    const paymentMethod = document.querySelector('input[name="paymentMethodType"]:checked').value;
 
     Swal.fire({
         title: 'Xác nhận thanh toán?',
@@ -805,6 +822,7 @@ function confirmOrder(orderId) {
         confirmButtonText: 'Xác nhận',
         cancelButtonText: 'Hủy',
     }).then((result) => {
+
         if (result.isConfirmed) {
             if (paymentMethod === 'cash') {
                 if (customerAmount < totalPay) {
@@ -813,13 +831,25 @@ function confirmOrder(orderId) {
                 }
                 updateOrderStatus1(orderId, 3, totalPay, 1);
             } else if (paymentMethod === 'vnpay') {
-                window.location.href = `/admin/shopping-offline/checkout/vnpay/submitOrder?amount=${totalPay}&orderInfo=thanh-toan-hoa-don`;
-                const i= parseInt(document.getElementById('checkoutStatus'));
-                if(i===1){
-                    updateOrderStatus1(orderId, 3, totalPay, 2);
-                }
+                const orderCode = document.getElementById("orderCode").innerText;
+                const orderNote = document.getElementById("orderNote").val;
+                handleVNPayPayment(orderId, totalPay, orderNote, orderCode);
             }
         }
+    });
+}
+
+// Thêm hóa đơn vào order history
+function addOrderToHistory(orderId, note) {
+    $.ajax({
+        url: '/admin/order-history',
+        method: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify({
+            orderId: orderId,
+            status: 3,
+            note: note
+        }),
     });
 }
 
@@ -833,6 +863,7 @@ function updateOrderStatus1(orderId, status, totalPay, paymentMethodId) {
         toAddress: document.getElementById('to_address').value,
         totalPay: totalPay,
         paymentMethodType: paymentMethodId,
+        note:  $('#orderNote').val().trim(),
         paymentStatus: 2,
         order_type: 'OFFLINE'
     };
@@ -850,6 +881,7 @@ function updateOrderStatus1(orderId, status, totalPay, paymentMethodId) {
                 confirmButtonText: 'OK',
             }).then((result) => {
                 if (result.isConfirmed) {
+                    addOrderToHistory(orderId, updateData.note);
                     handleRemainingInvoices(orderId);
                 }
             });
@@ -860,6 +892,30 @@ function updateOrderStatus1(orderId, status, totalPay, paymentMethodId) {
                 errorMessage = "Không thấy đơn hàng";
             }
             Swal.fire('Lỗi', errorMessage, 'error');
+        }
+    });
+}
+
+//xử lí thanh toán hóa đơn bằng vnpay
+function handleVNPayPayment(orderId, totalPay, orderNote, orderCode) {
+    $.ajax({
+        url: '/admin/shopping-offline/checkout/vnpay/payment',
+        method: 'GET',
+        data: {amount: totalPay, bankCode: 'NCB', orderInfor: orderId, orderNote: orderNote, orderCode: orderCode},
+        success: function (response) {
+            if (response.code === "ok") {
+                Swal.fire({
+                    title: 'Đang chuyển đến VNPay...',
+                    allowOutsideClick: false,
+                    didOpen: () => Swal.showLoading(),
+                });
+                window.location.href = response.paymentUrl;
+            } else {
+                Swal.fire({title: 'Lỗi', text: 'Không thể khởi tạo thanh toán VNPay!', icon: 'error'});
+            }
+        },
+        error: function () {
+            Swal.fire({title: 'Lỗi', text: 'Có lỗi xảy ra khi khởi tạo thanh toán!', icon: 'error'});
         }
     });
 }
@@ -879,12 +935,11 @@ function handleRemainingInvoices(orderId) {
     });
 
     if (nextOrderId) {
-        // Nếu có hóa đơn tiếp theo, hiển thị
         viewInvoice(nextOrderId);
     } else {
         Swal.fire({
             title: 'Thông báo',
-            text: 'Không còn hóa đơn nào, bạn có muốn tạo hóa đơn mới không?',
+            text: 'Không có hóa đơn nào, tạo mới?',
             icon: 'info',
             showCancelButton: true,
             confirmButtonText: 'Tạo',
@@ -898,7 +953,6 @@ function handleRemainingInvoices(orderId) {
         });
     }
 }
-
 
 // thông tin khách đặt hàng
 // $(document).ready(function () {
