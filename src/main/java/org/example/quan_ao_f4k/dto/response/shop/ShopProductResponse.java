@@ -24,6 +24,7 @@ public class ShopProductResponse {
         private String description;
         private Integer status;
         private Image image;
+        List<Image> images;
     }
 
     @Data
@@ -36,7 +37,6 @@ public class ShopProductResponse {
         private BigDecimal price;
         private Integer quantity;
         private Integer status;
-        List<Image> images;
     }
 
     /// FOR CART
