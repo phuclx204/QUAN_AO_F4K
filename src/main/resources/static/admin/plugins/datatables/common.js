@@ -23,6 +23,7 @@ Object.assign(DataTable.defaults, {
             '<option value="100">100</option></select>'
     },
     drawCallback: function () {
+        $('[data-bs-toggle="tooltip"]').tooltip();
         $(".dataTables_paginate > .pagination").addClass("pagination-rounded"),
             $("#products-datatable_length label").addClass("form-label"),
             document

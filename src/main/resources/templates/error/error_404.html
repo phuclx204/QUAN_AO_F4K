@@ -274,12 +274,53 @@
         bottom: 0;
         color: #a0a0a0;
         font-size: 14px
-    }</style>
+    }
+
+    .btn{line-height:1}
+    .btn {
+        display: inline-block;
+        font-weight: 400;
+        color: #212529;
+        text-align: center;
+        vertical-align: middle;
+        user-select: none;
+        border: 1px solid transparent;
+        padding: .375rem .75rem;
+        font-size: 1rem;
+        line-height: 1.5;
+        border-radius: .25rem;
+        transition: color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out, box-shadow .15s ease-in-out
+    }
+
+    .btn:hover {
+        color: #212529;
+        text-decoration: none
+    }
+
+    .btn.focus, .btn:focus {
+        outline: 0;
+        box-shadow: 0 0 0 .2rem rgba(0, 123, 255, .25)
+    }
+    .btn-primary {
+        color: #fff;
+        background-color: #007bff;
+        border-color: #007bff
+    }
+
+    .btn-primary:hover {
+        color: #fff;
+        background-color: #0069d9;
+        border-color: #0062cc
+    }
+
+    </style>
 </head>
 <body>
 <div class="cover">
-    <h1>Resource not found <small>Error 404</small></h1>
-    <p class="lead">The requested resource could not be found but may be available again in the future.</p>
+    <h1>Không tìm thấy trang! <small>Lỗi 404</small></h1>
+    <p class="lead">Xin lỗi! Địa chỉ bạn truy cập không tồn tại. Có thể đường dẫn bị sai hoặc trang đã bị xóa bỏ...</p>
+    <a href="javascript:void(0)" onclick="window.history.back()" class="btn btn-primary">Quay về</a>
+
 </div>
 </body>
 </html>

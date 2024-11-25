@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <link th:href="@{/admin/plugins/filepond/filepond.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/admin/plugins/filepond/filepond-plugin-image-preview.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/admin/plugins/filepond/filepond-plugin-image-overlay.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/admin/plugins/filepond/filepond-plugin-file-poster.min.css}" rel="stylesheet" type="text/css"/>
+    <link rel="stylesheet" th:href="@{/admin/dist/css/vendor.min.css}"/>
+    <link rel="stylesheet" th:href="@{/admin/dist/css/app-f4k.min.css}"/>
+    <th:block th:insert="admin/fragments/head :: head"></th:block>
+    <link rel="stylesheet" th:href="@{/admin/plugins/sweetalert/sweetalert2.min.css}"/>
+    <link rel="stylesheet" th:href="@{/admin/product/product-add.css}">
+
+    <meta name="product-id" th:content="${productId}">
+    <meta name="product-name" th:content="${productName}">
+    <meta name="product-detail-id" th:content="${productDetail.id}">
+</head>
+
+<body>
+<div th:replace="admin/fragments/sidebar::sidebar"></div>
+
+<!-- Begin page -->
+<section id="content">
+    <div th:replace="admin/fragments/loading::div"></div>
+    <div th:replace="admin/fragments/content::content"></div>
+
+    <main>
+        <!-- start content here -->
+        <div class="main-pane row" style="margin-top: 0">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="col-12">
+                            <div class="page-title-right">
+                                <ol class="breadcrumb m-0 p-0">
+                                    <li class="breadcrumb-item"><a th:href="@{home}"><i class="mdi mdi-home me-1"></i>Trang
+                                        chủ</a></li>
+                                    <li class="breadcrumb-item"><a th:href="@{/admin/products}">Sản phẩm</a></li>
+                                    <li class="breadcrumb-item"><a
+                                            th:href="@{/admin/products/product-detail/{productId}(productId=${productId})}">Sản
+                                        phẩm chi tiết</a></li>
+                                    <li class="breadcrumb-item active">Cập nhật sản phẩm chi tiết</li>
+                                </ol>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="row mb-2">
+                            <form id="formCreate" enctype="multipart/form-data" novalidate>
+                                <div class="modal-body">
+                                    <div class="row">
+                                        <div class="col-lg-6 mb-3 d-flex">
+                                            <label class="form-label me-2">Tên sản phẩm: </label><span>[[${productName}]]</span>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-lg-6 mb-3 d-flex">
+                                            <label class="form-label me-2">Danh mục: </label><span>[[${product.category.name}]]</span>
+                                        </div>
+                                        <div class="col-lg-6 mb-3 d-flex">
+                                            <label class="form-label me-2">Nhà sản xuất: </label><span>[[${product.brand.name}]]</span>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-lg-6 mb-3">
+                                            <label class="form-label" for="createColor">Màu sắc</label>
+                                            <div class="input-group flex-nowrap">
+                                                <button class="btn btn-info" id="btnAddColor">
+                                                    <i class="mdi mdi-palette-outline"></i>
+                                                </button>
+                                                <select class="form-control" id="createColor" name="colorId">
+                                                </select>
+                                            </div>
+                                            <div class="ms-1 invalid-feedback"></div>
+                                        </div>
+                                        <div class="col-lg-6 mb-3">
+                                            <label class="form-label" for="createSize">Kích cỡ</label>
+                                            <div class="input-group flex-nowrap">
+                                                <button class="btn btn-info" id="btnAddSize">
+                                                    <i class="mdi mdi-tag-outline"></i>
+                                                </button>
+                                                <select class="form-control" id="createSize" name="sizeId">
+                                                </select>
+                                            </div>
+                                            <div class="ms-1 invalid-feedback"></div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-6 mb-3 valid-div">
+                                            <label class="form-label" for="createPrice">Giá bán</label>
+                                            <div class="input-group ">
+                                                <input type="text" class="form-control" id="createPrice"
+                                                       placeholder="Giá bán"
+                                                       required name="price">
+                                                <div class="input-group-append">
+                                                     <span class="input-group-text" style="background-color: transparent;">VNĐ</span>
+                                                </div>
+                                            </div>
+                                            <div class="ms-1 invalid-feedback"></div>
+                                        </div>
+                                        <div class="col-6 mb-3">
+                                            <label class="form-label" for="createQuantity">Số lượng</label>
+                                            <input type="text" class="form-control" id="createQuantity"
+                                                   placeholder="Số lượng"
+                                                   required name="quantity">
+                                            <div class="invalid-feedback"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="has-spinner mt-3 d-flex gap-2 justify-content-end">
+                                    <button type="submit" class="btn btn-primary" id="action-save">Lưu</button>
+                                    <button type="button" class="btn btn-light" id="action-close">Đóng</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div> <!-- end card-body-->
+                </div> <!-- end card-->
+            </div> <!-- end col -->
+        </div>
+        <!-- end content -->
+    </main>
+
+    <!-- modal here -->
+
+    <!--    model create-->
+    <div id="modalAddAttributes" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalCreateLabel"
+         data-bs-backdrop="static">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form id="formAddAttributes" class="needs-validation" novalidate>
+                    <div class="modal-header">
+                        <h4 class="modal-title" id="standard-modalCreateLabel">Thêm mới thuộc tính</h4>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-12 mb-3">
+                                <label class="form-label" for="createAttributes" id="createAttributesLabel">Tên danh
+                                    mục</label>
+                                <input type="text" class="form-control" id="createAttributes" required>
+                                <div class="invalid-feedback" id="invalidFeedback"></div>
+                            </div>
+                        </div>
+                        <div class="row" id="rowColorChange" hidden>
+                            <div class="col-12 mb-3">
+                                <label for="changeColor" class="form-label">Chọn màu</label>
+                                <div class="input-group">
+                                    <input class="form-control" id="changeColor" type="color" name="color"
+                                           value="#727cf5">
+                                    <span class="input-group-text" style="width: 118px">Hex: <span class="ms-1"
+                                                                                                   id="hexCode"></span></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer has-spinner">
+                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Đóng</button>
+                        <button type="submit" class="btn btn-primary action-save">Lưu</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!--    end modal-->
+</section>
+<!-- END wrapper -->
+
+<!--default script-->
+<script th:src="@{/admin/script.js}"></script>
+<!--jquery-->
+<script th:src="@{/common/jquery/jquery.min.js}"></script>
+<!--vendor custom-->
+<script th:src="@{/admin/dist/js/vendor.min.js}"></script>
+<script th:src="@{/admin/dist/js/app.min.js}"></script>
+<!--sweet alter-->
+<script th:src="@{/admin/plugins/sweetalert/common.js}"></script>
+<script th:src="@{/admin/plugins/sweetalert/sweetalert2.min.js}"></script>
+<!--drop zone-->
+<script th:src="@{/admin/plugins/filepond/filepond.js}"></script>
+<script th:src="@{/admin/plugins/filepond/filepond.jquery.js}"></script>
+<script th:src="@{/admin/plugins/filepond/filepond-plugin-image-preview.js}"></script>
+<script th:src="@{/admin/plugins/filepond/filepond-plugin-file-validate-size.js}"></script>
+<script th:src="@{/admin/plugins/filepond/filepond-plugin-file-validate-type.js}"></script>
+<script th:src="@{/admin/plugins/filepond/filepond-plugin-image-overlay.min.js}"></script>
+<script th:src="@{/admin/plugins/filepond/filepond-plugin-file-poster.min.js}"></script>
+<script type="module" th:src="@{/admin/dist/js/ui/component.fileupload.js}"></script>
+<!--common-->
+<script type="module" th:src="@{/common/public.js}"></script>
+<!--custom script-->
+<script type="module" th:src="@{/admin/product/product-detail-update.js}"></script>
+</body>
+</html>

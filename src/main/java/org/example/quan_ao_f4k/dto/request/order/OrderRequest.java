@@ -16,7 +16,7 @@ public class OrderRequest {
     private String toPhone;
     private BigDecimal totalPay;
     @Nullable
-    private Long paymentMethodId;
+    private Long paymentMethodType;
     private Integer paymentStatus;
     private String note;
     private BigDecimal tax;

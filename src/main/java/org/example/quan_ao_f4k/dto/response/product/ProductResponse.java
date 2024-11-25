@@ -5,6 +5,7 @@ import org.example.quan_ao_f4k.model.general.Image;
 import org.example.quan_ao_f4k.model.product.Brand;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -23,6 +24,8 @@ public class ProductResponse {
     private String pathImg;
     private String slug;
     private Image image;
+    private List<Image> images;
+    private List<ProductDetailResponse> detailResponseList;
 }
 
 

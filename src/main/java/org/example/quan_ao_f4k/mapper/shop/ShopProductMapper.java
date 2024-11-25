@@ -18,13 +18,13 @@ import java.util.List;
         uses = {MapperCoverter.class, CategoryMapper.class, BrandMapper.class})
 public interface ShopProductMapper {
 
-    @Mapping(source = "id", target = "images", qualifiedByName = "convertToImageByProductDetail")
     ShopProductResponse.ProductDetailDto toProductDetailDto(ProductDetail productDetail);
     ProductDetail toProductDetail(ShopProductResponse.ProductDetailDto productDetailDto);
 
     List<ShopProductResponse.ProductDetailDto> toProductDetailDto(List<ProductDetail> list);
 
     @Mapping(source = "id", target = "image", qualifiedByName = "convertToImageByProduct")
+    @Mapping(source = "id", target = "images", qualifiedByName = "convertToImageByProductDetail")
     ShopProductResponse.ProductDto toProductDto(Product product);
     Product toProduct(ShopProductResponse.ProductDto productDto);
 

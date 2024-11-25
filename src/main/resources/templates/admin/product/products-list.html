@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <link th:href="@{/admin/plugins/datatables/css/dataTables.bootstrap5.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/admin/plugins/datatables/css/responsive.bootstrap5.min.css}" rel="stylesheet" type="text/css"/>
+    <link rel="stylesheet" th:href="@{/admin/dist/css/app-f4k.min.css}"/>
+    <th:block th:insert="admin/fragments/head :: head"></th:block>
+    <link rel="stylesheet" th:href="@{/admin/plugins/sweetalert/sweetalert2.min.css}"/>
+</head>
+
+<body>
+<div th:replace="admin/fragments/sidebar::sidebar"></div>
+
+<!-- Begin page -->
+<section id="content">
+    <div th:replace="admin/fragments/loading::div"></div>
+    <div th:replace="admin/fragments/content::content"></div>
+
+    <main>
+        <!-- start page title -->
+        <!--        <div class="row">-->
+        <!--            -->
+        <!--        </div>-->
+        <!-- end page title -->
+
+        <!-- start content here -->
+        <div class="main-pane row" style="margin-top: 0">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="col-12">
+                            <div class="page-title-right">
+                                <ol class="breadcrumb m-0">
+                                    <li class="breadcrumb-item"><a th:href="@{home}"><i class="mdi mdi-home me-1"></i>Trang
+                                        chủ</a></li>
+                                    <li class="breadcrumb-item"><a th:href="@{/admin/products}">Sản phẩm</a></li>
+                                    <li class="breadcrumb-item active">Danh sách sản phẩm</li>
+                                </ol>
+                            </div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-sm-4">
+                                <h4><i class="mdi mdi-filter-outline"></i> Bộ lọc</h4>
+                            </div>
+                            <div class="col-sm-8 d-flex justify-content-end">
+                                <div class="text-sm-end text-end">
+                                    <button type="button" class="btn btn-info mb-2 me-1" id="btnRefresh"><i
+                                            class="mdi mdi-refresh"></i>
+                                        Làm mới
+                                    </button>
+                                    <a th:href="@{/admin/products/add-product}" type="button" class="btn btn-info mb-2" id="btnCreateProduct"><i
+                                            class="mdi mdi-plus"></i> Thêm
+                                        sản phẩm
+                                    </a>
+                                </div>
+                            </div><!-- end col-->
+                        </div>
+
+                        <!--filter product-->
+                        <div class="row mb-2">
+                            <form id="formFilter">
+                                <div class="row mb-1">
+                                    <div class="col-8 mb-6">
+                                        <label class="form-label" for="filterSearch">Tìm kiếm</label>
+                                        <input type="text" class="form-control" id="filterSearch" placeholder="Tìm kiếm"
+                                               name="search">
+                                        <div class="invalid-feedback"></div>
+                                    </div>
+                                    <div class="col-4 mb-6">
+                                        <label class="form-label" for="filterStatus">Trạng thái</label>
+                                        <select class="form-select" id="filterStatus" name="status">
+                                            <option value="">Tất cả</option>
+                                            <option value="1">Hoạt động</option>
+                                            <option value="0">Ngừng hoạt động</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-4 mb-6">
+                                        <label class="form-label" for="filterCategory">Danh mục</label>
+                                        <select class="form-control" id="filterCategory"
+                                                name="categoryId">
+                                            <option value="">Tất cả</option>
+                                            <option value="1">1</option>
+                                        </select>
+                                        <div class="invalid-feedback"></div>
+                                    </div>
+                                    <div class="col-4 mb-6">
+                                        <label class="form-label" for="filterBrand">Thương hiệu</label>
+                                        <select class="form-control" id="filterBrand"
+                                                name="brandId">
+                                            <option value="">Tất cả</option>
+                                            <option value="1">1</option>
+                                        </select>
+                                        <div class="invalid-feedback"></div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+
+                        <hr>
+
+                        <div class="row mb-2 mt-2">
+                            <h5>Danh sách sản phẩm</h5>
+                            <div class="table-responsive">
+                                <table class="table table-centered w-100 dt-responsive nowrap" id="products-table">
+                                    <thead class="table-light">
+                                    <tr>
+                                        <th style="width: 50px;">STT</th>
+                                        <td></td>
+                                        <th>Tên sản phẩm</th>
+                                        <th>Danh mục</th>
+                                        <th>Thương hiệu</th>
+                                        <th>Trạng thái</th>
+                                        <th style="width: 150px">Thao tác</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div> <!-- end card-body-->
+                </div> <!-- end card-->
+            </div> <!-- end col -->
+        </div>
+        <!-- end content -->
+    </main>
+    <!--    end modal-->
+</section>
+<!-- END wrapper -->
+
+<!--default script-->
+<script th:src="@{/admin/script.js}"></script>
+<!--jquery-->
+<script th:src="@{/common/jquery/jquery.min.js}"></script>
+<!--vendor custom-->
+<script th:src="@{/admin/dist/js/vendor.min.js}"></script>
+<script th:src="@{/admin/dist/js/app.min.js}"></script>
+<!--datatables-->
+<script th:src="@{/admin/plugins/datatables/js/jquery.dataTables.min.js}"></script>
+<script th:src="@{/admin/plugins/datatables/js/dataTables.bootstrap5.min.js}"></script>
+<script th:src="@{/admin/plugins/datatables/js/dataTables.responsive.min.js}"></script>
+<script th:src="@{/admin/plugins/datatables/js/responsive.bootstrap5.min.js}"></script>
+<script th:src="@{/admin/plugins/datatables/js/dataTables.checkboxes.min.js}"></script>
+<script th:src="@{/admin/plugins/datatables/common.js}"></script>
+<!--sweet alter-->
+<script th:src="@{/admin/plugins/sweetalert/common.js}"></script>
+<script th:src="@{/admin/plugins/sweetalert/sweetalert2.min.js}"></script>
+<!--common-->
+<script type="module" th:src="@{/common/public.js}"></script>
+<!--custom script-->
+<script type="module" th:src="@{/admin/product/products-list.js}"></script>
+</body>
+</html>

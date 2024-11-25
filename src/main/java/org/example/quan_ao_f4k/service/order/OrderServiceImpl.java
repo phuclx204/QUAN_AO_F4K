@@ -20,6 +20,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -84,7 +85,19 @@ public class OrderServiceImpl implements OrderService {
 		model.addAttribute("districts", districtRepository.findAll());
 		model.addAttribute("provinces", provinceRepository.findAll());
 	}
+	// Tính số tiền cho từng chi tiết đơn hàng
+	private BigDecimal calculateAmount(OrderDetail detail) {
+		BigDecimal price = detail.getPrice();
+		BigDecimal quantity = BigDecimal.valueOf(detail.getQuantity());
+		return (price != null ? price.multiply(quantity) : BigDecimal.ZERO);
+	}
 
+	// Tính tổng số tiền từ danh sách chi tiết đơn hàng
+	public BigDecimal calculateTotalAmount(List<OrderDetail> orderDetails) {
+		return orderDetails.stream()
+				.map(this::calculateAmount)
+				.reduce(BigDecimal.ZERO, BigDecimal::add);
+	}
 	@Override
 	public ListResponse<OrderResponse> searchOrders(int page, int size, String sort, LocalDateTime startDate, LocalDateTime endDate,
 	                                                String search, Integer status) {

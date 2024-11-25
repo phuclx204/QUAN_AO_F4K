@@ -9,6 +9,7 @@
     <link rel="stylesheet" th:href="@{/admin/dist/css/common.css}"/>
     <link rel="stylesheet" th:href="@{/admin/plugins/jqgrid-5.7.0/ui.jqgrid-bootstrap4.css}"/>
     <link rel="stylesheet" th:href="@{/admin/plugins/sweetalert/sweetalert2.min.css}"/>
+    <!--    <link rel="stylesheet" th:href="@{/admin/plugins/bootstrap4/mine.css}"/>-->
 
     <link rel="stylesheet" th:href="@{/admin/orders/orderDetail.css}">
     <meta name="order-id" th:content="${order.id}">
@@ -29,9 +30,9 @@
                         <div class="page-title-box">
                             <div class="page-title-right">
                                 <ol class="breadcrumb m-0">
-                                    <li class="breadcrumb-item"><a href="javascript: void(0);">Home</a></li>
-                                    <li class="breadcrumb-item"><a th:href="@{/admin/orders}">Order</a></li>
-                                    <li class="breadcrumb-item active">Order Details</li>
+                                    <li class="breadcrumb-item"><a href="javascript: void(0);">Trang chủ</a></li>
+                                    <li class="breadcrumb-item"><a th:href="@{/admin/orders}">Hóa đơn</a></li>
+                                    <li class="breadcrumb-item active">Chi tiết hóa đơn</li>
                                 </ol>
                             </div>
                             <div class="d-flex align-items-center w-50">
@@ -50,18 +51,73 @@
                             </div>
 
                             <div class="process-line" id="process-line"></div>
+
+
                         </div>
+
                     </div>
+                    <div>
+                        <!-- Hiển thị dòng chữ "Đã hủy đơn hàng" khi order.status = 0 -->
+                        <div th:if="${order.status == 0}" style="color: red; font-weight: bold;">
+                            Đã hủy đơn hàng
+                        </div>
+
+                        <!-- Kiểm tra nếu đơn hàng đã hủy (status == 0), không hiển thị bất kỳ nút nào -->
+                        <div th:if="${order.status != 0}">
+                            <!-- Nút Xác Nhận -->
+                            <button type="button" class="btn btn-primary btn-change-status"
+                                    th:if="${order.status == 5}"
+                                    th:data-order-id="${order.id}"
+                                    th:data-new-status="8">
+                                <i class="bx bx-check-circle"></i> Xác Nhận
+                            </button>
+
+                            <button type="button" class="btn btn-primary btn-change-status"
+                                    th:if="${order.status == 8}"
+                                    th:data-order-id="${order.id}"
+                                    th:data-new-status="4">
+                                <i class="bx bx-truck"></i> Chờ Vận Chuyển
+                            </button>
+
+                            <!-- Nút Vận Chuyển -->
+                            <button type="button" class="btn btn-primary btn-change-status"
+                                    th:if="${order.status == 4}"
+                                    th:data-order-id="${order.id}"
+                                    th:data-new-status="6">
+                                <i class="bx bx-package"></i> Vận Chuyển
+                            </button>
+
+                            <!-- Nút Quay Lại -->
+                            <button type="button" class="btn btn-warning btn-go-back"
+                                    th:if="${order.status != 3 && order.status != 0}"
+                                    th:data-order-id="${order.id}"
+                                    th:data-previous-status="${order.status - 1}">
+                                <i class="bx bx-undo"></i> Quay Lại
+                            </button>
+
+                            <!-- Nút Hủy Đơn -->
+                            <button type="button" class="btn btn-danger btn-cancel-order"
+                                    th:if="${order.status != 3}"
+                                    th:data-order-id="${order.id}">
+                                <i class="bx bx-trash"></i> Hủy Hóa Đơn
+                            </button>
+
+                        </div>
+
+
+                    </div>
+
                 </div>
 
-                <div class="row">
+                <div class="row mt-2">
+
                     <div class="col-xl-8">
                         <div class="card">
                             <div class="card-body">
                                 <div class="header-title mb-3 d-flex align-items-center">
                                     <h5 class="me-2">Giỏ hàng</h5>
                                     <a th:if="${order.status == 5}" href="javascript:void(0);" class="btn btn-info"
-                                       id="openModalProduct">
+                                       data-bs-toggle="modal" data-bs-target="#productModal">
                                         <i class="mdi mdi-plus-circle me-1"></i>
                                         Thêm sản phẩm
                                     </a>
@@ -144,7 +200,9 @@
                         <div class="card">
                             <div class="card-body">
                                 <div class="header-title mb-3 d-flex align-items-center">
-                                    <h5 class="me-2">Đơn hàng: [[${order.code}]]</h5>
+                                    <h5>MÃ ĐƠN : </h5><h5 class="me-2" id="orderCode"> [[${order.code}]]</h5>
+                                    <h5>LOẠI ĐƠN : </h5><h5 class="me-2" id="orderType"> [[${order.order_type}]]</h5>
+
                                 </div>
                                 <div class="table-responsive">
                                     <table class="table mb-0">
@@ -157,18 +215,18 @@
                                         <tbody>
                                         <tr>
                                             <td>Phí vận chuyển :</td>
-                                            <td>$1641</td>
+                                            <td>#</td>
                                         </tr>
                                         <tr>
                                             <td>Grand Total :</td>
-                                            <td>$1641</td>
+                                            <td>#</td>
                                         </tr>
                                         <tr>
                                             <td>Shipping Charge :</td>
-                                            <td>$23</td>
+                                            <td>#</td>
                                         </tr>
                                         <tr>
-                                            <th>Total :</th>
+                                            <th>Tổng tiền :</th>
                                             <th><span id="total" th:text="${order.totalPay}"></span></th>
                                         </tr>
                                         </tbody>
@@ -191,14 +249,18 @@
                                 </h4>
 
                                 <h5>Hà Nội</h5>
-
                                 <address class="mb-0 font-14 address-lg">
-                                    Tên người nhận: <span th:text="${order.toName}"></span><br>
-                                    Số điện thoại: <span th:text="${order.toPhone}"></span><br>
-                                    Địa chỉ: <span th:text="${order.toAddress}"></span><br>
-                                    <br>
-
+                                    Tên người nhận: <span id="toName" th:text="${order.toName}"></span><br>
+                                    Số điện thoại: <span id="toPhone" th:text="${order.toPhone}"></span><br>
+                                    Địa chỉ: <span id="toAddress" th:text="${order.toAddress}"></span><br>
+                                    Ghi chú: <span id="orderNote" th:text="${order.note}"></span><br>
+                                    PTTT: <span id="payment_status"
+                                                th:text="${order.paymentMethod.id == 1 ? 'Thanh toán tiền mặt' :
+                                                           (order.paymentMethod.id == 2 ? 'Thanh toán VNPay' :
+                                                           (order.paymentMethod.id == 3 ? 'Nhận hàng thanh toán' : 'Không xác định'))}">
+                                            </span><br>
                                 </address>
+
 
                             </div>
                         </div>
@@ -242,78 +304,108 @@
 
         </div> <!-- content -->
     </main>
+
 </section>
-<!-- modal product-->
-<div id="productModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalCreateLabel"
-     data-bs-backdrop="static">
-    <div class="modal-dialog modal-xl">
+
+<!-- Modal -->
+<div id="productModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="openModalProduct"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document" style="max-width: 1070px">
         <div class="modal-content">
             <div class="modal-header">
-                <div class="modal-title">
-                    <div>
-                        <input type="text" name="search" placeholder="Nhập tên sản phẩm..."
-                               th:value="${param.search}" id="searchInput" class="search-input"/>
-                        <button type="button" class="btn btn-info new-btn-search" id="searchButton">Tìm kiếm
-                        </button>
-                        <button type="button" class="btn btn-info new-btn-add" id="resetModalButton">Làm mới
-                        </button>
-                    </div>
-                </div>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <h5 class="modal-title" id="openModalProduct">Thêm sản phẩm</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body">
-                <div class="row">
-                    <div class="col-md-6 col-lg-2">
-                        <label for="categorySelect">Danh mục:</label>
-                        <select id="categorySelect" class="form-select select-modal-search">
-                            <option value="">Tất cả</option>
-                        </select>
+            <div class="modal-body bg-secondary">
+                <header>
+                    <form id="searchForm" class="container">
+                        <div class="form-group row align-items-end">
+                            <label for="searchInput" class="col-sm-2 col-form-label">Tên sản phẩm:</label>
+                            <div class="col-sm-6">
+                                <input type="text" id="searchInput" name="nameProduct" class="form-control"
+                                       placeholder="Nhập tên sản phẩm..."/>
+                            </div>
+                            <div class="col-sm-2">
+                                <input type="text" id="minPrice" name="minPrice" class="form-control"
+                                       placeholder="Giá từ"/>
+                            </div>
+                            <div class="col-sm-2">
+                                <input type="text" id="maxPrice" name="maxPrice" class="form-control"
+                                       placeholder="Giá đến"/>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-2">
+                                <label for="categorySelect">Danh mục:</label>
+                                <select id="categorySelect" class="form-control">
+                                    <!-- Các danh mục khác -->
+                                </select>
+                            </div>
+                            <div class="form-group col-md-2">
+                                <label for="brandSelect">Thương Hiệu:</label>
+                                <select id="brandSelect" class="form-control">
+                                    <!-- Các thương hiệu khác -->
+                                </select>
+                            </div>
+                            <div class="form-group col-md-2">
+                                <label for="colorSelect">Màu sắc:</label>
+                                <select id="colorSelect" class="form-control">
+                                    <!-- Các màu sắc khác -->
+                                </select>
+                            </div>
+                            <div class="form-group col-md-2">
+                                <label for="sizeSelect">Kích cỡ:</label>
+                                <select id="sizeSelect" class="form-control">
+                                    <!-- Các kích cỡ khác -->
+                                </select>
+                            </div>
+                            <div class="form-group col-md-3">
+                                <label for="sortSelect">Sắp xếp theo giá:</label>
+                                <div class="input-group">
+                                    <select id="sortSelect" class="form-control">
+                                        <option value="">Chọn cách sắp xếp</option>
+                                        <option value="asc">Giá tăng dần</option>
+                                        <option value="desc">Giá giảm dần</option>
+                                    </select>
+                                    <!--                                        <input type="number" id="minPrice" class="form-control" placeholder="Min" style="width: 80px; margin-left: 5px;" />-->
+                                    <!--                                        <input type="number" id="maxPrice" class="form-control" placeholder="Max" style="width: 80px; margin-left: 5px;" />-->
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-center">
+                            <button type="button" class="btn btn-primary" id="searchButton">Tìm kiếm</button>
+                            <button type="button" class="btn btn-outline-primary" id="resetButton">Reset</button>
+                        </div>
+                    </form>
+                </header>
+                <main>
+                    <div class="table-responsive mt-2">
+                        <table class="table table-bordered table-centered table-primary">
+                            <thead>
+                            <tr>
+                                <th>Ảnh</th>
+                                <th>Tên sản phẩm</th>
+                                <th>Giá</th>
+                                <th>Màu</th>
+                                <th>Kích cỡ</th>
+                                <th>Số lượng</th>
+                                <th>Thao tác</th>
+                            </tr>
+                            </thead>
+                            <tbody id="productList">
+                            <!-- Các sản phẩm sẽ được thêm vào đây -->
+                            </tbody>
+                        </table>
                     </div>
-                    <div class="col-md-6 col-lg-2">
-                        <label for="brandSelect">Thương Hiệu:</label>
-                        <select id="brandSelect" class="form-select select-modal-search">
-                            <option value="">Tất cả</option>
-                        </select>
-                    </div>
-                    <div class="col-md-6 col-lg-2">
-                        <label for="colorSelect">Màu sắc:</label>
-                        <select id="colorSelect" class="form-select select-modal-search">
-                            <option value="">Tất cả</option>
-                        </select>
-                    </div>
-                    <div class="col-md-6 col-lg-2">
-                        <label for="sizeSelect">Kích Cỡ:</label>
-                        <select id="sizeSelect" class="form-select select-modal-search">
-                            <option value="">Tất cả</option>
-                        </select>
-                    </div>
-                </div>
-                <div>
-                    <table class="new-table" border="1">
-                        <thead>
-                        <tr>
-                            <th>STT</th>
-                            <th style="width: 70px;">Ảnh</th>
-                            <th>Tên sản phẩm</th>
-                            <th>Giá</th>
-                            <th style="width: 50px;">Màu</th>
-                            <th>Cỡ</th>
-                            <th>Số lượng</th>
-                            <th>Thao tác</th>
-                        </tr>
-                        </thead>
-                        <tbody id="productList">
-                        <!-- Các sản phẩm sẽ được thêm vào đây -->
-                        </tbody>
-                    </table>
                     <div id="pagination" class="d-flex justify-content-center align-items-center gap-2">
-                        <button class="page-button" id="prevPage">Trước</button>
-                        <input type="number" id="pageInput" min="1" class="form-control input-pagination"
-                               style="width: 80px; text-align: center; border: 1px solid #ced4da; border-radius: 5px;"/>
+                        <button class="btn btn-secondary" id="prevPage">Trước</button>
+                        <input type="text" id="pageInput"
+                               style="width: 50px; text-align: center; border: 1px solid #ced4da; border-radius: 5px;"
+                               disabled/>
                         <span id="totalPagesText" style="font-weight: bold;"></span>
-                        <button class="page-button" id="nextPage">Tiếp theo</button>
+                        <button class="btn btn-secondary" id="nextPage">Tiếp theo</button>
                     </div>
-                </div>
+                </main>
             </div>
         </div>
     </div>
@@ -338,6 +430,7 @@
 <script th:src="@{/admin/plugins/datatables/js/dataTables.responsive.min.js}"></script>
 <script th:src="@{/admin/plugins/datatables/js/responsive.bootstrap5.min.js}"></script>
 <script th:src="@{/admin/plugins/datatables/js/dataTables.checkboxes.min.js}"></script>
+<!--<script th:src="@{/admin/plugins/bootstrap4/bootstrap.bundle.js}"></script>-->
 
 <!--custom script-->
 <script type="module" th:src="@{/admin/orders/orderDetail.js}"></script>

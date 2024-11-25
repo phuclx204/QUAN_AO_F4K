@@ -29,5 +29,6 @@ public interface ProductMapper extends GennericMapper<Product, ProductRequest, P
 
     @Override
     @Mapping(source = "id", target = "image", qualifiedByName = "convertToImageByProduct")
+    @Mapping(source = "id", target = "images", qualifiedByName = "convertToImageByProductDetail")
     ProductResponse entityToResponse(Product product);
 }

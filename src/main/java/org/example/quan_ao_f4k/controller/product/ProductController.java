@@ -8,13 +8,17 @@ import org.example.quan_ao_f4k.dto.request.product.ProductRequest;
 import org.example.quan_ao_f4k.dto.response.product.ProductResponse;
 import org.example.quan_ao_f4k.list.ListResponse;
 import org.example.quan_ao_f4k.model.general.Image;
+import org.example.quan_ao_f4k.model.product.Product;
 import org.example.quan_ao_f4k.repository.general.ImageRepository;
+import org.example.quan_ao_f4k.repository.product.ProductRepository;
 import org.example.quan_ao_f4k.service.product.ProductService;
 import org.example.quan_ao_f4k.util.F4KConstants;
 import org.example.quan_ao_f4k.util.F4KUtils;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,11 +29,74 @@ import java.io.IOException;
 @AllArgsConstructor
 public class ProductController {
     private final ProductService productService;
+
+    private final ProductRepository productRepository;
     private final ImageRepository imageRepository;
 
     @GetMapping()
     public String getProduct() {
-        return "/admin/product/products";
+        return "admin/product/products-list";
+    }
+
+    @GetMapping("/add-product")
+    public String addProduct(Model model) {
+        return "admin/product/products-add";
+    }
+
+    @GetMapping("/get-detail")
+    public ResponseEntity<ProductResponse> getProductDetail(@RequestParam("id") Long id) {
+        return ResponseEntity.ok(productService.getDetail(id));
+    }
+
+    @GetMapping("/update-product/{id}")
+    public String updateProduct(@PathVariable Long id, Model model) {
+        Product product = productRepository.findById(id).orElse(null);
+        if (product == null) {
+            return "/error/error_404";
+        }
+        model.addAttribute("productId", product.getId());
+        return "admin/product/products-update";
+    }
+
+    @PostMapping("/add-product")
+    public ResponseEntity<?> addProduct(@Valid @ModelAttribute ProductRequest productRequest) {
+        boolean exists = productService.isAddExistProductByBrandAndCate(productRequest.getName(),
+                productRequest.getBrandId(), productRequest.getCategoryId());
+
+        if (exists) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body("Sản phẩm có tên với thương hiệu và danh mục này đã tồn tại");
+        }
+
+        productRequest.setSlug(F4KUtils.toSlug(productRequest.getName()));
+        productService.addProduct(productRequest);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/update-product/{id}")
+    public ResponseEntity<?> updateProduct(@PathVariable Long id, @Valid @ModelAttribute ProductRequest productRequest) {
+        boolean exists = productService.isUpdateExistProductByBrandAndCate(productRequest.getName(),
+                productRequest.getBrandId(), productRequest.getCategoryId(), id);
+
+        if (exists) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body("Sản phẩm có tên với thương hiệu và danh mục này đã tồn tại");
+        }
+
+        productService.updateProduct(id, productRequest);
+        return ResponseEntity.ok().build();
+    }
+
+    // Lấy danh sách với phân trang và sắp xếp
+    @GetMapping("/search-list")
+    public ResponseEntity<Page<ProductResponse>> searchList(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "5") int size,
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false) Integer status,
+            @RequestParam(required = false) Long categoryId,
+            @RequestParam(required = false) Long brandId) {
+        return ResponseEntity.ok(productService.searchProducts(page, size, search, status, categoryId, brandId));
     }
 
     // Lấy danh sách với phân trang và sắp xếp

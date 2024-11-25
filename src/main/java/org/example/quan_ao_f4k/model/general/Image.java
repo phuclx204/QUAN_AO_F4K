@@ -17,7 +17,6 @@ import lombok.*;
 @Setter
 @Builder
 public class Image {
-    @JsonIgnore
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

@@ -17,6 +17,8 @@ public class ProductDetailRequest {
 
     private Long productId;
 
+    private Long id;
+
     @NotNull(message = "Vui lòng chọn kích cỡ")
     private Long sizeId;
 
@@ -35,7 +37,4 @@ public class ProductDetailRequest {
     private Integer status = 1;
 
     private LocalDateTime createdAt = LocalDateTime.now();
-
-    private List<MultipartFile> images;
-    private List<Long> oldFiles;
 }
