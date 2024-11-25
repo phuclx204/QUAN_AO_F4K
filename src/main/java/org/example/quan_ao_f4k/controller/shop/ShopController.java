@@ -84,6 +84,12 @@ public class ShopController {
         return ResponseEntity.ok().build();
     }
 
+    @GetMapping("/product/update-quantity/{id}")
+    public ResponseEntity<?> updateQuantity(@PathVariable Long id, @RequestParam(value = "quantity", required = false) Integer quantity) {
+        shopCartService.updateQuantity(id, quantity);
+        return ResponseEntity.ok().build();
+    }
+
     // checkout
     @GetMapping("/checkout")
     public String checkout(Model model) {

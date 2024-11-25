@@ -5,33 +5,79 @@ const {convert2Vnd} = getCommon();
 (function () {
     const $tbody = $("#cart-items-body");
 
-    const getListCart = async () => {
-        let storedUserInfo = JSON.parse(localStorage.getItem("@f4k/account-basic-info"));
-        if (!storedUserInfo) {
-            alert("LOG: người dùng chưa đăng nhập")
-        }
-        await $ajax.get("/shop/cart/list-cart", {username: storedUserInfo.username}).then(rs => {
-            if (!rs.items.length) {
-                $('#btn-payment').addClass("disabled", true);
-            } else {
-                $('#btn-payment').removeClass("disabled", false);
-            }
-            // convert sô tiền => vnđ
-            $("#showSubtotal").text(convert2Vnd(rs.subtotal + ''))
-            // set lại số lượng trong thông báo giỏ hàng
-            $("#nar-cart").text(rs.itemCount ?? 0);
-            // hiện thị giỏ hàng
-            $tbody.empty();
-            addProductCart(rs.items)
-        });
+    const trangThaiSp = {
+        conHang: 1,
+        hetHang: 0
     }
 
-    getListCart().then();
+    const getListCart = async () => {
+        let storedUserInfo = JSON.parse(localStorage.getItem("@f4k/account-basic-info"));
+
+        const res = await $ajax.get("/shop/cart/list-cart", {username: storedUserInfo.username});
+        if (!res.items.length) {
+            $('#btn-payment').addClass("disabled", true);
+        } else {
+            $('#btn-payment').removeClass("disabled", false);
+        }
+        return res;
+    }
+    const updateQuantity = async (id, quantity) => {
+        await $ajax.get(`/shop/product/update-quantity/${id}`, {quantity: quantity});
+        $alterTop("success", "Cập nhật thành công")
+
+        await updateHtmlCart();
+    }
+    const deleteProductFormCart = async (id) => {
+        const isConfirmed = await $confirm("info", "Nhắc nhở", "Bạn có chắc muốn xóa không?");
+        if (isConfirmed.isConfirmed) {
+            await $ajax.post(`/shop/product/remove-cart/${id}`);
+            $alterTop("success", "Đã xóa khỏi giỏ hàng!");
+            await updateHtmlCart();
+        }
+
+    }
 
     const addProductCart = (items) => {
         items.forEach(item => {
             const product = item.productDetailDto.product;
             const productDetail = item.productDetailDto;
+
+            const urlProductDetail = `/shop/product/${product.slug}?color` + productDetail.color.hex.replace("#", "%23") + `&size=${productDetail.size.name}`;
+            const productName = productDetail.status === trangThaiSp.conHang ? `<a href="${urlProductDetail}" class="text-decoration-none">${product.name}</a>` : `${product.name}`;
+
+            const htmlTdQuantity = productDetail.status === trangThaiSp.conHang ?
+                `<div style="padding-left: 15px">Có sẵn ${productDetail.quantity} sản phẩm</div>
+                <div class="px-3 d-flex">
+                    <button class="btn btn-custom border btn-cart-sub" data-id="${productDetail.id}" data-value="${item.quantity - 1}"><span class="mdi mdi-minus"></span></button>
+                         <span class="border pe-3 ps-3 pt-1 pb-1">${item.quantity}</span>
+                    <button class="btn btn-custom border btn-cart-plus" data-id="${productDetail.id}" data-value="${item.quantity + 1}"><span class="mdi mdi-plus"></span></button>
+                </div>`
+                :
+                `<span class="text-muted mt-1"><strike>${item.quantity}</strike></span>`;
+
+            const htmlTdDetailProduct = productDetail.status === trangThaiSp.conHang ?
+                `<div class="ps-sm-3">
+                     <h6 class="mb-2 fw-bolder">${productName}</h6>
+                     <small class="d-block text-muted"> ${productDetail.color.name} / ${productDetail.size.name}</small>
+                </div>`
+                :
+                `<div class="ps-sm-3">
+                     <h6 class="mb-2 fw-bolder">${product.name}</h6>
+                     <small class="d-block text-muted mb-3"> ${productDetail.color.name} / ${productDetail.size.name}</small>
+                     <h5 class="text-danger">Hết hàng</h5>
+                </div>`
+
+            const htmlTdPrice = productDetail.status === trangThaiSp.conHang ?
+                `<div class="d-flex justify-content-between flex-column align-items-end h-100">
+                     <button class="cursor-pointer bg-transparent border-0 btn-remove" data-id="${productDetail.id}"><i class="ri-close-circle-line ri-lg"></i></button>
+                     <p class="fw-bolder mt-3 m-sm-0">${convert2Vnd(item.total + '')}</p>
+                </div>`
+                :
+                `<div class="d-flex justify-content-between flex-column align-items-end h-100">
+                     <button class="cursor-pointer bg-transparent border-0 btn-remove" data-id="${productDetail.id}"><i class="ri-close-circle-line ri-lg"></i></button>
+                     <p class="fw-bolder mt-3 m-sm-0"><strike>${convert2Vnd(item.total + '')}</strike></p>
+                </div>`
+
             const $row = $(`
                 <tr>
                     <td class="d-none d-sm-table-cell">
@@ -40,21 +86,13 @@ const {convert2Vnd} = getCommon();
                         </picture>
                     </td>
                     <td>
-                        <div class="ps-sm-3">
-                            <h6 class="mb-2 fw-bolder">${product.name}</h6>
-                            <small class="d-block text-muted"> ${productDetail.color.name} / ${productDetail.size.name}</small>
-                        </div>
+                        ${htmlTdDetailProduct}
                     </td>
                     <td>
-                        <div class="px-3">
-                            <span class="small text-muted mt-1">${item.quantity}</span>
-                        </div>
+                        ${htmlTdQuantity}
                     </td>
                     <td class="f-h-0">
-                        <div class="d-flex justify-content-between flex-column align-items-end h-100">
-                             <button class="cursor-pointer bg-transparent border-0 btn-remove" data-id="${productDetail.id}"><i class="ri-close-circle-line ri-lg"></i></button>
-                             <p class="fw-bolder mt-3 m-sm-0">${convert2Vnd(item.total + '')}</p>
-                        </div>
+                        ${htmlTdPrice}
                     </td>
                 </tr>
             `);
@@ -62,18 +100,41 @@ const {convert2Vnd} = getCommon();
         });
     }
 
+    const updateHtmlCart = async () => {
+        const data = await getListCart();
+        $tbody.empty();
+        addProductCart(data.items);
+
+        // convert sô tiền => vnđ
+        $("#showSubtotal").text(convert2Vnd(data.subtotal + ''))
+        // set lại số lượng trong thông báo giỏ hàng
+        $("#nar-cart").text(data.itemCount ?? 0);
+    }
+
+    // btn remove quantity
     $(document).on("click", ".btn-remove", async function (e) {
         const id = $(this).data("id");
-        await $confirm("info", "Nhắc nhở", "Bạn có chắc muốn xóa không?").then(rs => {
-            if (!rs.isConfirmed) return;
-            try {
-                $ajax.post("/shop/product/remove-cart/" + id).then(_rs => {
-                    getListCart();
-                });
-                $alterTop("success", "Đã xóa khỏi giỏ hàng!")
-            } catch (e) {
-                console.log(e)
-            }
-        })
+        await deleteProductFormCart(id);
+    })
+    // btn add quantity
+    $(document).on("click", ".btn-cart-sub", async function (e) {
+        const productDetailId = $(this).data("id");
+        const value = $(this).data("value");
+        if (value === 0) {
+            await deleteProductFormCart(productDetailId);
+        } else {
+            await updateQuantity(productDetailId, value);
+        }
+    })
+    // btn sub quantity
+    $(document).on("click", ".btn-cart-plus", async function (e) {
+        const productDetailId = $(this).data("id");
+        const value = $(this).data("value");
+
+        await updateQuantity(productDetailId, value);
+    })
+
+    $(document).ready(async () => {
+        await updateHtmlCart();
     })
 })()

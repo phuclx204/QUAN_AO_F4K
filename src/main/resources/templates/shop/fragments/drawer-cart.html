@@ -1,4 +1,4 @@
-<div class="offcanvas offcanvas-end d-none" tabindex="-1" id="offcanvasCart" th:fragment="drawer-cart">
+<div class="offcanvas offcanvas-end d-none" tabindex="-1" id="offcanvasCart" th:fragment="drawer-cart" style="width: 500px">
     <div class="offcanvas-header d-flex align-items-center">
         <h5 class="offcanvas-title" id="offcanvasCartLabel">Giỏ hàng</h5>
         <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
@@ -10,7 +10,7 @@
             </div>
             <div class="border-top pt-3">
                 <div class="d-flex justify-content-between align-items-center">
-                    <p class="m-0 fw-bolder">Tổng tiền</p>
+                    <p class="m-0 fw-bolder">Tạm tính</p>
                     <p class="m-0 fw-bolder" id="show-sub-total"></p>
                 </div>
                 <a th:href="@{/shop/cart}"

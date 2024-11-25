@@ -46,6 +46,7 @@ public class ShopProductResponse {
         private ProductDetailDto productDetailDto;
         private int quantity;
         private BigDecimal total;
+        private Integer status;
     }
 
     @Data

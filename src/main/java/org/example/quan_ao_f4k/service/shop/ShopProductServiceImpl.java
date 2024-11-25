@@ -6,6 +6,7 @@ import org.example.quan_ao_f4k.dto.request.shop.ShopProductRequest;
 import org.example.quan_ao_f4k.dto.response.shop.ShopProductResponse;
 import org.example.quan_ao_f4k.exception.BadRequestException;
 import org.example.quan_ao_f4k.mapper.shop.ShopProductMapper;
+import org.example.quan_ao_f4k.model.BaseEntity;
 import org.example.quan_ao_f4k.model.general.Image;
 import org.example.quan_ao_f4k.model.product.*;
 import org.example.quan_ao_f4k.repository.general.ImageRepository;
@@ -74,9 +75,17 @@ public class ShopProductServiceImpl implements ShopProductService {
         ProductDetail productDetail = productDetailRepository.findProductDetailBySlugProduct(slug, colorHex, sizeName)
                 .orElseThrow(() -> new BadRequestException("Lỗi không tìm thấy sản phẩm"));
 
+        List<ProductDetail> productDetailList = productDetailRepository.findProductDetailBySlugProduct(slug, productDetail.getColor().getHex());
+
+        List<Size> listSize = productDetailList.stream().map(el -> {
+            if (el.getStatus() == F4KConstants.STATUS_OFF) el.getSize().setStatus(F4KConstants.STATUS_OFF);
+            else el.getSize().setStatus(F4KConstants.STATUS_ON);
+            return el.getSize();
+        }).toList();
+
         List<Color> listColor = colorRepository.findBySlugProduct(slug);
 
-        List<Size> listSize = sizeRepository.findBySlugProduct(slug, productDetail.getColor().getHex());
+//        List<Size> listSize = sizeRepository.findBySlugProduct(slug, productDetail.getColor().getHex());
 
         List<Image> listImage = imageRepository.getImageByIdParent(productDetail.getProduct().getId(), F4KConstants.TableCode.PRODUCT_DETAIL);
 

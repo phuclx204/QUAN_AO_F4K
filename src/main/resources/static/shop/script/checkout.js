@@ -26,13 +26,10 @@ const {getValidate, clearValidation} = validateForm;
 
     // Lấy và cập nhật thông tin địa chỉ giao hàng
     const getAndSetShippingInfo = async () => {
-        try {
-            const response = await $ajax.get("/shop/get-shipping-info", { username: storedUserInfo.username });
-            $bodyAddress.empty();
-            updateAddressDOM(response);
-        } catch (error) {
-            console.error("Lỗi khi lấy thông tin địa chỉ:", error);
-        }
+        const response = await $ajax.get("/shop/get-shipping-info", { username: storedUserInfo.username });
+        $bodyAddress.empty();
+
+        updateAddressDOM(response);
     };
 
     // set localstorage cho address
@@ -42,6 +39,7 @@ const {getValidate, clearValidation} = validateForm;
 
     // Cập nhật giao diện danh sách địa chỉ
     const updateAddressDOM = (items) => {
+        console.log(items,'--- items')
         items.forEach((el, index) => {
             const address = transformData(addressMap, el);
 
@@ -322,6 +320,11 @@ const {getValidate, clearValidation} = validateForm;
     }
 
     /** Phân thông tin thanh toán **/
+    const trangThaiSp = {
+        conHang: 1,
+        hetHang: 0
+    }
+
     const subtotal = ref(null);
     const shipping = ref(null);
     const cartMapper = {
@@ -334,24 +337,24 @@ const {getValidate, clearValidation} = validateForm;
         const storedUserInfo = JSON.parse(localStorage.getItem("@f4k/account-basic-info"));
         if (!storedUserInfo) return alert("LOG: Người dùng chưa đăng nhập");
 
-        try {
-            const res = await $ajax.get("/shop/cart/list-cart", { username: storedUserInfo.username });
-            const data = transformData(cartMapper, res);
-            renderCartItems(data);
-            subtotal.value = data.subtotal;
-            updateTotal();
-        } catch (error) {
-            console.error("Lỗi khi lấy thông tin giỏ hàng:", error);
-        }
+        const res = await $ajax.get("/shop/cart/list-cart", { username: storedUserInfo.username });
+        const data = transformData(cartMapper, res);
+        renderCartItems(data);
+        subtotal.value = data.subtotal;
+        updateTotal();
     }
+
     const renderCartItems = (data) => {
         const cartContainer = $("#cart-items");
         cartContainer.empty();
         $("#subtotal").text(convert2Vnd(data.subtotal));
 
         data.items.forEach((item) => {
+
+            if (item.status !== trangThaiSp.conHang || item.productDetailDto.status !== trangThaiSp.conHang) return
+
             const productDetail = item.productDetailDto;
-            const { product } = item.productDetailDto;
+            const product = item.productDetailDto.product;
             const cartItemHTML = `
                 <div class="d-none d-md-flex justify-content-between align-items-start py-2">
                     <div class="d-flex flex-grow-1 justify-content-start align-items-start">
@@ -372,6 +375,7 @@ const {getValidate, clearValidation} = validateForm;
             cartContainer.append(cartItemHTML);
         });
     }
+
     const getFee = async () => {
         const objShip = JSON.parse(localStorage.getItem("@f4k/shipping_info"));
         if (!objShip) return;
@@ -415,7 +419,6 @@ const {getValidate, clearValidation} = validateForm;
             }
         })
     });
-
 
     // Khởi tạo trang
     $(document).ready(async function () {
