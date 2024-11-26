@@ -38,9 +38,14 @@ public class ShopCheckOutServiceImpl implements ShopCheckOutService {
     public void addModelCheckout(Model model) {
         User user = f4KUtils.getUser();
         Cart cart = shopCartService.getCart(user.getId());
-        model.addAttribute("cartId", cart.getId());
+
         ShopProductResponse.CartResponse cartResponse = shopCartService.getListCart(user.getUsername());
+
+        List<ShippingInfo> shippingInfo = shippingInfoRepository.findAllByUserId(user.getId());
+
+        model.addAttribute("cartId", cart.getId());
         model.addAttribute("carts", cartResponse);
+        model.addAttribute("shippingInfoList", shippingInfo);
     }
 
 

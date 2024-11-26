@@ -26,7 +26,7 @@
         <!-- Checkout Panel Left -->
         <div class="col-12 col-lg-6 col-xl-7">
             <!-- Checkout Shipping Address -->
-            <div class="checkout-panel">
+            <div class="checkout-panel" th:if="${shippingInfoList.size > 0}">
                 <h5 class="title-checkout">Địa chỉ nhận hàng
                     <a class="text-decoration cursor-pointer" data-bs-toggle="modal" data-bs-target="#exampleModal"
                        style="font-size: 16px; color: red">
@@ -37,6 +37,51 @@
                     <span style="font-weight: bold" id="detailReceiver"></span>
                     <span id="detailAddress"></span>
                 </div>
+            </div>
+             <!-- Checkout Shipping Address -->
+            <div class="checkout-panel" th:if="${shippingInfoList.size == 0}">
+                <h5 class="title-checkout">Địa chỉ nhận hàng</h5>
+                <form action="" id="formCreateAddress">
+                    <div class="row mb-3">
+                        <div class="col-6">
+                            <label for="createName" class="form-label">Họ và tên</label>
+                            <input type="text" class="form-control" id="createName" required
+                                   placeholder="Họ và tên" name="recipientName">
+                            <div class="invalid-feedback"></div>
+                        </div>
+                        <div class="col-6">
+                            <label for="createPhoneNumber" class="form-label">Số điện thoại</label>
+                            <input type="text" class="form-control" id="createPhoneNumber" required
+                                   placeholder="Số điện thoại" name="phoneNumber">
+                            <div class="invalid-feedback"></div>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-12 mb-3">
+                            <label for="datalistProvince" class="form-label">Thành phố</label>
+                            <select class="form-select" id="datalistProvince"
+                                    data-placeholder="Chọn thành phố" name="province"></select>
+                            <div class="invalid-feedback"></div>
+                        </div>
+                        <div class="col-12 mb-3">
+                            <label for="datalistDistrict" class="form-label">Quận/Huyện</label>
+                            <select class="form-select" id="datalistDistrict" data-placeholder="Chọn quận/huyện"
+                                    disabled name="district"></select>
+                            <div class="invalid-feedback"></div>
+                        </div>
+                        <div class="col-12 mb-3">
+                            <label for="datalistWard" class="form-label">Phường/Xã</label>
+                            <select class="form-select" id="datalistWard" data-placeholder="Chọn phường/xã"
+                                    disabled name="ward"></select>
+                            <div class="invalid-feedback"></div>
+                        </div>
+                    </div>
+                    <div class="col-12 mb-3">
+                        <label for="createAddressDetail" class="form-label">Địa chỉ cụ thể</label>
+                        <input type="text" class="form-control" id="createAddressDetail" name="addressDetail"></input>
+                        <div class="invalid-feedback"></div>
+                    </div>
+                </form>
             </div>
             <!-- Checkout Shipping Method-->
             <div class="checkout-panel">
@@ -78,11 +123,11 @@
                 <div class="py-3 border-bottom">
                     <div class="d-flex justify-content-between align-items-center mb-2">
                         <p class="m-0 fw-bolder fs-6">Thành tiền</p>
-                        <p class="m-0 fs-6 fw-bolder" id="subtotal">$0.00</p>
+                        <p class="m-0 fs-6 fw-bolder" id="subtotal">0</p>
                     </div>
                     <div class="d-flex justify-content-between align-items-center">
-                        <p class="m-0 fw-bolder fs-6">Giá ship</p>
-                        <p class="m-0 fs-6 fw-bolder" id="shippingCost">$8.95</p>
+                        <p class="m-0 fw-bolder fs-6">Giá vận chuyển</p>
+                        <p class="m-0 fs-6 fw-bolder" id="shippingPrice">0</p>
                     </div>
                 </div>
                 <div class="py-3 border-bottom">

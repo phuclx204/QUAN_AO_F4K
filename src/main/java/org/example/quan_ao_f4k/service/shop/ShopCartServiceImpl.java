@@ -11,7 +11,6 @@ import org.example.quan_ao_f4k.model.order.ShippingInfo;
 import org.example.quan_ao_f4k.model.product.ProductDetail;
 import org.example.quan_ao_f4k.repository.order.CartProductRepository;
 import org.example.quan_ao_f4k.repository.order.CartRepository;
-import org.example.quan_ao_f4k.repository.order.OrderDetailRepository;
 import org.example.quan_ao_f4k.repository.order.ShippingInfoRepository;
 import org.example.quan_ao_f4k.repository.product.ProductDetailRepository;
 import org.example.quan_ao_f4k.util.DeliveryForShopUtils;
@@ -213,11 +212,15 @@ public class ShopCartServiceImpl implements ShopCartService{
     @Transactional
     public void addShippingInfo(ShopProductResponse.ShippingInfoDto shippingInfoDto) {
         ShippingInfo shippingInfo = shopProductMapper.toShippingInfo(shippingInfoDto);
-        if (shippingInfo.getIsDefault()) {
-            ShippingInfo objTmp = shippingInfoRepository.findDefaultByUserId(f4KUtils.getUser().getId());
+
+        ShippingInfo objTmp = shippingInfoRepository.findDefaultByUserId(f4KUtils.getUser().getId());
+        if (objTmp == null) {
+            shippingInfo.setIsDefault(true);
+        } else if (shippingInfo.getIsDefault()) {
             objTmp.setIsDefault(false);
             shippingInfoRepository.save(objTmp);
         }
+
         shippingInfo.setUser(f4KUtils.getUser());
         shippingInfoRepository.save(shippingInfo);
     }
