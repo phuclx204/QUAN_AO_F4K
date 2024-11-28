@@ -56,4 +56,28 @@ public interface PromotionRepository extends JpaRepository<Promotion, Long>,
 	List<Promotion> findAllByStatusAndDayStartBeforeAndDayEndAfter(
 			@Param("status") Integer status,
 			@Param("now") LocalDate now);
+
+
+	@Query("SELECT p FROM Promotion p " +
+			"LEFT JOIN PromotionProduct pp ON pp.promotion.id = p.id " +
+			"LEFT JOIN Product pr ON pr.id = pp.product.id " +
+			"WHERE pr.id = :productId " +
+			"AND p.status = 1 " +
+			"AND p.dayStart <= :now " +
+			"AND p.dayEnd >= :now " +
+			"ORDER BY p.discountValue DESC")
+	List<Promotion> findActivePromotionsByProductId(@Param("productId") Long productId,
+													@Param("now") LocalDate now);
+
+	@Query("SELECT p FROM Promotion p " +
+			"LEFT JOIN PromotionProduct pp ON pp.promotion.id = p.id " +
+			"LEFT JOIN Product pr ON pr.id = pp.product.id " +
+			"LEFT JOIN ProductDetail pd ON pr.id = pd.product.id " +
+			"WHERE pd.id = :productDetailId " +
+			"AND p.status = 1 " +
+			"AND p.dayStart <= :now " +
+			"AND p.dayEnd >= :now " +
+			"ORDER BY p.discountValue DESC")
+	List<Promotion> findActivePromotionsByProductDetailId(@Param("productDetailId") Long productDetailId,
+														  @Param("now") LocalDate now);
 }

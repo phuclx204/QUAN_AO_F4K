@@ -27,7 +27,8 @@ public class ShopController {
 
     // home
     @GetMapping("/home")
-    public String index() {
+    public String index(Model model) {
+        shopProductService.addModelHome(model);
         return "/shop/pages/index";
     }
 

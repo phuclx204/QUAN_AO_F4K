@@ -13,4 +13,6 @@ public interface PromotionService extends CrudService<Long, PromotionRequest, Pr
     Page<PromotionResponse> searchPromotion(int page, int size, String search, Integer status, Integer effectiveDate);
     void addModelPromotionAdd(Model model);
     List<Promotion> getActivePromotions();
+    Promotion getBestPromotionForProduct(Long productId);
+    Promotion getBestPromotionForProductDetail(Long productDetailId);
 }

@@ -70,7 +70,7 @@ public class PromotionServiceImpl implements PromotionService {
     public PromotionResponse save(PromotionRequest request) {
         Promotion exitsPromotion = promotionRepository.findByNameAndDate(request.getName(), request.getDayStart(), null).orElse(null);
         if (exitsPromotion != null) {
-            throw new BadRequestException(String.format("Đã tồn tại sự kiện có tên [%s] từ ngày [%s] đến ngày [%s] hãy cập nhật lại hoặc tạo mới", request.getName(),exitsPromotion.getDayStart(), exitsPromotion.getDayEnd()));
+            throw new BadRequestException(String.format("Đã tồn tại sự kiện có tên [%s] từ ngày [%s] đến ngày [%s] hãy cập nhật lại hoặc tạo mới", request.getName(), exitsPromotion.getDayStart(), exitsPromotion.getDayEnd()));
         }
 
         Promotion promotionTmp = promotionMapper.requestToEntity(request);
@@ -101,7 +101,7 @@ public class PromotionServiceImpl implements PromotionService {
 
         Promotion exitsPromotion = promotionRepository.findByNameAndDate(request.getName(), request.getDayStart(), request.getId()).orElse(null);
         if (exitsPromotion != null) {
-            throw new BadRequestException(String.format("Đã tồn tại sự kiện có tên [%s] từ ngày [%s] đến ngày [%s] hãy cập nhật lại hoặc tạo mới", request.getName(),exitsPromotion.getDayStart(), exitsPromotion.getDayEnd()));
+            throw new BadRequestException(String.format("Đã tồn tại sự kiện có tên [%s] từ ngày [%s] đến ngày [%s] hãy cập nhật lại hoặc tạo mới", request.getName(), exitsPromotion.getDayStart(), exitsPromotion.getDayEnd()));
         }
 
         object.setName(request.getName());
@@ -156,7 +156,21 @@ public class PromotionServiceImpl implements PromotionService {
         return promotionRepository.findAllByStatusAndDayStartBeforeAndDayEndAfter(F4KConstants.STATUS_ON, now);
     }
 
-    public void updateExpiredPromotionsBatch() {
+    @Override
+    public Promotion getBestPromotionForProduct(Long productId) {
+        LocalDate now = LocalDate.now();
+        List<Promotion> promotions = promotionRepository.findActivePromotionsByProductId(productId, now);
+        return promotions.isEmpty() ? null : promotions.get(0);
+    }
+
+    @Override
+    public Promotion getBestPromotionForProductDetail(Long productDetailId) {
+        LocalDate now = LocalDate.now();
+        List<Promotion> promotions = promotionRepository.findActivePromotionsByProductDetailId(productDetailId, now);
+        return promotions.isEmpty() ? null : promotions.get(0);
+    }
+
+    private void updateExpiredPromotionsBatch() {
         List<Promotion> listPromotion = promotionRepository.findAll();
         List<Promotion> updatedPromotions = new ArrayList<>();
 
