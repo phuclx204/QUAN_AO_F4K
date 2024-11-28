@@ -108,11 +108,19 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 function openLoading() {
-  $('#loading').addClass('show');
-  $('body').addClass('no-interaction');
+  const $preloader = $("#preloader");
+  $preloader.css("display", "block");
+  $preloader.addClass("loading-overlay")
+  $("#status").css("display", "block");
 }
 
 function closeLoading() {
-  $('#loading').removeClass('show');
-  $('body').removeClass('no-interaction');
+  const $preloader = $("#preloader");
+  $("#status").fadeOut();
+  $preloader.delay(350).fadeOut("slow");
+  setTimeout(() => $preloader.removeClass("loading-overlay"), 350);
+
+  return new Promise(function(resolve, reject) {
+    setTimeout(() => resolve(), 350);
+  });
 }

@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <link th:href="@{/admin/plugins/datatables/combine/select.bootstrap5.min.css}" rel="stylesheet" type="text/css"/>
+    <link rel="stylesheet" th:href="@{/admin/plugins/datepicker/daterangepicker.css}"/>
+    <link rel="stylesheet" th:href="@{/admin/dist/css/app-f4k.min.css}"/>
+    <th:block th:insert="admin/fragments/head :: head"></th:block>
+    <link rel="stylesheet" th:href="@{/admin/plugins/sweetalert/sweetalert2.min.css}"/>
+    <link rel="stylesheet" th:href="@{/admin/promotion/promotion_add.css}"/>
+
+    <meta name="promotion-id" th:content="${promotion.id}">
+</head>
+
+<body>
+<div th:replace="admin/fragments/loading::div"></div>
+<div th:replace="admin/fragments/sidebar::sidebar"></div>
+
+<!-- Begin page -->
+<section id="content">
+    <div th:replace="admin/fragments/content::content"></div>
+
+    <main>
+        <!-- start page title -->
+        <!--        <div class="row">-->
+        <!--            -->
+        <!--        </div>-->
+        <!-- end page title -->
+
+        <!-- start content here -->
+        <div class="main-pane row" style="margin-top: 0">
+            <div class="col-xl-4">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="col-12">
+                            <div class="page-title-right">
+                                <ol class="breadcrumb m-0">
+                                    <li class="breadcrumb-item"><a th:href="@{home}"><i class="mdi mdi-home me-1"></i>Trang
+                                        chủ</a></li>
+                                    <li class="breadcrumb-item"><a th:href="@{/admin/promotion}">Đợt giảm giá</a></li>
+                                    <li class="breadcrumb-item active">Cập nhật đợt giảm giá</li>
+                                </ol>
+                            </div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-12">
+                                <h4><i class="mdi mdi-keyboard-backspace"></i> Cập nhật đợt giảm giá</h4>
+                            </div>
+                        </div>
+                        <hr>
+                        <!--filter product-->
+                        <div class="row mb-2">
+                            <form class="row" id="formCreatePromotion" novalidate>
+                                <div class="col-12 mb-3">
+                                    <label class="form-label" for="createName">Tên</label>
+                                    <input type="text" class="form-control" id="createName"
+                                           placeholder="Tên đợt giảm giá"
+                                           required name="name">
+                                    <div class="ms-1 invalid-feedback"></div>
+                                </div>
+                                <div class="col-12 mb-3 valid-div">
+                                    <label class="form-label" for="createValue">Phần trăm giảm</label>
+                                    <div class="input-group mb-0 me-2 border">
+                                        <input type="number" placeholder="Phần trăm giảm" class="form-control" id="createValue" name="discountValue">
+                                        <div class="input-group-append">
+                                            <span class="input-group-text">%</span>
+                                        </div>
+                                    </div>
+                                    <div class="ms-1 invalid-feedback"></div>
+                                </div>
+                                <div class="col-12 mb-3">
+                                    <label class="form-label" for="createDateRanger">Thời gian sự kiện</label>
+                                    <input type="text" class="form-control date" id="createDateRanger"
+                                           data-toggle="date-picker" name="createDateRanger">
+                                    <div class="ms-1 invalid-feedback"></div>
+                                </div>
+                                <div class="col-12 mb-3">
+                                    <label class="form-label" for="createStatus">Trạng thái</label>
+                                    <select class="form-select" id="createStatus" name="status">
+                                        <option value="">Tất cả</option>
+                                        <option value="1">Đang triển khai</option>
+                                        <option value="0">Ngừng hoạt động</option>
+                                        <option value="2">Hết hạn</option>
+                                    </select>
+                                </div>
+                                <div class="has-spinner mt-3 d-flex gap-2 justify-content-end">
+                                    <button type="submit" class="btn btn-primary" id="action-save">Cập nhật</button>
+                                    <button type="button" class="btn btn-light" id="action-close">Đóng</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div> <!-- end card-body-->
+                </div>
+            </div> <!-- end col -->
+            <div class="col-xl-8">
+                <div class="card" style="min-height: 650px!important;">
+                    <div class="card-body">
+                        <!--filter product-->
+                        <div class="row">
+                            <div class="col-1"><label for="filterSearch" class="col-form-label">Bộ lọc</label>
+                            </div>
+                            <div class="col-8"><input type="text" class="form-control" id="filterSearch"
+                                                           placeholder="Tìm kiếm sản phẩm theo tên"></div>
+                            <div class="col-3">
+                                <button class="btn btn-info" id="btnRefresh"><i class="mdi mdi-refresh"></i> Làm mới
+                                </button>
+                            </div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="row mb-2">
+                                <table class="table table-centered w-100"
+                                       id="products-datatable">
+                                    <thead class="table-light">
+                                    <tr>
+                                        <th></th>
+                                        <th class="all">Sản phẩm</th>
+                                        <th style="width: 150px">Danh mục</th>
+                                        <th style="width: 150px">Nhà sản xuất</th>
+                                        <th>Trạng thái</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <!--<td></td>-->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div> <!-- end card-body-->
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- end content -->
+    </main>
+    <!--    end modal-->
+</section>
+<!-- END wrapper -->
+
+<!--default script-->
+<script th:src="@{/admin/script.js}"></script>
+<!--jquery-->
+<script th:src="@{/common/jquery/jquery.min.js}"></script>
+<!--vendor custom-->
+<script th:src="@{/admin/dist/js/vendor.min.js}"></script>
+<script th:src="@{/admin/dist/js/app.min.js}"></script>
+<!--datatables-->
+<script th:src="@{/admin/plugins/datatables/combine/dataTables.min.js}"></script>
+<script th:src="@{/admin/plugins/datatables/combine/dataTables.bootstrap5.min.js}"></script>
+<script th:src="@{/admin/plugins/datatables/combine/dataTables.select.min.js}"></script>
+<!--date ranger piker-->
+<script th:src="@{/admin/plugins/datepicker/moment.min.js}"></script>
+<script th:src="@{/admin/plugins/datepicker/daterangepicker.js}"></script>
+<!--sweet alter-->
+<script th:src="@{/admin/plugins/sweetalert/common.js}"></script>
+<script th:src="@{/admin/plugins/sweetalert/sweetalert2.min.js}"></script>
+<!--common-->
+<script type="module" th:src="@{/common/public.js}"></script>
+<!--custom script-->
+<script type="module" th:src="@{/admin/promotion/promotion_update.js}"></script>
+</body>
+</html>

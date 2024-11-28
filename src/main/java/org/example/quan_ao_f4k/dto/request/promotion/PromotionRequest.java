@@ -17,15 +17,15 @@ public class PromotionRequest {
     @NotBlank(message = "Tên chương trình không được để trống")
     private String name;
     @NotNull(message = "Ngày không được để trống")
-    @FutureOrPresent(message = "Ngày phải ở trong tương lai hoặc là ngày hiện tại")
+//    @FutureOrPresent(message = "Ngày phải ở trong tương lai hoặc là ngày hiện tại")
     private LocalDate dayStart;
     @NotNull(message = "Ngày không được để trống")
-    @FutureOrPresent(message = "Ngày phải ở trong tương lai hoặc là ngày hiện tại")
+//    @FutureOrPresent(message = "Ngày phải ở trong tương lai hoặc là ngày hiện tại")
     private LocalDate dayEnd;
     @NotNull(message = "Trạng thái không được để trống")
     private Integer status;
-    @NotEmpty(message = "Danh sách sản phẩm khuyến mãi không được để trống")
-    private List<PromotionProductRequest> products;
+    private BigDecimal discountValue;
+    private List<Long> productIds;
 
 //
 //    @Data

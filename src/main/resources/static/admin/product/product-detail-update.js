@@ -5,7 +5,6 @@ const  {formatNumberByDot, convert2Vnd} = getCommon()
 
 $(document).ready(async function () {
     "use strict";
-    openLoading()
 
     /** Biến toàn cục  **/
     const productId = document.querySelector('meta[name="product-id"]').getAttribute("content");
@@ -209,14 +208,14 @@ $(document).ready(async function () {
             const url = '/admin/products/product-detail/' + productId + "/update/" + productDetailId;
             await $ajax.put(url, data);
 
+            await closeLoading();
             showAlert("Cập nhật thành công", "success").then(_rs => {
-                closeLoading();
                 window.location.href = '/admin/products/product-detail/' + productId;
             });
         } catch (e) {
             console.log(e);
         } finally {
-            closeLoading();
+            await closeLoading();
             buttonSpinner.hidden();
         }
     })
@@ -250,7 +249,6 @@ $(document).ready(async function () {
     $(document).ready(async function () {
         const res = await getData();
         await loadOptionFilter(res);
-        closeLoading();
     })
 });
 
