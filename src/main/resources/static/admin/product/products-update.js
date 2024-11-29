@@ -5,7 +5,6 @@ const  {convert2Vnd, formatNumberByDot} = getCommon()
 
 $(document).ready(async function () {
     "use strict";
-    openLoading()
 
     /** Biến toàn cục  **/
     const idFormCreate = 'formCreate';
@@ -288,7 +287,6 @@ $(document).ready(async function () {
     $(document).ready(async function () {
         const res = await getData();
         await loadOptionFilter(res);
-        closeLoading();
     })
 });
 

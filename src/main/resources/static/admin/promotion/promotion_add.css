@@ -1,0 +1,38 @@
+.dt-search {
+    display: none; /* Ẩn ô tìm kiếm mặc định */
+}
+
+.selected {
+    background-color: #b4dcff!important;
+}
+
+span[data-bs-toggle="tooltip"] {
+    display: inline-block;
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Tooltip can be triggered on hover or focus */
+span[data-bs-toggle="tooltip"]:hover, span[data-bs-toggle="tooltip"]:focus {
+    cursor: pointer;
+}
+
+/* Optional: Style for tooltip appearance */
+.tooltip-inner {
+    max-width: 300px; /* You can customize the max-width of the tooltip */
+    word-wrap: break-word;
+    white-space: normal;
+}
+
+.dt-paging nav {
+    background: transparent!important;
+}
+
+nav[aria-label="pagination"]::before {
+    content: ""!important;
+    width: 0!important;
+    background: initial!important;
+    color: inherit!important;
+}

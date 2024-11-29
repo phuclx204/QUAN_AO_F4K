@@ -4,7 +4,6 @@ const {convert2Vnd} = getCommon();
 
 $(document).ready(async function () {
     "use strict";
-    openLoading()
 
     /** Biến toàn cục  **/
     const productId = document.querySelector('meta[name="product-id"]').getAttribute("content");
@@ -148,7 +147,7 @@ $(document).ready(async function () {
     })
 
     $(document).ready(async function () {
-        closeLoading();
+
     })
 });
 

@@ -10,6 +10,7 @@ public interface ShopCartService {
     void addModelCart(Model model);
     ShopProductResponse.CartResponse getListCart(String username);
     String addCart(Long idProductDetail, int quantity);
+    void updateQuantity(Long idProductDetail, int quantity);
     void removeCart(Long idProductDetail);
     Cart getCart(Long userId);
     ShopProductResponse.ShippingInfoDto detailShippingInfo(Long idProductDetail);

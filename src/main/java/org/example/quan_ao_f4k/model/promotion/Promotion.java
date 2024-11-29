@@ -31,4 +31,7 @@ public class Promotion extends BaseEntity {
 
     @Column(name = "status", nullable = false)
     private Integer status =1;
+
+    @Column(name = "discount_value", precision = 10, scale = 2)
+    private BigDecimal discountValue;
 }

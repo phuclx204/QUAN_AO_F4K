@@ -293,7 +293,10 @@ const $ajax = (() => {
                 success: function (response) {
                     resolve(response);
                 },
-                error: function (xhr) {
+                error: async function (xhr) {
+                    if (closeLoading()) {
+                        await closeLoading();
+                    }
                     console.log(xhr.responseText)
                     const objectError = xhr.responseJSON || {message: xhr.responseText} || {message: "Không thể thao tác"};
                     if (showErrMess) {

@@ -14,4 +14,6 @@ public interface ShopProductService {
     void addModelFilter(Model model);
     Page<ShopProductResponse.ProductDetailDto> searchProducts(ShopProductRequest.RequestSearch requestSearch);
     void addModelProductDetail(Model model, String slug, String colorHex, String sizeName);
+
+    void addModelHome(Model model);
 }

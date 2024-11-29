@@ -46,4 +46,7 @@ public interface ProductRepository extends JpaRepository<Product, Long>,
 								@Param("status") Integer status,
 								@Param("categoryId") Long categoryId,
 								@Param("brandId") Long brandId);
+
+	@Query("select p from Product p where p.status = :status")
+	List<Product> findProductByStatus(@Param("status") Integer status);
 }

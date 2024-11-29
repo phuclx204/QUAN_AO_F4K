@@ -6,6 +6,7 @@ import org.example.quan_ao_f4k.dto.request.shop.ShopProductRequest;
 import org.example.quan_ao_f4k.dto.response.shop.ShopProductResponse;
 import org.example.quan_ao_f4k.exception.BadRequestException;
 import org.example.quan_ao_f4k.mapper.shop.ShopProductMapper;
+import org.example.quan_ao_f4k.model.BaseEntity;
 import org.example.quan_ao_f4k.model.general.Image;
 import org.example.quan_ao_f4k.model.product.*;
 import org.example.quan_ao_f4k.repository.general.ImageRepository;
@@ -14,6 +15,7 @@ import org.example.quan_ao_f4k.repository.product.ProductDetailRepository;
 import org.example.quan_ao_f4k.repository.product.ProductRepository;
 import org.example.quan_ao_f4k.repository.product.SizeRepository;
 import org.example.quan_ao_f4k.repository.shop.CriteriaRepository;
+import org.example.quan_ao_f4k.service.pomotion.PromotionService;
 import org.example.quan_ao_f4k.util.F4KConstants;
 import org.example.quan_ao_f4k.util.F4KUtils;
 import org.springframework.data.domain.Page;
@@ -32,12 +34,13 @@ import java.util.function.Function;
 @AllArgsConstructor
 @Slf4j
 public class ShopProductServiceImpl implements ShopProductService {
+    private final PromotionService promotionService;
+
     private final ProductDetailRepository productDetailRepository;
     private final ColorRepository colorRepository;
     private final SizeRepository sizeRepository;
     private final ImageRepository imageRepository;
     private final CriteriaRepository criteriaRepository;
-
     private final ProductRepository productRepository;
 
     private final ShopProductMapper shopProductMapper;
@@ -74,9 +77,17 @@ public class ShopProductServiceImpl implements ShopProductService {
         ProductDetail productDetail = productDetailRepository.findProductDetailBySlugProduct(slug, colorHex, sizeName)
                 .orElseThrow(() -> new BadRequestException("Lỗi không tìm thấy sản phẩm"));
 
+        List<ProductDetail> productDetailList = productDetailRepository.findProductDetailBySlugProduct(slug, productDetail.getColor().getHex());
+
+        List<Size> listSize = productDetailList.stream().map(el -> {
+            if (el.getStatus() == F4KConstants.STATUS_OFF) el.getSize().setStatus(F4KConstants.STATUS_OFF);
+            else el.getSize().setStatus(F4KConstants.STATUS_ON);
+            return el.getSize();
+        }).toList();
+
         List<Color> listColor = colorRepository.findBySlugProduct(slug);
 
-        List<Size> listSize = sizeRepository.findBySlugProduct(slug, productDetail.getColor().getHex());
+//        List<Size> listSize = sizeRepository.findBySlugProduct(slug, productDetail.getColor().getHex());
 
         List<Image> listImage = imageRepository.getImageByIdParent(productDetail.getProduct().getId(), F4KConstants.TableCode.PRODUCT_DETAIL);
 
@@ -93,6 +104,48 @@ public class ShopProductServiceImpl implements ShopProductService {
         model.addAttribute("listColor", listColor);
         model.addAttribute("listSize", listSize);
         model.addAttribute("listData", searchProducts(requestSearch));
+    }
+
+    @Override
+    public void addModelHome(Model model) {
+        ShopProductRequest.RequestSearch requestSearch = ShopProductRequest.RequestSearch
+                .builder()
+                .page(0)
+                .pageSize(8)
+                .orderBy("asc")
+                .build();
+
+        ShopProductRequest.RequestSearch requestSearch2 = ShopProductRequest.RequestSearch
+                .builder()
+                .page(0)
+                .pageSize(3)
+                .orderBy("desc")
+                .build();
+
+
+
+        List<ShopProductResponse.ProductDetailDto> listProduct2 = searchProducts(requestSearch2).getContent();
+        Map<Integer, List<ShopProductResponse.ProductDetailDto>> mapProduct = new HashMap<>();
+
+        Integer index = 0;
+        for (ShopProductResponse.ProductDetailDto item: listProduct2) {
+            ShopProductRequest.RequestSearch requestSearch3 = ShopProductRequest.RequestSearch
+                    .builder()
+                    .brand(List.of(item.getProduct().getBrand().getId()))
+                    .page(0)
+                    .pageSize(4)
+                    .orderBy("desc")
+                    .build();
+            List<ShopProductResponse.ProductDetailDto> listProductTmp = searchProducts(requestSearch3).getContent();
+            mapProduct.put(index, listProductTmp);
+            index += 1;
+        }
+
+
+
+        model.addAttribute("listProduct", searchProducts(requestSearch));
+        model.addAttribute("listProduct2", listProduct2);
+        model.addAttribute("mapProduct", mapProduct);
     }
 
     private void getImagesProductDetail(List<Image> listImage, String slug, String colorHex) {
