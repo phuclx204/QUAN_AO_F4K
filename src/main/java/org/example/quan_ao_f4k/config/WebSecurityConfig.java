@@ -1,0 +1,89 @@
+package org.example.quan_ao_f4k.config;
+
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
+import org.example.quan_ao_f4k.util.F4KConstants;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+
+import java.io.IOException;
+
+@Configuration
+@EnableWebSecurity
+@RequiredArgsConstructor
+public class WebSecurityConfig {
+
+    private static final String[] PUBLIC_ENDPOINTS = {
+            "/static/**",
+            "/common/**",
+            "/verify_account/**"
+    };
+
+    private final AuthenticationProvider authenticationProvider;
+
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
+        httpSecurity
+                .csrf(csrf -> csrf.disable())
+                .authorizeHttpRequests(
+                        request -> request
+                                .requestMatchers(PUBLIC_ENDPOINTS).permitAll()
+                                .requestMatchers("/authentication/**").permitAll()
+//                                .requestMatchers( String.format("%s/admin/**", api)).permitAll()
+//                                .requestMatchers( HttpMethod.GET,"/dashboard/**").hasRole("ADMIN")
+//                                .requestMatchers( String.format("%s/shop/**", api)).hasRole("USER")
+                                .anyRequest().authenticated()
+                )
+                .formLogin((form) -> form
+                        .loginPage("/authentication/login").permitAll()
+                        .loginProcessingUrl("/authentication/login")
+                        .failureUrl("/authentication/login?error=true")
+                        .defaultSuccessUrl("/shop/home", true)
+                        .successHandler(new AuthenticationSuccessHandler() {
+                            @Override
+                            public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
+                                UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+                                String username = userDetails.getUsername();
+                                System.out.println("The user " + username + " has logged in.");
+                                boolean hasUserRole = authentication.getAuthorities().stream()
+                                        .anyMatch(r -> r.getAuthority().equals(F4KConstants.ROLE_USER));
+                                boolean hasAdminRole = authentication.getAuthorities().stream()
+                                        .anyMatch(r -> r.getAuthority().equals(F4KConstants.ROLE_ADMIN));
+                                boolean hasStaffRole = authentication.getAuthorities().stream()
+                                        .anyMatch(r -> r.getAuthority().equals(F4KConstants.ROLE_STAFF));
+                                if (hasUserRole){
+                                    response.sendRedirect("/shop/home");
+                                }else if (hasAdminRole || hasStaffRole){
+                                    response.sendRedirect("/admin/products");
+                                } else {
+                                    response.sendRedirect("/error/401");
+                                }
+                            }
+                        })
+                )
+                .authenticationProvider(authenticationProvider)
+                .logout(logout -> logout
+                        .logoutUrl("/authentication/logout")
+                        .logoutSuccessUrl("/authentication/login")
+                )
+//                .addFilterBefore(jwtTokenFilter,
+//                        UsernamePasswordAuthenticationFilter.class)
+//                .logout(logout ->
+//                        logout.logoutUrl("/api/v1/auth/logout")
+//                                .addLogoutHandler(logoutHandler)
+//                                .logoutSuccessHandler((request, response, authentication) -> SecurityContextHolder.clearContext())
+//                )
+        ;
+        return httpSecurity.build();
+    }
+}

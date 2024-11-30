@@ -294,7 +294,7 @@ const $ajax = (() => {
                     resolve(response);
                 },
                 error: async function (xhr) {
-                    if (closeLoading()) {
+                    if (typeof closeLoading === 'function') {
                         await closeLoading();
                     }
                     console.log(xhr.responseText)

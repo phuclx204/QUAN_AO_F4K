@@ -1,0 +1,32 @@
+@import url('https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Poppins:wght@400;500;600;700&display=swap');
+
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@100..900&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+a {
+    text-decoration: #2c83ce;
+}
+
+li {
+    list-style: none;
+}
+
+:root {
+    --size-customes: 220px;
+
+    --poppins: 'Poppins', sans-serif;
+    --lato: 'Lato', sans-serif;
+
+    --ct-body-font-family-custome: "Roboto Slab", serif;;
+    --ct-body-font-family: var(--ct-body-font-family-custome);
+    --ct-font-sans-serif: var(--ct-body-font-family-custome);
+}
+
+html {
+    overflow-x: hidden;
+}
