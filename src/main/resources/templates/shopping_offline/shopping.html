@@ -52,9 +52,12 @@
                         </thead>
                         <tbody>
                         <tr th:each="detail, iterStat : ${orderDetails}">
-                            <td>
-                                <img th:src="${detail.productDetail.product.thumbnail}" alt="images.jpg"
+                            <td th:if="${detail.image != null}">
+                                <img th:src="${detail.image.fileUrl}" alt="images.jpg"
                                      style="width: 50px; height: 50px;"/>
+                            </td>
+                            <td th:if="${detail.image == null}">
+                                null
                             </td>
                             <td th:text="${detail.productDetail.product.name} + ' | Size : ' + ${detail.productDetail.size.name} + ' | Màu : ' + ${detail.productDetail.color.name}"></td>
                             <td>

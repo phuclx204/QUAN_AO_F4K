@@ -11,7 +11,6 @@ import org.example.quan_ao_f4k.model.order.ShippingInfo;
 import org.example.quan_ao_f4k.model.product.ProductDetail;
 import org.example.quan_ao_f4k.repository.order.CartProductRepository;
 import org.example.quan_ao_f4k.repository.order.CartRepository;
-import org.example.quan_ao_f4k.repository.order.OrderDetailRepository;
 import org.example.quan_ao_f4k.repository.order.ShippingInfoRepository;
 import org.example.quan_ao_f4k.repository.product.ProductDetailRepository;
 import org.example.quan_ao_f4k.util.DeliveryForShopUtils;
@@ -29,6 +28,7 @@ import java.util.List;
 @Service
 public class ShopCartServiceImpl implements ShopCartService{
     private final F4KUtils f4KUtils;
+    private final ShopProductService shopProductService;
 
     private final CartRepository cartRepository;
     private final CartProductRepository cartProductRepository;
@@ -47,19 +47,72 @@ public class ShopCartServiceImpl implements ShopCartService{
     public ShopProductResponse.CartResponse getListCart(String username) {
         Cart cart = getCart(f4KUtils.getUser().getId());
         List<CartProduct> listCartProduct = cartProductRepository.findAllByCart_Id(cart.getId());
+
+        updateCartByStatusProduct(listCartProduct);
+
         List<ShopProductResponse.CartProductDto> listCartProductDto = shopProductMapper.toCartProductDto(listCartProduct);
 
-        BigDecimal subtotal = BigDecimal.ZERO;
-        for (ShopProductResponse.CartProductDto el : listCartProductDto) {
-            subtotal = subtotal.add(el.getProductDetailDto().getPrice().multiply(BigDecimal.valueOf(el.getQuantity())));
-            el.setTotal(el.getProductDetailDto().getPrice().multiply(BigDecimal.valueOf(el.getQuantity())));
-        }
+        applyDiscounts(listCartProductDto);
+
+        BigDecimal subtotal = calculateSubtotal(listCartProductDto);
 
         return ShopProductResponse.CartResponse.builder()
                 .items(listCartProductDto)
                 .itemCount(listCartProductDto.size())
                 .subtotal(subtotal)
                 .build();
+    }
+
+    private void updateCartByStatusProduct(List<CartProduct> listCartProduct) {
+        for (CartProduct cartProduct : listCartProduct) {
+            if (cartProduct.getProductDetail().getStatus() == F4KConstants.STATUS_OFF){
+                cartProduct.setStatus(F4KConstants.HET_HANG);
+            } else {
+                int quantity = productDetailRepository.findQuantityByProductDetailId(cartProduct.getProductDetail().getId());
+                cartProduct.setStatus(F4KConstants.CON_HANG);
+                if (quantity <= 0) {
+                    cartProduct.setStatus(F4KConstants.HET_HANG);
+                } else if (cartProduct.getQuantity() > quantity){
+                    cartProduct.setQuantity(quantity);
+                }
+            }
+            cartProductRepository.save(cartProduct);
+        }
+    }
+
+    private void applyDiscounts(List<ShopProductResponse.CartProductDto> listCartProductDto) {
+        listCartProductDto.forEach(el -> {
+            var promotion = shopProductService.getBestPromotionForProductDetail(el.getProductDetailDto().getId());
+            if (promotion != null) {
+                BigDecimal finalPrice = shopProductService.calculateDiscountedPrice(el.getProductDetailDto().getPrice(), promotion.getDiscountValue());
+                if (finalPrice.compareTo(BigDecimal.ZERO) < 0) {
+                    finalPrice = BigDecimal.ZERO;
+                }
+                el.getProductDetailDto().setDiscountValue(finalPrice);
+                el.getProductDetailDto().setPromotion(promotion);
+            } else {
+                el.getProductDetailDto().setDiscountValue(null);
+                el.getProductDetailDto().setPromotion(null);
+            }
+        });
+    }
+
+    private BigDecimal calculateSubtotal(List<ShopProductResponse.CartProductDto> listCartProductDto) {
+        BigDecimal subtotal = BigDecimal.ZERO;
+        for (ShopProductResponse.CartProductDto el : listCartProductDto) {
+            if (el.getProductDetailDto().getPromotion() != null) {
+                el.setTotal(el.getProductDetailDto().getDiscountValue().multiply(BigDecimal.valueOf(el.getQuantity())));
+                if (el.getStatus() == F4KConstants.CON_HANG) {
+                    subtotal = subtotal.add(el.getProductDetailDto().getDiscountValue().multiply(BigDecimal.valueOf(el.getQuantity())));
+                }
+            } else {
+                el.setTotal(el.getProductDetailDto().getPrice().multiply(BigDecimal.valueOf(el.getQuantity())));
+                if (el.getStatus() == F4KConstants.CON_HANG) {
+                    subtotal = subtotal.add(el.getProductDetailDto().getPrice().multiply(BigDecimal.valueOf(el.getQuantity())));
+                }
+            }
+        }
+        return subtotal;
     }
 
     @Override
@@ -82,6 +135,7 @@ public class ShopCartServiceImpl implements ShopCartService{
                 cartProduct.setQuantity(quantity);
                 cartProduct.setProductDetail(productDetail);
                 cartProduct.setCreatedAt(LocalDateTime.now());
+                cartProduct.setStatus(F4KConstants.CON_HANG);
             } else {
                 int productQuantity = cartProductTmp.getQuantity() + quantity;
                 if (productQuantity > productDetail.getQuantity()) {
@@ -96,6 +150,34 @@ public class ShopCartServiceImpl implements ShopCartService{
             throw new BadRequestException("Đã có lỗi xảy ra xin hãy thao tác lại");
         }
     }
+
+    @Override
+    @Transactional
+    public void updateQuantity(Long idProductDetail, int quantity) {
+        ProductDetail productDetail = productDetailRepository.findById(idProductDetail).orElseThrow(
+                () -> new BadRequestException("Không tồn tại sản phẩm!")
+        );
+
+        if (quantity < 0) {
+            throw new BadRequestException("Số lượng không hợp lệ!");
+        }
+
+        Cart cart = getCart(f4KUtils.getUser().getId());
+        CartProduct cartProductTmp = cartProductRepository.findByCart_IdAndProductDetail_Id(cart.getId(), productDetail.getId()).orElse(null);
+
+        if (cartProductTmp == null) {
+            throw new BadRequestException("Không tồn tại sản phẩm trong giỏ hàng");
+        }
+
+        if (productDetail.getQuantity() < quantity) {
+            throw new BadRequestException("Số lượng sản phẩm không đủ");
+        }
+
+        cartProductTmp.setQuantity(quantity);
+
+        cartProductRepository.save(cartProductTmp);
+    }
+
 
     @Override
     @Transactional
@@ -168,11 +250,15 @@ public class ShopCartServiceImpl implements ShopCartService{
     @Transactional
     public void addShippingInfo(ShopProductResponse.ShippingInfoDto shippingInfoDto) {
         ShippingInfo shippingInfo = shopProductMapper.toShippingInfo(shippingInfoDto);
-        if (shippingInfo.getIsDefault()) {
-            ShippingInfo objTmp = shippingInfoRepository.findDefaultByUserId(f4KUtils.getUser().getId());
+
+        ShippingInfo objTmp = shippingInfoRepository.findDefaultByUserId(f4KUtils.getUser().getId());
+        if (objTmp == null) {
+            shippingInfo.setIsDefault(true);
+        } else if (shippingInfo.getIsDefault()) {
             objTmp.setIsDefault(false);
             shippingInfoRepository.save(objTmp);
         }
+
         shippingInfo.setUser(f4KUtils.getUser());
         shippingInfoRepository.save(shippingInfo);
     }

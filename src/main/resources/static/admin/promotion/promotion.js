@@ -1,41 +1,89 @@
-import {$ajax, buttonSpinner, getCommon, ref, validateForm} from "/common/public.js";
+import {$ajax, syncFormWithDataObject} from "/common/public.js";
 
-const {getFormValuesByName} = getCommon();
-const {getValidate, clearValidation} = validateForm;
-
-$(document).ready(async function () {
+(function () {
     "use strict";
 
-    const promotionId = ref(null);
-    const listProducts = JSON.parse(localStorage.getItem("listProducts"));
-
-    const URL = '/admin/promotion';
+    /** Biến toàn cục  **/
+    const imageBlank = "https://firebasestorage.googleapis.com/v0/b/clothes-f4k.appspot.com/o/common%2Fdata_not_found.png?alt=media&token=36148ded-ba2c-4207-8525-2da16e7a8557";
+    const idFormFilter = 'formFilter';
     const STATUS_ON = 1;
     const STATUS_OFF = 0;
-    const TYPE_CASH = 1;
-    const TYPE_PERCENT = 2;
 
-    // init table
-    const table = $('#products-table').DataTable({
+    const formFilterDefault = {
+        search: '',
+        status: '1',
+        categoryId: '',
+        brandId: ''
+    }
+    const objFilter = Object.assign({}, {...formFilterDefault});
+
+    syncFormWithDataObject({
+        selectorParent: idFormFilter,
+        dataObject: objFilter,
+        initialValues: formFilterDefault,
+    });
+
+    /** Function scope **/
+    const addOptionFilter = async (url, selectElement, defaultOption = "Tất cả") => {
+        try {
+            const res = await $ajax.get(url);
+            selectElement.empty().append(`<option value="">${defaultOption}</option>`);
+            res.forEach(item => {
+                selectElement.append(`<option value="${item.id}">${item.name}</option>`);
+            });
+        } catch (e) {
+            console.log(e)
+        }
+    }
+
+    const loadOptionFilter = () => {
+        addOptionFilter('/admin/category/active', $('#filterCategory'));
+        addOptionFilter('/admin/brand/active', $('#filterBrand'));
+    }
+
+    const refreshFilter = () => {
+        syncFormWithDataObject({
+            selectorParent: idFormFilter,
+            dataObject: objFilter,
+            initialValues: formFilterDefault,
+        });
+    }
+    /** Xử lý form filter **/
+
+    $("#btnRefresh").on("click", function (e) {
+        refreshFilter();
+        reloadTable();
+    })
+
+    $(document).on("keydown", "#filterSearch", async function (e) {
+        if (e.key === "Enter") {
+            e.preventDefault();
+            reloadTable();
+        }
+    });
+
+    $(document).on("change", "#filterStatus, #filterCategory, #filterBrand", function (e) {
+        reloadTable();
+    })
+
+    // Khởi tạo table
+    const $tableProduct = $('#products-table').DataTable({
         info: false,
         serverSide: true,
         searching: false,
         bLengthChange: false,
-        pageLength: 10,
+        pageLength: 5,
         ajax: {
-            url: URL + "/list",
+            url: "/admin/promotion/list",
             type: 'GET',
             data: function (data) {
-                const filterSearch = document.querySelector('input[data-f4k-filter="search"]').value;
-                const filterStatus = document.querySelector('select[data-f4k-filter="selectStatus"]').value;
-                const filterEffectiveDate = document.querySelector('select[data-f4k-filter="selectEffectiveDate"]').value;
                 return {
                     page: Math.floor(data.start / data.length) + 1,
                     size: data.length,
-                    sort: 'id,desc',
-                    search: filterSearch,
-                    status: filterStatus,
-                    effectiveDate: filterEffectiveDate
+                    search: objFilter.search,
+                    status: objFilter.status,
+                    categoryId: objFilter.categoryId,
+                    brandId: objFilter.brandId
                 }
             }
         },
@@ -47,295 +95,94 @@ $(document).ready(async function () {
                     return meta.row + meta.settings._iDisplayStart + 1;
                 }
             },
-            {data: 'name', title: 'Tên kỳ giảm giá'},
-            {data: 'dayStart', title: 'Thời gian bắt đầu'},
-            {data: 'dayEnd', title: 'Thời gian kết thúc'},
+            {data: 'name', title: 'Tên đợt giảm giá'},
+            {data: 'discountValue', title: 'Phần trăm giảm'},
+            {data: 'dayStart', title: 'Ngày bắt đầu'},
+            {data: 'dayEnd', title: 'Ngày kết thúc'},
             {
                 data: 'status',
                 title: 'Trạng thái',
                 render: function (data, type, row) {
-                    if (data === STATUS_ON) {
+                    if (data === 1) {
                         return '<span class="badge bg-success">Hoạt động</span>';
+                    } else if (data === 2) {
+                        return '<span class="badge bg-danger">Hết hạn</span>';
+                    } else if (data === 3) {
+                        return '<span class="badge bg-info">Sắp diễn ra</span>';
                     } else {
-                        return '<span class="badge bg-danger">Vô hiệu hóa</span>';
+                        return '<span class="badge bg-warning">Vô hiệu hóa</span>';
                     }
                 }
             },
             {
                 data: null,
-                title: 'Thao tác',
+                title: 'Hành động',
                 render: function (data, type, row) {
+                    let htmlAction = '';
+                    if (row?.status === 2 || row?.status === 3) {
+                        htmlAction = '';
+                    } else {
+                        htmlAction = (row?.status === 1) ?
+                            `<span data-bs-toggle="tooltip" title="Vô hiệu hóa">
+                           <a href="javascript:void(0);" class="action-icon action-lock" data-id="${row.id}"> <i class="text-danger mdi mdi-lock-outline"></i></a>
+                        </span>`
+                            :
+                            `<span data-bs-toggle="tooltip" title="Kích hoạt">
+                           <a href="javascript:void(0);" class="action-icon action-open" data-id="${row.id}"> <i class="text-success mdi mdi-lock-open-variant-outline"></i></a>
+                        </span>`
+                    }
+
+
                     return `<td class="table-action">
-<!--                             <a href="javascript:void(0);" class="action-icon action-view" data-id="${row.id}"> <i class="mdi mdi-eye"></i></a>-->
-                             <a href="javascript:void(0);" class="action-icon action-update" data-id="${row.id}"> <i class="mdi mdi-square-edit-outline"></i></a>
-<!--                             <a href="javascript:void(0);" class="action-icon action-delete" data-id="${row.id}"> <i class="mdi mdi-delete"></i></a>-->
+                              <span data-bs-toggle="tooltip" title="Cập nhật">
+                                <a href="/admin/promotion/update/${row.id}" class="action-icon action-update" data-id="${row.id}"> <i class="text-warning mdi mdi-square-edit-outline"></i></a>
+                              </span>
+                              ${htmlAction}
                              </td>`;
                 }
             }
         ]
     });
-    $(document).on("submit", "#formSearch", e => {
-        e.preventDefault();
-        table.search('').draw();
-    })
-    $(document).on("change", "#select-effectiveDate, #select-status", () => {
-        table.search('').draw();
-    })
+
     const reloadTable = () => {
-        table.ajax.reload(null, false);
+        $tableProduct.ajax.reload(null, false);
     }
 
-    // modal
-    const setLabelModal = (text) => {
-        const label = $('#standard-modalCreateLabel');
-        label.empty()
-        label.text(text)
-    }
-    const closeModal = () => {
-        $('#modal-create').modal('hide');
-    }
-
-    const setDateRange = (startDate, endDate) => {
-        const dateRanger = $('#createDateRanger').data('daterangepicker');
-        dateRanger.setStartDate(moment(startDate).format("DD/MM/YYYY"));
-        dateRanger.setEndDate(moment(endDate).format("DD/MM/YYYY"));
-    }
-    const getSelectedDates = () => {
-        const dateRanger = $('#createDateRanger').data('daterangepicker');
-        const startDate = dateRanger.startDate.format('YYYY-MM-DD');
-        const endDate = dateRanger.endDate.format('YYYY-MM-DD');
-        return {start: startDate, end: endDate};
-    }
-    const openModal = (mode, $this) => {
-        $('#createDateRanger').daterangepicker({
-            // timePicker: true,
-            // startDate: moment().startOf('hour'),
-            // endDate: moment().startOf('date'),
-            locale: {
-                format: 'DD/MM/YYYY'
-            }
-        });
-
-        if (mode === "create") {
-            setLabelModal("Thêm mới")
-            setDateRange(moment().startOf('day'), moment().startOf('day'));
-        } else if (mode === "update") {
-            setLabelModal("Cập nhật")
-            const id = $this.data("id");
-            promotionId.value = id;
-            $ajax.get("/admin/promotion/detail", {id: id}).then(data => {
-                $('#createName').val(data.name)
-                if (data.status === 1) {
-                    $('#createStatus1').prop("checked", true)
-                } else {
-                    $('#createStatus2').prop("checked", true)
-                }
-                setDateRange(data.dayStart, data.dayEnd)
-                fillDynamicInput(data.products)
-            })
-        }
-
-        $('#modal-create').modal('show');
-    }
-
-    const modalSelector = document.getElementById('modal-create')
-    modalSelector.addEventListener('hide.bs.modal', event => {
-        $('#createName').val("");
-        $('#createStatus1').prop("checked", true)
-        resetDynamicInput()
-        promotionId.value = null;
-        clearValidation("formCreate")
-    })
-
-    // event button
-    $(document).on("click", ".action-create", function (e) {
+    $(document).on("click", ".action-lock", async function (e) {
         e.preventDefault();
-        openModal("create")
+        const isConfirmed = await $confirm("info", "Nhắc nhở", "Bạn có chắc muốn vô hiệu hóa đợt giảm giá không?");
+        if (isConfirmed.isConfirmed) {
+            openLoading();
+            const promotionId = $(this).data("id");
+            console.log(promotionId, ' - promotionId')
+            await $ajax.put("/admin/promotion/update-status/" + promotionId, null, {status: STATUS_OFF});
+            await closeLoading();
+            $alter("success", "Thông báo", "Cập nhật thành công");
+            reloadTable();
+        }
     })
+
+    $(document).on("click", ".action-open", async function (e) {
+        e.preventDefault();
+        const isConfirmed = await $confirm("info", "Nhắc nhở", "Bạn có chắc muốn kích hoạt đợt giảm giá không?");
+        if (isConfirmed.isConfirmed) {
+            const promotionId = $(this).data("id");
+            await $ajax.put("/admin/promotion/update-status/" + promotionId, null, {status: STATUS_ON});
+            $alter("success", "Thông báo", "Cập nhật thành công");
+            reloadTable();
+        }
+    })
+
     $(document).on("click", ".action-update", function (e) {
-        e.preventDefault();
-        openModal("update", $(this))
-    })
-    // $(document).on("click", ".action-delete", async function (e) {
-    //     e.preventDefault();
-    //     const id = $(this).data("id");
-    //     try {
-    //         openLoading();
-    //         await $ajax.remove("/admin/products/" + id).then(_ => {
-    //             $alterTop("success", "Xóa thành công")
-    //             reloadTable();
-    //         });
-    //     } finally {
-    //         closeLoading()
-    //     }
-    // })
-
-    const validationRules = {
-        'createName': [
-            {
-                rule: (value) => value.trim() !== "",
-                message: "Tên sản phẩm bắt buộc",
-                type: 'text'
-            }
-        ]
-    };
-    $(document).on("submit", "#formCreate", async e => {
-        e.preventDefault();
-        const isValid = await getValidate('formCreate', validationRules);
-        if (!isValid) return
-
-        const confirm = await $confirm("warning",
-            "Những sản phẩm trùng nhau sẽ lấy theo giá trị đầu tiên, bạn có chắc chắn muốn lưu không?",
-            "Nhắc nhở")
-        if (!confirm.isConfirmed) return
-        const object = {
-            name: $("#createName").val(),
-            dayStart: getSelectedDates().start,
-            dayEnd: getSelectedDates().end,
-            status: $('#createStatus1').is(":checked") ? STATUS_ON : STATUS_OFF,
-            products: getDataDynamic()
-        }
-        try {
-            buttonSpinner.show();
-            if (promotionId.value) {
-                object.id = promotionId.value;
-                await $ajax.put(URL, object).then(() => {
-                    $alter("success", "Note", "Cập nhật thành công")
-                    reloadTable();
-                    closeModal();
-                });
-            } else {
-                await $ajax.post(URL, object).then(() => {
-                    $alter("success", "Note", "Thêm mới thành công")
-                    reloadTable();
-                    closeModal();
-                });
-            }
-        } catch (e) {
-            console.log(e)
-        } finally {
-            buttonSpinner.hidden()
-        }
+        console.log('vao update')
     })
 
-    // create dynamic input
-    function allRowsFilled() {
-        let allFilled = true;
-        $("#dynamicTable tbody tr").each(function () {
-            let product = $(this).find('select[name="products[]"]').val();
-            let discount = $(this).find('input[name="discount[]"]').val();
-            if (!product || !discount) {
-                allFilled = false;
-                return false;
-            }
-        });
-        return allFilled;
-    }
+    $(document).ready(async function () {
+        await loadOptionFilter();
 
-    const getDataDynamic = () => {
-        let data = [];
-        $("#dynamicTable tbody tr").each(function () {
-            let product = $(this).find('select[name="products[]"]').val();
-            let discount = $(this).find('input[name="discount[]"]').val();
-            // let discountType = $(this).find('select[name="discountType[]"]').val();
-
-            if (product && discount) {
-                data.push({
-                    product: product,
-                    productId: product,
-                    discountValue: discount,
-                    type: TYPE_PERCENT
-                });
-            }
-        });
-        return data;
-    };
-    const getDynamicInputDefault = () => {
-        // <option value="${TYPE_CASH}" selected>VNĐ</option>
-        // <option value="${TYPE_PERCENT}">%</option>
-        return `<tr>
-                <input type="hidden" name="id[]" value="" />
-                <td>${getHtmlSelectProduct()}</td>
-                <td>
-                    <div class="input-group">
-                         <input type="text" name="discount[]" class="form-control" placeholder="Giá trị giảm" style="width: 65%">
-                         <span class="input-group-text">%</span>
-                    </div>
-                </td>
-                <td>
-                    <button type="button" class="btn btn-danger remove-row">
-                         <i class='bx bx-trash'></i>
-                    </button>
-                </td>
-            </tr>`
-    }
-    const getHtmlSelectProduct = (value = null) => {
-        const listItem = JSON.parse(localStorage.getItem("listProducts"));
-        const select = `<select class="form-select" name="products[]">`;
-        let optionHtml = `<option value="" disabled selected>Chọn sản phẩm</option>`;
-        listItem.forEach(el => {
-            optionHtml += `<option value="${el.id}" ${value === el.id ? 'selected' : ''}>${el.name}</option>`
-        })
-
-        return (select + optionHtml + "</select>");
-    }
-    const fillDynamicInput = (items) => {
-        let newRow = items.length ? `` : getDynamicInputDefault();
-        // <option value="${TYPE_CASH}" ${el.type === TYPE_CASH ? 'selected' : ''}>VNĐ</option>
-        // <option value="${TYPE_PERCENT}" ${el.type === TYPE_PERCENT ? 'selected' : ''}>%</option>
-        items.forEach(el => {
-            newRow += `<tr>
-                <input type="hidden" name="id[]" value="${el.product?.id}" />
-                <td>${getHtmlSelectProduct(el.product?.id)}</td>
-                <td>
-                    <div class="input-group">
-                         <input type="text" name="discount[]" class="form-control" placeholder="Giá trị giảm" style="width: 65%" value="${el.discountValue}">
-                         <span class="input-group-text">%</span>
-                    </div>
-                </td>
-                </td>
-                <td>
-                    <button type="button" class="btn btn-danger remove-row">
-                         <i class='bx bx-trash'></i>
-                    </button>
-                </td>
-            </tr>`
-        })
-
-        $("#dynamicTable tbody").html(newRow)
-    }
-    const fillDynamicInputDetail = (items) => {
-        let newRow = ``;
-        items.forEach(el => {
-            newRow += `<tr>
-                <td><span>${el.product.name}</span></td>
-                <td>
-                    <span>${el.type === TYPE_CASH ? convert2Vnd(el.discountValue) : el.type === TYPE_PERCENT ? el.discountValue + " %" : ""}</span> 
-                </td>
-            </tr>`
-        })
-
-        $("#dynamicTableDetail tbody").html(newRow)
-    }
-    const resetDynamicInput = () => {
-        $("#dynamicTable tbody").empty();
-        let newRow = getDynamicInputDefault();
-        $("#dynamicTable tbody").append(newRow)
-    };
-
-    $(document).on("click", ".remove-row", function () {
-        $(this).closest("tr").remove();
-    });
-    $("#addRow").click(function () {
-        if (!allRowsFilled()) {
-            $alterTop("error", "Vui lòng nhập đầy đủ thông tin trước khi thêm dòng mới.")
-            // alert("Vui lòng nhập đầy đủ thông tin trước khi thêm dòng mới.");
-            return;
-        }
-        let newRow = getDynamicInputDefault();
-        $("#dynamicTable tbody").append(newRow);
-    });
-});
+        closeLoading();
+    })
+})();
 
 
 

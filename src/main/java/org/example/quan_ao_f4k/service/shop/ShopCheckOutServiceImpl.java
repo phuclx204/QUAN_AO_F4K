@@ -8,6 +8,7 @@ import org.example.quan_ao_f4k.dto.response.shop.ShopProductResponse;
 import org.example.quan_ao_f4k.exception.BadRequestException;
 import org.example.quan_ao_f4k.model.authentication.User;
 import org.example.quan_ao_f4k.model.order.*;
+import org.example.quan_ao_f4k.model.promotion.Promotion;
 import org.example.quan_ao_f4k.repository.order.*;
 import org.example.quan_ao_f4k.util.F4KUtils;
 import org.example.quan_ao_f4k.util.HoaDonUtils;
@@ -26,6 +27,7 @@ import java.util.stream.Collectors;
 public class ShopCheckOutServiceImpl implements ShopCheckOutService {
     private final F4KUtils f4KUtils;
     private final ShopCartService shopCartService;
+    private final ShopProductService shopProductService;
 
     private final ShippingInfoRepository shippingInfoRepository;
     private final OrderDetailRepository orderDetailRepository;
@@ -38,9 +40,14 @@ public class ShopCheckOutServiceImpl implements ShopCheckOutService {
     public void addModelCheckout(Model model) {
         User user = f4KUtils.getUser();
         Cart cart = shopCartService.getCart(user.getId());
-        model.addAttribute("cartId", cart.getId());
+
         ShopProductResponse.CartResponse cartResponse = shopCartService.getListCart(user.getUsername());
+
+        List<ShippingInfo> shippingInfo = shippingInfoRepository.findAllByUserId(user.getId());
+
+        model.addAttribute("cartId", cart.getId());
         model.addAttribute("carts", cartResponse);
+        model.addAttribute("shippingInfoList", shippingInfo);
     }
 
 
@@ -109,12 +116,22 @@ public class ShopCheckOutServiceImpl implements ShopCheckOutService {
     }
 
     private OrderDetail createOrderDetail(CartProduct cartProduct, Order savedOrder, OrderProductDetailKey key) {
+        Promotion promotion = shopProductService.getBestPromotionForProductDetail(cartProduct.getProductDetail().getId());
+
+        BigDecimal price = cartProduct.getProductDetail().getPrice();
+        Integer quantity = cartProduct.getQuantity();
+
+        if (promotion != null) {
+            price = shopProductService.calculateDiscountedPrice(price, promotion.getDiscountValue());
+        }
+
+        BigDecimal finaPrice = price.multiply(BigDecimal.valueOf(quantity));
+
         return OrderDetail.builder()
                 .order(savedOrder)
                 .productDetail(cartProduct.getProductDetail())
-                .quantity(cartProduct.getQuantity())
-                .price(cartProduct.getProductDetail().getPrice()
-                        .multiply(BigDecimal.valueOf(cartProduct.getQuantity())))
+                .quantity(quantity)
+                .price(finaPrice)
                 .orderProductDetailKey(key)
                 .build();
     }

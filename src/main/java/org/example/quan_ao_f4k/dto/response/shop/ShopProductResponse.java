@@ -6,6 +6,7 @@ import lombok.Data;
 import org.example.quan_ao_f4k.model.authentication.User;
 import org.example.quan_ao_f4k.model.general.Image;
 import org.example.quan_ao_f4k.model.product.*;
+import org.example.quan_ao_f4k.model.promotion.Promotion;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -36,7 +37,9 @@ public class ShopProductResponse {
         private Color color;
         private BigDecimal price;
         private Integer quantity;
+        private BigDecimal discountValue;
         private Integer status;
+        private Promotion promotion;
     }
 
     /// FOR CART
@@ -46,6 +49,7 @@ public class ShopProductResponse {
         private ProductDetailDto productDetailDto;
         private int quantity;
         private BigDecimal total;
+        private Integer status;
     }
 
     @Data

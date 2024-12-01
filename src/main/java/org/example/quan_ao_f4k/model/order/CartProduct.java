@@ -34,4 +34,8 @@ public class CartProduct {
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
+
+    @Column(name = "status")
+    private Integer status;
+
 }

@@ -1,199 +1,120 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Invoice</title>
-    <link
-            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css"
-            rel="stylesheet"
-    />
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Hóa đơn</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f9f9f9;
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
         }
+
         .invoice-container {
-            background: #ffffff;
-            border: 1px solid #ddd;
-            padding: 20px;
-            margin: 20px auto;
-            width: 800px;
-            border-radius: 10px;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            width: 300px;
+            margin: auto;
+            padding: 10px;
+            border: 1px dashed #000;
         }
+
         .invoice-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
+            text-align: center;
+            margin-bottom: 10px;
         }
+
         .invoice-header h1 {
-            color: #d9534f;
-        }
-        .invoice-total {
-            background: #d9534f;
-            color: #fff;
-            padding: 10px;
-            text-align: center;
+            margin: 0;
             font-size: 18px;
-            border-radius: 5px;
         }
+
+        .invoice-header p {
+            margin: 0;
+            font-size: 12px;
+        }
+
         .invoice-details {
-            margin: 20px 0;
+            margin-bottom: 10px;
+            font-size: 12px;
         }
-        .invoice-details th,
-        .invoice-details td {
+
+        .invoice-details strong {
+            display: block;
+        }
+
+        .invoice-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+        }
+
+        .invoice-table th,
+        .invoice-table td {
+            border: 1px solid #000;
+            padding: 5px;
             text-align: left;
-            padding: 10px;
-            border: 1px solid #ddd;
         }
-        .invoice-details th {
-            background-color: #f7f7f7;
-        }
-        .grand-total {
-            background-color: #d9534f;
-            color: #fff;
-            font-weight: bold;
+
+        .invoice-footer {
             text-align: center;
-        }
-        .terms-section {
-            margin-top: 30px;
-        }
-        .bank-details,
-        .signature {
-            margin-top: 20px;
-        }
-        .footer {
-            text-align: center;
-            margin-top: 30px;
-            font-size: 14px;
-            color: #777;
+            margin-top: 10px;
+            font-size: 12px;
         }
     </style>
 </head>
+
 <body>
 <div class="invoice-container">
-    <!-- Invoice Header -->
+    <!-- Header -->
     <div class="invoice-header">
-        <h1>F4K</h1>
-        <div>
-            <h4>Shop mua bán quần áo</h4>
-            <p>48 Liên Hồng - Đan Phượng - Hà Nội</p>
-        </div>
+        <h1>F4K Shop</h1>
+        <p>48 Liên Hồng - Đan Phượng - Hà Nội</p>
+        <p>Hotline: +84 865 290 067</p>
     </div>
 
-    <!-- Total Due -->
-    <div class="invoice-total">
-        Tổng giá: $3410.00
+    <!-- Invoice Details -->
+    <div class="invoice-details">
+        <strong>Khách hàng: Khách bán lẻ</strong>
+        <p>Ngày xuất hóa đơn: <span th:text="${currentDateTime}"></span></p>
     </div>
 
-    <!-- Invoice Info -->
-    <div class="row invoice-details">
-        <div class="col-md-6">
-            <strong>Thông tin người mua:</strong>
-            <p>
-                Họ tên : <br />
-                Email : shyen@email.com <br />
-                Số điện thoại : +123 456 7890
-            </p>
-        </div>
-        <div class="col-md-6">
-            <strong>Phương thức thanh toán:</strong>
-            <p>
-                <strong>Trạng thái:</strong> #143999<br />
-                <strong>ngày mua:</strong> 5 Feb, 2015<br />
-            </p>
-        </div>
-    </div>
-
-    <!-- Table -->
-    <table class="table table-bordered invoice-details">
+    <!-- Product Table -->
+    <table class="invoice-table">
         <thead>
         <tr>
             <th>STT</th>
-            <th>Sản Phẩm mua</th>
-            <th>số lượng</th>
-            <th>giá trị</th>
-            <th>tổng giá</th>
+            <th>Sản phẩm</th>
+            <th>SL</th>
+            <th>Đơn giá</th>
+            <th>Thành tiền</th>
         </tr>
         </thead>
         <tbody>
-        <tr>
-            <td>01</td>
-            <td>Flyer Design</td>
-            <td>02</td>
-            <td>$500.00</td>
-            <td>$1000.00</td>
+        <tr th:each="orderD, iterStat : ${orderDetails}">
+            <td th:text="${iterStat.index + 1}"></td>
+            <td th:text="${orderD.productDetail.product.name}"></td>
+            <td th:text="${orderD.quantity}">1</td>
+            <td th:text="${orderD.price}">1000</td>
+            <td th:text="${orderD.quantity * orderD.price}"></td>
         </tr>
         <tr>
-            <td>02</td>
-            <td>Business Card Design</td>
-            <td>03</td>
-            <td>$200.00</td>
-            <td>$600.00</td>
+            <td colspan="2"><strong>Tổng SL:</strong></td>
+            <td><strong>3</strong></td>
         </tr>
-        <tr>
-            <td>03</td>
-            <td>Invoice Design</td>
-            <td>02</td>
-            <td>$250.00</td>
-            <td>$500.00</td>
-        </tr>
-        <tr>
-            <td>04</td>
-            <td>Logo Design</td>
-            <td>02</td>
-            <td>$600.00</td>
-            <td>$1200.00</td>
-        </tr>
-        <tr>
-            <td>05</td>
-            <td>Web Design</td>
-            <td>01</td>
-            <td>$110.00</td>
-            <td>$110.00</td>
-        </tr>
-        <tr class="grand-total">
-            <td colspan="4">Tổng tiền</td>
-            <td>$3410.00</td>
-        </tr>
+<!--        <tr>-->
+<!--            <td colspan="4"><strong>Tổng tiền:</strong></td>-->
+<!--            <td><strong>${orderD.order.totalPay}</strong></td>-->
+<!--        </tr>-->
         </tbody>
     </table>
 
-    <!-- Terms Section -->
-    <div class="terms-section">
-        <h5>Terms and Conditions</h5>
-        <p>
-            Payment is due within 30 days from the date of the invoice. Late payments
-            may attract additional charges.
-        </p>
-    </div>
-
-    <!-- Bank Details and Signature -->
-    <div class="row">
-        <div class="col-md-6 bank-details">
-            <h5>Bank Information</h5>
-            <p>
-                Bank Name: XYZ Bank <br />
-                Account No: 1234567890 <br />
-                IBAN: XYZIBAN12345
-            </p>
-        </div>
-        <div class="col-md-6 signature text-end">
-            <p>Authorized Signature</p>
-            <p>_____________________</p>
-        </div>
-    </div>
-
     <!-- Footer -->
-    <div class="footer">
-        <p>Thank you for your business!</p>
+    <div class="invoice-footer">
+        <p>Cảm ơn quý khách đã mua hàng!</p>
+        <p>Hẹn gặp lại!</p>
     </div>
 </div>
-
-<script
-        src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"
-></script>
 </body>
+
 </html>

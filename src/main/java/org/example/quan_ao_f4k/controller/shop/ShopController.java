@@ -27,7 +27,8 @@ public class ShopController {
 
     // home
     @GetMapping("/home")
-    public String index() {
+    public String index(Model model) {
+        shopProductService.addModelHome(model);
         return "/shop/pages/index";
     }
 
@@ -81,6 +82,12 @@ public class ShopController {
     @PostMapping("/product/remove-cart/{id}")
     public ResponseEntity<?> deleteCart(@PathVariable Long id) {
         shopCartService.removeCart(id);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/product/update-quantity/{id}")
+    public ResponseEntity<?> updateQuantity(@PathVariable Long id, @RequestParam(value = "quantity", required = false) Integer quantity) {
+        shopCartService.updateQuantity(id, quantity);
         return ResponseEntity.ok().build();
     }
 

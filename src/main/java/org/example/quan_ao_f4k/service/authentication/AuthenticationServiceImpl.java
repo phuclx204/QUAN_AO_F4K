@@ -12,10 +12,6 @@ import org.example.quan_ao_f4k.repository.authentication.UserRepository;
 import org.example.quan_ao_f4k.util.F4KConstants;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Repository;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
@@ -26,58 +22,26 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
 
-
-    private Role getRole() {
-        Role role = roleRepository.findByName(F4KConstants.ROLE_USER);
-        if (role == null) {
-            return roleRepository.save(
-                    Role.builder()
-                            .name(F4KConstants.ROLE_USER)
-                            .status(F4KConstants.STATUS_ON)
-                            .build());
-        }
-        return role;
-    }
-
-    @Override
-    public User findByLogin(String login) {
-        Optional<User> userOptional = userRepository.findByUsername(login);
-        return userOptional
-                .orElseThrow(() -> new IllegalStateException("User with username: " + login + " does not exist"));
-    }
-
-    @Override
-    public User getUserById(Long userId) {
-        Optional<User> userOptional = userRepository.findById(userId);
-        return userOptional
-                .orElseThrow(() -> new IllegalStateException("User with id: " + userId + " does not exist"));
-    }
-
     @Override
     public AuthenticationResponse register(RegisterRequest request) {
+        Role role = roleRepository.findById(request.getRoleId()).orElseThrow(() -> new IllegalArgumentException("Role not found"));
+
         if (userRepository.existsByUsername(request.getUsername())) {
-            throw new BadRequestException("Username is already in use");
+            throw new BadRequestException("Tên đăng nhập đã tồn tại");
         }
 
-        User newUser = User
-                .builder()
+        var user = User.builder()
                 .username(request.getUsername())
-                .password(passwordEncoder.encode(request.getPassword()))
-                .role(getRole())
                 .email(request.getEmail())
+                .password(passwordEncoder.encode(request.getPassword()))
+                .role(role)
                 .status(F4KConstants.STATUS_ON)
                 .build();
 
-        User createdUser = userRepository.save(newUser);
-
-        return AuthenticationResponse
-                .builder()
-                .userDto(userMapper.entityToResponse(createdUser))
+        var savedUser = userRepository.save(user);
+        return AuthenticationResponse.builder()
+                .status("200")
+                .message("Success")
                 .build();
-    }
-
-    @Override
-    public List<User> getUsers() {
-        return userRepository.findAll();
     }
 }

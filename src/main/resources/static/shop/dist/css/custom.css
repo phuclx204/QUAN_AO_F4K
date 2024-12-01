@@ -61,3 +61,8 @@
     overflow: hidden;
     border-top: 1px solid #e9ecef;
 }
+
+.out-of-stock {
+    text-decoration: line-through;
+    color: #999; /* Màu xám nhạt để thể hiện sự hết hàng */
+}

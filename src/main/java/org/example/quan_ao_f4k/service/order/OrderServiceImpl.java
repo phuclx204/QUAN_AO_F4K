@@ -3,6 +3,7 @@ package org.example.quan_ao_f4k.service.order;
 import lombok.AllArgsConstructor;
 import org.example.quan_ao_f4k.dto.request.order.OrderRequest;
 import org.example.quan_ao_f4k.dto.response.orders.OrderResponse;
+import org.example.quan_ao_f4k.dto.response.orders.OrderStatisticsResponse;
 import org.example.quan_ao_f4k.list.ListResponse;
 import org.example.quan_ao_f4k.mapper.order.OrderMapper;
 import org.example.quan_ao_f4k.model.order.Order;
@@ -23,7 +24,9 @@ import org.springframework.ui.Model;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @AllArgsConstructor
@@ -113,4 +116,45 @@ public class OrderServiceImpl implements OrderService {
 
 		return new ListResponse<>(orderResponses, orders);
 	}
+
+	@Override
+	public Map<LocalDate, OrderStatisticsResponse> getOrderStatistics(LocalDate startDate, LocalDate endDate) {
+		// Lấy tất cả các đơn hàng từ kho dữ liệu
+		List<Order> allOrders = orderRepository.findAll();
+
+		// Lọc các đơn hàng theo ngày và trạng thái hóa đơn (chỉ lấy những đơn hàng có trạng thái là 3 và nằm trong khoảng thời gian startDate và endDate)
+		List<Order> filteredOrders = allOrders.stream()
+				.filter(order -> {
+					LocalDate createdDate = order.getCreatedAt().toLocalDate();
+					// Kiểm tra ngày tạo và trạng thái của đơn hàng
+					return !createdDate.isBefore(startDate) && !createdDate.isAfter(endDate) && order.getStatus() == 3;
+				})
+				.collect(Collectors.toList());
+
+		// Nhóm các đơn hàng theo ngày và tính toán thống kê cho mỗi ngày
+		return filteredOrders.stream()
+				.collect(Collectors.groupingBy(
+						order -> order.getCreatedAt().toLocalDate(), // Nhóm đơn hàng theo ngày tạo
+						Collectors.collectingAndThen(
+								Collectors.toList(), // Thu thập các đơn hàng vào một danh sách
+								ordersByDate -> {
+									// Tính toán số lượng đơn hàng trong ngày
+									long count = ordersByDate.size();
+									// Tính tổng số tiền thanh toán cho các đơn hàng trong ngày
+									BigDecimal totalPay = ordersByDate.stream()
+											.map(Order::getTotalPay)
+											.reduce(BigDecimal.ZERO, BigDecimal::add);
+									// Trả về một đối tượng OrderStatisticsResponse với các thống kê
+									return new OrderStatisticsResponse(count, totalPay, ordersByDate.get(0).getCreatedAt().toLocalDate());
+								}
+						)
+				));
+	}
+
+	@Override
+	public BigDecimal getTotalRevenue() {
+		return orderRepository.getTotalPay();
+	}
+
+
 }

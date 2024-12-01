@@ -5,6 +5,7 @@ import lombok.Data;
 import org.example.quan_ao_f4k.dto.request.promotion.PromotionProductRequest;
 import org.example.quan_ao_f4k.model.promotion.PromotionProduct;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -16,5 +17,6 @@ public class PromotionResponse {
     private LocalDate dayStart;
     private LocalDate dayEnd;
     private int status;
+    private BigDecimal discountValue;
     private List<PromotionProductResponse> products;
 }

@@ -50,7 +50,9 @@ const getListProduct = async (objSearch = {}) => {
                 size: el.size.name,
                 price: el.price,
                 discount: null,
-                thumbnail: el.product.image
+                thumbnail: el.product.image,
+                promotion: el.promotion,
+                discountValue: el.discountValue
             }
         })
 
@@ -73,19 +75,35 @@ const addDomListProduct = (item) => {
     const hrefProduct = '/shop/product/' + item.slug + '?color=' + item.colorHex.replaceAll("#", '%23') + '&size=' + item.size;
     const hrefQuickAdd = '/shop/cart/add/' + item.id;
 
+    let finalPrice = ``;
+    if (item.promotion) {
+        finalPrice = `<div class="d-flex justify-content-center align-items-center mt-2">
+                          <p class="mb-0 me-2 text-danger fw-bolder">${convert2Vnd(item.discountValue)}</p>
+                          <p class="mb-0 text-muted fw-bolder"><s>${convert2Vnd(item.price)}</s></p>
+                     </div>`
+    } else {
+        finalPrice = `<p class="fw-bolder m-0 mt-2">${convert2Vnd(item.price)}</p>`
+    }
+
+    let discountPercent = item.promotion ? `<span class="badge card-badge bg-secondary">-${item.promotion.discountValue}%</span>` : '';
+
+    let cartAction =
+        `<div class="card-actions">
+            <a class="small text-uppercase tracking-wide fw-bolder text-center d-block btn-add-cart" href="${hrefQuickAdd}" data-id="${item.id}">Quick Add</a>
+            <div class="d-flex justify-content-center align-items-center flex-wrap mt-3"></div>
+        </div>`
+
     const productCardHTML = `
         <div class="col-12 col-sm-6 col-md-4">
             <div class="card position-relative h-100 card-listing hover-trigger">
+                ${discountPercent}
                 <div class="card-header h-100">
                     ${getDomPicture(item.thumbnail)}
-                    <div class="card-actions">
-                        <a class="small text-uppercase tracking-wide fw-bolder text-center d-block btn-add-cart" href="${hrefQuickAdd}" data-id="${item.id}">Quick Add</a>
-                        <div class="d-flex justify-content-center align-items-center flex-wrap mt-3"></div>
-                    </div>
+                <!--${cartAction}-->
                 </div>
                 <div class="card-body px-0 text-center">
                     <a class="mb-0 mx-2 mx-md-4 fs-p link-cover text-decoration-none d-block text-center link-name-product" href="${hrefProduct}">${item.name}</a>
-                    <p class="fw-bolder m-0 mt-2">${convert2Vnd(item.price)}</p>
+                    ${finalPrice}
                 </div>
             </div>
         </div>

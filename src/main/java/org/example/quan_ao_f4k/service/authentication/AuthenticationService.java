@@ -8,8 +8,5 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 public interface  AuthenticationService {
-    User findByLogin(String login);
-    User getUserById(Long userId);
     AuthenticationResponse register(RegisterRequest request);
-    List<User> getUsers();
 }

@@ -1,16 +1,16 @@
-const avatarInput = document.getElementById('avatar');
-const avatarPreview = document.getElementById('avatar-preview');
-
-avatarInput.addEventListener('change', function () {
-    if (this.files && this.files[0]) {
-        const reader = new FileReader();
-        reader.onload = function (e) {
-            avatarPreview.src = e.target.result;
-            avatarPreview.style.display = 'block';
-        }
-        reader.readAsDataURL(this.files[0]);
-    }
-});
+// const avatarInput = document.getElementById('avatar');
+// const avatarPreview = document.getElementById('avatar-preview');
+//
+// avatarInput.addEventListener('change', function () {
+//     if (this.files && this.files[0]) {
+//         const reader = new FileReader();
+//         reader.onload = function (e) {
+//             avatarPreview.src = e.target.result;
+//             avatarPreview.style.display = 'block';
+//         }
+//         reader.readAsDataURL(this.files[0]);
+//     }
+// });
 
 $(document).ready(function () {
     // === Khởi động ===

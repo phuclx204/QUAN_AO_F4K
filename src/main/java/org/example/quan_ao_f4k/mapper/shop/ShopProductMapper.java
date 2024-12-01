@@ -25,6 +25,7 @@ public interface ShopProductMapper {
 
     @Mapping(source = "id", target = "image", qualifiedByName = "convertToImageByProduct")
     @Mapping(source = "id", target = "images", qualifiedByName = "convertToImageByProductDetail")
+    @Mapping(source = "slug", target = "slug")
     ShopProductResponse.ProductDto toProductDto(Product product);
     Product toProduct(ShopProductResponse.ProductDto productDto);
 

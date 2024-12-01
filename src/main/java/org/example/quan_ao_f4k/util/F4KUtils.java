@@ -7,6 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.security.SecureRandom;
@@ -19,7 +22,8 @@ public class F4KUtils {
     @Autowired
     private UserRepository userRepository;
 
-    private F4KUtils() {}
+    private F4KUtils() {
+    }
 
     public static <T> Page<T> toPage(List<T> list, Pageable pageable) {
         int pageSize = pageable.getPageSize();
@@ -62,8 +66,25 @@ public class F4KUtils {
     }
 
     //TODO: Đợi thích hợp xong JWT bắt buộc xem lại
+//    public User getUser() {
+//    }
+
     public User getUser() {
-        return userRepository.findByUsername("user").orElseThrow(
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+//        if (authentication != null && authentication.isAuthenticated()) {
+//            Object principal = authentication.getPrincipal();
+//            if (principal instanceof UserDetails) {
+//                return ((UserDetails) principal);
+//            } else {
+//                return null; // Trường hợp này có thể xảy ra nếu không dùng UserDetails
+//            }
+//        }
+//        return null;
+        if (userDetails == null) {
+            throw new BadRequestException("Lỗi đăng nhập, xem lại tài khoản đang đăng nhập");
+        }
+        return userRepository.findByUsername(userDetails.getUsername()).orElseThrow(
                 () -> new BadRequestException("Lỗi đăng nhập, xem lại tài khoản đang đăng nhập")
         );
     }

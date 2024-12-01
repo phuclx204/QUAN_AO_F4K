@@ -4,6 +4,7 @@ import org.example.quan_ao_f4k.model.promotion.Promotion;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
@@ -39,8 +40,44 @@ public interface PromotionRepository extends JpaRepository<Promotion, Long>,
 	boolean existsByNameAndDate(String name, LocalDate dateStart, Long id);
 
 	@Query("SELECT p FROM Promotion p " +
+			"WHERE (p.name is null or p.name = :name) " +
+			"AND :dateStart BETWEEN p.dayStart AND p.dayEnd " +
+			"AND (:id IS NULL OR :id != p.id)")
+	Optional<Promotion> findByNameAndDate(String name, LocalDate dateStart, Long id);
+
+	@Query("SELECT p FROM Promotion p " +
 			"WHERE :dateStart BETWEEN p.dayStart AND p.dayEnd " +
 			"AND (:id IS NULL OR :id != p.id)" +
 			"order by p.id desc limit 1")
 	Optional<Promotion> findByStarDate(LocalDate dateStart, Long id);
+
+	@Query("SELECT p FROM Promotion p WHERE p.status = :status " +
+			"AND p.dayStart <= :now AND p.dayEnd >= :now")
+	List<Promotion> findAllByStatusAndDayStartBeforeAndDayEndAfter(
+			@Param("status") Integer status,
+			@Param("now") LocalDate now);
+
+
+	@Query("SELECT p FROM Promotion p " +
+			"LEFT JOIN PromotionProduct pp ON pp.promotion.id = p.id " +
+			"LEFT JOIN Product pr ON pr.id = pp.product.id " +
+			"WHERE pr.id = :productId " +
+			"AND p.status = 1 " +
+			"AND p.dayStart <= :now " +
+			"AND p.dayEnd >= :now " +
+			"ORDER BY p.discountValue DESC")
+	List<Promotion> findActivePromotionsByProductId(@Param("productId") Long productId,
+													@Param("now") LocalDate now);
+
+	@Query("SELECT p FROM Promotion p " +
+			"LEFT JOIN PromotionProduct pp ON pp.promotion.id = p.id " +
+			"LEFT JOIN Product pr ON pr.id = pp.product.id " +
+			"LEFT JOIN ProductDetail pd ON pr.id = pd.product.id " +
+			"WHERE pd.id = :productDetailId " +
+			"AND p.status = 1 " +
+			"AND p.dayStart <= :now " +
+			"AND p.dayEnd >= :now " +
+			"ORDER BY p.discountValue DESC")
+	List<Promotion> findActivePromotionsByProductDetailId(@Param("productDetailId") Long productDetailId,
+														  @Param("now") LocalDate now);
 }
