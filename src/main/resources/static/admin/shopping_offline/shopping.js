@@ -234,8 +234,17 @@ function renderProductList(products) {
     products.forEach((prd, index) => {
         const productRow = document.createElement('tr');
 
+        const listImg = prd.images;
+        let image = ``;
+
+        if (!listImg.length) {
+            image = ''
+        } else {
+            image = `<img src="${listImg[0].fileUrl}" alt="${prd.product.name}" style="width: 50px; height: 50px;">`
+        }
+
         productRow.innerHTML = `
-            <td><img src="${prd.product.thumbnail}" alt="${prd.product.name}" style="width: 50px; height: 50px;"></td>
+            <td>${image}</td>
             <td>${prd.product.name}</td>
             <td>${prd.price}</td>
             <td>

@@ -113,10 +113,13 @@ const {getValidate, clearValidation} = validateForm;
             const productDetail = item.productDetailDto;
             const product = item.productDetailDto.product;
 
+            const discountPercent = productDetail.promotion ? `<span class="badge card-badge bg-secondary">-${productDetail.promotion.discountValue}%</span>` : '';
+
             const cartItemHTML = `
                 <div class="d-none d-md-flex justify-content-between align-items-start py-2">
                     <div class="d-flex flex-grow-1 justify-content-start align-items-start">
-                        <div class="position-relative f-w-20 border p-2 me-4">
+                        <div class="position-relative f-w-20 border p-2 me-4  position-relative">
+                            ${discountPercent}
                             <span class="checkout-item-qty">${item.quantity}</span>
                             <img src="${product.image.fileUrl}" alt="${product.image.nameFile}" class="rounded img-fluid">
                         </div>

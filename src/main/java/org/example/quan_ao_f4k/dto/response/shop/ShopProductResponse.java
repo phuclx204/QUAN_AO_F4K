@@ -37,6 +37,7 @@ public class ShopProductResponse {
         private Color color;
         private BigDecimal price;
         private Integer quantity;
+        private BigDecimal discountValue;
         private Integer status;
         private Promotion promotion;
     }

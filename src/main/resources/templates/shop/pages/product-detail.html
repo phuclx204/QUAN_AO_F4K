@@ -60,11 +60,16 @@
                         </p>
                     </div>
                     <h1 class="mb-2 fs-2 fw-bold">[[${objDetail.product.name}]]</h1>
-                    <div class="d-flex justify-content-start align-items-center">
-                        <p class="lead fw-bolder m-0 fs-3 lh-1 text-danger me-2" id="product-price"
-                           th:data-price="${objDetail.price}"></p>
-                        <!--                        <s class="lh-1 me-2"><span class="fw-bolder m-0">$94.99</span></s>-->
-                        <!--                        <p class="lead fw-bolder m-0 fs-6 lh-1 text-success">Save $10.00</p>-->
+                    <div th:if="${promotion != null}" class="d-flex justify-content-start align-items-center">
+                        <p class="lead fw-bolder m-0 fs-3 lh-1 text-danger me-2 product-price-list"
+                           th:data-price="${finalDiscount}">[[${finalDiscount}]]</p>
+                        <s class="lh-1 me-2"><span class="fw-bolder m-0 product-price-list">[[${objDetail.price}]]</span></s>
+                        <p class="lead fw-bolder m-0 fs-6 lh-1 text-success">-[[${promotion.discountValue}]]%</p>
+                    </div>
+
+                    <div th:if="${promotion == null}" class="d-flex justify-content-start align-items-center">
+                        <p class="lead fw-bolder m-0 fs-3 lh-1 text-danger me-2 product-price-list"
+                           th:data-price="${objDetail.price}">[[${objDetail.price}]]</p>
                     </div>
 
                     <!-- Product Views-->

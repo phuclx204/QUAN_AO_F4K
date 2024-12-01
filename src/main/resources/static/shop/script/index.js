@@ -54,6 +54,7 @@ export {URL, imageBlank}
         replaceSubtotal(result.subtotal)
     }
     const updateHtmlCartItem = (item) => {
+        console.log(item)
         const productDetail = item.productDetailDto;
         const product = productDetail.product;
 
@@ -63,6 +64,8 @@ export {URL, imageBlank}
 
         const urlProductDetail = `/shop/product/${product.slug}?color` + productDetail.color.hex.replace("#", "%23") + `&size=${productDetail.size.name}`;
         const productName = productDetail.status === trangThaiSp.conHang ? `<a href="${urlProductDetail}" class="text-decoration-none">${product.name}</a>` : `${product.name}`;
+
+        const discountPercent = productDetail.promotion ? `<span class="badge card-badge bg-secondary">-${productDetail.promotion.discountValue}%</span>` : '';
 
         let htmlFooter = ``
         if (item.status === 1) {
@@ -75,9 +78,11 @@ export {URL, imageBlank}
         } else {
             htmlFooter += `<span class="text-danger">Hết hàng</span><strike class="fw-bolder text-end m-0">${total}</strike>`
         }
+
         const htmlCartItem =
             `<div class="row mx-0 pb-4 mb-4 border-bottom">
-                    <div class="col-3">
+                    <div class="col-3 position-relative">
+                        ${discountPercent}
                         <picture class="d-block bg-light">
                             <img class="img-fluid" src="${srcImg}"
                                  alt="Bootstrap 5">

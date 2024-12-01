@@ -21,6 +21,7 @@ import org.example.quan_ao_f4k.service.order.OrderServiceImpl;
 
 import org.example.quan_ao_f4k.service.product.ProductDetailService;
 import org.example.quan_ao_f4k.service.product.ProductDetailServiceImpl;
+import org.example.quan_ao_f4k.util.F4KConstants;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -74,15 +75,15 @@ public class ShoppingController {
 		}
 		List<OrderDetail> orderDetails = orderService.findCart(id);
 
-//		List<Image> images = new ArrayList<>();
-//		for (OrderDetail orderDetail : orderDetails) {
-//			// Lấy hình ảnh của sản phẩm tương ứng với ProductDetail
-//			List<Image> productImages = imageRepository.getImageByIdParent(orderDetail.getProductDetail().getId(), "PRODUCT_DETAIL");
-//			// Lưu hình ảnh đầu tiên của sản phẩm vào OrderDetail (nếu có)
-//			if (!productImages.isEmpty()) {
-//				orderDetail.setImage(productImages.get(0));  // Giả sử OrderDetail có setter cho image
-//			}
-//		}
+		List<Image> images = new ArrayList<>();
+		for (OrderDetail orderDetail : orderDetails) {
+			// Lấy hình ảnh của sản phẩm tương ứng với ProductDetail
+			Image productImages = imageRepository.findImageByIdParent(orderDetail.getProductDetail().getProduct().getId(), F4KConstants.TableCode.PRODUCT);
+			// Lưu hình ảnh đầu tiên của sản phẩm vào OrderDetail (nếu có)
+			if (productImages != null) {
+				orderDetail.setImage(productImages);
+			}
+		}
 
 		BigDecimal totalAmount = orderService.calculateTotalAmount(orderDetails);
 

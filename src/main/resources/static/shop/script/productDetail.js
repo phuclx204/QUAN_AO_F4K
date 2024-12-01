@@ -4,8 +4,8 @@ import {$ajax, getCommon, ref, buttonSpinner} from "/common/public.js";
     const {convert2Vnd} = getCommon();
 
     // định dạng lại loại tiền
-    const price = document.getElementById('product-price').dataset.price;
-    document.getElementById('product-price').innerText = convert2Vnd(price);
+    // const price = document.getElementById('product-price').dataset.price;
+    // document.getElementById('product-price').innerText = convert2Vnd(price);
     let priceList = document.getElementsByClassName("product-price-list")
     priceList.forEach(el => {
         el.innerHTML = convert2Vnd(el.innerHTML);

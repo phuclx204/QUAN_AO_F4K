@@ -28,6 +28,7 @@ import java.util.List;
 @Service
 public class ShopCartServiceImpl implements ShopCartService{
     private final F4KUtils f4KUtils;
+    private final ShopProductService shopProductService;
 
     private final CartRepository cartRepository;
     private final CartProductRepository cartProductRepository;
@@ -46,6 +47,23 @@ public class ShopCartServiceImpl implements ShopCartService{
     public ShopProductResponse.CartResponse getListCart(String username) {
         Cart cart = getCart(f4KUtils.getUser().getId());
         List<CartProduct> listCartProduct = cartProductRepository.findAllByCart_Id(cart.getId());
+
+        updateCartByStatusProduct(listCartProduct);
+
+        List<ShopProductResponse.CartProductDto> listCartProductDto = shopProductMapper.toCartProductDto(listCartProduct);
+
+        applyDiscounts(listCartProductDto);
+
+        BigDecimal subtotal = calculateSubtotal(listCartProductDto);
+
+        return ShopProductResponse.CartResponse.builder()
+                .items(listCartProductDto)
+                .itemCount(listCartProductDto.size())
+                .subtotal(subtotal)
+                .build();
+    }
+
+    private void updateCartByStatusProduct(List<CartProduct> listCartProduct) {
         for (CartProduct cartProduct : listCartProduct) {
             if (cartProduct.getProductDetail().getStatus() == F4KConstants.STATUS_OFF){
                 cartProduct.setStatus(F4KConstants.HET_HANG);
@@ -60,21 +78,41 @@ public class ShopCartServiceImpl implements ShopCartService{
             }
             cartProductRepository.save(cartProduct);
         }
+    }
 
-        List<ShopProductResponse.CartProductDto> listCartProductDto = shopProductMapper.toCartProductDto(listCartProduct);
+    private void applyDiscounts(List<ShopProductResponse.CartProductDto> listCartProductDto) {
+        listCartProductDto.forEach(el -> {
+            var promotion = shopProductService.getBestPromotionForProductDetail(el.getProductDetailDto().getId());
+            if (promotion != null) {
+                BigDecimal finalPrice = shopProductService.calculateDiscountedPrice(el.getProductDetailDto().getPrice(), promotion.getDiscountValue());
+                if (finalPrice.compareTo(BigDecimal.ZERO) < 0) {
+                    finalPrice = BigDecimal.ZERO;
+                }
+                el.getProductDetailDto().setDiscountValue(finalPrice);
+                el.getProductDetailDto().setPromotion(promotion);
+            } else {
+                el.getProductDetailDto().setDiscountValue(null);
+                el.getProductDetailDto().setPromotion(null);
+            }
+        });
+    }
+
+    private BigDecimal calculateSubtotal(List<ShopProductResponse.CartProductDto> listCartProductDto) {
         BigDecimal subtotal = BigDecimal.ZERO;
         for (ShopProductResponse.CartProductDto el : listCartProductDto) {
-            el.setTotal(el.getProductDetailDto().getPrice().multiply(BigDecimal.valueOf(el.getQuantity())));
-            if (el.getStatus() == F4KConstants.CON_HANG) {
-                subtotal = subtotal.add(el.getProductDetailDto().getPrice().multiply(BigDecimal.valueOf(el.getQuantity())));
+            if (el.getProductDetailDto().getPromotion() != null) {
+                el.setTotal(el.getProductDetailDto().getDiscountValue().multiply(BigDecimal.valueOf(el.getQuantity())));
+                if (el.getStatus() == F4KConstants.CON_HANG) {
+                    subtotal = subtotal.add(el.getProductDetailDto().getDiscountValue().multiply(BigDecimal.valueOf(el.getQuantity())));
+                }
+            } else {
+                el.setTotal(el.getProductDetailDto().getPrice().multiply(BigDecimal.valueOf(el.getQuantity())));
+                if (el.getStatus() == F4KConstants.CON_HANG) {
+                    subtotal = subtotal.add(el.getProductDetailDto().getPrice().multiply(BigDecimal.valueOf(el.getQuantity())));
+                }
             }
         }
-
-        return ShopProductResponse.CartResponse.builder()
-                .items(listCartProductDto)
-                .itemCount(listCartProductDto.size())
-                .subtotal(subtotal)
-                .build();
+        return subtotal;
     }
 
     @Override

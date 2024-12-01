@@ -26,6 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -168,6 +169,23 @@ public class PromotionServiceImpl implements PromotionService {
         LocalDate now = LocalDate.now();
         List<Promotion> promotions = promotionRepository.findActivePromotionsByProductDetailId(productDetailId, now);
         return promotions.isEmpty() ? null : promotions.get(0);
+    }
+
+    @Override
+    public BigDecimal calculateDiscountedPrice(BigDecimal originalPrice, BigDecimal discountPercent) {
+        if (originalPrice == null || discountPercent == null) {
+            return originalPrice;
+        }
+
+        if (discountPercent.compareTo(BigDecimal.ZERO) < 0 || discountPercent.compareTo(BigDecimal.valueOf(100)) > 0) {
+            throw new IllegalArgumentException("Phần trăm giảm giá phải nằm trong khoảng từ 0 đến 100.");
+        }
+
+        BigDecimal discountMultiplier = BigDecimal.ONE.subtract(
+                discountPercent.divide(BigDecimal.valueOf(100), RoundingMode.HALF_UP)
+        );
+
+        return originalPrice.multiply(discountMultiplier).setScale(2, RoundingMode.HALF_UP);
     }
 
     private void updateExpiredPromotionsBatch() {

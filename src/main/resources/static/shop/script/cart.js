@@ -78,10 +78,13 @@ const {convert2Vnd} = getCommon();
                      <p class="fw-bolder mt-3 m-sm-0"><strike>${convert2Vnd(item.total + '')}</strike></p>
                 </div>`
 
+            const discountPercent = productDetail.promotion ? `<span class="badge card-badge bg-secondary">-${productDetail.promotion.discountValue}%</span>` : '';
+
             const $row = $(`
                 <tr>
                     <td class="d-none d-sm-table-cell">
-                        <picture class="d-block bg-light p-3 f-w-20">
+                        <picture class="d-block bg-light p-3 f-w-20 position-relative">
+                            ${discountPercent}
                             <img class="img-fluid" src="${product.image.fileUrl}" alt="">
                         </picture>
                     </td>
