@@ -1,7 +1,22 @@
 package org.example.quan_ao_f4k.controller.shopping_offline;
 
-import lombok.AllArgsConstructor;
 
+import lombok.AllArgsConstructor;
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import org.thymeleaf.context.Context;
+
+import org.thymeleaf.spring6.SpringTemplateEngine;
+import org.xhtmlrenderer.pdf.ITextRenderer;
+
+import java.io.OutputStream;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import org.example.quan_ao_f4k.dto.request.order.OrderDetailRequest;
 import org.example.quan_ao_f4k.dto.request.order.OrderDetailResponse;
 import org.example.quan_ao_f4k.dto.request.order.OrderRequest;
@@ -9,8 +24,10 @@ import org.example.quan_ao_f4k.dto.response.orders.OrderResponse;
 import org.example.quan_ao_f4k.dto.response.product.ProductDetailResponse;
 import org.example.quan_ao_f4k.dto.response.promotion.PromotionResponse;
 import org.example.quan_ao_f4k.model.general.Image;
+import org.example.quan_ao_f4k.model.order.Order;
 import org.example.quan_ao_f4k.model.order.OrderDetail;
 import org.example.quan_ao_f4k.model.order.OrderProductDetailKey;
+import org.example.quan_ao_f4k.model.product.Product;
 import org.example.quan_ao_f4k.model.product.ProductDetail;
 import org.example.quan_ao_f4k.repository.general.ImageRepository;
 import org.example.quan_ao_f4k.repository.order.OrderRepository;
@@ -25,8 +42,6 @@ import org.example.quan_ao_f4k.util.F4KConstants;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
@@ -34,11 +49,11 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-
 @Controller
 @RequestMapping("/admin/shopping-offline")
 @AllArgsConstructor
 public class ShoppingController {
+	private final SpringTemplateEngine templateEngine;
 	private final OrderServiceImpl orderService;
 	private final OrderRepository orderRepository;
 	private final OrderDetailServiceimpl orderDetailService;
@@ -47,7 +62,7 @@ public class ShoppingController {
 	private final ImageRepository imageRepository;
 	private final AddressServiceImpl addressService;
 
-	@GetMapping({"","/"})
+	@GetMapping({"", "/"})
 	public String getOrdersWithStatusFive(Model model) {
 		try {
 			orderService.addModelOrder(model);
@@ -56,6 +71,7 @@ public class ShoppingController {
 		}
 		return "/shopping_offline/shopping";
 	}
+
 	@PostMapping()
 	public ResponseEntity<?> add(@RequestBody OrderRequest request) {
 		try {
@@ -70,7 +86,7 @@ public class ShoppingController {
 	@GetMapping("/{id}")
 	public String getOrderById(@PathVariable Long id, Model model) {
 		OrderResponse orderResponse = orderService.findById(id);
-		if(orderResponse == null) {
+		if (orderResponse == null) {
 			return "/error/error_404";
 		}
 		List<OrderDetail> orderDetails = orderService.findCart(id);
@@ -119,7 +135,7 @@ public class ShoppingController {
 		OrderProductDetailKey key = new OrderProductDetailKey();
 		key.setOrderId(orderId);
 		key.setProductDetailId(productDetailId);
-		System.out.println("Price "+request.getPrice());
+		System.out.println("Price " + request.getPrice());
 
 		OrderDetailResponse response = orderDetailService.save(key, request);
 
@@ -147,4 +163,39 @@ public class ShoppingController {
 		List<OrderDetail> productDetails = orderDetailService.getProductDetailsByOrderId(orderId);
 		return ResponseEntity.ok(productDetails);
 	}
+
+	@GetMapping("/generate-pdf/{orderId}")
+	@ResponseBody
+	public void generatePdf(@PathVariable Long orderId,
+	                        HttpServletResponse response,
+	                        Model model) throws Exception {
+		DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
+		String currentDateTime = dateFormatter.format(new Date());
+		model.addAttribute("currentDateTime", currentDateTime);
+
+		List<OrderDetail> orderDetails = orderDetailService.getProductDetailsByOrderId(orderId);
+		model.addAttribute("orderDetails", orderDetails);
+
+		// Sử dụng Flying Saucer để chuyển HTML thành PDF
+		ITextRenderer renderer = new ITextRenderer();
+//		renderer.getFontResolver().addFont("", true);
+
+		// Tạo dữ liệu cho template Thymeleaf
+		Context context = new Context();
+		context.setVariables(model.asMap());
+		String htmlContent = templateEngine
+				.process("shopping_offline/orderPDF", context);
+
+		// Cấu hình header cho response để tải PDF
+		response.setContentType("application/pdf");
+		response.setHeader("Content-Disposition", "attachment; filename=\"invoice-" + orderDetails.get(0).getOrder().getCode() + ".pdf\"");
+		renderer.setDocumentFromString(htmlContent);
+		renderer.layout();
+
+		// Ghi PDF vào OutputStream (browser)
+		try (OutputStream os = response.getOutputStream()) {
+			renderer.createPDF(os);
+		}
+	}
+
 }

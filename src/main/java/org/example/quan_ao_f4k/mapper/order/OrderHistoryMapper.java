@@ -12,7 +12,7 @@ import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
 
 @Mapper(componentModel = "spring",
-        unmappedTargetPolicy = ReportingPolicy.IGNORE,uses = MapperCoverter.class)
+        unmappedTargetPolicy = ReportingPolicy.IGNORE,uses = {MapperCoverter.class,OrderMapper.class})
 public interface OrderHistoryMapper extends GennericMapper<OrderHistory, OrderHistoryRequest, OrderHistoryResponse> {
 
     @Override

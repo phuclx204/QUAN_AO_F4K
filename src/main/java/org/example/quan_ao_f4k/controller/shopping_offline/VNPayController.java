@@ -2,13 +2,17 @@ package org.example.quan_ao_f4k.controller.shopping_offline;
 
 
 import jakarta.servlet.http.HttpServletRequest;
+import org.example.quan_ao_f4k.dto.response.orders.PaymentDTO;
 import org.example.quan_ao_f4k.service.order.VNPayService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.math.BigDecimal;
 
 @Controller
 @RequestMapping("/admin/shopping-offline/checkout/vnpay")
@@ -16,43 +20,37 @@ public class VNPayController {
 	@Autowired
 	private VNPayService vnPayService;
 
-	@GetMapping("/submitOrder")
-	public String submidOrder(@RequestParam("amount") int orderTotal,
-	                          @RequestParam("orderInfo") String orderInfo,
-	                          HttpServletRequest request){
-		String baseUrl = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
-		String vnpayUrl = vnPayService.createOrder(orderTotal, orderInfo, baseUrl);
-		return "redirect:" + vnpayUrl;
+	@GetMapping("/payment")
+	public ResponseEntity<PaymentDTO.VNPayResponse> submidOrder(HttpServletRequest request,
+	                                                            @RequestParam("amount") long amount,
+	                                                            @RequestParam(value = "bankCode", required = false) String bankCode) {
+		PaymentDTO.VNPayResponse response = vnPayService.createVnPayPayment(request);
+		return ResponseEntity.ok(response);
 	}
 
-	@GetMapping("/vnpay-payment")
-	public String GetMapping(HttpServletRequest request, Model model){
-		int paymentStatus =vnPayService.orderReturn(request);
+	@GetMapping("/payment-callback")
+	public String payCallbackHandler(HttpServletRequest request, RedirectAttributes redirectAttributes) {
+		String status = request.getParameter("vnp_ResponseCode");
+		String orderId = request.getParameter("vnp_OrderInfo");
+		String totalPay = request.getParameter("vnp_Amount");
+		String orderNote = request.getParameter("vnp_OrderNote");
+		String orderCode = request.getParameter("vnp_TxnRef");
 
-		String orderInfo = request.getParameter("vnp_OrderInfo");
-		String paymentTime = request.getParameter("vnp_PayDate");
-		String transactionId = request.getParameter("vnp_TransactionNo");
-		String totalPrice = request.getParameter("vnp_Amount");
+		Long id = Long.parseLong(orderId);
+		BigDecimal total = BigDecimal.valueOf(Long.parseLong(totalPay)/100);
 
-		model.addAttribute("orderId", orderInfo);
-		model.addAttribute("totalPrice", totalPrice);
-		model.addAttribute("paymentTime", paymentTime);
-		model.addAttribute("transactionId", transactionId);
 
-		// Xử lý các trạng thái thanh toán
-		switch (paymentStatus) {
-			case 1:
-				model.addAttribute("checkoutStatus", "Thanh toán thành công");
-				break;
-			case 0:
-				model.addAttribute("checkoutStatus", "Thanh toán không thành công");
-				break;
-			case -1:
-			default:
-				model.addAttribute("checkoutStatus", "Dữ liệu không hợp lệ");
-				break;
+		if ("00".equals(status)) {
+			vnPayService.updateOrder(id,total,orderNote,orderCode);
+			redirectAttributes.addFlashAttribute("message", "Thanh toán thành công!");
+			redirectAttributes.addFlashAttribute("messageType", "success");
+			redirectAttributes.addFlashAttribute("statusPay", status);
+		} else {
+			redirectAttributes.addFlashAttribute("message", "Thanh toán thất bại!");
+			redirectAttributes.addFlashAttribute("messageType", "error");
 		}
-
 		return "redirect:/admin/shopping-offline/";
 	}
+
+
 }

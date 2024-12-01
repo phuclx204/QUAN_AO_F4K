@@ -208,13 +208,13 @@
                             <label>Phương thức thanh toán:</label>
                             <div>
                                 <div class="form-check">
-                                    <input type="radio" id="paymentCash" name="paymentMethod" class="form-check-input"
+                                    <input type="radio" id="paymentCash" name="paymentMethodType" class="form-check-input"
                                            value="cash" checked>
                                     <label for="paymentCash" class="form-check-label">
                                         <i class='bx bx-money'></i> Thanh toán trực tiếp</label>
                                 </div>
                                 <div class="form-check">
-                                    <input type="radio" id="paymentVNPay" name="paymentMethod" class="form-check-input"
+                                    <input type="radio" id="paymentVNPay" name="paymentMethodType" class="form-check-input"
                                            value="vnpay">
                                     <label for="paymentVNPay" class="form-check-label">
                                         <i class='bx bx-credit-card'></i> VNPay</label>
@@ -232,7 +232,7 @@
                         <input type="hidden" id="checkoutStatus" th:value="${checkoutStatus}">
 
                         <div class="form-group">
-                            <textarea class="form-control" placeholder="Thêm ghi chú"></textarea>
+                            <textarea class="form-control" id="orderNote" placeholder="Thêm ghi chú"></textarea>
                         </div>
                         <div class="form-check">
                             <input type="checkbox" id="invoiceCheckbox" class="form-check-input"/>
@@ -355,6 +355,8 @@
             </div>
         </div>
     </div>
+<!--    thông báo-->
+    <span id="notificationMessage" th:if="${message != null}" th:text="${message}" style="display: none;"></span>
 </section>
 
 <!--default script-->
@@ -374,6 +376,5 @@
 <script th:src="@{/admin/shopping_offline/shopping.js}"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/decimal.js/10.2.4/decimal.min.js"></script>
 <script></script>
-
 </body>
 </html>
