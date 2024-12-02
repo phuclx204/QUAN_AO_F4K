@@ -5,6 +5,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.example.quan_ao_f4k.util.F4KConstants;
+import org.example.quan_ao_f4k.util.F4KUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -40,7 +41,8 @@ public class WebSecurityConfig {
                         request -> request
                                 .requestMatchers(PUBLIC_ENDPOINTS).permitAll()
                                 .requestMatchers("/authentication/**").permitAll()
-//                                .requestMatchers( String.format("%s/admin/**", api)).permitAll()
+                                .requestMatchers("/admin/**").hasAuthority(F4KConstants.ROLE_ADMIN)
+                                .requestMatchers("/shop/**").hasRole(F4KConstants.ROLE_USER)
 //                                .requestMatchers( HttpMethod.GET,"/dashboard/**").hasRole("ADMIN")
 //                                .requestMatchers( String.format("%s/shop/**", api)).hasRole("USER")
                                 .anyRequest().authenticated()
