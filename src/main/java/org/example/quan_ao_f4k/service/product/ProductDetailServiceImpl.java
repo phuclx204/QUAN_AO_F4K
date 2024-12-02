@@ -186,7 +186,7 @@ public class ProductDetailServiceImpl implements ProductDetailService {
 
     @Override
     public Page<ProductDetailResponse> searchProductDetail(int page, int size, String name, List<Long> brandIds, List<Long> categoryIds, List<Long> sizeIds, List<Long> colorIds, BigDecimal priceFrom, BigDecimal priceTo, String orderBy) {
-        List<ProductDetail> productDetails = productDetailRepository.getListSearch(name, brandIds, categoryIds, sizeIds, colorIds, priceFrom, priceTo, orderBy);
+        List<ProductDetail> productDetails = productDetailRepository.getListProductDetailSearch(name, brandIds, categoryIds, sizeIds, colorIds, priceFrom, priceTo, orderBy);
 
         List<ProductDetailResponse> productDetailResponses = productDetailMapper.entityToResponse(productDetails);
         productDetailResponses.forEach(el -> {
