@@ -14,6 +14,8 @@ public interface ShopCheckOutService {
     Order createOrder(HoaDonUtils.PhuongThucMuaHang phuongThucMuaHang);
     Order createOrder(HoaDonUtils.PhuongThucMuaHang phuongThucMuaHang, boolean isClear);
 
+    void cancelOrder(Long orderId, String note);
+
     public void clearCart(User user);
 
     List<OrderDetail> getOrderDetailByOrder(Order order);

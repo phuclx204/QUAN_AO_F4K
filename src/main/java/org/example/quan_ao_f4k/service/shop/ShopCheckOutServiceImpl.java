@@ -62,16 +62,37 @@ public class ShopCheckOutServiceImpl implements ShopCheckOutService {
     public Order createOrder(HoaDonUtils.PhuongThucMuaHang phuongThucMuaHang, boolean isClear) {
         User user = f4KUtils.getUser();
 
-        Order newOrder = initOrder(user, phuongThucMuaHang);
-        Order savedOrder = orderRepository.save(newOrder);
         Cart cart = getUserCart(user);
         List<CartProduct> cartProducts = getCartProducts(cart);
 
-        List<OrderDetail> orderDetails = convertCartProductsToOrderDetails(cartProducts, savedOrder);
-        saveOrderDetails(orderDetails);
+        for (CartProduct cartProduct: cartProducts) {
+            Order newOrder = initOrder(user, phuongThucMuaHang);
+            Order savedOrder = orderRepository.save(newOrder);
+
+            OrderDetail orderDetails = convertCartProductsToOrderDetails(cartProduct, savedOrder);
+            orderDetailRepository.save(orderDetails);
+        }
+
 
         if (isClear) clearCart(user);
-        return savedOrder;
+        return null;
+    }
+
+    @Override
+    public void cancelOrder(Long orderId, String note) {
+        Order order = orderRepository.findByOrderId(orderId).orElseThrow(
+                () -> new BadRequestException("Hoá đơn không tồn tại")
+        );
+
+        if (order.getStatus() != HoaDonUtils.TrangThaiHoaDon.CHO_XAC_NHAN.getStatus()) {
+            throw new BadRequestException(String.format("Hoá đơn đang ở trạng thái %s không thể thao tác"
+                    , HoaDonUtils.TrangThaiHoaDon.getMessByStatus(order.getStatus())));
+        } else {
+            order.setUser(f4KUtils.getUser());
+            order.setStatus(HoaDonUtils.TrangThaiHoaDon.HUY_DON.getStatus());
+            order.setNote(note);
+            orderRepository.save(order);
+        }
     }
 
     @Override
@@ -106,13 +127,9 @@ public class ShopCheckOutServiceImpl implements ShopCheckOutService {
         cartRepository.deleteAllByUser_Id(user.getId());
     }
 
-    private List<OrderDetail> convertCartProductsToOrderDetails(List<CartProduct> cartProducts, Order savedOrder) {
-        return cartProducts.stream()
-                .map(cartProduct -> {
-                    OrderProductDetailKey key = createOrderProductDetailKey(savedOrder, cartProduct);
-                    return createOrderDetail(cartProduct, savedOrder, key);
-                })
-                .collect(Collectors.toList());
+    private OrderDetail convertCartProductsToOrderDetails(CartProduct cartProduct, Order savedOrder) {
+        OrderProductDetailKey key = createOrderProductDetailKey(savedOrder, cartProduct);
+        return createOrderDetail(cartProduct, savedOrder, key);
     }
 
     private OrderDetail createOrderDetail(CartProduct cartProduct, Order savedOrder, OrderProductDetailKey key) {

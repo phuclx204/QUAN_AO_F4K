@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <th:block th:insert="shop/fragments/header::head"></th:block>
+
+    <meta name="user-id" th:content="${userInfo.id}">
+    <meta name="user-name" th:content="${userInfo.username}">
+</head>
+
+<body class="">
+
+<!-- Navbar -->
+<div th:replace="shop/fragments/navbar-2::navbar(isError = false)"></div>
+<!-- / Navbar-->
+
+<!-- Main Section-->
+<div class="content-page mb-5">
+    <div class="content">
+
+        <!-- Start Content-->
+        <div class="container mt-4">
+            <div class="row d-flex justify-content-around position-relative">
+                <!--row left-->
+                <div class="col-xl-3 col-lg-5">
+                    <div class="card"
+                         style="box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 0px 0px, rgba(27, 31, 35, 0.15) 0px 0px 0px 1px; height: 200px">
+                        <div class="card-body">
+                            <h4 class="mb-0 mt-2">[[${userInfo.username}]]</h4>
+                            <p class="text-muted font-14">Người dùng</p>
+
+                            <ul class="list-group list-group-flush mt-3 text-start">
+                                <a href="/shop/account-setting" class="list-group-item list-group-item-action active">Tài
+                                    khoản của tôi</a>
+                                <a href="/shop/purchase-history" class="list-group-item list-group-item-action">Đơn
+                                    Mua</a>
+                            </ul>
+                        </div> <!-- end card-body -->
+                    </div> <!-- end card -->
+                </div>
+                <!--row right-->
+                <div class="col-xl-9 col-lg-7"
+                     style="box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px, rgba(27, 31, 35, 0.15) 0px 0px 0px 1px;">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="mb-4 text-uppercase">
+                                <i class="mdi mdi-account-circle me-1"></i> Thông tin cá nhân
+                                <span class="form-text text-muted"><small><a href="javascript: void(0);"
+                                                                             data-bs-toggle="modal"
+                                                                             data-bs-target="#exampleModal">Đổi mật khẩu</a></small></span>
+                            </h5>
+                            <form id="formCreate">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="fullName" class="form-label">Họ và tên</label>
+                                            <input type="text" class="form-control" id="fullName" name="fullName"
+                                                   placeholder="Họ và tên">
+                                            <div class="ms-1 invalid-feedback"></div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="gender" class="form-label">Giới tính</label>
+                                            <select class="form-select" aria-label="Default select example" id="gender"
+                                                    name="gender">
+                                                <option value="0">Khác</option>
+                                                <option value="1">Nam</option>
+                                                <option value="2">Nữ</option>
+                                            </select>
+                                            <div class="ms-1 invalid-feedback"></div>
+                                        </div>
+                                    </div> <!-- end col -->
+                                </div> <!-- end row -->
+
+                                <div class="row">
+                                    <div class="col-12">
+                                        <div class="mb-3">
+                                            <label for="addressDetail" class="form-label">Địa chỉ chi tiết</label>
+                                            <input class="form-control" id="addressDetail" name="addressDetail"
+                                                   placeholder="Địa chỉ chi tiết..."></input>
+                                            <div class="ms-1 invalid-feedback"></div>
+                                        </div>
+                                    </div> <!-- end col -->
+                                </div> <!-- end row -->
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="email" class="form-label">Email</label>
+                                            <input type="email" class="form-control" id="email" name="email"
+                                                   placeholder="Email">
+                                            <div class="ms-1 invalid-feedback"></div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="numberPhone" class="form-label">Số điện thoại</label>
+                                            <input type="number" class="form-control" id="numberPhone"
+                                                   placeholder="Số điện thoại" name="numberPhone">
+                                            <div class="ms-1 invalid-feedback"></div>
+                                        </div>
+                                    </div>
+                                </div> <!-- end row -->
+
+                                <div class="text-end">
+                                    <button type="submit" class="btn btn-success mt-2"><i
+                                            class="mdi mdi-content-save"></i> Save
+                                    </button>
+                                </div>
+                            </form>
+                        </div> <!-- end card body -->
+                    </div> <!-- end card -->
+                </div>
+            </div>
+        </div>
+        <!-- container -->
+
+    </div>
+    <!-- content -->
+</div>
+<!-- / Main Section-->
+<!--modal-->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Đổi mật khẩu</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="formChangePass">
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="mb-3">
+                                <label for="oldPassword" class="form-label">Mật khẩu cũ</label>
+                                <input type="password" class="form-control" id="oldPassword" name="oldPassword"
+                                       placeholder="Nhập mật khẩu">
+                                <div class="ms-1 invalid-feedback"></div>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="mb-3">
+                                <label for="newPassword" class="form-label">Mật khẩu mới</label>
+                                <input type="password" class="form-control" id="newPassword" name="newPassword"
+                                       placeholder="Nhập mật khẩu">
+                                <div class="ms-1 invalid-feedback"></div>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="mb-3">
+                                <label for="rePassword" class="form-label">Nhập lại mật khẩu</label>
+                                <input type="password" class="form-control" id="rePassword" name="rePassword"
+                                       placeholder="Nhập mật khẩu">
+                                <div class="ms-1 invalid-feedback"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Save changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<!--/ modal-->
+
+<!-- Cart Offcanvas-->
+<div th:replace="shop/fragments/drawer-cart::div"></div>
+
+<!--script-->
+<script th:replace="shop/fragments/script::div"></script>
+
+<script type="module" th:src="@{/shop/script/account-setting.js}"></script>
+</body>
+</html>

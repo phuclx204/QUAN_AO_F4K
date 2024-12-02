@@ -4,17 +4,27 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.quan_ao_f4k.dto.request.shop.ShopProductRequest;
 import org.example.quan_ao_f4k.dto.response.shop.ShopProductResponse;
+import org.example.quan_ao_f4k.exception.BadRequestException;
+import org.example.quan_ao_f4k.mapper.shop.ShopProductMapper;
+import org.example.quan_ao_f4k.model.authentication.User;
+import org.example.quan_ao_f4k.model.promotion.Promotion;
+import org.example.quan_ao_f4k.repository.authentication.UserRepository;
 import org.example.quan_ao_f4k.service.shop.ShopCartService;
 import org.example.quan_ao_f4k.service.shop.ShopCheckOutService;
 import org.example.quan_ao_f4k.service.shop.ShopProductService;
+import org.example.quan_ao_f4k.util.F4KUtils;
 import org.example.quan_ao_f4k.util.HoaDonUtils;
 import org.springframework.data.domain.Page;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.util.List;
 
 @Controller
 @RequestMapping("/shop")
@@ -24,6 +34,12 @@ public class ShopController {
     private final ShopProductService shopProductService;
     private final ShopCheckOutService shopCheckOutService;
     private final ShopCartService shopCartService;
+    private final PasswordEncoder passwordEncoder;
+
+    private final F4KUtils f4KUtils;
+    private final ShopProductMapper shopProductMapper;
+
+    private final UserRepository userRepository;
 
     // home
     @GetMapping("/home")
@@ -155,5 +171,69 @@ public class ShopController {
         shopCheckOutService.createOrder(phuongThucMuaHang);
         redirectAttributes.addFlashAttribute("createOrderSuccess", true);
         return "redirect:/shop/purchase-history";
+    }
+
+    @GetMapping("/cancel-order")
+    public ResponseEntity<?> cancelOrder(@RequestParam("orderId") Long orderId, @RequestParam("note") String note) {
+        shopCheckOutService.cancelOrder(orderId, note);
+        return ResponseEntity.ok().build();
+    }
+
+    // Promotion
+    @GetMapping("/list-promotion")
+    public ResponseEntity<List<Promotion>> getListPromotion() {
+        return ResponseEntity.ok(shopProductService.getListPromotion());
+    }
+
+    @GetMapping("/promotion/{id}")
+    public String detailPromotion(@PathVariable Long id, Model model) {
+        shopProductService.addModelPromotion(model, id);
+        return "/shop/pages/promotion-detail";
+    }
+
+    // Account setting
+    @GetMapping("/account-setting")
+    public String account(Model model) {
+        model.addAttribute("userInfo", f4KUtils.getUser());
+        return "/shop/pages/account-setting";
+    }
+
+    @GetMapping("/account-setting/get-info")
+    public ResponseEntity<?> getUserInfo(@Param("id") Long id, @RequestParam("username") String username) {
+        User user = userRepository.findByIdAndUsername(id, username).orElse(null);
+        return ResponseEntity.ok(shopProductMapper.toUserDto(user));
+    }
+
+    @PutMapping("/account-setting/update-info")
+    public ResponseEntity<?> updateUserInfo(@RequestBody ShopProductResponse.UserDto userDto) {
+        User user = userRepository.findByIdAndUsername(userDto.getId(), userDto.getUsername()).orElseThrow(
+                () -> new BadRequestException("Dữ liệu không phù hợp")
+        );
+
+        user.setEmail(userDto.getEmail());
+        user.setFullName(userDto.getFullName());
+        user.setNumberPhone(userDto.getNumberPhone());
+        user.setAddressDetail(userDto.getAddressDetail());
+        user.setGender(userDto.getGender());
+        userRepository.save(user);
+
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/account-setting/update-password/{id}")
+    public ResponseEntity<?> updateUserInfo(@PathVariable Long id, @RequestParam String oldPassword, @RequestParam String newPassword) {
+        User user = userRepository.findByIdUser(id).orElseThrow(
+                () -> new BadRequestException("Không tìm thấy tài khoản người dùng")
+        );
+
+        String passwordNew = passwordEncoder.encode(newPassword);
+        if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
+            throw new BadRequestException("Mật khẩu cũ không đúng");
+        } else {
+            user.setPassword(passwordNew);
+            userRepository.save(user);
+        }
+
+        return ResponseEntity.ok().build();
     }
 }

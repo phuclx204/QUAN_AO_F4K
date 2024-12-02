@@ -5,6 +5,8 @@ const {convert2Vnd} = getCommon();
 (function () {
     const $tbody = $("#cart-items-body");
 
+    const imageBlank = "https://firebasestorage.googleapis.com/v0/b/clothes-f4k.appspot.com/o/common%2Fdata_not_found.png?alt=media&token=36148ded-ba2c-4207-8525-2da16e7a8557";
+
     const trangThaiSp = {
         conHang: 1,
         hetHang: 0
@@ -80,12 +82,14 @@ const {convert2Vnd} = getCommon();
 
             const discountPercent = productDetail.promotion ? `<span class="badge card-badge bg-secondary">-${productDetail.promotion.discountValue}%</span>` : '';
 
+            const fileImg = product.image?.fileUrl ? product.image?.fileUrl : imageBlank;
+
             const $row = $(`
                 <tr>
                     <td class="d-none d-sm-table-cell">
                         <picture class="d-block bg-light p-3 f-w-20 position-relative">
                             ${discountPercent}
-                            <img class="img-fluid" src="${product.image.fileUrl}" alt="">
+                            <img class="img-fluid" src="${fileImg}" alt="">
                         </picture>
                     </td>
                     <td>

@@ -90,6 +90,19 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, Lo
 	)
 	List<ProductDetail> findProductDetailBySlugAndStatus(@Param("slug") String slug, @Param("status") Integer status);
 
+	@Query("SELECT pd FROM ProductDetail pd " +
+			"LEFT JOIN Product p ON p.id = pd.product.id " +
+			"LEFT JOIN PromotionProduct prd ON prd.product.id = p.id " +
+			"WHERE pd.id = (" +
+			"   SELECT MAX(pdi.id) FROM ProductDetail pdi WHERE pdi.product.id = pd.product.id" +
+			") " +
+			"AND p.status = 1 " +
+			"AND prd.status = 1" +
+			"AND (:promotionId IS NULL OR prd.promotion.id = :promotionId) " +
+			"ORDER BY pd.price DESC")
+	List<ProductDetail> getListByPromotionId(
+			@Param("promotionId") Long promotionId
+	);
 	// ==== sonng - shop site - end ====
 
 	@Query("SELECT p.quantity FROM ProductDetail p WHERE p.id = :productDetailId")

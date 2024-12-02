@@ -48,4 +48,7 @@ public interface OrderRepository extends JpaRepository<Order, Long>,
     @Query("SELECT COALESCE(SUM(o.totalPay), 0) FROM Order o WHERE o.status = 3")
     BigDecimal getTotalPay();
 
+    @Query("SELECT o from Order o where o.id = :orderId")
+    Optional<Order> findByOrderId(@Param("orderId") Long orderId);
+
 }

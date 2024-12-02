@@ -19,6 +19,9 @@ public interface ShopProductService {
 
     void addModelHome(Model model);
 
+    List<Promotion> getListPromotion();
+    void addModelPromotion(Model model, Long idPromotion);
+
     public BigDecimal calculateDiscountedPrice(BigDecimal originalPrice, BigDecimal discountPercent);
     Promotion getBestPromotionForProduct(Long productId);
     Promotion getBestPromotionForProductDetail(Long productDetailId);

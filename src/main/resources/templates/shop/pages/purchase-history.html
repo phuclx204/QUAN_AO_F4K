@@ -10,7 +10,7 @@
 <!-- / Navbar-->
 
 <!-- Main Section-->
-<div class="content-page">
+<div class="content-page mb-5">
     <div class="content">
 
         <!-- Start Content-->
@@ -25,7 +25,8 @@
                             <p class="text-muted font-14">Người dùng</p>
 
                             <ul class="list-group list-group-flush mt-3 text-start">
-                                <a href="#" class="list-group-item list-group-item-action">Tài khoản của tôi</a>
+                                <a href="/shop/account-setting" class="list-group-item list-group-item-action">Tài khoản
+                                    của tôi</a>
                                 <a th:href="@{/shop/purchase-history}"
                                    class="list-group-item list-group-item-action active">Đơn Mua</a>
                             </ul>
@@ -39,44 +40,45 @@
                         <div class="card-body">
                             <ul class="nav nav-pills bg-nav-pills nav-justified mb-3">
                                 <li class="nav-item">
-                                    <a href="#statusAll" data-bs-toggle="tab" aria-expanded="true"
-                                       class="nav-link rounded-0 active">
-                                        Tất cả
+                                    <a href="#statusAll" data-bs-toggle="tab" aria-expanded="false"
+                                       class="nav-link rounded-0" style="width: 130px">
+                                        Tất cả ([[${status_all.size}]])
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="#statusWaitConfirm" data-bs-toggle="tab" aria-expanded="false"
-                                       class="nav-link rounded-0">
-                                        Chờ xác nhận
+                                    <a href="#statusWaitConfirm" data-bs-toggle="tab" aria-expanded="true"
+                                       class="nav-link rounded-0 active" style="width: 170px">
+                                        Chờ xác nhận ([[${status_wait_confirm.size}]])
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="#settings" data-bs-toggle="tab" aria-expanded="false"
-                                       class="nav-link rounded-0">
-                                        Chờ giao hàng
+                                    <a href="#statusWaitDelivery" data-bs-toggle="tab" aria-expanded="false"
+                                       class="nav-link rounded-0" style="width: 170px">
+                                        Chờ giao hàng ([[${status_wait_delivery.size}]])
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="#settings" data-bs-toggle="tab" aria-expanded="false"
-                                       class="nav-link rounded-0">
-                                        Đang giao hàng
+                                    <a href="#status_on_delivery" data-bs-toggle="tab" aria-expanded="false"
+                                       class="nav-link rounded-0" style="width: 170px">
+                                        Đang giao hàng ([[${status_on_delivery.size}]])
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="#settings" data-bs-toggle="tab" aria-expanded="false"
+                                    <a href="#status_complete" data-bs-toggle="tab" aria-expanded="false"
                                        class="nav-link rounded-0">
-                                        Hoàn thành
+                                        Hoàn thành ([[${status_complete.size}]])
                                     </a>
                                 </li>
                                 <li class="nav-item">
                                     <a href="#statusWaitCancel" data-bs-toggle="tab" aria-expanded="false"
                                        class="nav-link rounded-0">
-                                        Đã hủy
+                                        Đã hủy ([[${status_cancel.size}]])
                                     </a>
                                 </li>
                             </ul>
                             <div class="tab-content">
-                                <div class="tab-pane show active" id="statusAll">
+                                <div class="tab-pane pt-5" id="statusAll"
+                                     style="max-height: 500px; overflow: auto">
                                     <div class="table-responsive">
                                         <table class="table table-borderless table-striped">
                                             <thead class="table-primary">
@@ -110,26 +112,48 @@
                                             </tbody>
                                         </table>
                                     </div>
-                                    <nav class="border-top mt-5 pt-5 d-flex justify-content-between align-items-center"
-                                         aria-label="Category Pagination">
-                                        <ul class="pagination">
-                                            <li class="page-item"><a class="page-link" href="#"><i
-                                                    class="ri-arrow-left-line align-bottom"></i> Prev</a></li>
-                                        </ul>
-                                        <ul class="pagination">
-                                            <li class="page-item active mx-1"><a class="page-link" href="#">1</a></li>
-                                            <li class="page-item mx-1"><a class="page-link" href="#">2</a></li>
-                                            <li class="page-item mx-1"><a class="page-link" href="#">3</a></li>
-                                        </ul>
-                                        <ul class="pagination">
-                                            <li class="page-item"><a class="page-link" href="#">Next <i
-                                                    class="ri-arrow-right-line align-bottom"></i></a></li>
-                                        </ul>
-                                    </nav>
                                 </div> <!-- end tab-pane -->
                                 <!-- end about me section content -->
 
-                                <div class="tab-pane" id="statusWaitConfirm">
+                                <div class="tab-pane show active" id="statusWaitConfirm" style="max-height: 500px; overflow: auto">
+                                    <div class="table-responsive">
+                                        <table class="table table-borderless table-striped">
+                                            <thead class="table-primary">
+                                            <tr>
+                                                <th scope="col">STT</th>
+                                                <th scope="col">Sản phẩm</th>
+                                                <th scope="col">Số lượng</th>
+                                                <th scope="col">Giá tiền</th>
+                                                <th scope="col">Trạng thái</th>
+                                                <th scope="col">Trạng thái thanh toán</th>
+                                                <th></th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            <tr th:each="item,index:${status_wait_confirm}">
+                                                <th scope="row">[[${index.index+1}]]</th>
+                                                <td>[[${item.productDetail.product.name}]]</td>
+                                                <td>[[${item.quantity}]]</td>
+                                                <td class="order-price">[[${item.price}]]</td>
+                                                <td class="order-status">[[${item.order.status}]]</td>
+                                                <td class="payment-status">[[${item.order.paymentStatus}]]</td>
+                                                <td>
+                                                    <div>
+                                                        <button class="btn btn-success btn-cancel"
+                                                                th:data-id="${item.order.id}"
+                                                                th:data-value="${item.productDetail.id}"
+                                                                data-bs-toggle="modal" data-bs-target="#exampleModal">
+                                                            Hủy mua hàng
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+
+                                <div class="tab-pane" id="statusWaitDelivery" style="max-height: 500px; overflow: auto">
                                     <div class="table-responsive">
                                         <table class="table table-borderless table-striped">
                                             <thead class="table-primary">
@@ -143,7 +167,7 @@
                                             </tr>
                                             </thead>
                                             <tbody>
-                                            <tr th:each="item,index:${status_wait_confirm}">
+                                            <tr th:each="item,index:${status_wait_delivery}">
                                                 <th scope="row">[[${index.index+1}]]</th>
                                                 <td>[[${item.productDetail.product.name}]]</td>
                                                 <td>[[${item.quantity}]]</td>
@@ -154,22 +178,60 @@
                                             </tbody>
                                         </table>
                                     </div>
-                                    <nav class="border-top mt-5 pt-5 d-flex justify-content-between align-items-center"
-                                         aria-label="Category Pagination">
-                                        <ul class="pagination">
-                                            <li class="page-item"><a class="page-link" href="#"><i
-                                                    class="ri-arrow-left-line align-bottom"></i> Prev</a></li>
-                                        </ul>
-                                        <ul class="pagination">
-                                            <li class="page-item active mx-1"><a class="page-link" href="#">1</a></li>
-                                            <li class="page-item mx-1"><a class="page-link" href="#">2</a></li>
-                                            <li class="page-item mx-1"><a class="page-link" href="#">3</a></li>
-                                        </ul>
-                                        <ul class="pagination">
-                                            <li class="page-item"><a class="page-link" href="#">Next <i
-                                                    class="ri-arrow-right-line align-bottom"></i></a></li>
-                                        </ul>
-                                    </nav>
+                                </div>
+
+                                <div class="tab-pane" id="status_on_delivery" style="max-height: 500px; overflow: auto">
+                                    <div class="table-responsive">
+                                        <table class="table table-borderless table-striped">
+                                            <thead class="table-primary">
+                                            <tr>
+                                                <th scope="col">STT</th>
+                                                <th scope="col">Sản phẩm</th>
+                                                <th scope="col">Số lượng</th>
+                                                <th scope="col">Giá tiền</th>
+                                                <th scope="col">Trạng thái</th>
+                                                <th scope="col">Trạng thái thanh toán</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            <tr th:each="item,index:${status_on_delivery}">
+                                                <th scope="row">[[${index.index+1}]]</th>
+                                                <td>[[${item.productDetail.product.name}]]</td>
+                                                <td>[[${item.quantity}]]</td>
+                                                <td class="order-price">[[${item.price}]]</td>
+                                                <td class="order-status">[[${item.order.status}]]</td>
+                                                <td class="payment-status">[[${item.order.paymentStatus}]]</td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+
+                                <div class="tab-pane" id="status_complete" style="max-height: 500px; overflow: auto">
+                                    <div class="table-responsive">
+                                        <table class="table table-borderless table-striped">
+                                            <thead class="table-primary">
+                                            <tr>
+                                                <th scope="col">STT</th>
+                                                <th scope="col">Sản phẩm</th>
+                                                <th scope="col">Số lượng</th>
+                                                <th scope="col">Giá tiền</th>
+                                                <th scope="col">Trạng thái</th>
+                                                <th scope="col">Trạng thái thanh toán</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            <tr th:each="item,index:${status_on_delivery}">
+                                                <th scope="row">[[${index.index+1}]]</th>
+                                                <td>[[${item.productDetail.product.name}]]</td>
+                                                <td>[[${item.quantity}]]</td>
+                                                <td class="order-price">[[${item.price}]]</td>
+                                                <td class="order-status">[[${item.order.status}]]</td>
+                                                <td class="payment-status">[[${item.order.paymentStatus}]]</td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
 
                                 <div class="tab-pane" id="statusWaitCancel">
@@ -208,175 +270,10 @@
                                             </tbody>
                                         </table>
                                     </div>
-                                    <nav class="border-top mt-5 pt-5 d-flex justify-content-between align-items-center"
-                                         aria-label="Category Pagination">
-                                        <ul class="pagination">
-                                            <li class="page-item"><a class="page-link" href="#"><i
-                                                    class="ri-arrow-left-line align-bottom"></i> Prev</a></li>
-                                        </ul>
-                                        <ul class="pagination">
-                                            <li class="page-item active mx-1"><a class="page-link" href="#">1</a></li>
-                                            <li class="page-item mx-1"><a class="page-link" href="#">2</a></li>
-                                            <li class="page-item mx-1"><a class="page-link" href="#">3</a></li>
-                                        </ul>
-                                        <ul class="pagination">
-                                            <li class="page-item"><a class="page-link" href="#">Next <i
-                                                    class="ri-arrow-right-line align-bottom"></i></a></li>
-                                        </ul>
-                                    </nav>
                                 </div>
 
                                 <div class="tab-pane" id="settings">
-<!--                                    <form>-->
-<!--                                        <h5 class="mb-4 text-uppercase"><i class="mdi mdi-account-circle me-1"></i>-->
-<!--                                            Personal Info</h5>-->
-<!--                                        <div class="row">-->
-<!--                                            <div class="col-md-6">-->
-<!--                                                <div class="mb-3">-->
-<!--                                                    <label for="firstname" class="form-label">First Name</label>-->
-<!--                                                    <input type="text" class="form-control" id="firstname"-->
-<!--                                                           placeholder="Enter first name">-->
-<!--                                                </div>-->
-<!--                                            </div>-->
-<!--                                            <div class="col-md-6">-->
-<!--                                                <div class="mb-3">-->
-<!--                                                    <label for="lastname" class="form-label">Last Name</label>-->
-<!--                                                    <input type="text" class="form-control" id="lastname"-->
-<!--                                                           placeholder="Enter last name">-->
-<!--                                                </div>-->
-<!--                                            </div> &lt;!&ndash; end col &ndash;&gt;-->
-<!--                                        </div> &lt;!&ndash; end row &ndash;&gt;-->
 
-<!--                                        <div class="row">-->
-<!--                                            <div class="col-12">-->
-<!--                                                <div class="mb-3">-->
-<!--                                                    <label for="userbio" class="form-label">Bio</label>-->
-<!--                                                    <textarea class="form-control" id="userbio" rows="4"-->
-<!--                                                              placeholder="Write something..."></textarea>-->
-<!--                                                </div>-->
-<!--                                            </div> &lt;!&ndash; end col &ndash;&gt;-->
-<!--                                        </div> &lt;!&ndash; end row &ndash;&gt;-->
-
-<!--                                        <div class="row">-->
-<!--                                            <div class="col-md-6">-->
-<!--                                                <div class="mb-3">-->
-<!--                                                    <label for="useremail" class="form-label">Email Address</label>-->
-<!--                                                    <input type="email" class="form-control" id="useremail"-->
-<!--                                                           placeholder="Enter email">-->
-<!--                                                    <span class="form-text text-muted"><small>If you want to change email please <a-->
-<!--                                                            href="javascript: void(0);">click</a> here.</small></span>-->
-<!--                                                </div>-->
-<!--                                            </div>-->
-<!--                                            <div class="col-md-6">-->
-<!--                                                <div class="mb-3">-->
-<!--                                                    <label for="userpassword" class="form-label">Password</label>-->
-<!--                                                    <input type="password" class="form-control" id="userpassword"-->
-<!--                                                           placeholder="Enter password">-->
-<!--                                                    <span class="form-text text-muted"><small>If you want to change password please <a-->
-<!--                                                            href="javascript: void(0);">click</a> here.</small></span>-->
-<!--                                                </div>-->
-<!--                                            </div> &lt;!&ndash; end col &ndash;&gt;-->
-<!--                                        </div> &lt;!&ndash; end row &ndash;&gt;-->
-
-<!--                                        <h5 class="mb-3 text-uppercase bg-light p-2"><i-->
-<!--                                                class="mdi mdi-office-building me-1"></i> Company Info</h5>-->
-<!--                                        <div class="row">-->
-<!--                                            <div class="col-md-6">-->
-<!--                                                <div class="mb-3">-->
-<!--                                                    <label for="companyname" class="form-label">Company Name</label>-->
-<!--                                                    <input type="text" class="form-control" id="companyname"-->
-<!--                                                           placeholder="Enter company name">-->
-<!--                                                </div>-->
-<!--                                            </div>-->
-<!--                                            <div class="col-md-6">-->
-<!--                                                <div class="mb-3">-->
-<!--                                                    <label for="cwebsite" class="form-label">Website</label>-->
-<!--                                                    <input type="text" class="form-control" id="cwebsite"-->
-<!--                                                           placeholder="Enter website url">-->
-<!--                                                </div>-->
-<!--                                            </div> &lt;!&ndash; end col &ndash;&gt;-->
-<!--                                        </div> &lt;!&ndash; end row &ndash;&gt;-->
-
-<!--                                        <h5 class="mb-3 text-uppercase bg-light p-2"><i class="mdi mdi-earth me-1"></i>-->
-<!--                                            Social</h5>-->
-<!--                                        <div class="row">-->
-<!--                                            <div class="col-md-6">-->
-<!--                                                <div class="mb-3">-->
-<!--                                                    <label for="social-fb" class="form-label">Facebook</label>-->
-<!--                                                    <div class="input-group">-->
-<!--                                                        <span class="input-group-text"><i class="mdi mdi-facebook"></i></span>-->
-<!--                                                        <input type="text" class="form-control" id="social-fb"-->
-<!--                                                               placeholder="Url">-->
-<!--                                                    </div>-->
-<!--                                                </div>-->
-<!--                                            </div>-->
-<!--                                            <div class="col-md-6">-->
-<!--                                                <div class="mb-3">-->
-<!--                                                    <label for="social-tw" class="form-label">Twitter</label>-->
-<!--                                                    <div class="input-group">-->
-<!--                                                        <span class="input-group-text"><i-->
-<!--                                                                class="mdi mdi-twitter"></i></span>-->
-<!--                                                        <input type="text" class="form-control" id="social-tw"-->
-<!--                                                               placeholder="Username">-->
-<!--                                                    </div>-->
-<!--                                                </div>-->
-<!--                                            </div> &lt;!&ndash; end col &ndash;&gt;-->
-<!--                                        </div> &lt;!&ndash; end row &ndash;&gt;-->
-
-<!--                                        <div class="row">-->
-<!--                                            <div class="col-md-6">-->
-<!--                                                <div class="mb-3">-->
-<!--                                                    <label for="social-insta" class="form-label">Instagram</label>-->
-<!--                                                    <div class="input-group">-->
-<!--                                                        <span class="input-group-text"><i class="mdi mdi-instagram"></i></span>-->
-<!--                                                        <input type="text" class="form-control" id="social-insta"-->
-<!--                                                               placeholder="Url">-->
-<!--                                                    </div>-->
-<!--                                                </div>-->
-<!--                                            </div>-->
-<!--                                            <div class="col-md-6">-->
-<!--                                                <div class="mb-3">-->
-<!--                                                    <label for="social-lin" class="form-label">Linkedin</label>-->
-<!--                                                    <div class="input-group">-->
-<!--                                                        <span class="input-group-text"><i class="mdi mdi-linkedin"></i></span>-->
-<!--                                                        <input type="text" class="form-control" id="social-lin"-->
-<!--                                                               placeholder="Url">-->
-<!--                                                    </div>-->
-<!--                                                </div>-->
-<!--                                            </div> &lt;!&ndash; end col &ndash;&gt;-->
-<!--                                        </div> &lt;!&ndash; end row &ndash;&gt;-->
-
-<!--                                        <div class="row">-->
-<!--                                            <div class="col-md-6">-->
-<!--                                                <div class="mb-3">-->
-<!--                                                    <label for="social-sky" class="form-label">Skype</label>-->
-<!--                                                    <div class="input-group">-->
-<!--                                                        <span class="input-group-text"><i-->
-<!--                                                                class="mdi mdi-skype"></i></span>-->
-<!--                                                        <input type="text" class="form-control" id="social-sky"-->
-<!--                                                               placeholder="@username">-->
-<!--                                                    </div>-->
-<!--                                                </div>-->
-<!--                                            </div>-->
-<!--                                            <div class="col-md-6">-->
-<!--                                                <div class="mb-3">-->
-<!--                                                    <label for="social-gh" class="form-label">Github</label>-->
-<!--                                                    <div class="input-group">-->
-<!--                                                        <span class="input-group-text"><i-->
-<!--                                                                class="mdi mdi-github"></i></span>-->
-<!--                                                        <input type="text" class="form-control" id="social-gh"-->
-<!--                                                               placeholder="Username">-->
-<!--                                                    </div>-->
-<!--                                                </div>-->
-<!--                                            </div> &lt;!&ndash; end col &ndash;&gt;-->
-<!--                                        </div> &lt;!&ndash; end row &ndash;&gt;-->
-
-<!--                                        <div class="text-end">-->
-<!--                                            <button type="submit" class="btn btn-success mt-2"><i-->
-<!--                                                    class="mdi mdi-content-save"></i> Save-->
-<!--                                            </button>-->
-<!--                                        </div>-->
-<!--                                    </form>-->
                                 </div>
                                 <!-- end settings content-->
 
@@ -393,14 +290,65 @@
 </div>
 <!-- / Main Section-->
 
+<!--modal-->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Lý do huỷ đơn</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="" id="formCancel">
+                <div class="modal-body">
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="flexRadioDefault" id="1" checked>
+                        <label class="form-check-label" for="1" >
+                            Thay đổi địa chỉ giao hàng
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="flexRadioDefault" id="2">
+                        <label class="form-check-label" for="2">
+                            Không muốn mua nữa
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="flexRadioDefault" id="3">
+                        <label class="form-check-label" for="3">
+                            Thay đổi số lượng
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="flexRadioDefault" id="4">
+                        <label class="form-check-label" for="4">
+                            Lý do khác
+                        </label>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="mb-3">
+                            <textarea rows="3" class="form-control" id="note" name="note" placeholder="Nhập lý do"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                    <button type="submit" class="btn btn-primary">Huỷ đơn</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<!-- / modal-->
+
 <!-- Footer-->
-<footer th:replace="shop/fragments/footer::footer"></footer>
+<!--<footer th:replace="shop/fragments/footer::footer"></footer>-->
 <!-- / Footer-->
 <!-- Cart Offcanvas-->
 <div th:replace="shop/fragments/drawer-cart::div"></div>
 
 <!--script-->
 <script th:replace="shop/fragments/script::div"></script>
+<script type="module" th:src="@{/shop/script/purchase-history.js}"></script>
 <script type="module" th:inline="javascript">
     import {getCommon} from "/common/public.js";
 
@@ -473,8 +421,6 @@
             $(this).text(convert2Vnd(status));
         });
     });
-
-
 </script>
 </body>
 </html>
