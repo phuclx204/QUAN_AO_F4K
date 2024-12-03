@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="shop/fragments/header::head"></head>
+
+<body class="">
+
+<!-- Navbar -->
+<div th:replace="shop/fragments/navbar-2::navbar(isError = false)"></div>
+<!-- / Navbar-->
+
+<!-- Main Section-->
+<section class="mt-0 ">
+
+    <!-- Category Top Banner -->
+    <div class="py-6 bg-img-cover bg-dark bg-overlay-gradient-dark position-relative overflow-hidden mb-4 bg-pos-center-center"
+         style="background-image: url(https://firebasestorage.googleapis.com/v0/b/clothes-f4k.appspot.com/o/banner%2Fbanner-1.jpg?alt=media&token=9d6b9bab-633d-4935-baa9-9347e0c11be8);">
+        <div class="container position-relative z-index-20" data-aos="fade-right" data-aos-delay="300">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item breadcrumb-light"><a th:href="@{/shop/home}">Trang chủ</a></li>
+                    <li class="breadcrumb-item active breadcrumb-light" aria-current="page">Cửa hàng</li>
+                </ol>
+            </nav>
+            <h1 class="fw-bold display-6 mb-4 text-white">Chào Mừng Đến Với Cửa Hàng Của Chúng Tôi!</h1>
+            <div class="col-12 col-md-6">
+                <p class="lead text-white mb-0">
+                    Di chuyển, duỗi người, nhảy và đi bộ đường dài trong những sản phẩm mới nhất chống thấm nước của
+                    chúng tôi. Chúng tôi bảo vệ bạn trong các buổi đi bộ đường dài hoặc leo núi, từ áo khoác Gortex đến
+                    quần chống thấm nước nhẹ. Khám phá dòng sản phẩm quần áo ngoài trời mới nhất của chúng tôi.
+                </p>
+            </div>
+        </div>
+    </div>
+    <!-- Category Top Banner -->
+
+    <div class="container">
+        <div class="row">
+            <!-- Category Products-->
+            <div class="col-12" style="position: relative">
+                <!-- Products-->
+                <div class="row g-4 mb-5">
+                    <div class="col-12 col-sm-6 col-md-3" th:each="item:${listPromotion}">
+                        <!-- Card Product-->
+                        <div class="card position-relative h-100 card-listing hover-trigger">
+                            <span th:if="${item.promotion != null}" class="badge card-badge bg-secondary">-[[${item.promotion.discountValue}]]%</span>
+                            <div class="card-header">
+                                <picture th:if="${item.product.image}"
+                                         class="position-relative overflow-hidden d-block bg-light">
+                                    <img class="w-100 img-fluid position-relative z-index-10"
+                                         title=""
+                                         th:src="${item.product.image.fileUrl}" alt="123">
+                                </picture>
+                                <picture th:if="${item.product.image == null}"
+                                         class="position-relative overflow-hidden d-block bg-light">
+                                    <img class="w-100 img-fluid position-relative z-index-10" title=""
+                                         src="https://firebasestorage.googleapis.com/v0/b/clothes-f4k.appspot.com/o/common%2Fdata_not_found.png?alt=media&token=36148ded-ba2c-4207-8525-2da16e7a8557">
+                                </picture>
+                            </div>
+                            <div class="card-body px-0 text-center">
+                                <a class="mb-0 mx-2 mx-md-4 fs-p link-cover text-decoration-none d-block text-center"
+                                   th:href="'/shop/product/' + ${item.product.slug}">[[${item.product.name}]]</a>
+                                <p th:if="${item.promotion == null}" class="fw-bolder m-0 mt-2 product-price-list">
+                                    [[${item.price}]]</p>
+                                <div th:if="${item.promotion != null}"
+                                     class="d-flex justify-content-center align-items-center mt-2">
+                                    <p class="mb-0 me-2 text-danger fw-bolder product-price-list">
+                                        [[${item.discountValue}]]</p>
+                                    <p class="mb-0 text-muted fw-bolder"><s
+                                            class="product-price-list">[[${item.price}]]</s></p>
+                                </div>
+                            </div>
+                        </div>
+                        <!--/ Card Product-->
+                    </div>
+                </div>
+                <!-- / Products-->
+            </div>
+            <!-- / Category Products-->
+
+        </div>
+    </div>
+
+</section>
+<!-- / Main Section-->
+
+<!-- Footer-->
+<footer th:replace="shop/fragments/footer::footer"></footer>
+<!-- / Footer-->
+
+<!-- Cart Offcanvas-->
+<div th:replace="shop/fragments/drawer-cart::div"></div>
+
+<script th:replace="shop/fragments/script::div"></script>
+
+<script type="module">
+    import {getCommon} from "/common/public.js";
+
+    const {convert2Vnd} = getCommon();
+    let priceList = document.getElementsByClassName("product-price-list")
+    priceList.forEach(el => {
+        el.innerHTML = convert2Vnd(el.innerHTML);
+    })
+
+</script>
+</body>
+</html>

@@ -76,4 +76,16 @@ public class ShopProductResponse {
         private String wardName;
         private Boolean isDefault = false;
     }
+
+    @Data
+    @Builder
+    public static class UserDto {
+        private Long id;
+        private String username;
+        private String numberPhone;
+        private String email;
+        private Integer gender;
+        private String addressDetail;
+        private String fullName;
+    }
 }

@@ -153,11 +153,27 @@ export {URL, imageBlank}
         await updateQuantity(productDetailId, value);
     })
 
-    drawerCart.addEventListener('show.bs.offcanvas', async event => {
-        await updateHtmlCart();
-    })
+    if (drawerCart != null) {
+        drawerCart.addEventListener('show.bs.offcanvas', async event => {
+            await updateHtmlCart();
+        })
+    }
+
+    /** get list promotion **/
+    const getListPromotion = async () => {
+        const res = await $ajax.get("/shop/list-promotion");
+
+        const $promotionDropdown = $('#promotion-dropdown');
+        let dropDown = ``;
+        res.forEach(el => {
+            dropDown += `<li><a class="dropdown-item" href="/shop/promotion/${el.id}">${el.name}</a></li>`
+        })
+        $promotionDropdown.empty();
+        $promotionDropdown.append(dropDown);
+    }
 
     $(document).ready(async () => {
+        await getListPromotion();
         await getDataCart();
     })
 })()

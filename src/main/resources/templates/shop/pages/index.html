@@ -163,6 +163,7 @@
                     <div class="swiper-slide d-flex h-auto" th:each="item:${listProduct}">
                         <!-- Card Product-->
                         <div class="card position-relative h-100 card-listing hover-trigger">
+                            <span th:if="${item.promotion != null}" class="badge card-badge bg-secondary">-[[${item.promotion.discountValue}]]%</span>
                             <div class="card-header">
                                 <picture th:if="${item.product.image}" class="position-relative overflow-hidden d-block bg-light">
                                     <img class="w-100 img-fluid position-relative z-index-10"
@@ -176,28 +177,13 @@
                                 </picture>
                             </div>
                             <div class="card-body px-0 text-center">
-                                <div class="d-flex justify-content-center align-items-center mx-auto mb-1">
-                                    <!-- Review Stars Small-->
-                                    <div class="rating position-relative d-table">
-                                        <div class="position-absolute stars" style="width: 90%">
-                                            <i class="ri-star-fill text-dark mr-1"></i>
-                                            <i class="ri-star-fill text-dark mr-1"></i>
-                                            <i class="ri-star-fill text-dark mr-1"></i>
-                                            <i class="ri-star-fill text-dark mr-1"></i>
-                                            <i class="ri-star-fill text-dark mr-1"></i>
-                                        </div>
-                                        <div class="stars">
-                                            <i class="ri-star-fill mr-1 text-muted opacity-25"></i>
-                                            <i class="ri-star-fill mr-1 text-muted opacity-25"></i>
-                                            <i class="ri-star-fill mr-1 text-muted opacity-25"></i>
-                                            <i class="ri-star-fill mr-1 text-muted opacity-25"></i>
-                                            <i class="ri-star-fill mr-1 text-muted opacity-25"></i>
-                                        </div>
-                                    </div> <span class="small fw-bolder ms-2 text-muted"> 4.7 (456)</span>
-                                </div>
                                 <a class="mb-0 mx-2 mx-md-4 fs-p link-cover text-decoration-none d-block text-center"
                                    th:href="'/shop/product/' + ${item.product.slug}">[[${item.product.name}]]</a>
-                                <p class="fw-bolder m-0 mt-2 product-price-list">[[${item.price}]]</p>
+                                <p th:if="${item.promotion == null}" class="fw-bolder m-0 mt-2 product-price-list">[[${item.price}]]</p>
+                                <div th:if="${item.promotion != null}" class="d-flex justify-content-center align-items-center mt-2">
+                                    <p class="mb-0 me-2 text-danger fw-bolder product-price-list">[[${item.discountValue}]]</p>
+                                    <p class="mb-0 text-muted fw-bolder"><s class="product-price-list">[[${item.price}]]</s></p>
+                                </div>
                             </div>
                         </div>
                         <!--/ Card Product-->
@@ -349,8 +335,9 @@
                                         <!-- Card-->
                                         <!-- Card Product-->
                                         <div class="card position-relative h-100 card-listing hover-trigger">
+                                            <span th:if="${item.promotion != null}" class="badge card-badge bg-secondary">-[[${item.promotion.discountValue}]]%</span>
                                             <div class="card-header">
-                                                <picture th:if="${item.product.image}" class="position-relative overflow-hidden d-block bg-light">
+                                                 <picture th:if="${item.product.image}" class="position-relative overflow-hidden d-block bg-light">
                                                     <img class="w-100 img-fluid position-relative z-index-10"
                                                          title=""
                                                          th:src="${item.product.image.fileUrl}" alt="123">
@@ -362,30 +349,13 @@
                                                 </picture>
                                             </div>
                                             <div class="card-body px-0 text-center">
-                                                <div
-                                                        class="d-flex justify-content-center align-items-center mx-auto mb-1">
-                                                    <!-- Review Stars Small-->
-                                                    <div class="rating position-relative d-table">
-                                                        <div class="position-absolute stars" style="width: 80%">
-                                                            <i class="ri-star-fill text-dark mr-1"></i>
-                                                            <i class="ri-star-fill text-dark mr-1"></i>
-                                                            <i class="ri-star-fill text-dark mr-1"></i>
-                                                            <i class="ri-star-fill text-dark mr-1"></i>
-                                                            <i class="ri-star-fill text-dark mr-1"></i>
-                                                        </div>
-                                                        <div class="stars">
-                                                            <i class="ri-star-fill mr-1 text-muted opacity-25"></i>
-                                                            <i class="ri-star-fill mr-1 text-muted opacity-25"></i>
-                                                            <i class="ri-star-fill mr-1 text-muted opacity-25"></i>
-                                                            <i class="ri-star-fill mr-1 text-muted opacity-25"></i>
-                                                            <i class="ri-star-fill mr-1 text-muted opacity-25"></i>
-                                                        </div>
-                                                    </div> <span class="small fw-bolder ms-2 text-muted"> 4.7
-                                                            (1669)</span>
-                                                </div>
                                                 <a class="mb-0 mx-2 mx-md-4 fs-p link-cover text-decoration-none d-block text-center"
                                                    th:href="'/shop/product/' + ${item.product.slug}">[[${item.product.name}]]</a>
-                                                <p class="fw-bolder m-0 mt-2 product-price-list">[[${item.price}]]</p>
+                                                <p th:if="${item.promotion == null}" class="fw-bolder m-0 mt-2 product-price-list">[[${item.price}]]</p>
+                                                <div th:if="${item.promotion != null}" class="d-flex justify-content-center align-items-center mt-2">
+                                                    <p class="mb-0 me-2 text-danger fw-bolder product-price-list">[[${item.discountValue}]]</p>
+                                                    <p class="mb-0 text-muted fw-bolder"><s class="product-price-list">[[${item.price}]]</s></p>
+                                                </div>
                                             </div>
                                         </div>
                                         <!--/ Card Product-->
@@ -423,6 +393,7 @@
                                         <div class="col-12 col-md-6" th:each="product: ${mapProduct.get(state.index)}">
                                             <!-- Card Product-->
                                             <div class="card position-relative h-100 card-listing hover-trigger">
+                                                <span th:if="${product.promotion != null}" class="badge card-badge bg-secondary">-[[${product.promotion.discountValue}]]%</span>
                                                 <div class="card-header">
                                                     <picture th:if="${product.product.image}" class="position-relative overflow-hidden d-block bg-light">
                                                         <img class="w-100 img-fluid position-relative z-index-10"
@@ -436,35 +407,13 @@
                                                     </picture>
                                                 </div>
                                                 <div class="card-body px-0 text-center">
-                                                    <div
-                                                            class="d-flex justify-content-center align-items-center mx-auto mb-1">
-                                                        <!-- Review Stars Small-->
-                                                        <div class="rating position-relative d-table">
-                                                            <div class="position-absolute stars" style="width: 80%">
-                                                                <i class="ri-star-fill text-dark mr-1"></i>
-                                                                <i class="ri-star-fill text-dark mr-1"></i>
-                                                                <i class="ri-star-fill text-dark mr-1"></i>
-                                                                <i class="ri-star-fill text-dark mr-1"></i>
-                                                                <i class="ri-star-fill text-dark mr-1"></i>
-                                                            </div>
-                                                            <div class="stars">
-                                                                <i
-                                                                        class="ri-star-fill mr-1 text-muted opacity-25"></i>
-                                                                <i
-                                                                        class="ri-star-fill mr-1 text-muted opacity-25"></i>
-                                                                <i
-                                                                        class="ri-star-fill mr-1 text-muted opacity-25"></i>
-                                                                <i
-                                                                        class="ri-star-fill mr-1 text-muted opacity-25"></i>
-                                                                <i
-                                                                        class="ri-star-fill mr-1 text-muted opacity-25"></i>
-                                                            </div>
-                                                        </div> <span class="small fw-bolder ms-2 text-muted"> 4.7
-                                                                (1669)</span>
-                                                    </div>
                                                     <a class="mb-0 mx-2 mx-md-4 fs-p link-cover text-decoration-none d-block text-center"
                                                        th:href="'/shop/product/' + ${product.product.slug}">[[${product.product.name}]]</a>
-                                                    <p class="fw-bolder m-0 mt-2 product-price-list">[[${product.price}]]</p>
+                                                    <p th:if="${product.promotion == null}" class="fw-bolder m-0 mt-2 product-price-list">[[${product.price}]]</p>
+                                                    <div th:if="${product.promotion != null}" class="d-flex justify-content-center align-items-center mt-2">
+                                                        <p class="mb-0 me-2 text-danger fw-bolder product-price-list">[[${product.discountValue}]]</p>
+                                                        <p class="mb-0 text-muted fw-bolder"><s class="product-price-list">[[${product.price}]]</s></p>
+                                                    </div>
                                                 </div>
                                             </div>
                                             <!--/ Card Product-->

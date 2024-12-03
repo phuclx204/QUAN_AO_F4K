@@ -1,290 +1,279 @@
-function closeModal() {
-    $('.modal').hide();
-}
+import {$ajax, syncFormWithDataObject, validateForm, ref} from "/common/public.js";
+
+const {getValidate, clearValidation} = validateForm;
+
+$(document).ready(async function () {
+    "use strict";
+
+    const $modalAddAttributes = $('#modalAddAttributes');
+
+    /** Biến toàn cục  **/
+    const idFormFilter = 'formFilter';
+    const STATUS_ON = 1;
+    const STATUS_OFF = 0;
+    const idRow = ref(null);
 
 
-function openAddModal() {
-    $('#addModal').show();
-}
+    const typeModal = {
+        type_color: 'color',
+        type_category: 'category',
+        type_brand: 'brand',
+        type_size: 'size'
+    }
 
-function showEditModal(id, name, hex) {
-    $('#editId').val(id);
-    $('#editName').val(name);
+    const urlUpdate = '/admin/color/';
+    const modalType = typeModal.type_color;
 
-    // Hiển thị màu đã chọn
-    $('#editHex').val(hex);
-    $('#editSelectedColor').css('background-color', hex);
-
-    // Hiển thị modal
-    $('#editModal').show();
-
-    // Khởi tạo Pickr sau khi modal được hiển thị
-    setTimeout(() => {
-        const editPickr = Pickr.create({
-            el: '#editColorPicker',
-            theme: 'nano',
-            default: hex,
-            swatches: [
-                '#F44336', '#E91E63', '#9C27B0',
-                '#673AB7', '#3F51B5', '#2196F3'
-            ],
-            components: {
-                preview: true,
-                opacity: false,
-                hue: true,
-                interaction: {
-                    hex: true,
-                    input: true,
-                    save: false
-                }
-            }
-        });
-
-        // Xử lý khi người dùng chọn màu
-        editPickr.on('change', (color) => {
-            const hexCode = color.toHEXA().toString();
-            $('#editHex').val(hexCode);
-            $('#editSelectedColor').css('background-color', hexCode);
-        });
-    }, 0);
-}
-
-$(document).ready(function () {
-    loadDatas();
-
-    $(document).ready(function () {
-        const pickr = Pickr.create({
-            el: '#colorPicker',
-            theme: 'nano',
-            default:'#ffffff',
-            swatches: [
-                '#F44336', '#E91E63', '#9C27B0',
-                '#673AB7', '#3F51B5', '#2196F3'
-            ],
-            components: {
-                preview: true,
-                opacity: false,
-                hue: true,
-                interaction: {
-                    hex: true,
-                    input: true,
-                    save: false // Không cần nút lưu
-                }
-            }
-        });
-
-        // Xử lý khi người dùng chọn màu
-        pickr.on('change', (color) => {
-            const hexCode = color.toHEXA().toString();
-            $('#hexCode').val(hexCode);
-            $('#selectedColor').css('background-color', hexCode);
-        });
+    const formFilterDefault = {
+        search: '',
+        status: '1'
+    }
+    const objFilter = Object.assign({}, {...formFilterDefault});
+    syncFormWithDataObject({
+        selectorParent: idFormFilter,
+        dataObject: objFilter,
+        initialValues: formFilterDefault,
     });
 
-
-    $('.search-form').on('submit', function (event) {
-        event.preventDefault();
-        const search = $('input[name="search"]').val();
-        loadDatas(1, 5, 'id,desc', search);
-    });
-
-    function loadDatas(page = 1, size = 5, sort = 'id,desc', search = '') {
-        $.ajax({
-            url: '/admin/color/list',
-            method: 'GET',
-            data: {page: page, size: size, sort: sort, search: search},
-            success: function (response) {
-                renderDatas(response.content);
-                setupPagination(response.totalPages, page);
-                $('#totalData').text(`Tổng  ${response.totalElements}` + ' bản ghi');
-            },
-            error: function (error) {
-                console.error('Không thể tải dữ liệu:', error);
+    const ruleFormAttributes = {
+        'createAttributes': [
+            {
+                rule: (value) => value.trim() !== "",
+                message: "Tên thuộc tính bắt buộc",
+                type: 'text'
             }
+        ]
+    };
+
+    /** Function scope **/
+    const refreshFilter = () => {
+        syncFormWithDataObject({
+            selectorParent: idFormFilter,
+            dataObject: objFilter,
+            initialValues: formFilterDefault,
         });
     }
 
-    function renderDatas(datas) {
-        const tbody = $('tbody');
-        tbody.empty();
+    const openModalAttributes = (title = 'Thêm mới thuộc tính', label = 'Tên thuộc tính', type, data = null) => {
+        const $formAddAttributes = $('#formAddAttributes');
+        const $createAttributes = $('#createAttributes');
 
-        if (datas.length === 0) {
-            tbody.append(`
-            <tr>
-                <td colspan="4" style="text-align: center;color:red">Không có dữ liệu !</td>
-            </tr>
-        `);
-            $('#pagination').hide();
-            return;
+        $('#standard-modalCreateLabel').text(title)
+
+        $formAddAttributes.data('type', type)
+        $('#createAttributesLabel').text(label)
+        $createAttributes.prop("placeholder", label);
+        $('#invalidFeedback').text(label + ' không thể trống')
+
+        if (data) {
+            $formAddAttributes.data("is", true);
+            $createAttributes.val(data.name);
+
+            if (type === typeModal.type_color) {
+                $('#changeColor').val(data.hex);
+            }
         } else {
-            $('#pagination').show();
+            $formAddAttributes.data("is", false);
         }
 
-
-        datas.forEach((i, index) => {
-            tbody.append(`
-                <tr>
-                    <td>${index + 1}</td>
-                    <td>${i.name}</td>
-                    <td>${i.hex || 'N/A'}</td>
-                    <td>
-                        <i class='bx bx-edit' onclick="showEditModal(${i.id}, '${i.name}', '${i.hex}')"></i>
-                    </td>
-                    <td>
-                        <input type="checkbox" value="${i.id}" ${i.status === 1 ? 'checked' : ''} 
-                               onchange="submitStatusForm(this)">
-                    </td>
-                </tr>
-            `);
-        });
+        if (type === typeModal.type_color) {
+            $('#rowColorChange').prop('hidden', false);
+            $('#hexCode').text($('#changeColor').val());
+        } else {
+            $('#rowColorChange').prop('hidden', true);
+        }
     }
 
-    function setupPagination(totalPages, currentPage) {
-        const pagination = $('#pagination');
-        pagination.empty();
+    const fetchAttributes = async (type, data, isUpdate = false) => {
+        let url = ``;
+        if (type === typeModal.type_category) url = `/admin/category`;
+        if (type === typeModal.type_brand) url = `/admin/brand`;
+        if (type === typeModal.type_color) url = `/admin/color`;
+        if (type === typeModal.type_size) url = `/admin/size`;
 
-        pagination.append(`
-        <button class="page-button" ${currentPage === 1 ? 'disabled' : ''} data-page="${currentPage - 1}">
-            Trước
-        </button>
-        `);
-
-        pagination.append(`
-        <input type="text" id="pageInput" value="${currentPage}" style="width: 50px; text-align: center;" />
-        <span> / ${totalPages}</span>
-        `);
-
-        pagination.append(`
-        <button class="page-button" ${currentPage === totalPages ? 'disabled' : ''} data-page="${currentPage + 1}">
-            Tiếp theo
-        </button>
-        `);
-
-        $('.page-button').on('click', function () {
-            const page = $(this).data('page');
-            loadDatas(page);
-        });
-
-        $('#pageInput').on('input', function () {
-            this.value = this.value.replace(/[^0-9]/g, '');
-        });
-
-        $('#pageInput').on('keypress', function (e) {
-            if (e.key === 'Enter') {
-                let inputPage = parseInt($(this).val());
-
-                if (isNaN(inputPage) || inputPage < 1) {
-                    inputPage = 1;
-                } else if (inputPage > totalPages) {
-                    inputPage = totalPages;
-                }
-
-                loadDatas(inputPage);
-            }
-        });
+        if (isUpdate) {
+            await $ajax.put(url + "/" + idRow.value, data);
+        } else {
+            await $ajax.post(url, data);
+        }
     }
 
-
-    // Thêm
-    $('#addForm').on('submit', function (event) {
-        event.preventDefault();
-
-        const dataName = $('#addName').val();
-        const dataHex = $('#hexCode').val();
-
-        if (!dataName) {
-            Swal.fire('Error', 'Tên không được để trống!', 'error');
-            return;
-        }
-
-        if (!/^#[0-9A-F]{6}$/i.test(dataHex)) {
-            Swal.fire('Error', 'Mã hex không hợp lệ!', 'error');
-            return;
-        }
-
-        $.ajax({
-            url: '/admin/color',
-            method: 'POST',
-            contentType: 'application/json',
-            data: JSON.stringify({name: dataName,hex:dataHex}),
-            success: function (response) {
-                $('#addModal').hide();
-                loadDatas();
-                Swal.fire({
-                    title: 'Thông báo',
-                    text: 'Thêm mới thành công.',
-                    timer: 2000,
-                    timerProgressBar: true,
-                });
-            },
-            error: function (xhr) {
-                let errorMessage = 'Không thể thêm mới';
-                if (xhr.status === 409) {
-                    errorMessage = xhr.responseText;
-                } else if (xhr.status === 400 && xhr.responseJSON) {
-                    errorMessage = xhr.responseJSON.map(error => error.defaultMessage).join(', ');
-                }
-                Swal.fire('Error', errorMessage, 'error');
-            }
-        });
+    $('#changeColor').on('input', function () {
+        const selectedColor = $(this).val();
+        $('#hexCode').text(selectedColor);
     });
 
-    $('#editForm').on('submit', function (event) {
-        event.preventDefault();
+    /** Xử lý form filter **/
+    $("#btnRefresh").on("click", function (e) {
+        refreshFilter();
+        reloadTable();
+    })
 
-        const id = $('#editId').val();
-        const dataName = $('#editName').val();
-        const dataHex = $('#editHex').val();
-        $.ajax({
-            url: `/admin/color/${id}`,
-            method: 'PUT',
-            contentType: 'application/json',
-            data: JSON.stringify({name: dataName,hex:dataHex}),
-            success: function (response) {
-                $('#editModal').hide();
-                loadDatas();
-                Swal.fire({
-                    title: 'Thông báo',
-                    text: 'Đã lưu thay đổi.',
-                    timer: 2000,
-                    timerProgressBar: true,
-                });
-            },
-            error: function (xhr) {
-                let errorMessage = 'Không thể thêm mới';
-                if (xhr.status === 409) {
-                    errorMessage = xhr.responseText;
-                } else if (xhr.status === 400 && xhr.responseJSON) {
-                    errorMessage = xhr.responseJSON.map(error => error.defaultMessage).join(', ');
-                }
-                Swal.fire('Error', errorMessage, 'error');
-            }
-        });
+    $(document).on("keydown", "#filterSearch", async function (e) {
+        if (e.key === "Enter") {
+            e.preventDefault();
+            reloadTable();
+        }
     });
 
+    $(document).on("change", "#filterStatus", function (e) {
+        reloadTable();
+    })
 
-});
-
-function submitStatusForm(checkbox) {
-    const id = checkbox.value;
-    const status = checkbox.checked ? 1 : 0;
-
-    $.ajax({
-        url: `/admin/color/${id}`,
-        method: 'PATCH',
-        contentType: 'application/json',
-        data: JSON.stringify({status: status}),
-        success: function () {
-            Swal.fire({
-                title: 'Thông báo',
-                text: 'Đã thay đổi trạng thái.',
-                timer: 2000,
-                timerProgressBar: true,
-            });
+    // Khởi tạo table
+    const $tableProduct = $('#products-table').DataTable({
+        info: false,
+        serverSide: true,
+        searching: false,
+        bLengthChange: false,
+        pageLength: 5,
+        ajax: {
+            url: "/admin/color/list",
+            type: 'GET',
+            data: function (data) {
+                return {
+                    page: Math.floor(data.start / data.length) + 1,
+                    size: data.length,
+                    search: objFilter.search,
+                    sort: 'id,desc',
+                    status: objFilter.status
+                }
+            }
         },
-        error: function () {
-            Swal.fire('Error', 'Cập nhật trạng thái thất bại', 'error');
-        }
-    });
-}
+        columns: [
+            {
+                data: null,
+                title: "STT",
+                render: (data, type, full, meta) => {
+                    return meta.row + meta.settings._iDisplayStart + 1;
+                }
+            },
+            {data: 'name', title: 'Tên sản phẩm'},
+            {
+                data: 'hex', title: 'Mã màu',
+                render: (data, type, full, meta) => {
+                    return `<div class="d-flex">${data} - <span class="ms-2" style="width: 40px; height: 20px; background-color: ${data}"></span></div>`;
+                }
+            },
+            {
+                data: 'status',
+                title: 'Trạng thái',
+                render: function (data, type, row) {
+                    if (data === 1) {
+                        return '<span class="badge bg-success">Hoạt động</span>';
+                    } else {
+                        return '<span class="badge bg-danger">Vô hiệu hóa</span>';
+                    }
+                }
+            },
+            {
+                data: null,
+                title: 'Hành động',
+                render: function (data, type, row) {
+                    const htmlAction = row?.status === 1 ?
+                        `<span data-bs-toggle="tooltip" title="Vô hiệu hóa">
+                           <a href="javascript:void(0);" class="action-icon action-lock" data-id="${row.id}"> <i class="text-danger mdi mdi-lock-outline"></i></a>
+                        </span>`
+                        :
+                        `<span data-bs-toggle="tooltip" title="Kích hoạt">
+                           <a href="javascript:void(0);" class="action-icon action-open" data-id="${row.id}"> <i class="text-success mdi mdi-lock-open-variant-outline"></i></a>
+                        </span>`
 
+                    return `<td class="table-action">
+                              <span data-bs-toggle="tooltip" title="Cập nhật">
+                                <a href="#" class="action-icon action-update" data-id="${row.id}"> <i class="text-warning mdi mdi-square-edit-outline"></i></a>
+                              </span>
+                              ${htmlAction}
+                             </td>`;
+                }
+            }
+        ]
+    });
+
+    const reloadTable = () => {
+        $tableProduct.ajax.reload(null, false);
+    }
+
+    const getRowById = (rowId) => {
+        const row = $tableProduct.rows().data().toArray().find(row => row.id === rowId);
+        if (row) {
+            return row;
+        } else {
+            return null;
+        }
+    }
+
+    $(document).on("click", ".action-lock", async function (e) {
+        e.preventDefault();
+        const isConfirmed = await $confirm("info", "Nhắc nhở", "Bạn có chắc muốn vô hiệu hóa sản phẩm không?");
+        if (isConfirmed.isConfirmed) {
+            const rowId = $(this).data("id");
+            await $ajax.patch(urlUpdate + rowId, {status: STATUS_OFF});
+            $alter("success", "Thông báo", "Cập nhật thành công");
+            reloadTable();
+        }
+    })
+
+    $(document).on("click", ".action-open", async function (e) {
+        e.preventDefault();
+        const isConfirmed = await $confirm("info", "Nhắc nhở", "Bạn có chắc muốn kích hoạt sản phẩm không?");
+        if (isConfirmed.isConfirmed) {
+            const rowId = $(this).data("id");
+            await $ajax.patch(urlUpdate + rowId, {status: STATUS_ON});
+            $alter("success", "Thông báo", "Cập nhật thành công");
+            reloadTable();
+        }
+    })
+
+    $(document).on("click", ".action-update", function (e) {
+        const data = getRowById($(this).data("id"));
+        idRow.value = $(this).data("id");
+        openModalAttributes("Cập nhật thuộc tính", "Tên danh mục", modalType, data);
+        $modalAddAttributes.modal("show");
+    })
+
+    // Modal thêm thuộc tính
+    $(document).on("click", "#btnCreateProduct", function (e) {
+        e.preventDefault();
+        idRow.value = null;
+        openModalAttributes('Thêm mới thuộc tính', "Tên danh mục", modalType);
+        $modalAddAttributes.modal("show");
+    })
+
+    document.getElementById("modalAddAttributes").addEventListener('hide.bs.modal', event => {
+        idRow.value = null;
+        clearValidation('formAddAttributes');
+    })
+
+    // Xử lý khi submit form tạo tạo nhanh thuộc tính
+    $(document).on("submit", "#formAddAttributes", async function (e) {
+        e.preventDefault();
+        const isValid = await getValidate('formAddAttributes', ruleFormAttributes);
+        if (!isValid) return;
+
+        openLoading();
+        const isUpdate = $(this).data("is");
+
+        const type = $(this).data("type");
+        const data = {
+            name: $('#createAttributes').val().trim()
+        }
+        if (type === typeModal.type_category) {
+            data.description = data.name;
+        } else if (type === typeModal.type_color) {
+            data.hex = $('#changeColor').val();
+        }
+
+        await fetchAttributes(type, data, isUpdate);
+
+        await closeLoading();
+        $alterTop("success", isUpdate ? "Cập nhật thành công" : "Thêm mới thanh công");
+
+        reloadTable();
+        $modalAddAttributes.modal("hide");
+    })
+
+    $(document).ready(async function () {
+        // await loadOptionFilter();
+    })
+});

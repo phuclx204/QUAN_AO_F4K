@@ -44,10 +44,13 @@
                                 Cửa hàng
                             </a>
                         </li>
-                        <li class="nav-item me-lg-4">
-                            <a class="nav-link fw-bolder py-lg-4" th:href="@{/shop/category/discount}">
+                        <li class="nav-item dropdown me-lg-4">
+                            <a class="nav-link fw-bolder dropdown-toggle py-lg-4" href="#" role="button"
+                               data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 Giảm giá
                             </a>
+                            <ul class="dropdown-menu" id="promotion-dropdown">
+                            </ul>
                         </li>
                         <!--                        QUICK PAGES-->
                         <li class="nav-item dropdown me-lg-4">
@@ -108,11 +111,13 @@
                             <i class="ri-user-line ri-lg align-middle"></i>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-dark cs-user-dropdown">
-                            <li><a class="dropdown-item" href="#">Trang cá nhân</a></li>
-                            <li><a class="dropdown-item" href="#">Giỏ hàng</a></li>
-                            <li><a class="dropdown-item" href="#">Lịch sử mua hàng</a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="#">Đăng xuất</a></li>
+                            <li><a class="dropdown-item" href="/shop/account-setting">Trang cá nhân</a></li>
+                            <li><a class="dropdown-item" th:href="@{/shop/cart}">Giỏ hàng</a></li>
+                            <li><a class="dropdown-item" th:href="@{/shop/purchase-history}">Lịch sử mua hàng</a></li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li><a class="dropdown-item" href="/authentication/logout">Đăng xuất</a></li>
                         </ul>
                     </li>
                     <!-- /Navbar Login-->

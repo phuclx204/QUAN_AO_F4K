@@ -5,7 +5,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.example.quan_ao_f4k.util.F4KConstants;
-import org.springframework.beans.factory.annotation.Value;
+import org.example.quan_ao_f4k.util.F4KUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -15,6 +16,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.RememberMeServices;
 
 import java.io.IOException;
 
@@ -26,10 +28,16 @@ public class WebSecurityConfig {
     private static final String[] PUBLIC_ENDPOINTS = {
             "/static/**",
             "/common/**",
-            "/verify_account/**"
+            "/verify_account/**",
+            "/admin/plugins/**",
+            "/vnPay/**"
     };
 
-    private final AuthenticationProvider authenticationProvider;
+    @Autowired
+    private AuthenticationProvider authenticationProvider;
+
+    @Autowired
+    private RememberMeServices rememberMeServices;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
@@ -39,9 +47,9 @@ public class WebSecurityConfig {
                         request -> request
                                 .requestMatchers(PUBLIC_ENDPOINTS).permitAll()
                                 .requestMatchers("/authentication/**").permitAll()
-//                                .requestMatchers( String.format("%s/admin/**", api)).permitAll()
-//                                .requestMatchers( HttpMethod.GET,"/dashboard/**").hasRole("ADMIN")
-//                                .requestMatchers( String.format("%s/shop/**", api)).hasRole("USER")
+                                .requestMatchers("/admin/**").hasAuthority(F4KConstants.ROLE_ADMIN)
+                                .requestMatchers("/shop/**").hasAuthority(F4KConstants.ROLE_USER)
+//                                .requestMatchers("/vnPay/**").hasAnyAuthority(F4KConstants.ROLE_USER, F4KConstants.ROLE_ADMIN)
                                 .anyRequest().authenticated()
                 )
                 .formLogin((form) -> form
@@ -74,15 +82,13 @@ public class WebSecurityConfig {
                 .authenticationProvider(authenticationProvider)
                 .logout(logout -> logout
                         .logoutUrl("/authentication/logout")
+                        .invalidateHttpSession(true)
+                        .invalidateHttpSession(true)
                         .logoutSuccessUrl("/authentication/login")
                 )
-//                .addFilterBefore(jwtTokenFilter,
-//                        UsernamePasswordAuthenticationFilter.class)
-//                .logout(logout ->
-//                        logout.logoutUrl("/api/v1/auth/logout")
-//                                .addLogoutHandler(logoutHandler)
-//                                .logoutSuccessHandler((request, response, authentication) -> SecurityContextHolder.clearContext())
-//                )
+                .rememberMe((remember) -> remember
+                        .rememberMeServices(rememberMeServices)
+                );
         ;
         return httpSecurity.build();
     }

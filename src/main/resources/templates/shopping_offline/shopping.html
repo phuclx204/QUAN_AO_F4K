@@ -62,7 +62,7 @@
                             <td th:text="${detail.productDetail.product.name} + ' | Size : ' + ${detail.productDetail.size.name} + ' | Màu : ' + ${detail.productDetail.color.name}"></td>
                             <td>
                                 <input type="text" class="form-control priceInput"
-                                       th:value="${detail.productDetail.price}" readonly
+                                       th:value="${detail.price}" readonly
                                        style="width: 100px;"/>
                             </td>
                             <td>
@@ -71,7 +71,7 @@
                                 <input type="hidden" id="orderId" th:value="${detail.order.id}"/>
                                 <input type="hidden" id="productDetailId" th:value="${detail.productDetail.id}"/>
                             </td>
-                            <td th:text="${detail.productDetail.price * detail.quantity}"></td>
+                            <td th:text="${detail.price * detail.quantity}"></td>
                             <td>
                                 <span data-bs-toggle="tooltip" title="Xóa khỏi giỏ hàng">
                                     <a href="javascript:void(0)" class="delete-btn"
@@ -201,7 +201,7 @@
                                     Tổng tiền:
                                     <span id="totalAmount" class="text-danger"
                                           th:text="${total != null ? total : 0}"></span>
-                                </span>₫
+                                </span>
                             </h5>
                         </div>
                         <div class="form-group">
@@ -223,8 +223,8 @@
                         </div>
                         <div class="form-group mt-4">
                             <label for="customerAmount">Tiền khách đưa:
-                                <span id="formattedNumber" class="text-primary">0</span> ₫</label>
-                            <p>Tiền thừa: <span id="changeAmount" class="text-primary">0</span> ₫</p>
+                                <span id="formattedNumber" class="text-primary">0</span></label>
+                            <p>Tiền thừa: <span id="changeAmount" class="text-primary">0</span></p>
                             <input type="text" id="customerAmount" class="form-control"
                                    placeholder="Nhập tiền khách đưa"/>
                         </div>

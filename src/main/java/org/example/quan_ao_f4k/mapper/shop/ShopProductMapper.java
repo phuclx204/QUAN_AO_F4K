@@ -4,6 +4,7 @@ import org.example.quan_ao_f4k.dto.response.shop.ShopProductResponse;
 import org.example.quan_ao_f4k.mapper.MapperCoverter;
 import org.example.quan_ao_f4k.mapper.product.BrandMapper;
 import org.example.quan_ao_f4k.mapper.product.CategoryMapper;
+import org.example.quan_ao_f4k.model.authentication.User;
 import org.example.quan_ao_f4k.model.order.CartProduct;
 import org.example.quan_ao_f4k.model.order.ShippingInfo;
 import org.example.quan_ao_f4k.model.product.Product;
@@ -39,4 +40,7 @@ public interface ShopProductMapper {
     ShopProductResponse.ShippingInfoDto toShippingInfoDto(ShippingInfo shippingInfo);
     ShippingInfo toShippingInfo(ShopProductResponse.ShippingInfoDto productDto);
     List<ShopProductResponse.ShippingInfoDto> toShippingInfoDto(List<ShippingInfo> list);
+
+    ShopProductResponse.UserDto toUserDto(User user);
+    User toUser(ShopProductResponse.UserDto userDto);
 }

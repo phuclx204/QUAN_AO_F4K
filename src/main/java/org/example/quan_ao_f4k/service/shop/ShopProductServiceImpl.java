@@ -9,11 +9,13 @@ import org.example.quan_ao_f4k.mapper.shop.ShopProductMapper;
 import org.example.quan_ao_f4k.model.general.Image;
 import org.example.quan_ao_f4k.model.product.*;
 import org.example.quan_ao_f4k.model.promotion.Promotion;
+import org.example.quan_ao_f4k.model.promotion.PromotionProduct;
 import org.example.quan_ao_f4k.repository.general.ImageRepository;
 import org.example.quan_ao_f4k.repository.product.ColorRepository;
 import org.example.quan_ao_f4k.repository.product.ProductDetailRepository;
 import org.example.quan_ao_f4k.repository.product.ProductRepository;
 import org.example.quan_ao_f4k.repository.product.SizeRepository;
+import org.example.quan_ao_f4k.repository.promotion.PromotionProductRepository;
 import org.example.quan_ao_f4k.repository.promotion.PromotionRepository;
 import org.example.quan_ao_f4k.repository.shop.CriteriaRepository;
 import org.example.quan_ao_f4k.util.F4KConstants;
@@ -43,6 +45,7 @@ public class ShopProductServiceImpl implements ShopProductService {
     private final CriteriaRepository criteriaRepository;
     private final ProductRepository productRepository;
     private final PromotionRepository promotionRepository;
+    private final PromotionProductRepository promotionProductRepository;
 
     private final ShopProductMapper shopProductMapper;
 
@@ -156,6 +159,42 @@ public class ShopProductServiceImpl implements ShopProductService {
         model.addAttribute("listProduct", searchProducts(requestSearch));
         model.addAttribute("listProduct2", listProduct2);
         model.addAttribute("mapProduct", mapProduct);
+    }
+
+    @Override
+    public List<Promotion> getListPromotion() {
+        return promotionRepository.findAllByStatusAndDayStartBeforeAndDayEndAfter(F4KConstants.STATUS_ON, LocalDate.now());
+    }
+
+    private List<ShopProductResponse.ProductDetailDto> getListProductByPromotion(Long promotionId) {
+        List<ProductDetail> productDetailList = productDetailRepository.getListByPromotionId(promotionId);
+        List<ShopProductResponse.ProductDetailDto> listResponse = shopProductMapper.toProductDetailDto(productDetailList);
+        applyDiscounts(listResponse);
+        return listResponse;
+    }
+
+    @Override
+    public void addModelPromotion(Model model, Long idPromotion) {
+        List<PromotionProduct> promotionProducts = promotionProductRepository.findByPromotionId(idPromotion, null);
+
+        for (PromotionProduct promotionProduct: promotionProducts) {
+            Long idProduct = promotionProduct.getProduct().getId();
+
+            Promotion promotion = getBestPromotionForProduct(idProduct);
+            if (promotion == null ) {
+                continue;
+            }
+
+            if (promotion.getId() != idPromotion) {
+                promotionProduct.setStatus(F4KConstants.STATUS_OFF);
+            } else {
+                promotionProduct.setStatus(F4KConstants.STATUS_ON);
+            }
+        }
+        promotionProductRepository.saveAll(promotionProducts);
+
+        List<ShopProductResponse.ProductDetailDto> listProducts = getListProductByPromotion(idPromotion);
+        model.addAttribute("listPromotion", listProducts);
     }
 
     @Override

@@ -6,7 +6,6 @@ const {transformData, convert2Vnd} = getCommon();
 
 $(document).ready(async function () {
     "use strict";
-    openLoading();
 
     /**  Lấy giá trị từ thẻ meta - header **/
     if (!document.querySelector('meta[name="order-id"]').getAttribute("content")) alert("orderId không tồn tại")
@@ -14,112 +13,9 @@ $(document).ready(async function () {
     const orderStatus = ref(document.querySelector('meta[name="order-status"]').getAttribute("content"));
 
     /**  Xử lý hiện thị trạng thái hóa đơn **/
-    const orderDetailHistoryMapper = {
-        id: 'id',
-        status: 'status',
-        note: 'note',
-        orderType: 'orderType',
-        changeDate: 'changeDate',
-        orderId: 'orderId'
-    }
-
     const TT_CHO_XAC_NHAN = '5';
-    const trangThaiThanhToan = {
-        CHUA_THANH_TOAN: {status: 1, mess: "Chưa thanh toán"},
-        DA_THANH_TOAN: {status: 2, mess: "Đã thanh toán"},
-        CHO_THANH_TOAN: {status: 3, mess: "Chờ thanh toán"}
-    }
-    const statusMapping = Object.values(trangThaiThanhToan).reduce((map, item) => {
-        map[item.status] = item.mess;
-        return map;
-    }, {});
-    const getTrangThaiThanhToan = (status) => {
-        return statusMapping[status] || "Không xác định";
-    };
 
-    const trangThaiHoaDon = [
-        {status: 0, mess: "Hủy đơn"},
-        {status: 1, mess: "Tạo mới"},
-        {status: 3, mess: "Hoàn tất"},
-        {status: 4, mess: "Chờ giao hàng"},
-        {status: 5, mess: "Chờ xác nhận"},
-        {status: 6, mess: "Đang giao hàng"},
-        {status: 7, mess: "Đã giao hàng"},
-        {status: 8, mess: "Chờ lấy hàng"},
-    ];
-    const getStateByPaymentMethod = (phuongThuc, currentStatus = null) => {
-        const stateOffline = [1];
-        const stateOnline = [5, 4, 8, 6, 7];
-        if (currentStatus != null) {
-            if (`${currentStatus}` === '3') {
-                stateOffline.push(3);
-                stateOnline.push(3);
-            }
-            if (`${currentStatus}` === '0') {
-                stateOffline.push(0);
-                stateOnline.push(0);
-            }
-        }
-
-        const states = phuongThuc.trim() === 'online' ? stateOnline : stateOffline;
-
-        return states.map(el => {
-            const currentItem = trangThaiHoaDon.find(item => item.status === el);
-            return {
-                status: currentItem.status,
-                mess: currentItem.mess
-            }
-        })
-    };
-
-    const mapStatusWithDates = (orderHistory, statusOrders) => {
-        return statusOrders.map(item => {
-            const matchedStatus = orderHistory.find(el => el.status === item.status)
-            return {
-                status: item.status,
-                mess: item ? item.mess : '',
-                changeDate: matchedStatus?.changeDate ?? ''
-            };
-        })
-    };
-    const updateHtmlTimelineOrder = (listTimelineOrder, currentOrder) => {
-        const $processLine = $('#process-line');
-        const spaceSizeLine = 100 / (listTimelineOrder.length - 1);
-        let process = 0;
-        const $timeLineOrder = $('#timeLineOrder');
-
-        // Xóa nội dung trước đó
-        $timeLineOrder.empty();
-
-        // Lặp qua từng phần tử trong listTimelineOrder
-        listTimelineOrder.forEach(el => {
-            // Định dạng ngày giờ nếu có
-            let formatDate = '';
-            if (el.changeDate) {
-                formatDate = dayjs(el.changeDate).format('DD-MM-YYYY hh:mm:ss A');
-            }
-
-            // Xác định class của bước
-            let classTimeLine = 'step-item';
-            if (el.status === currentOrder.status) {
-                $processLine.css('width', process + '%');
-                classTimeLine += ' current';
-            }
-
-            // Tạo HTML mới cho mỗi bước
-            const $html = `
-            <div class="${classTimeLine}">
-                <span data-bs-toggle="tooltip" data-bs-placement="bottom" title="${formatDate}">${el.mess}</span>
-            </div>
-        `;
-
-            process += spaceSizeLine;
-            $timeLineOrder.append($html);
-        });
-
-        $('[data-bs-toggle="tooltip"]').tooltip();
-    };
-    const updateHtmlTimelineOrder2 = (listTimelineOrder) => {
+    const updateHtmlTimelineOrder = (listTimelineOrder) => {
         const $processLine = $('#process-line');
         let process = 100;
         if (listTimelineOrder.length === 1) process = 0;
@@ -146,7 +42,7 @@ $(document).ready(async function () {
             // Tạo HTML mới cho mỗi bước
             const $html = `
             <div class="${classTimeLine}">
-                <span data-bs-toggle="tooltip" data-bs-placement="bottom" title="${formatDate}">${el.status}</span>
+                <span class="status_order" data-bs-toggle="tooltip" data-bs-placement="bottom" title="${formatDate}">${el.status}</span>
             </div>
         `;
             $timeLineOrder.append($html);
@@ -160,13 +56,7 @@ $(document).ready(async function () {
 
         const res = await $ajax.get("/admin/order-detail/get-state/" + orderCode);
         if (!res.length) return
-
-        // const currentOrder = transformData(orderDetailHistoryMapper, res.at(-1));
-        //
-        // const states = getStateByPaymentMethod(currentOrder.orderType, currentOrder.status)
-        // const listTimelineOrder = mapStatusWithDates(res, states);
-        // updateHtmlTimelineOrder(listTimelineOrder, currentOrder)
-        updateHtmlTimelineOrder2(res)
+        updateHtmlTimelineOrder(res)
     }
 
     /** Xử lý của table giỏ hàng **/
@@ -603,26 +493,32 @@ $(document).ready(async function () {
         }
     }
 
-    // gọi khi đã tải xong js
+    const loadStatus = () => {
+        let orderStatus = document.getElementsByClassName("status_order");
+
+        for (let el of orderStatus) {
+            el.innerHTML = getStatusLabel(el.innerHTML);
+        }
+    }
+
+        // gọi khi đã tải xong js
     $(document).ready(async () => {
         await getStateOrderDetail()
 
         // Duyệt qua tất cả các thẻ có id là 'productPrice' và 'totalPrice' để định dạng tiền tệ
         $('#productPrice, #totalPrice, #total').each(function () {
             const price = parseFloat($(this).text().replace(/[^0-9.-]+/g, ""));
-
             if (!isNaN(price)) {
                 $(this).text((price));
             }
         });
 
-//         update tt thanh toán
         $('#paymentStatus').each(function () {
             const status = $(this).data("id");
-            $(this).text($(this).text() + getTrangThaiThanhToan(status))
+            $(this).text($(this).text() + getStatusLabel(status))
         });
 
-        closeLoading();
+        setTimeout(() => loadStatus(), 200)
     })
 
     function updateOrderStatus(orderId, status) {
@@ -632,9 +528,13 @@ $(document).ready(async function () {
         const toAddress = $('#toAddress').text()?.trim() || ''; // Lấy địa chỉ
         const toPhone = $('#toPhone').text()?.trim() || ''; // Lấy số điện thoại
         let totalPay = $('#total').text()?.trim() || ''; // Lấy tổng tiền thanh toán
-        const paymentMethod = $('#paymentMethodId').text()?.trim() || ''; // Lấy phương thức thanh toán
+        // const paymentMethod = $('#paymentMethodId').text()?.trim() || ''; // Lấy phương thức thanh toán
+        const paymentMethod =  document.querySelector('meta[name="payment-method"]').getAttribute("content");
+        const orderType =  document.querySelector('meta[name="order-type"]').getAttribute("content");
+        const paymentStatus =  document.querySelector('meta[name="payment-status"]').getAttribute("content");
+
         const note = $('#note').val()?.trim() || ''; // Lấy ghi chú (nếu có)
-        const orderType = $('#orderType').val()?.trim() || ''; // Lấy loại đơn hàng (nếu có)
+        // const orderType = $('#orderType').val()?.trim() || ''; // Lấy loại đơn hàng (nếu có)
 
         // Xử lý tổng tiền thanh toán: loại bỏ ký tự không phải số (như VNĐ)
         totalPay = totalPay.replace(/[^0-9.-]/g, '');
@@ -678,7 +578,8 @@ $(document).ready(async function () {
             totalPay: totalPay,  // Đảm bảo chỉ chứa giá trị số
             paymentMethod: paymentMethod,
             note: note,
-            orderType: orderType,
+            order_type: orderType,
+            paymentStatus: paymentStatus,
             orderDetails: orderDetails
         };
 
@@ -801,6 +702,7 @@ $(document).ready(async function () {
         const statusMap = {
             5: 'Xác Nhận',
             8: 'Chờ Vận Chuyển',
+            6: 'Đang giao hàng',
             4: 'Vận Chuyển',
             3: 'Hoàn Thành',
             0: 'Hủy Đơn'

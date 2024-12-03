@@ -51,6 +51,9 @@ public class User extends BaseEntity  implements UserDetails {
     @Column(name = "avatar_url")
     private String avatarUrl;
 
+    @Column(name = "address_detail")
+    private String addressDetail;
+
     @Column(name = "status")
     private Integer status=1;
 

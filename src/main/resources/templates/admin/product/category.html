@@ -2,12 +2,10 @@
 <html xmlns:th="http://www.thymeleaf.org">
 
 <head>
+    <link th:href="@{/admin/plugins/datatables/css/dataTables.bootstrap5.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/admin/plugins/datatables/css/responsive.bootstrap5.min.css}" rel="stylesheet" type="text/css"/>
+    <link rel="stylesheet" th:href="@{/admin/dist/css/app-f4k.min.css}"/>
     <th:block th:insert="admin/fragments/head :: head"></th:block>
-    <link rel="stylesheet" th:href="@{/admin/product/datas.css}">
-    <link rel="stylesheet" th:href="@{/admin/plugins/bootstrap4/mine.css}"/>
-    <link rel="stylesheet" th:href="@{/admin/dist/css/common.css}"/>
-
-    <link rel="stylesheet" th:href="@{/admin/plugins/jqgrid-5.7.0/ui.jqgrid-bootstrap4.css}"/>
     <link rel="stylesheet" th:href="@{/admin/plugins/sweetalert/sweetalert2.min.css}"/>
 </head>
 
@@ -15,121 +13,149 @@
 <div th:replace="admin/fragments/sidebar::sidebar"></div>
 
 <section id="content">
+    <div th:replace="admin/fragments/loading::div"></div>
     <div th:replace="admin/fragments/content::content"></div>
     <main>
-        <div class="head-title">
-            <div class="left">
-                <h1>Danh mục</h1>
-                <ul class="breadcrumb">
-                    <li>
-                        <a th:href="@{home}">Trang chủ</a>
-                    </li>
-                    <li><i class='bx bx-chevron-right'></i></li>
-                    <li>
-                        <a class="active" th:href="@{category}">Quản lý danh mục</a>
-                    </li>
-                </ul>
-            </div>
-<!--            <div class="btn-container">-->
-<!--                <a th:href="@{/admin/category/export/excel}" class="btn-download">-->
-<!--                    <i class='bx bxs-cloud-download'></i>-->
-<!--                    <span class="text">Tải xuống Excel</span>-->
-<!--                </a>-->
-<!--                <a th:href="@{/admin/category/export/pdf}" class="btn-download">-->
-<!--                    <i class='bx bxs-cloud-download'></i>-->
-<!--                    <span class="text">Tải xuống PDF</span>-->
-<!--                </a>-->
-<!--            </div>-->
-        </div>
-
-        <div class="table-data">
-            <div class="order">
-                <div class="head">
-                    <a href="javascript:void(0);" class="btn-add-form" onclick="openAddModal()">
-                        <i class='bx bx-plus'></i>
-                    </a>
-
-                    <h3>Danh sách </h3>
-                    <form th:action="@{/admin/category}" method="get" class="search-form" id="searchForm">
-                        <div class="search-container">
-                            <input type="text" name="search" placeholder="Tìm kiếm..."
-                                   th:value="${param.search}" id="searchInput"/>
-                            <button type="submit" class="search-btn"><i class='bx bx-search'></i></button>
+        <!-- start content here -->
+        <div class="main-pane row" style="margin-top: 0">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="col-12">
+                            <div class="page-title-right">
+                                <ol class="breadcrumb m-0">
+                                    <li class="breadcrumb-item"><a th:href="@{home}"><i class="mdi mdi-home me-1"></i>Trang chủ</a></li>
+                                    <li class="breadcrumb-item active">Quản lý danh mục</li>
+                                </ol>
+                            </div>
                         </div>
-                    </form>
-                </div>
-                <table>
-                    <thead>
-                    <tr>
-                        <th>STT</th>
-                        <th>Tên</th>
-                        <th>Mô tả</th>
-                        <th>Edit</th>
-                        <th>#</th>
-                    </tr>
-                    </thead>
-                    <tbody>
+                        <div class="row mb-2">
+                            <div class="col-sm-4">
+                                <h4><i class="mdi mdi-filter-outline"></i> Bộ lọc</h4>
+                            </div>
+                            <div class="col-sm-8 d-flex justify-content-end">
+                                <div class="text-sm-end text-end">
+                                    <button type="button" class="btn btn-info mb-2 me-1" id="btnRefresh"><i
+                                            class="mdi mdi-refresh"></i>
+                                        Làm mới
+                                    </button>
+                                    <a href="#" type="button" class="btn btn-info mb-2" id="btnCreateProduct">
+                                        <i class="mdi mdi-plus"> </i> Thêm mới danh mục
+                                    </a>
+                                </div>
+                            </div><!-- end col-->
+                        </div>
 
-                    </tbody>
-                </table>
-                <span id="totalData"></span>
-                <div id="pagination" class="d-flex justify-content-center align-items-center gap-2">
-                    <button class="page-button" id="prevPage">Trước</button>
-                    <input type="text" id="pageInput" style="width: 50px; text-align: center; border: 1px solid #ced4da; border-radius: 5px;" />
-                    <span id="totalPagesText" style="font-weight: bold;"></span>
-                    <button class="page-button" id="nextPage">Tiếp theo</button>
-                </div>
+                        <!--filter product-->
+                        <div class="row mb-2">
+                            <form id="formFilter">
+                                <div class="row mb-1">
+                                    <div class="col-8 mb-6">
+                                        <label class="form-label" for="filterSearch">Tìm kiếm</label>
+                                        <input type="text" class="form-control" id="filterSearch" placeholder="Tìm kiếm"
+                                               name="search">
+                                        <div class="invalid-feedback"></div>
+                                    </div>
+                                    <!--                                    <div class="col-4 mb-6">-->
+                                    <!--                                        <label class="form-label" for="filterStatus">Trạng thái</label>-->
+                                    <!--                                        <select class="form-select" id="filterStatus" name="status">-->
+                                    <!--                                            <option value="">Tất cả</option>-->
+                                    <!--                                            <option value="1">Hoạt động</option>-->
+                                    <!--                                            <option value="0">Ngừng hoạt động</option>-->
+                                    <!--                                        </select>-->
+                                    <!--                                    </div>-->
+                                </div>
+                            </form>
+                        </div>
 
-            </div>
+                        <hr>
+
+                        <div class="row mb-2 mt-2">
+                            <h5>Danh sách danh mục</h5>
+                            <div class="table-responsive">
+                                <table class="table table-centered w-100 dt-responsive nowrap" id="products-table">
+                                    <thead class="table-light">
+                                    <tr>
+                                        <th style="width: 50px;">STT</th>
+                                        <th>Tên</th>
+                                        <th>Trạng thái</th>
+                                        <th style="width: 150px">Thao tác</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div> <!-- end card-body-->
+                </div> <!-- end card-->
+            </div> <!-- end col -->
         </div>
+        <!-- end content -->
     </main>
 </section>
 
-<div id="addModal" class="modal">
-    <div class="modal-content">
-        <span class="close" onclick="closeModal()">&times;</span>
-        <form id="addForm">
-            <label for="addName">Nhập tên:</label>
-            <input type="text" id="addName" name="name">
-            <label for="desciptionName">Nhập mô tả:</label>
-            <input type="text" id="desciptionName" name="description">
-            <button type="submit">Thêm</button>
-        </form>
-    </div>
-</div>
-
-<!-- Modal for editing -->
-<div id="editModal" class="modal">
-    <div class="modal-content">
-        <span class="close" onclick="closeModal()">&times;</span>
-        <form id="editForm">
-            <input type="hidden" id="editId" name="id">
-            <label for="editName">Nhập tên:</label>
-            <input type="text" id="editName" name="name">
-
-            <label for="editDescription">Nhập mô tả:</label>
-            <input type="text" id="editDescription" name="description">
-            <button type="submit">Cập nhật</button>
-        </form>
+<div id="modalAddAttributes" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalCreateLabel"
+     data-bs-backdrop="static">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form id="formAddAttributes" novalidate>
+                <div class="modal-header">
+                    <h4 class="modal-title" id="standard-modalCreateLabel">Thêm mới thuộc tính</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-12 mb-3">
+                            <label class="form-label" for="createAttributes" id="createAttributesLabel">Tên danh
+                                mục</label>
+                            <input type="text" class="form-control" id="createAttributes" required>
+                            <div class="invalid-feedback" id="invalidFeedback"></div>
+                        </div>
+                    </div>
+                    <div class="row" id="rowColorChange" hidden>
+                        <div class="col-12 mb-3">
+                            <label for="changeColor" class="form-label">Chọn màu</label>
+                            <div class="input-group">
+                                <input class="form-control" id="changeColor" type="color" name="color"
+                                       value="#727cf5">
+                                <span class="input-group-text" style="width: 118px">Hex: <span class="ms-1"
+                                                                                               id="hexCode"></span></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer has-spinner">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Đóng</button>
+                    <button type="submit" class="btn btn-primary action-save">Lưu</button>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
 
 <!--default script-->
 <script th:src="@{/admin/script.js}"></script>
-
 <!--jquery-->
-<script th:src="@{/admin/plugins/jquery/jquery.min.js}"></script>
-<!--plugin table-->
-<script th:src="@{/admin/plugins/jqgrid-5.7.0/common.js}"></script>
-<script th:src="@{/admin/plugins/jqgrid-5.7.0/jquery.jqGrid.min.js}"></script>
-<script th:src="@{/admin/plugins/jqgrid-5.7.0/grid.locale-vn.js}"></script>
-<!--alter-->
+<script th:src="@{/common/jquery/jquery.min.js}"></script>
+<!--vendor custom-->
+<script th:src="@{/admin/dist/js/vendor.min.js}"></script>
+<script th:src="@{/admin/dist/js/app.min.js}"></script>
+<!--datatables-->
+<script th:src="@{/admin/plugins/datatables/js/jquery.dataTables.min.js}"></script>
+<script th:src="@{/admin/plugins/datatables/js/dataTables.bootstrap5.min.js}"></script>
+<script th:src="@{/admin/plugins/datatables/js/dataTables.responsive.min.js}"></script>
+<script th:src="@{/admin/plugins/datatables/js/responsive.bootstrap5.min.js}"></script>
+<script th:src="@{/admin/plugins/datatables/js/dataTables.checkboxes.min.js}"></script>
+<script th:src="@{/admin/plugins/datatables/common.js}"></script>
+<!--sweet alter-->
 <script th:src="@{/admin/plugins/sweetalert/common.js}"></script>
 <script th:src="@{/admin/plugins/sweetalert/sweetalert2.min.js}"></script>
-<!--bootstrap-->
-<script th:src="@{/admin/plugins/bootstrap4/bootstrap.bundle.js}"></script>
+<!--common-->
+<script type="module" th:src="@{/common/public.js}"></script>
 <!--custom script-->
-<script th:src="@{/admin/product/category.js}"></script>
+<script type="module" th:src="@{/admin/product/category.js}"></script>
 
 </body>
 </html>

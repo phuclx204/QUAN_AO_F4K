@@ -62,6 +62,26 @@ public class ShopCheckOutServiceImpl implements ShopCheckOutService {
     public Order createOrder(HoaDonUtils.PhuongThucMuaHang phuongThucMuaHang, boolean isClear) {
         User user = f4KUtils.getUser();
 
+        Cart cart = getUserCart(user);
+        List<CartProduct> cartProducts = getCartProducts(cart);
+
+        for (CartProduct cartProduct: cartProducts) {
+            Order newOrder = initOrder(user, phuongThucMuaHang);
+            Order savedOrder = orderRepository.save(newOrder);
+
+            OrderDetail orderDetails = convertCartProductsToOrderDetails(cartProduct, savedOrder);
+            orderDetailRepository.save(orderDetails);
+        }
+
+
+        if (isClear) clearCart(user);
+        return null;
+    }
+
+    @Override
+    public Order createOneOrder(HoaDonUtils.PhuongThucMuaHang phuongThucMuaHang, boolean isClear) {
+        User user = f4KUtils.getUser();
+
         Order newOrder = initOrder(user, phuongThucMuaHang);
         Order savedOrder = orderRepository.save(newOrder);
         Cart cart = getUserCart(user);
@@ -72,6 +92,22 @@ public class ShopCheckOutServiceImpl implements ShopCheckOutService {
 
         if (isClear) clearCart(user);
         return savedOrder;
+    }
+
+    @Override
+    public void cancelOrder(Long orderId, String note) {
+        Order order = orderRepository.findByOrderId(orderId).orElseThrow(
+                () -> new BadRequestException("Hoá đơn không tồn tại")
+        );
+
+        if (order.getStatus() != HoaDonUtils.TrangThaiHoaDon.CHO_XAC_NHAN.getStatus()) {
+            throw new BadRequestException(String.format("Hoá đơn đang ở trạng thái %s không thể thao tác"
+                    , HoaDonUtils.TrangThaiHoaDon.getMessByStatus(order.getStatus())));
+        } else {
+            order.setStatus(HoaDonUtils.TrangThaiHoaDon.HUY_DON.getStatus());
+            order.setNote(note);
+            orderRepository.save(order);
+        }
     }
 
     @Override
@@ -113,6 +149,11 @@ public class ShopCheckOutServiceImpl implements ShopCheckOutService {
                     return createOrderDetail(cartProduct, savedOrder, key);
                 })
                 .collect(Collectors.toList());
+    }
+
+    private OrderDetail convertCartProductsToOrderDetails(CartProduct cartProduct, Order savedOrder) {
+        OrderProductDetailKey key = createOrderProductDetailKey(savedOrder, cartProduct);
+        return createOrderDetail(cartProduct, savedOrder, key);
     }
 
     private OrderDetail createOrderDetail(CartProduct cartProduct, Order savedOrder, OrderProductDetailKey key) {
