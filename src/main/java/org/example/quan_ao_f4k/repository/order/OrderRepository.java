@@ -48,6 +48,20 @@ public interface OrderRepository extends JpaRepository<Order, Long>,
     @Query("SELECT COALESCE(SUM(o.totalPay), 0) FROM Order o WHERE o.status = 3")
     BigDecimal getTotalPay();
 
+    @Query("SELECT COUNT(o.id) FROM Order o WHERE o.status = 3")
+    Integer getTotalQuantityOrders();
+
+    @Query("SELECT COALESCE(SUM(od.quantity), 0) " +
+            "FROM Order o JOIN OrderDetail od ON o.id = od.order.id " +
+            "WHERE o.status = 3")
+    Integer getTotalProductQuantityInCompletedOrders();
+
+    @Query("SELECT o.order_type, COALESCE(SUM(o.totalPay), 0) " +
+            "FROM Order o " +
+            "WHERE o.order_type IN ('OFFLINE', 'ONLINE') AND o.status = 3 " +
+            "GROUP BY o.order_type")
+    List<Object[]> getTotalPayByOrderType();
+
     @Query("SELECT o from Order o where o.id = :orderId")
     Optional<Order> findByOrderId(@Param("orderId") Long orderId);
 

@@ -32,9 +32,26 @@ public class StatisticalController {
 		Map<LocalDate, OrderStatisticsResponse> statistics = orderService.getOrderStatistics(startDate, endDate);
 		return ResponseEntity.ok(statistics);
 	}
-	@GetMapping("/totalRevenue")
+	@GetMapping("/total-revenue")
 	public ResponseEntity<BigDecimal> getTotal() {
 		BigDecimal totalRevenue = orderService.getTotalRevenue();
 		return ResponseEntity.ok(totalRevenue);
 	}
+	@GetMapping("/total-quantity-order")
+	public ResponseEntity<Integer> getTotalQuantityOrder() {
+		Integer totalRevenue = orderService.getTotalQuantityOrders();
+		return ResponseEntity.ok(totalRevenue);
+	}
+	@GetMapping("/total-quantity-product")
+	public ResponseEntity<Integer> getTotalQuantityProduct() {
+		Integer totalRevenue = orderService.getTotalProductQuantityInCompletedOrders();
+		return ResponseEntity.ok(totalRevenue);
+	}
+	@GetMapping("/total-by-order-type")
+	public ResponseEntity<Map<String, BigDecimal>> getTotalByOrderType() {
+		Map<String, BigDecimal> totalByOrderType = orderService.getTotalPayByOrderType();
+		return ResponseEntity.ok(totalByOrderType);
+	}
+
+
 }

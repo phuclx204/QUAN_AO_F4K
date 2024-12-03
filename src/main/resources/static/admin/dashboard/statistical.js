@@ -1,4 +1,4 @@
-$(document).ready(function() {
+$(document).ready(function () {
     // Tính toán ngày hiện tại và ngày 7 ngày trước
     const today = new Date();
     const last7Days = new Date();
@@ -12,30 +12,27 @@ $(document).ready(function() {
         return `${year}-${month}-${day}`;
     };
 
-    // Điền ngày bắt đầu và kết thúc vào các input
     const startDate = formatDate(last7Days);
     const endDate = formatDate(today);
 
-    // Điền vào các trường ngày
     $("#startDate").val(startDate);
     $("#endDate").val(endDate);
 
-    // Hàm vẽ biểu đồ
+    // Hàm vẽ biểu đồ cột
     function drawChart(orderStatistics) {
         const labels = Object.keys(orderStatistics); // Mảng các ngày
         const revenueData = labels.map(date => orderStatistics[date].totalRevenue); // Mảng doanh thu
         const ordersData = labels.map(date => orderStatistics[date].numberOfOrders); // Mảng số đơn hàng
 
-        // Vẽ biểu đồ với Highcharts
         Highcharts.chart('chart', {
             chart: {
-                type: 'bar'  // Chọn kiểu biểu đồ thanh
+                type: 'bar'
             },
             title: {
                 text: 'Doanh thu và số đơn hàng theo ngày'
             },
             xAxis: {
-                categories: labels, // Các ngày làm trục X
+                categories: labels,
                 title: {
                     text: 'Ngày'
                 }
@@ -57,7 +54,7 @@ $(document).ready(function() {
             }],
             tooltip: {
                 shared: true,
-                valueSuffix: ' VND'
+                valueSuffix: ''
             },
             series: [{
                 name: 'Doanh thu',
@@ -73,7 +70,6 @@ $(document).ready(function() {
         });
     }
 
-    // Gửi yêu cầu AJAX khi trang được tải để lấy dữ liệu cho 7 ngày gần nhất
     $.ajax({
         url: "/admin/statistical/data",
         method: "GET",
@@ -81,17 +77,17 @@ $(document).ready(function() {
             startDate: startDate,
             endDate: endDate
         },
-        success: function(orderStatistics) {
-            console.log(orderStatistics); // Kiểm tra dữ liệu nhận được
-            drawChart(orderStatistics); // Vẽ biểu đồ với dữ liệu nhận được
+        success: function (orderStatistics) {
+            // console.log(orderStatistics);
+            drawChart(orderStatistics);
         },
-        error: function(err) {
+        error: function (err) {
             console.error("Error:", err);
         }
     });
 
     // Lọc dữ liệu khi nhấn nút "Lọc"
-    $("#filterButton").click(function() {
+    $("#filterButton").click(function () {
         const startDate = $("#startDate").val();
         const endDate = $("#endDate").val();
 
@@ -108,28 +104,115 @@ $(document).ready(function() {
                 startDate: startDate,
                 endDate: endDate
             },
-            success: function(orderStatistics) {
-                console.log(orderStatistics); // Kiểm tra dữ liệu nhận được
-                drawChart(orderStatistics); // Cập nhật biểu đồ với dữ liệu mới
+            success: function (orderStatistics) {
+                // console.log(orderStatistics);
+                drawChart(orderStatistics);
             },
-            error: function(err) {
+            error: function (err) {
                 console.error("Error:", err);
             }
         });
     });
 });
-$(document).ready(function() {
-    // Gửi yêu cầu AJAX đến API để lấy doanh thu
+$(document).ready(function () {
     $.ajax({
-        url: '/admin/statistical/totalRevenue',
+        url: '/admin/statistical/total-revenue',
         method: 'GET',
-        success: function(response) {
-            // Khi có dữ liệu, cập nhật giá trị vào thẻ HTML
-            $('#revenueAmount').text(response.toFixed(0).replace(/\d(?=(\d{3})+\.)/g, '$&,')+'₫' );
+        success: function (response) {
+            $('#revenueAmount').text(formatPrice(response.toFixed(0)));
         },
-        error: function(err) {
+        error: function (err) {
             console.error('Error fetching revenue:', err);
-            $('#revenueAmount').text('0₫'); // Hiển thị 0 nếu có lỗi
+            $('#revenueAmount').text('0₫');
         }
     });
 });
+$(document).ready(function () {
+    $.ajax({
+        url: '/admin/statistical/total-quantity-order',
+        method: 'GET',
+        success: function (response) {
+            $('#totalQuantityOrder').text(response);
+        },
+        error: function (err) {
+            console.error('Error fetching revenue:', err);
+            $('#totalQuantityOrder').text('0');
+        }
+    });
+    $(document).ready(function () {
+        $.ajax({
+            url: '/admin/statistical/total-quantity-product',
+            method: 'GET',
+            success: function (response) {
+                $('#totalQuantityProduct').text(response);
+            },
+            error: function (err) {
+                console.error('Error fetching revenue:', err);
+                $('#totalQuantityProduct').text('0');
+            }
+        });
+    });
+});
+
+$(document).ready(function () {
+    // Gửi yêu cầu lấy dữ liệu tổng doanh thu theo loại đơn hàng
+    $.ajax({
+        url: '/admin/statistical/total-by-order-type',
+        method: 'GET',
+        success: function (response) {
+            const revenueData = {
+                OFFLINE: response.OFFLINE || 0,
+                ONLINE: response.ONLINE || 0
+            };
+            drawPieChart(revenueData);
+        },
+        error: function (err) {
+            console.error('Error fetching total revenue by order type:', err);
+        }
+    });
+
+    // Hàm hiển thị biểu đồ tròn
+    function drawPieChart(data) {
+        const chartData = Object.keys(data).map(key => ({
+            name: key === 'OFFLINE' ? 'Trực tiếp' : 'Trực tuyến',
+            y: parseFloat(data[key]),
+            color: key === 'OFFLINE' ? '#36A2EB' : '#FF6384'
+        }));
+
+        Highcharts.chart('average-chart', {
+            chart: {
+                type: 'pie'
+            },
+            title: {
+                text: 'Biểu đồ tổng doanh thu theo loại đơn hàng'
+            },
+            series: [{
+                name: 'Doanh thu',
+                data: chartData,
+                showInLegend: true
+            }],
+            tooltip: {
+                pointFormat: '<b>{point.y} ₫</b>'
+            },
+            plotOptions: {
+                pie: {
+                    allowPointSelect: true,
+                    cursor: 'pointer',
+                    dataLabels: {
+                        enabled: true,
+                        format: '<b>{point.name}</b>: {point.percentage:.1f} %'
+                    }
+                }
+            }
+        });
+
+        // Hiển thị giá trị chi tiết
+        $('#total-pay-online').text(formatPrice(data.ONLINE));
+        $('#total-pay-offline').text(formatPrice(data.OFFLINE));
+    }
+
+});
+function formatPrice(amount) {
+    // Chuyển đổi số thành chuỗi và định dạng với dấu phẩy
+    return parseFloat(amount).toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",") + ' ₫';
+}
