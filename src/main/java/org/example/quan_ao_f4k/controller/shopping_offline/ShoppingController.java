@@ -3,6 +3,7 @@ package org.example.quan_ao_f4k.controller.shopping_offline;
 
 import lombok.AllArgsConstructor;
 import jakarta.servlet.http.HttpServletResponse;
+import org.example.quan_ao_f4k.service.pomotion.PromotionServiceImpl;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -61,6 +62,7 @@ public class ShoppingController {
 	private final ProductDetailService productDetailService;
 	private final ImageRepository imageRepository;
 	private final AddressServiceImpl addressService;
+	private final PromotionServiceImpl promotionServiceImpl;
 
 	@GetMapping({"", "/"})
 	public String getOrdersWithStatusFive(Model model) {
@@ -198,4 +200,17 @@ public class ShoppingController {
 		}
 	}
 
+	@GetMapping("/is-on-sale")
+	public ResponseEntity<BigDecimal> calculateDiscount(
+			@RequestParam Long productDetailId,
+			@RequestParam BigDecimal originalPrice) {
+
+		BigDecimal discountedPrice = promotionServiceImpl.isProductDetailOnSale(productDetailId, originalPrice);
+
+		if (discountedPrice == null) {
+			return ResponseEntity.ok(originalPrice); // Nếu không có giảm giá, trả về giá gốc
+		}
+
+		return ResponseEntity.ok(discountedPrice);
+	}
 }

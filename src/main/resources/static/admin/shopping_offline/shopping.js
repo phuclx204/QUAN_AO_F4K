@@ -1,3 +1,4 @@
+
 // Load data và hiện modal product detail khi click
 function addProductDetail() {
     loadSelect();
@@ -87,6 +88,7 @@ function createInvoice() {
         userId: 999,
         code: generateUniqueCode(),
         status: 1,
+        paymentStatus: 3,
         order_type: 'OFFLINE'
     };
 
@@ -136,11 +138,7 @@ function updateOrderStatus(orderId, status) {
     $.ajax({
         url: `/admin/shopping-offline/` + orderId + `/order-details`, // API để lấy danh sách sản phẩm
         method: 'GET',
-        success: function (response) {
-            // Tăng số lượng tồn kho cho từng sản phẩm
-            response.forEach(productDetail => {
-                updateProductQuantity(productDetail.productDetail.id, productDetail.quantity);
-            });
+        success: function (res) {
 
             // Sau khi cập nhật tồn kho, thay đổi trạng thái đơn hàng
             $.ajax({
@@ -155,6 +153,10 @@ function updateOrderStatus(orderId, status) {
                         icon: 'success',
                         confirmButtonText: 'OK',
                         timerProgressBar: true,
+                    });
+                    // Tăng số lượng tồn kho cho từng sản phẩm
+                    res.forEach(prD => {
+                        updateProductQuantity(prD.productDetail.id, prD.quantity);
                     });
                     handleRemainingInvoices(orderId);
                 },
@@ -180,11 +182,6 @@ function viewInvoice(orderIds) {
     window.location.href = "/admin/shopping-offline/" + orderIds
 }
 
-//hàm xác nhận cho trường nhập tiền
-function isValidPrice(value) {
-    const num = parseFloat(value);
-    return !isNaN(num) && num >= 0;
-}
 
 // tự động cho các trường nhập tiền chỉ được nhập số
 $(document).ready(function () {
@@ -197,20 +194,38 @@ $(document).ready(function () {
 
 });
 
+//hàm kiểm tra xem có giảm giá hay không
+function checkDiscountAndRenderPrice(productDetailId, originalPrice, callback) {
+    $.ajax({
+        url: `/admin/shopping-offline/is-on-sale`,
+        type: 'GET',
+        data: {
+            productDetailId: productDetailId,
+            originalPrice: originalPrice
+        },
+        success: function(discountedPrice) {
+            callback(discountedPrice); // Gọi callback với giá sau giảm
+        },
+        error: function(error) {
+            console.error('Lỗi khi tính giảm giá:', error);
+            callback(originalPrice); // Trả về giá gốc nếu có lỗi
+        }
+    });
+}
 // hàm lấy dữ liệu product detail
 function fetchProductDetails(page = 1, size = 5) {
-    const search = $("#searchInput").val(); // Lấy giá trị từ trường tìm kiếm
-    const brandIds = $("#brandSelect").val(); // Lấy giá trị từ trường chọn thương hiệu
-    const categoryIds = $("#categorySelect").val(); // Lấy giá trị từ trường chọn danh mục
-    const sizeIds = $("#sizeSelect").val(); // Lấy giá trị từ trường chọn kích cỡ
-    const colorIds = $("#colorSelect").val(); // Lấy giá trị từ trường chọn màu sắc
+    const search = $("#searchInput").val();
+    const brandIds = $("#brandSelect").val();
+    const categoryIds = $("#categorySelect").val();
+    const sizeIds = $("#sizeSelect").val();
+    const colorIds = $("#colorSelect").val();
     const priceFrom = parseFloat($("#minPrice").val()) || null;
     const priceTo = parseFloat($("#maxPrice").val()) || null;
-    const orderBy = $("#sortSelect").val() || 'asc'; // Cách sắp xếp
+    const orderBy = $("#sortSelect").val() || 'asc';
 
     $.ajax({
         url: `/admin/shopping-offline/product-detail-list`,
-        method: 'GET', // Phương thức HTTP
+        method: 'GET',
         data: {
             page: page,
             size: size,
@@ -234,7 +249,14 @@ function fetchProductDetails(page = 1, size = 5) {
         });
 }
 
+//hàm format price
+function formatPrice(amount) {
+    // Chuyển đổi số thành chuỗi và định dạng với dấu phẩy
+    return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") +' ₫';
+}
+
 function renderProductList(products) {
+
     const productList = document.getElementById('productList');
     productList.innerHTML = '';
 
@@ -262,7 +284,7 @@ function renderProductList(products) {
         productRow.innerHTML = `
             <td>${image}</td>
             <td>${prd.product.name}</td>
-            <td>${prd.price}</td>
+            <td class="original-price">${formatPrice(prd.price)}</td>
             <td>
                 ${prd.color ? `<span class="color-circle" style="background-color: ${prd.color.hex}; display: inline-block; width: 20px; height: 20px; border-radius: 50%;"></span>` : ''}
             </td>
@@ -277,9 +299,44 @@ function renderProductList(products) {
                 </button>
             </td>
         `;
+
+        // Kiểm tra giảm giá và cập nhật giao diện
+        checkDiscountAndRenderPrice(prd.id, prd.price, function(discountedPrice) {
+            const originalPriceCell = productRow.querySelector('.original-price');
+            if (discountedPrice !== prd.price) {
+                const discountPercentage = ((prd.price - discountedPrice) / prd.price) * 100;
+
+                originalPriceCell.innerHTML = `
+                    <span style="text-decoration: line-through; color: red;">${formatPrice(prd.price)}</span>
+                    <span style="color: black;" class="discountedPrice">${discountedPrice}</span>
+                `;
+
+                // Hiển thị phần trăm giảm
+                const discountLabel = document.createElement('span');
+                discountLabel.classList.add('discount-label');
+                discountLabel.textContent = `- ${discountPercentage.toFixed(0)}%`;
+                discountLabel.style.color = '#ff5733';
+                discountLabel.style.fontWeight = 'bold';
+                discountLabel.style.fontSize = '14px';
+                discountLabel.style.backgroundColor = 'rgba(255, 87, 51, 0.1)';
+                discountLabel.style.padding = '2px 8px';
+                discountLabel.style.borderRadius = '4px';
+                discountLabel.style.marginLeft = '10px';
+                discountLabel.style.display = 'inline-block';
+
+                // Thêm nhãn giảm giá vào giá sau giảm
+                originalPriceCell.appendChild(discountLabel);
+            } else {
+                originalPriceCell.innerHTML = `
+                    <span style="color: black;" class="discountedPrice">${prd.price}</span>
+                `;
+            }
+        });
+
         productList.appendChild(productRow);
     });
 }
+
 
 //hàm thiết lập phân trang cho product detail
 function setupPagination(totalPages, currentPage) {
@@ -452,7 +509,7 @@ function addProductToInvoice(productDetailId) {
     } else {
         // Sản phẩm chưa có trong giỏ - thêm mới
         const productRow = $(`button[onclick="addProductToInvoice(${productDetailId})"]`).closest('tr');
-        const price = productRow.find('td:nth-child(3)').text().trim(); // Lấy giá từ bảng sản phẩm
+        const price = productRow.find('.discountedPrice').text().trim(); // Lấy giá từ bảng sản phẩm
 
         $.ajax({
             url: '/admin/shopping-offline/add',
@@ -806,15 +863,15 @@ const statusMessage = document.getElementById("statusMessage");
 
 
 const totalAmount = parseInt(totalAmountElement.textContent.replace(/\D/g, ""), 10) || 0;
-totalAmountElement.textContent = formatCurrency(totalAmount);
+totalAmountElement.textContent = formatPrice(totalAmount);
 
 inputField.addEventListener("input", () => {
     const numericValue = parseInt(inputField.value.replace(/[^0-9]/g, ""), 10) || 0;
-    formattedNumber.textContent = formatCurrency(numericValue);
+    formattedNumber.textContent = formatPrice(numericValue);
     inputField.value = numericValue;
     const change = numericValue - totalAmount;
     statusMessage.textContent = numericValue >= totalAmount ? "" : "Chưa đủ tiền";
-    changeAmount.textContent = formatCurrency(change < 0 ? 0 : change);
+    changeAmount.textContent = formatPrice(change < 0 ? 0 : change);
 });
 
 // Confirm and process order

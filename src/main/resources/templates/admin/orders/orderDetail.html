@@ -73,6 +73,14 @@
                             </button>
 
                             <button type="button" class="btn btn-primary btn-change-status"
+                                    th:if="${order.status == 6}"
+                                    th:data-order-id="${order.id}"
+                                    th:data-new-status="3">
+                                <i class="bx bx-check-circle"></i> Xác Nhận
+                            </button>
+
+
+                            <button type="button" class="btn btn-primary btn-change-status"
                                     th:if="${order.status == 8}"
                                     th:data-order-id="${order.id}"
                                     th:data-new-status="4">
@@ -199,10 +207,9 @@
                     <div class="col-xl-4">
                         <div class="card">
                             <div class="card-body">
-                                <div class="header-title mb-3 d-flex align-items-center">
-                                    <h5>MÃ ĐƠN : </h5><h5 class="me-2" id="orderCode"> [[${order.code}]]</h5>
-                                    <h5>LOẠI ĐƠN : </h5><h5 class="me-2" id="orderType"> [[${order.order_type}]]</h5>
-
+                                <div class="header-title mb-3">
+                                    <div class="d-flex align-items-center"><h5>MÃ ĐƠN : </h5><h5 class="me-2" id="orderCode"> [[${order.code}]]</h5></div>
+                                    <div class="d-flex align-items-center"><h5>LOẠI ĐƠN : </h5><h5 class="me-2" id="orderType"> [[${order.order_type}]]</h5></div>
                                 </div>
                                 <div class="table-responsive">
                                     <table class="table mb-0">
