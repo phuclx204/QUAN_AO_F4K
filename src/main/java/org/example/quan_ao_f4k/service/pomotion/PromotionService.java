@@ -16,6 +16,5 @@ public interface PromotionService extends CrudService<Long, PromotionRequest, Pr
     List<Promotion> getActivePromotions();
 
     BigDecimal calculateDiscountedPrice(BigDecimal originalPrice, BigDecimal discountPercent);
-    Promotion getBestPromotionForProduct(Long productId);
     Promotion getBestPromotionForProductDetail(Long productDetailId);
 }

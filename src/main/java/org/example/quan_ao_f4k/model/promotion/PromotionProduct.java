@@ -3,6 +3,7 @@ package org.example.quan_ao_f4k.model.promotion;
 import jakarta.persistence.*;
 import lombok.*;
 import org.example.quan_ao_f4k.model.product.Product;
+import org.example.quan_ao_f4k.model.product.ProductDetail;
 
 import java.math.BigDecimal;
 
@@ -23,7 +24,7 @@ public class PromotionProduct {
     @Id
     @ManyToOne
     @JoinColumn(name = "product_id")
-    private Product product;
+    private ProductDetail productDetail;
 
     @Column(name = "quantity")
     private Integer quantity;

@@ -178,9 +178,9 @@ public class ShopProductServiceImpl implements ShopProductService {
         List<PromotionProduct> promotionProducts = promotionProductRepository.findByPromotionId(idPromotion, null);
 
         for (PromotionProduct promotionProduct: promotionProducts) {
-            Long idProduct = promotionProduct.getProduct().getId();
+            Long idProduct = promotionProduct.getProductDetail().getId();
 
-            Promotion promotion = getBestPromotionForProduct(idProduct);
+            Promotion promotion = getBestPromotionForProductDetail(idProduct);
             if (promotion == null ) {
                 continue;
             }

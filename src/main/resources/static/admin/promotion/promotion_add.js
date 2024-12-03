@@ -1,4 +1,5 @@
 import {$ajax, syncFormWithDataObject, buttonSpinner, validateForm, ref} from "/common/public.js";
+
 const {getValidate, clearValidation} = validateForm;
 
 (function () {
@@ -60,7 +61,7 @@ const {getValidate, clearValidation} = validateForm;
             'style': 'multi'
         },
         ajax: {
-            url: "/admin/products/search-list",
+            url: "/admin/products/product-detail/get-list",
             type: 'GET',
             data: function (data) {
                 return {
@@ -71,11 +72,11 @@ const {getValidate, clearValidation} = validateForm;
                 }
             },
             dataFilter: (data) => {
-                const json = jQuery.parseJSON( data );
+                const json = jQuery.parseJSON(data);
                 json.recordsTotal = json.totalElements;
                 json.recordsFiltered = json.totalElements;
                 json.data = json.content;
-                return JSON.stringify( json );
+                return JSON.stringify(json);
             },
             error: function (xhr, error, thrown) {
                 console.log("Error: ", error);
@@ -86,9 +87,10 @@ const {getValidate, clearValidation} = validateForm;
                 data: null,
                 render: DataTable.render.select()
             },
-            {data: 'name', title: 'Tên sản phẩm',
+            {
+                data: 'product.name', title: 'Tên sản phẩm',
                 render: (data, type, row, meta) => {
-                    const fileImg = row.image?.fileUrl ? row.image?.fileUrl : imageBlank;
+                    const fileImg = row.product.image?.fileUrl ? row.product.image?.fileUrl : imageBlank;
                     $('[data-bs-toggle="tooltip"]').tooltip();
                     return `<div class="d-flex align-items-center">
                             <img src="${fileImg}" alt="contact-img" title="contact-img" class="rounded me-3" height="48" />
@@ -98,8 +100,13 @@ const {getValidate, clearValidation} = validateForm;
                             </div>`
                 }
             },
-            {data: 'category.name', title: 'Danh mục'},
-            {data: 'brand.name', title: 'Thương hiệu'},
+            {
+                data: 'color', title: 'Màu sắc',
+                render: (data, type, row, meta) => {
+                    return `<div class="d-flex">${data.name} - <span class="ms-1" style="width: 20px; height: 20px; background-color: ${data.hex}"></span></div>`;
+                }
+            },
+            {data: 'size.name', title: 'Kích thước'},
             {
                 data: 'status',
                 title: 'Trạng thái',
@@ -128,7 +135,7 @@ const {getValidate, clearValidation} = validateForm;
     }
 
     const getSelectValue = () => {
-        const selectedData = $table.rows({ selected: true }).data().toArray();
+        const selectedData = $table.rows({selected: true}).data().toArray();
         return selectedData.map(el => (el.id))
     }
     // event
@@ -174,6 +181,7 @@ const {getValidate, clearValidation} = validateForm;
 
         openLoading()
         buttonSpinner.show()
+
         try {
             await $ajax.post("/admin/promotion", model);
 
@@ -187,7 +195,6 @@ const {getValidate, clearValidation} = validateForm;
             buttonSpinner.hidden()
         }
     })
-
 
 
     $('#action-close').on("click", function (e) {
@@ -212,8 +219,8 @@ const {getValidate, clearValidation} = validateForm;
             }
         });
 
-        $createDateRanger.on('apply.daterangepicker', function(ev, picker) {
-            dayStart.value =  picker.startDate.format('YYYY-MM-DD');
+        $createDateRanger.on('apply.daterangepicker', function (ev, picker) {
+            dayStart.value = picker.startDate.format('YYYY-MM-DD');
             dayEnd.value = picker.endDate.format('YYYY-MM-DD');
         });
     })

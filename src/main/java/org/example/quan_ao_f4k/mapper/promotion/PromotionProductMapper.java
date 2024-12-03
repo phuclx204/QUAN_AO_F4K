@@ -18,11 +18,11 @@ public interface PromotionProductMapper extends GennericMapper<PromotionProduct,
 
     @Override
     @Mapping(source = "promotionId", target = "promotion", qualifiedByName = "convertToPromotion")
-    @Mapping(source = "productId", target = "product", qualifiedByName = "convertToProduct")
+    @Mapping(source = "productId", target = "productDetail", qualifiedByName = "convertToProductDetail")
     PromotionProduct requestToEntity(PromotionProductRequest request);
 
     @Override
     @Mapping(source = "promotionId", target = "promotion", qualifiedByName = "convertToPromotion")
-    @Mapping(source = "productId", target = "product", qualifiedByName = "convertToProduct")
+    @Mapping(source = "productId", target = "productDetail", qualifiedByName = "convertToProductDetail")
     PromotionProduct partialUpdate(@MappingTarget PromotionProduct promotionProduct, PromotionProductRequest request);
 }

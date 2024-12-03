@@ -30,7 +30,7 @@ public interface PromotionRepository extends JpaRepository<Promotion, Long>,
 			"LEFT JOIN PromotionProduct o ON p.id = o.promotion.id " +
 			"WHERE (?1 BETWEEN p.dayStart AND p.dayEnd) " +
 			"AND p.status = 1 " +
-			"AND o.product.id IN ?2")
+			"AND o.productDetail.id IN ?2")
 	List<Promotion> findPromotionsByProductId(LocalDate dateStart, List<Long> productId);
 
 	@Query("SELECT CASE WHEN COUNT(p) > 0 THEN true ELSE false END FROM Promotion p " +
@@ -60,7 +60,8 @@ public interface PromotionRepository extends JpaRepository<Promotion, Long>,
 
 	@Query("SELECT p FROM Promotion p " +
 			"LEFT JOIN PromotionProduct pp ON pp.promotion.id = p.id " +
-			"LEFT JOIN Product pr ON pr.id = pp.product.id " +
+			"LEFT JOIN ProductDetail pd ON pp.productDetail.id = pd.id " +
+			"LEFT JOIN Product pr ON pr.id = pd.product.id " +
 			"WHERE pr.id = :productId " +
 			"AND p.status = 1 " +
 			"AND p.dayStart <= :now " +
@@ -71,8 +72,7 @@ public interface PromotionRepository extends JpaRepository<Promotion, Long>,
 
 	@Query("SELECT p FROM Promotion p " +
 			"LEFT JOIN PromotionProduct pp ON pp.promotion.id = p.id " +
-			"LEFT JOIN Product pr ON pr.id = pp.product.id " +
-			"LEFT JOIN ProductDetail pd ON pr.id = pd.product.id " +
+			"LEFT JOIN ProductDetail pd ON pp.productDetail.id = pd.id " +
 			"WHERE pd.id = :productDetailId " +
 			"AND p.status = 1 " +
 			"AND p.dayStart <= :now " +
