@@ -209,14 +209,14 @@ $(document).ready(async function () {
             const url = '/admin/products/product-detail/' + productId + "/add";
             await $ajax.post(url, data);
 
+            await closeLoading();
             showAlert("Thêm mới thành công", "success").then(_rs => {
-                closeLoading();
                 window.location.href = '/admin/products/product-detail/' + productId;
             });
         } catch (e) {
             console.log(e);
         } finally {
-            closeLoading();
+            await closeLoading();
             buttonSpinner.hidden();
         }
     })

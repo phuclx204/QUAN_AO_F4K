@@ -205,14 +205,14 @@ $(document).ready(async function () {
             const url = '/admin/products/update-product/'+objectCreateProduct.productId;
             await $ajax.callWithMultipartFile(url, "POST", data);
 
+            await closeLoading();
             showAlert("Cập nhật thành công", "success").then(_rs => {
-                closeLoading();
                 window.location.href = '/admin/products';
             });
         } catch (e) {
             console.log(e);
         } finally {
-            closeLoading();
+            await closeLoading();
             buttonSpinner.hidden();
         }
     })

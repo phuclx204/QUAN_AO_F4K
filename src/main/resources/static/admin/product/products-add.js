@@ -234,14 +234,14 @@ $(document).ready(async function () {
             console.log(data, ' -- data')
             await $ajax.callWithMultipartFile(url, "POST", data);
 
+            await closeLoading();
             showAlert("Thêm mới thành công", "success").then(_rs => {
-                closeLoading();
                 window.location.href = '/admin/products';
             });
         } catch (e) {
             console.log(e);
         } finally {
-            closeLoading();
+            await closeLoading();
             buttonSpinner.hidden();
         }
     })

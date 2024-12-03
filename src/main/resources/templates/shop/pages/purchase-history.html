@@ -221,7 +221,7 @@
                                             </tr>
                                             </thead>
                                             <tbody>
-                                            <tr th:each="item,index:${status_on_delivery}">
+                                            <tr th:each="item,index:${status_complete}">
                                                 <th scope="row">[[${index.index+1}]]</th>
                                                 <td>[[${item.productDetail.product.name}]]</td>
                                                 <td>[[${item.quantity}]]</td>

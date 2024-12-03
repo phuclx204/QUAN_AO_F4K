@@ -122,7 +122,7 @@ public class ShopCheckOutServiceImpl implements ShopCheckOutService {
 
         List<OrderDetail> status_all = orderDetailRepository.findAllByOrderUserIdAndOrderStatus(user.getId(), null);
         List<OrderDetail> status_wait_confirm = orderDetailRepository.findAllByOrderUserIdAndOrderStatus(user.getId(), HoaDonUtils.TrangThaiHoaDon.CHO_XAC_NHAN.getStatus());
-        List<OrderDetail> status_wait_delivery = orderDetailRepository.findAllByOrderUserIdAndOrderStatus(user.getId(), HoaDonUtils.TrangThaiHoaDon.CHO_GIAO_HANG.getStatus());
+        List<OrderDetail> status_wait_delivery = orderDetailRepository.findAllByOrderUserIdAndOrderStatus(user.getId(), HoaDonUtils.TrangThaiHoaDon.CHO_LAY_HANG.getStatus());
         List<OrderDetail> status_on_delivery = orderDetailRepository.findAllByOrderUserIdAndOrderStatus(user.getId(), HoaDonUtils.TrangThaiHoaDon.DANG_GIAO_HANG.getStatus());
         List<OrderDetail> status_complete = orderDetailRepository.findAllByOrderUserIdAndOrderStatus(user.getId(), HoaDonUtils.TrangThaiHoaDon.HOAN_TAT.getStatus());
         List<OrderDetail> status_cancel = orderDetailRepository.findAllByOrderUserIdAndOrderStatus(user.getId(), HoaDonUtils.TrangThaiHoaDon.HUY_DON.getStatus());
@@ -227,7 +227,7 @@ public class ShopCheckOutServiceImpl implements ShopCheckOutService {
                 order.setNote(HoaDonUtils.ORDER_NOTE_ONLINE);
             }
             case THANH_TOAN_SAU_NHAN_HANG -> {
-                order.setPaymentMethod(paymentMethodRepository.findById(3L).get());
+                order.setPaymentMethod(paymentMethodRepository.findById(1L).get());
                 order.setNote(HoaDonUtils.ORDER_NOTE);
             }
         }

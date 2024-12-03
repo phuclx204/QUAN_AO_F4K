@@ -30,7 +30,7 @@ public class Product extends BaseEntity {
 	@Column(name = "slug")
 	private String slug;
 
-	@Column(name = "description")
+	@Column(name = "description", columnDefinition = "TEXT")
 	private String description;
 
 	@Column(name = "status", nullable = false)

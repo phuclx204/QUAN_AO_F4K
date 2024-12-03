@@ -48,10 +48,10 @@ public class Order extends BaseEntity {
     @Column(name = "tax", precision = 10, scale = 2)
     private BigDecimal tax;
 
-    @Column(name = "code", length = 20, nullable = false,unique = true)
+    @Column(name = "code", length = 20, nullable = false)
     private String code;
 
-    @Column(name = "order_type", length = 20, nullable = false,unique = true)
+    @Column(name = "order_type", length = 20, nullable = false)
     private String order_type;
 
     @Column(name = "status", nullable = false)
