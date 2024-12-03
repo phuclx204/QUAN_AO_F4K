@@ -21,4 +21,7 @@ public interface OrderService extends CrudService<Long, OrderRequest, OrderRespo
 
 	Map<LocalDate, OrderStatisticsResponse> getOrderStatistics(LocalDate startDate, LocalDate endDate);
 	BigDecimal getTotalRevenue();
+	Integer getTotalQuantityOrders();
+	Integer getTotalProductQuantityInCompletedOrders();
+	Map<String, BigDecimal> getTotalPayByOrderType();
 }
