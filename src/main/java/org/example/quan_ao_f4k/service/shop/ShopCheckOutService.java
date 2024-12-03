@@ -13,6 +13,7 @@ public interface ShopCheckOutService {
 
     Order createOrder(HoaDonUtils.PhuongThucMuaHang phuongThucMuaHang);
     Order createOrder(HoaDonUtils.PhuongThucMuaHang phuongThucMuaHang, boolean isClear);
+    Order createOneOrder(HoaDonUtils.PhuongThucMuaHang phuongThucMuaHang, boolean isClear);
 
     void cancelOrder(Long orderId, String note);
 

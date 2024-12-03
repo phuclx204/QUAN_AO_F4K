@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.example.quan_ao_f4k.util.F4KConstants;
 import org.example.quan_ao_f4k.util.F4KUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -27,11 +28,16 @@ public class WebSecurityConfig {
     private static final String[] PUBLIC_ENDPOINTS = {
             "/static/**",
             "/common/**",
-            "/verify_account/**"
+            "/verify_account/**",
+            "/admin/plugins/**",
+            "/vnPay/**"
     };
 
-    private final AuthenticationProvider authenticationProvider;
-    private final RememberMeServices rememberMeServices;
+    @Autowired
+    private AuthenticationProvider authenticationProvider;
+
+    @Autowired
+    private RememberMeServices rememberMeServices;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
@@ -42,9 +48,8 @@ public class WebSecurityConfig {
                                 .requestMatchers(PUBLIC_ENDPOINTS).permitAll()
                                 .requestMatchers("/authentication/**").permitAll()
                                 .requestMatchers("/admin/**").hasAuthority(F4KConstants.ROLE_ADMIN)
-                                .requestMatchers("/shop/**").hasRole(F4KConstants.ROLE_USER)
-//                                .requestMatchers( HttpMethod.GET,"/dashboard/**").hasRole("ADMIN")
-//                                .requestMatchers( String.format("%s/shop/**", api)).hasRole("USER")
+                                .requestMatchers("/shop/**").hasAuthority(F4KConstants.ROLE_USER)
+//                                .requestMatchers("/vnPay/**").hasAnyAuthority(F4KConstants.ROLE_USER, F4KConstants.ROLE_ADMIN)
                                 .anyRequest().authenticated()
                 )
                 .formLogin((form) -> form

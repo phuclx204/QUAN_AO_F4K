@@ -14,6 +14,9 @@
     <link rel="stylesheet" th:href="@{/admin/orders/orderDetail.css}">
     <meta name="order-id" th:content="${order.id}">
     <meta name="order-status" th:content="${order.status}">
+    <meta name="payment-method" th:content="${order.paymentMethod.id}">
+    <meta name="payment-status" th:content="${order.paymentStatus}">
+    <meta name="order-type" th:content="${order.order_type}">
 </head>
 <body>
 <div th:replace="admin/fragments/sidebar::sidebar"></div>

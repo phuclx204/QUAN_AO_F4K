@@ -528,9 +528,13 @@ $(document).ready(async function () {
         const toAddress = $('#toAddress').text()?.trim() || ''; // Lấy địa chỉ
         const toPhone = $('#toPhone').text()?.trim() || ''; // Lấy số điện thoại
         let totalPay = $('#total').text()?.trim() || ''; // Lấy tổng tiền thanh toán
-        const paymentMethod = $('#paymentMethodId').text()?.trim() || ''; // Lấy phương thức thanh toán
+        // const paymentMethod = $('#paymentMethodId').text()?.trim() || ''; // Lấy phương thức thanh toán
+        const paymentMethod =  document.querySelector('meta[name="payment-method"]').getAttribute("content");
+        const orderType =  document.querySelector('meta[name="order-type"]').getAttribute("content");
+        const paymentStatus =  document.querySelector('meta[name="payment-status"]').getAttribute("content");
+
         const note = $('#note').val()?.trim() || ''; // Lấy ghi chú (nếu có)
-        const orderType = $('#orderType').val()?.trim() || ''; // Lấy loại đơn hàng (nếu có)
+        // const orderType = $('#orderType').val()?.trim() || ''; // Lấy loại đơn hàng (nếu có)
 
         // Xử lý tổng tiền thanh toán: loại bỏ ký tự không phải số (như VNĐ)
         totalPay = totalPay.replace(/[^0-9.-]/g, '');
@@ -574,7 +578,8 @@ $(document).ready(async function () {
             totalPay: totalPay,  // Đảm bảo chỉ chứa giá trị số
             paymentMethod: paymentMethod,
             note: note,
-            orderType: orderType,
+            order_type: orderType,
+            paymentStatus: paymentStatus,
             orderDetails: orderDetails
         };
 

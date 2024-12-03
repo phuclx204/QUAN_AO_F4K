@@ -79,6 +79,22 @@ public class ShopCheckOutServiceImpl implements ShopCheckOutService {
     }
 
     @Override
+    public Order createOneOrder(HoaDonUtils.PhuongThucMuaHang phuongThucMuaHang, boolean isClear) {
+        User user = f4KUtils.getUser();
+
+        Order newOrder = initOrder(user, phuongThucMuaHang);
+        Order savedOrder = orderRepository.save(newOrder);
+        Cart cart = getUserCart(user);
+        List<CartProduct> cartProducts = getCartProducts(cart);
+
+        List<OrderDetail> orderDetails = convertCartProductsToOrderDetails(cartProducts, savedOrder);
+        saveOrderDetails(orderDetails);
+
+        if (isClear) clearCart(user);
+        return savedOrder;
+    }
+
+    @Override
     public void cancelOrder(Long orderId, String note) {
         Order order = orderRepository.findByOrderId(orderId).orElseThrow(
                 () -> new BadRequestException("Hoá đơn không tồn tại")
@@ -88,7 +104,6 @@ public class ShopCheckOutServiceImpl implements ShopCheckOutService {
             throw new BadRequestException(String.format("Hoá đơn đang ở trạng thái %s không thể thao tác"
                     , HoaDonUtils.TrangThaiHoaDon.getMessByStatus(order.getStatus())));
         } else {
-            order.setUser(f4KUtils.getUser());
             order.setStatus(HoaDonUtils.TrangThaiHoaDon.HUY_DON.getStatus());
             order.setNote(note);
             orderRepository.save(order);
@@ -125,6 +140,15 @@ public class ShopCheckOutServiceImpl implements ShopCheckOutService {
     public void clearCart(User user) {
         cartProductRepository.deleteAllByUser_Id(user.getId());
         cartRepository.deleteAllByUser_Id(user.getId());
+    }
+
+    private List<OrderDetail> convertCartProductsToOrderDetails(List<CartProduct> cartProducts, Order savedOrder) {
+        return cartProducts.stream()
+                .map(cartProduct -> {
+                    OrderProductDetailKey key = createOrderProductDetailKey(savedOrder, cartProduct);
+                    return createOrderDetail(cartProduct, savedOrder, key);
+                })
+                .collect(Collectors.toList());
     }
 
     private OrderDetail convertCartProductsToOrderDetails(CartProduct cartProduct, Order savedOrder) {

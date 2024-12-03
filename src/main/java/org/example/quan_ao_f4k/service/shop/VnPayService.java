@@ -33,7 +33,7 @@ public class VnPayService {
     @Transactional
     public String createOrder(HttpServletRequest request, int amount, String orderInfor, String urlReturn) {
         try {
-            Order order = shopCheckOutService.createOrder(HoaDonUtils.PhuongThucMuaHang.CHUYEN_TIEN, false);
+            Order order = shopCheckOutService.createOneOrder(HoaDonUtils.PhuongThucMuaHang.CHUYEN_TIEN, false);
 
             // tạo sanbox thanh toán online
             Map<String, String> vnp_Params = initParamVnPay(
