@@ -27,7 +27,7 @@ public class User extends BaseEntity  implements UserDetails {
     private String email;
 
     @ManyToOne
-    @JoinColumn(name = "address_id",nullable = false)
+    @JoinColumn(name = "address_id")
     private Address address;
 
     @Column(name = "username", nullable = false, length = 255)
