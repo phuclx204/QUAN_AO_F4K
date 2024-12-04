@@ -23,13 +23,13 @@ public class Order extends BaseEntity {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @Column(name = "to_name", nullable = false)
+    @Column(name = "to_name")
     private String toName;
 
-    @Column(name = "to_address", nullable = false)
+    @Column(name = "to_address")
     private String toAddress;
 
-    @Column(name = "to_phone", nullable = false)
+    @Column(name = "to_phone")
     private String toPhone;
 
     @Column(name = "total_pay", precision = 10, scale = 2)

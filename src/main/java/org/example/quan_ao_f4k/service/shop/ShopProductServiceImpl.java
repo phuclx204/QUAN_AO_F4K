@@ -267,7 +267,7 @@ public class ShopProductServiceImpl implements ShopProductService {
         Map<Object, Number> category = new HashMap<>();
         for (T item : items) {
             int size = getSizeFunction.apply(item);
-            if (size <= 0) continue;
+//            if (size <= 0) continue;
             category.put(item, size);
         }
         return category;

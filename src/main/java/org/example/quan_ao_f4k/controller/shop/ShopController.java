@@ -7,11 +7,14 @@ import org.example.quan_ao_f4k.dto.response.shop.ShopProductResponse;
 import org.example.quan_ao_f4k.exception.BadRequestException;
 import org.example.quan_ao_f4k.mapper.shop.ShopProductMapper;
 import org.example.quan_ao_f4k.model.authentication.User;
+import org.example.quan_ao_f4k.model.product.Brand;
 import org.example.quan_ao_f4k.model.promotion.Promotion;
 import org.example.quan_ao_f4k.repository.authentication.UserRepository;
+import org.example.quan_ao_f4k.repository.product.BrandRepository;
 import org.example.quan_ao_f4k.service.shop.ShopCartService;
 import org.example.quan_ao_f4k.service.shop.ShopCheckOutService;
 import org.example.quan_ao_f4k.service.shop.ShopProductService;
+import org.example.quan_ao_f4k.util.F4KConstants;
 import org.example.quan_ao_f4k.util.F4KUtils;
 import org.example.quan_ao_f4k.util.HoaDonUtils;
 import org.springframework.data.domain.Page;
@@ -40,6 +43,7 @@ public class ShopController {
     private final ShopProductMapper shopProductMapper;
 
     private final UserRepository userRepository;
+    private final BrandRepository brandRepository;
 
     // home
     @GetMapping("/home")
@@ -235,5 +239,11 @@ public class ShopController {
         }
 
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/list-brand")
+    public ResponseEntity<?> getListBrand() {
+        List<Brand> lstBrand = brandRepository.findByStatus(F4KConstants.STATUS_ON);
+        return ResponseEntity.ok(lstBrand);
     }
 }

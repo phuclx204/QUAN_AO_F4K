@@ -34,7 +34,8 @@ public interface OrderRepository extends JpaRepository<Order, Long>,
             + "o.toName LIKE %:search% OR :search IS NULL OR "
             + "o.toPhone LIKE %:search% OR :search IS NULL OR "
             + "o.order_type LIKE %:search% OR :search IS NULL) AND "
-            + "(o.status = :status OR :status IS NULL)")
+            + "(o.status = :status OR :status IS NULL)"
+            + "order by o.id desc ")
     Page<Order> searchOrders(Pageable pageable,
                              @Param("startDate") LocalDateTime startDate,
                              @Param("endDate") LocalDateTime endDate,
@@ -67,4 +68,21 @@ public interface OrderRepository extends JpaRepository<Order, Long>,
 
     @Query("SELECT o from Order o where o.id = :orderId")
     Order findAllById(@Param("orderId") Long orderId);
+
+    @Query("SELECT o FROM Order o WHERE "
+            + "(o.status != 1) AND "
+            + "(o.createdAt >= :startDate OR :startDate IS NULL) AND "
+            + "(o.createdAt <= :endDate OR :endDate IS NULL) AND "
+            + "(o.code LIKE %:search% OR :search IS NULL OR "
+            + "o.toName LIKE %:search% OR :search IS NULL OR "
+            + "o.toPhone LIKE %:search% OR :search IS NULL) AND "
+            + "(o.order_type LIKE %:orderType% OR :orderType IS NULL) AND "
+            + "(o.status = :status OR :status IS NULL) "
+            + "ORDER BY o.id DESC")
+    Page<Order> searchOrders(Pageable pageable,
+                             @Param("startDate") LocalDateTime startDate,
+                             @Param("endDate") LocalDateTime endDate,
+                             @Param("search") String search,
+                             @Param("orderType") String orderType,
+                             @Param("status") Integer status);
 }

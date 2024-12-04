@@ -164,17 +164,37 @@ export {URL, imageBlank}
         const res = await $ajax.get("/shop/list-promotion");
 
         const $promotionDropdown = $('#promotion-dropdown');
+        if (!res.length) {
+            $promotionDropdown.remove();
+        } else {
+            let dropDown = ``;
+            res.forEach(el => {
+                dropDown += `<li><a class="dropdown-item" href="/shop/promotion/${el.id}">${el.name}</a></li>`
+            })
+            $promotionDropdown.empty();
+            $promotionDropdown.append(dropDown);
+        }
+    }
+
+    const getListBard = async () => {
+        const res = await $ajax.get("/shop/list-brand")
+
+        const $brandDropdown = $('#brand-dropdown');
         let dropDown = ``;
         res.forEach(el => {
-            dropDown += `<li><a class="dropdown-item" href="/shop/promotion/${el.id}">${el.name}</a></li>`
+            const params = new URLSearchParams({brand: el.name}).toString();
+            const url = `/shop/collections?` + params;
+            dropDown += `<li><a class="dropdown-item" href="${url}">${el.name}</a></li>`
         })
-        $promotionDropdown.empty();
-        $promotionDropdown.append(dropDown);
+        $brandDropdown.empty();
+        $brandDropdown.append(dropDown);
     }
 
     $(document).ready(async () => {
         await getListPromotion();
         await getDataCart();
+
+        await getListBard();
     })
 })()
 

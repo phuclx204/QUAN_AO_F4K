@@ -24,4 +24,7 @@ public interface OrderService extends CrudService<Long, OrderRequest, OrderRespo
 	Integer getTotalQuantityOrders();
 	Integer getTotalProductQuantityInCompletedOrders();
 	Map<String, BigDecimal> getTotalPayByOrderType();
+
+	ListResponse<OrderResponse> searchList(int page, int size, String sort, LocalDateTime startDate, LocalDateTime endDate,
+											 String search, Integer status, String orderType);
 }

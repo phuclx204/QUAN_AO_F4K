@@ -177,4 +177,19 @@ public class OrderServiceImpl implements OrderService {
 		));
 	}
 
+	@Override
+	public ListResponse<OrderResponse> searchList(int page, int size, String sort, LocalDateTime startDate, LocalDateTime endDate, String search, Integer status, String orderType) {
+		Pageable pageable = PageRequest.of(page - 1, size);
+
+		// Áp dụng phân trang và lọc
+		Page<Order> orders = orderRepository.searchOrders(pageable, startDate, endDate, search, orderType, status);
+
+		// Chuyển đổi danh sách Order thành OrderResponse
+		List<OrderResponse> orderResponses = orders.getContent().stream()
+				.map(orderMapper::entityToResponse)
+				.collect(Collectors.toList());
+
+		return new ListResponse<>(orderResponses, orders);
+	}
+
 }

@@ -5,6 +5,8 @@ const {removeNullProperties, getPagination, formatNumberByDot, convert2Vnd} = ge
 
 const GET_LIST_API = URL + "/collections/list-product";
 
+const currentUrl = window.location.href;
+
 const queryShowProduct = $('#product-show-list');
 const queryPagination = $('#pagination-product')
 const querySearchForm = $('#filter-search-product')
@@ -266,6 +268,7 @@ const formatInputCash = ($query) => {
 $(document).on('input', '.filter-min-price, .filter-max-price', function () {
     formatInputCash($(this));
 });
+
 const handlePriceBlur = async (type, minSelector, maxSelector) => {
     let min = parseInt($(minSelector).val().replace(/[^0-9]/g, ''), 10);
     let max = parseInt($(maxSelector).val().replace(/[^0-9]/g, ''), 10);
@@ -296,4 +299,27 @@ $('.filter-list-price').on('click', async function (e) {
 
         await getListProduct(removeNullProperties({...objSearch, ...objPagination,}))
     }
+})
+
+
+const getBrandFormHref = async () => {
+    const queryString = currentUrl.split('?')[1];
+    if (!queryString) return
+    const params = new URLSearchParams(queryString);
+    const brand = params.get('brand');
+    $('.from-filter-brand').each(function () {
+        const label = $(this).find('.brand-name').text().trim();
+        const checkbox = $(this).find('.cb-brand');
+        if (label === brand) {
+            checkbox.prop('checked', true);
+        }
+    });
+
+    setTimeout(async () => {
+        await updateSearchAndFetch('brand', '.cb-brand');
+    }, 200)
+}
+
+$(document).ready(async function (e) {
+    await getBrandFormHref()
 })
