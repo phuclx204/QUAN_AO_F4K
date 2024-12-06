@@ -1,6 +1,7 @@
 package org.example.quan_ao_f4k.repository.order;
 
 import org.example.quan_ao_f4k.dto.response.orders.OrderStatisticsResponse;
+import org.example.quan_ao_f4k.dto.response.product.ProductDetailDTO;
 import org.example.quan_ao_f4k.model.order.Order;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
