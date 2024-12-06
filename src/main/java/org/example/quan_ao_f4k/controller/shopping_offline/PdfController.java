@@ -1,8 +1,10 @@
 package org.example.quan_ao_f4k.controller.shopping_offline;
 
+import com.itextpdf.text.pdf.BaseFont;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,28 +31,26 @@ public class PdfController {
     @GetMapping("/generate-pdff")
     @ResponseBody
     public void generatePdff(HttpServletResponse response, Model model) throws Exception {
-        // Tạo dữ liệu cho template Thymeleaf
         Context context = new Context();
         context.setVariables(model.asMap());
         String htmlContent = templateEngine.process("shopping_offline/orderPDF", context);
-        DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
 
-        String currentDateTime = dateFormatter.format(new Date());
-        String output = dateFormatter.format(new Date());
-
-        // Cấu hình header cho response để tải PDF
         response.setContentType("application/pdf");
         response.setHeader("Content-Disposition", "attachment; filename=\"output.pdf\"");
 
-        // Sử dụng Flying Saucer để chuyển HTML thành PDF
         ITextRenderer renderer = new ITextRenderer();
+
+        // Thêm font hỗ trợ Unicode
+        String fontPath = new ClassPathResource("fonts/Roboto-Regular.ttf").getPath();
+        renderer.getFontResolver().addFont(fontPath, BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
+
         renderer.setDocumentFromString(htmlContent);
         renderer.layout();
 
-        // Ghi PDF vào OutputStream (browser)
         try (OutputStream os = response.getOutputStream()) {
             renderer.createPDF(os);
         }
     }
+
 
 }
