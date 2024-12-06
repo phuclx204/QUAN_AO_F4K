@@ -23,7 +23,7 @@ public class OrderController {
 
 	@GetMapping({"/",""})
 	public String order() {
-		return "/admin/orders/order";
+		return "/admin/orders/order-list";
 	}
 
 	@GetMapping("/all")
