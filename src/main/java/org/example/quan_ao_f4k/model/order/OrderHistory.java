@@ -28,6 +28,7 @@ public class OrderHistory {
 
     private LocalDateTime changeDate;
 
+    @Column(name = "note")
     private String note;
 
     @Column(name = "created_at", nullable = false, updatable = false)

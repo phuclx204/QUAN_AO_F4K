@@ -18,6 +18,19 @@ import {$ajax} from "/common/public.js";
         });
     }
 
+    function convertDate($this) {
+        const date = new Date($this.text().trim());
+
+        const hours = String(date.getHours()).padStart(2, "0");
+        const minutes = String(date.getMinutes()).padStart(2, "0");
+        const day = String(date.getDate()).padStart(2, "0");
+        const month = String(date.getMonth() + 1).padStart(2, "0"); // Tháng trong JS bắt đầu từ 0
+        const year = date.getFullYear();
+
+        const formattedDate = `${hours}:${minutes} ${day}-${month}-${year}`;
+        $this.text(formattedDate);
+    }
+
     /** Event **/
     $("#formCancel").on("submit", async function (e) {
         e.preventDefault();
@@ -38,8 +51,16 @@ import {$ajax} from "/common/public.js";
     })
 
     $(document).on("click", ".btn-cancel", function (e) {
+        e.preventDefault();
+
         orderId = $(this).data("value");
         console.log(orderId, ' - orderId')
         $exampleModal.modal("show");
+    })
+
+    $(document).ready(function () {
+        $('.format-time').each(function () {
+            convertDate($(this))
+        });
     })
 })()

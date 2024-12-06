@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <th:block th:insert="shop/fragments/header::head"></th:block>
+    <link rel="stylesheet" th:href="@{/shop/css/purchase-history-detail.css}"/>
+</head>
+
+
+<body class="">
+
+<!-- Navbar -->
+<div th:replace="shop/fragments/navbar-2::navbar(isError = false)"></div>
+<!-- / Navbar-->
+
+<!-- Main Section-->
+<div class="content-page mb-5">
+    <div class="content">
+
+        <!-- Start Content-->
+        <div class="container-fluid p-5 mt-4">
+            <div class="row d-flex justify-content-around position-relative">
+                <!--row left-->
+                <div class="col-xl-3 col-lg-5">
+                    <div class="card"
+                         style="box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 0px 0px, rgba(27, 31, 35, 0.15) 0px 0px 0px 1px; height: 200px">
+                        <div class="card-body">
+                            <h4 class="mb-0 mt-2">[[${user.username}]]</h4>
+                            <p class="text-muted font-14">Người dùng</p>
+
+                            <ul class="list-group list-group-flush mt-3 text-start">
+                                <a href="/shop/account-setting" class="list-group-item list-group-item-action">Tài khoản
+                                    của tôi</a>
+                                <a th:href="@{/shop/purchase-history}"
+                                   class="list-group-item list-group-item-action active">Đơn Mua</a>
+                            </ul>
+                        </div> <!-- end card-body -->
+                    </div> <!-- end card -->
+                </div>
+                <!--row right-->
+                <div class="col-xl-9 col-lg-7"
+                     style="box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px, rgba(27, 31, 35, 0.15) 0px 0px 0px 1px;">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <a href="/shop/purchase-history"
+                                   class="text-decoration-none d-flex align-items-center"
+                                   style="font-size: 18px">
+                                    <span class="mdi mdi-keyboard-backspace me-1" style="font-size: 20px"></span>
+                                    <span>Quay lại</span>
+                                    <div th:if="${orderDetail.orderDto.status == 5}" class="ms-2"><button class="btn btn-danger btn-orange-2 btn-cancel" style="color: white" th:data-value="${orderDetail.orderDto.id}">Huỷ hoá đơn</button></div>
+                                </a>
+                                <div class="d-flex">
+                                    <span style="font-weight: bold">Mã đơn hàng: [[${orderDetail.orderDto.code}]]</span>
+                                    <div class="text-muted ms-2 me-2">|</div>
+                                    <div class="text-danger" style="font-weight: bold">
+                                        [[${orderDetail.orderDto.statusText}]]
+                                    </div>
+                                </div>
+                            </div>
+                            <div th:if="${orderDetail.orderDto.status != 0}">
+                                <div class="divider mb-5"></div>
+                                <div class="steps">
+                                    <div class="steps-body" id="steps-body">
+                                        <!--status-->
+                                    </div>
+                                </div>
+                                <div class="divider mb-5"></div>
+                                <div class="row">
+                                    <div class="col-4" style="padding-right: 20px; border-right: 1px solid #e9ecef;">
+                                        <h5>Địa chỉ nhận hàng</h5>
+                                        <div>Người nhận: [[${orderDetail.orderDto.toName}]]</div>
+                                        <div>Sđt: [[${orderDetail.orderDto.toPhone}]]</div>
+                                        <div>Địa chỉ: [[${orderDetail.orderDto.toAddress}]]</div>
+                                    </div>
+                                    <div class="col-8">
+                                        <div class="container">
+                                            <ul class="sessions" style="max-height: 400px; overflow: auto">
+                                                <li th:each="item:${history}">
+                                                    <div class="time format-time">[[${item.createdAt}]]</div>
+                                                    <p>[[${item.note}]]</p>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="divider mb-4"></div>
+                            </div>
+                            <div th:if="${orderDetail.orderDto.status == 0}">
+                                <div class="mt-3 mb-3 pt-4 pb-4" style="background-color: #FFFCF6">
+                                    <h4 class="text-danger">Đã hủy đơn hàng</h4>
+                                    <div>Vào <span class="format-time">[[${orderDetail.orderDto.updatedAt}]]</span></div>
+                                    <div style="font-size: 20px">Lý do: [[${orderDetail.orderDto.note}]]</div>
+                                </div>
+                            </div>
+                            <div>
+                                <h5 class="mb-2">Danh sách sản phẩm</h5>
+                                <div th:each="item: ${orderDetail.detailDtoList}"
+                                     style="background-color: rgb(250, 250, 250)">
+                                    <div class="d-flex justify-content-between">
+                                        <div class="d-flex">
+                                            <div class="me-2">
+                                                <picture th:if="${item.productDetailDto.product.image != null}"
+                                                         class="overflow-hidden d-block bg-light">
+                                                    <img class="img-fluid"
+                                                         style="width: 81px!important; height: 81px!important; object-fit: contain"
+                                                         th:src="${item.productDetailDto.product.image.fileUrl}"
+                                                         alt="123">
+                                                </picture>
+                                                <picture th:if="${item.productDetailDto.product.image == null}"
+                                                         class="position-relative overflow-hidden d-block bg-light">
+                                                    <img class="img-fluid"
+                                                         style="width: 81px!important; height: 81px!important; object-fit: cover"
+                                                         src="https://firebasestorage.googleapis.com/v0/b/clothes-f4k.appspot.com/o/common%2Fdata_not_found.png?alt=media&token=36148ded-ba2c-4207-8525-2da16e7a8557">
+                                                </picture>
+                                            </div>
+                                            <div class="d-flex flex-column me-2">
+                                                <span>[[${item.productDetailDto.product.name}]]</span>
+                                                <span class="text-muted">Phân loại hàng: Kích cỡ [[${item.productDetailDto.size.name}]], [[${item.productDetailDto.color.name}]]</span>
+                                                <span>Số lượng: [[${item.quantity}]] </span>
+                                            </div>
+                                        </div>
+                                        <div class="d-flex flex-column justify-content-center me-3">
+                                            <div th:if="${item.purchasePrice == null}">
+                                                <span class="order-price text-danger">[[${item.productDetailDto.price}]]</span>
+                                            </div>
+                                            <div th:if="${item.purchasePrice != null}">
+                                                <div class="d-flex flex-column" style="text-align: end">
+                                                    <s class="lh-1 me-2"><span
+                                                            class="fw-bolder m-0 product-price-list text-muted order-price">[[${item.productDetailDto.price}]]</span></s>
+                                                    <span class="order-price text-danger">[[${item.purchasePrice}]]</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="divider"></div>
+                                </div>
+                                <div>
+                                    <table class="w-100">
+                                        <thead>
+                                        <th></th>
+                                        <th style="width: 300px;"></th>
+                                        </thead>
+                                        <tbody>
+                                        <tr style="text-align: end; border-bottom: 1px solid #e9ecef; height: 38px">
+                                            <td>Tổng tiền hàng</td>
+                                            <td class="order-price">[[${orderDetail.orderDto.totalCart}]]</td>
+                                        </tr>
+                                        <tr style="text-align: end; border-bottom: 1px solid #e9ecef; height: 38px">
+                                            <td>Phí vận chuyển</td>
+                                            <td class="order-price">[[${orderDetail.orderDto.shippingPay}]]</td>
+                                        </tr>
+                                        <tr style="text-align: end; border-bottom: 1px solid #e9ecef; height: 38px">
+                                            <td>Thành tiền</td>
+                                            <td class="text-danger ms-2 order-price" style="font-size: 20px">
+                                                [[${orderDetail.orderDto.totalPay}]]
+                                            </td>
+                                        </tr>
+                                        <tr style="text-align: end; border-bottom: 1px solid #e9ecef; height: 38px">
+                                            <td>Phương thức Thanh toán</td>
+                                            <td>[[${orderDetail.orderDto.paymentMethod.name}]]</td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div> <!-- end card -->
+                </div>
+            </div>
+        </div>
+        <!-- container -->
+
+    </div>
+    <!-- content -->
+</div>
+<!-- / Main Section-->
+
+<!--modal-->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Lý do huỷ đơn</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="" id="formCancel">
+                <div class="modal-body">
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="flexRadioDefault" id="1" checked>
+                        <label class="form-check-label" for="1">
+                            Thay đổi địa chỉ giao hàng
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="flexRadioDefault" id="2">
+                        <label class="form-check-label" for="2">
+                            Không muốn mua nữa
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="flexRadioDefault" id="3">
+                        <label class="form-check-label" for="3">
+                            Thay đổi số lượng
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="flexRadioDefault" id="4">
+                        <label class="form-check-label" for="4">
+                            Lý do khác
+                        </label>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="mb-3">
+                            <textarea rows="3" class="form-control" id="note" name="note"
+                                      placeholder="Nhập lý do"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                    <button type="submit" class="btn btn-primary">Huỷ đơn</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<!-- / modal-->
+
+<!-- Cart Offcanvas-->
+<div th:replace="shop/fragments/drawer-cart::div"></div>
+
+<!--script-->
+<script th:replace="shop/fragments/script::div"></script>
+<script type="module" th:src="@{/shop/script/purchase-history-detail.js}"></script>
+<script type="module" th:inline="javascript">
+    import {getCommon} from "/common/public.js";
+
+    const {convert2Vnd} = getCommon();
+
+    if ([[${errMess}]]) {
+        $alterTop("error", [[${errMess}]])
+    }
+
+    const statusOrder = [[${orderDetail.orderDto.status}]]
+
+    const statusConfig = {
+        3: [
+            {icon: "mdi-account-check", text: "Chờ xác nhận", type: "completed"},
+            {icon: "mdi-dolly", text: "Chờ lấy hàng", type: "completed"},
+            {icon: "mdi-truck-outline", text: "Chờ giao hàng", type: "completed"},
+            {icon: "mdi-truck-fast-outline", text: "Đang giao hàng", type: "completed"},
+            {icon: "mdi-package-variant-closed-check", text: "Đã giao hàng", type: "completed"},
+        ],
+        6: [
+            {icon: "mdi-account-check", text: "Chờ xác nhận", type: "completed"},
+            {icon: "mdi-dolly", text: "Chờ lấy hàng", type: "completed"},
+            {icon: "mdi-truck-outline", text: "Chờ giao hàng", type: "completed"},
+            {icon: "mdi-truck-fast-outline", text: "Đang giao hàng", type: "active"},
+        ],
+        5: [
+            {icon: "mdi-account-check", text: "Chờ xác nhận", type: "active"},
+        ],
+        8: [
+            {icon: "mdi-account-check", text: "Chờ xác nhận", type: "completed"},
+            {icon: "mdi-dolly", text: "Chờ lấy hàng", type: "active"},
+        ],
+        4: [
+            {icon: "mdi-account-check", text: "Chờ xác nhận", type: "completed"},
+            {icon: "mdi-dolly", text: "Chờ lấy hàng", type: "completed"},
+            {icon: "mdi-truck-outline", text: "Chờ giao hàng", type: "active"},
+        ],
+    };
+
+    const getHtmlStatus = (status) => {
+        const steps = statusConfig[status] || [];
+        let html = "";
+
+        steps.forEach(step => {
+            const stepClass = step.type === "completed" ? "step-completed" : step.type === "active" ? "step-active" : "step";
+            const textColor = step.type === "completed" ? "text-success" : "text-primary";
+            const textTickHtml = stepClass !== "step-active" ? `<span class="mdi mdi-check text-success step-indicator"></span>` : ""
+
+            html += `<div class="step ${stepClass}">
+                    ${textTickHtml}
+                    <span class="mdi ${step.icon} ${textColor}" style="font-size: 50px"></span>
+                    <div>${step.text}</div>
+                </div>`;
+        });
+
+        const nullStepsCount = 5 - steps.length; // Giả sử tổng số bước là 5
+        html += getHtmlStatusNull(nullStepsCount);
+
+        return html;
+    };
+
+    const getHtmlStatusNull = (count) => {
+        return Array.from({length: count}, () => `
+        <div class="step">
+            <span class="mdi mdi-format-float-none" style="font-size: 50px"></span>
+        </div>
+    `).join('');
+    };
+
+    const genStatus = (currentStatus) => {
+        const $stepBody = $("#steps-body");
+        $stepBody.empty();
+        $stepBody.append(getHtmlStatus(currentStatus));
+    };
+
+
+    $(document).ready(function () {
+        $('.order-price').each(function () {
+            const status = $(this).text().trim();
+            $(this).text(convert2Vnd(status));
+        });
+
+        genStatus(statusOrder);
+
+        console.log(statusOrder)
+    });
+</script>
+</body>
+</html>

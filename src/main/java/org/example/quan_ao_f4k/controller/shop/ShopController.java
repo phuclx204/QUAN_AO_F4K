@@ -170,9 +170,16 @@ public class ShopController {
         return "/shop/pages/purchase-history";
     }
 
+    @GetMapping("/purchase-history-detail/{code}")
+    public String purchaseHistoryDetail(@PathVariable String code, Model model) {
+        shopCheckOutService.addModalPurchaseHistoryDetail(model, code);
+        return "/shop/pages/purchase-history-detail";
+    }
+
+
     @GetMapping("/create-order")
     public String createOrder(@RequestParam("buyType") HoaDonUtils.PhuongThucMuaHang phuongThucMuaHang, RedirectAttributes redirectAttributes) {
-        shopCheckOutService.createOrder(phuongThucMuaHang);
+        shopCheckOutService.createOneOrder(phuongThucMuaHang, true);
         redirectAttributes.addFlashAttribute("createOrderSuccess", true);
         return "redirect:/shop/purchase-history";
     }

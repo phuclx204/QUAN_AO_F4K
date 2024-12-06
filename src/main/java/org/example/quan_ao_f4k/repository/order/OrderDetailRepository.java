@@ -34,6 +34,9 @@ public interface OrderDetailRepository extends JpaRepository<OrderDetail, OrderP
 	@Query("SELECT o from OrderDetail o where o.order.user.id = :userId and (:status is null or o.order.status = :status) order by o.order.id desc ")
 	List<OrderDetail> findAllByOrderUserIdAndOrderStatus(@Param("userId") Long userId, @Param("status") Integer status);
 
+	@Query("SELECT o from OrderDetail o where(:userId is null or  o.order.user.id = :userId) and o.order.id = :orderId order by o.order.id desc ")
+	List<OrderDetail> findAllByOrderIdAndUserId(@Param("userId") Long userId, @Param("orderId") Long orderId);
+
 	List<OrderDetail> findAllByOrder_Id(Long orderId);
 
 }

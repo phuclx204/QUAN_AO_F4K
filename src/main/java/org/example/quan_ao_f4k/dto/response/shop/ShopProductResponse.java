@@ -5,10 +5,13 @@ import lombok.Builder;
 import lombok.Data;
 import org.example.quan_ao_f4k.model.authentication.User;
 import org.example.quan_ao_f4k.model.general.Image;
+import org.example.quan_ao_f4k.model.order.Order;
+import org.example.quan_ao_f4k.model.order.PaymentMethod;
 import org.example.quan_ao_f4k.model.product.*;
 import org.example.quan_ao_f4k.model.promotion.Promotion;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -87,5 +90,44 @@ public class ShopProductResponse {
         private Integer gender;
         private String addressDetail;
         private String fullName;
+    }
+
+    @Data
+    @Builder
+    public static class OrderDto {
+        private Long id;
+        private User user;
+        private String toName;
+        private String toAddress;
+        private String toPhone;
+        private BigDecimal totalPay;
+        private BigDecimal shippingPay;
+        private BigDecimal totalCart;
+        private PaymentMethod paymentMethod;
+        private Integer paymentStatus;
+        private String note;
+        private BigDecimal tax;
+        private String code;
+        private String order_type;
+        private Integer status;
+        private String statusText;
+        private LocalDateTime updatedAt;
+    }
+
+    @Data
+    @Builder
+    public static class OrderDetailDto {
+        private OrderDto orderDto;
+        private ProductDetailDto productDetailDto;
+        private Integer quantity;
+        private BigDecimal price;
+        private BigDecimal purchasePrice;
+    }
+
+    @Data
+    @Builder
+    public static class OrderResponse {
+        private OrderDto orderDto;
+        private List<OrderDetailDto> detailDtoList;
     }
 }

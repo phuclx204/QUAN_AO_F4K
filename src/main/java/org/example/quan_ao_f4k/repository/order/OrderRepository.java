@@ -85,4 +85,7 @@ public interface OrderRepository extends JpaRepository<Order, Long>,
                              @Param("search") String search,
                              @Param("orderType") String orderType,
                              @Param("status") Integer status);
+
+    @Query("SELECT o FROM Order o WHERE o.order_type = :orderType AND (:status is null or o.status = :status) order by o.id desc")
+    List<Order> findOrdersByStatusAndType(@Param("orderType") String orderType, @Param("status") Integer status);
 }
