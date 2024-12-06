@@ -19,12 +19,16 @@ public class OrderResponse {
 	private String toName;
 	private String toAddress;
 	private String toPhone;
-	private BigDecimal totalPay;
 	private Long paymentMethodType;
 	private Integer paymentStatus;
 	private String note;
 	private BigDecimal tax;
 	private String code;
 	private Integer status;
+	private String statusText;
 	private String order_type;
+
+	private BigDecimal totalPay;
+	private BigDecimal shippingPay;
+	private BigDecimal totalCart;
 }

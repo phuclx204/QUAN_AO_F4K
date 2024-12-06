@@ -4,9 +4,11 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.quan_ao_f4k.dto.request.order.OrderDetailResponse;
 import org.example.quan_ao_f4k.dto.response.orders.OrderHistoryResponse;
+import org.example.quan_ao_f4k.dto.response.orders.OrderResponse;
 import org.example.quan_ao_f4k.dto.response.product.ProductDetailResponse;
 import org.example.quan_ao_f4k.mapper.order.OrderDetailMapper;
 import org.example.quan_ao_f4k.mapper.order.OrderHistoryMapper;
+import org.example.quan_ao_f4k.mapper.order.OrderMapper;
 import org.example.quan_ao_f4k.mapper.product.ProductDetailMapper;
 import org.example.quan_ao_f4k.model.general.Image;
 import org.example.quan_ao_f4k.model.order.Order;
@@ -18,6 +20,7 @@ import org.example.quan_ao_f4k.repository.order.OrderHistoryRepository;
 import org.example.quan_ao_f4k.repository.order.OrderRepository;
 import org.example.quan_ao_f4k.service.order.OrderServiceImpl;
 import org.example.quan_ao_f4k.util.F4KConstants;
+import org.example.quan_ao_f4k.util.HoaDonUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -43,6 +46,7 @@ public class OrderDetailController {
 	private ProductDetailMapper productDetailMapper;
 	private OrderHistoryMapper orderHistoryMapper;
 	private OrderDetailMapper orderDetailMapper;
+	private OrderMapper orderMapper;
 
 	@GetMapping
 	public String orderDetail() {
@@ -53,6 +57,11 @@ public class OrderDetailController {
 	public String getOrderById(@PathVariable String code, Model model) {
 
 		Order order = orderRepository.findOrderByOrderCode(code);
+		OrderResponse orderResponse = orderMapper.entityToResponse(order);
+		orderResponse.setStatusText(HoaDonUtils.TrangThaiHoaDon.getMessByStatus(orderResponse.getStatus()));
+
+		List<OrderDetail> listOrderDetail = orderDetailRepository.findAllByOrderIdAndUserId(null, order.getId());
+		List<OrderDetailResponse> listOrderDetailResponse = orderDetailMapper.entityToResponse(listOrderDetail);
 
 		List<OrderDetail> orderDetails = orderService.findCart(order.getId());
 		List<OrderHistory> orderHistories = orderHistoryRepository.findByOrderId(order.getId());
@@ -69,9 +78,9 @@ public class OrderDetailController {
 		}
 		model.addAttribute("orderDetails", orderDetails);
 		model.addAttribute("orderHistory", orderHistories);
-		model.addAttribute("order", order);
+		model.addAttribute("order", orderResponse);
 		model.addAttribute("images", images);
-		return "/admin/orders/orderDetail";
+		return "/admin/orders/order-detail";
 	}
 
 	@GetMapping("/get-state/{code}")

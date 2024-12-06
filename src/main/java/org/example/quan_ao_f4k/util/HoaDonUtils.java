@@ -40,12 +40,12 @@ public class HoaDonUtils {
     public enum TrangThaiHoaDon {
         HUY_DON(0, "Hủy đơn"),
         TAO_MOI(1, "Tạo mới"),
-        TRA_HANG(2, "Trả hàng"),
+        TRA_HANG(2, "Trả hàng"), // bỏ
         HOAN_TAT(3, "Hoàn tất"),
         CHO_GIAO_HANG(4, "Chờ giao hàng"),
         CHO_XAC_NHAN(5, "Chờ xác nhận"),
         DANG_GIAO_HANG(6, "Đang giao hàng"),
-        DA_GIAO_HANG(7, "Đã giao hàng"),
+        DA_GIAO_HANG(7, "Đã giao hàng"), // bỏ
         CHO_LAY_HANG(8, "Chờ lấy hàng");
 
         private final int status; // Giá trị trạng thái

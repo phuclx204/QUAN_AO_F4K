@@ -9,4 +9,6 @@ public class OrderDetailResponse {
     private Long productDetailId;
     private Integer quantity;
     private BigDecimal price;
+    
+    private BigDecimal purchasePrice;
 }

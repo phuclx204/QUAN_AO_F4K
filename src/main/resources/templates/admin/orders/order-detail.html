@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <link th:href="@{/admin/plugins/datatables/css/dataTables.bootstrap5.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/admin/plugins/datatables/css/responsive.bootstrap5.min.css}" rel="stylesheet" type="text/css"/>
+    <link rel="stylesheet" th:href="@{/admin/dist/css/app-f4k.min.css}"/>
+    <th:block th:insert="admin/fragments/head :: head"></th:block>
+    <link rel="stylesheet" th:href="@{/admin/plugins/sweetalert/sweetalert2.min.css}"/>
+    <link rel="stylesheet" th:href="@{/admin/orders/order-detail.css}">
+</head>
+<body>
+<div th:replace="admin/fragments/sidebar::sidebar"></div>
+<section id="content">
+    <div th:replace="admin/fragments/loading::div"></div>
+    <div th:replace="admin/fragments/content::content"></div>
+    <main>
+        <div class="main-pane row" style="margin-top: 0">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="col-12">
+                            <div class="page-title-right">
+                                <ol class="breadcrumb m-0 p-0">
+                                    <li class="breadcrumb-item"><a th:href="@{home}"><i class="mdi mdi-home me-1"></i>Trang
+                                        chủ</a></li>
+                                    <li class="breadcrumb-item"><a th:href="@{/admin/products}">Sản phẩm</a></li>
+                                    <li class="breadcrumb-item"><a
+                                            th:href="@{/admin/products/product-detail/{productId}(productId=${productId})}">Sản
+                                        phẩm chi tiết</a></li>
+                                    <li class="breadcrumb-item active">Thêm mới sản phẩm chi tiết</li>
+                                </ol>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="col-12">
+                            <div class="card shadow-none" style="border: 1px solid #e9ecef!important;">
+                                <div class="card-header pb-0" style="font-size: 20px; font-weight: bold">
+                                    Theo dõi đơn hàng
+                                    <hr>
+                                </div>
+                                <div class="card-body pb-0">
+                                    <div class="steps">
+                                        <div class="steps-body" id="steps-body">
+                                            <div class="step step-completed">
+                                                <span class="mdi mdi-check text-success step-indicator"></span>
+                                                <span class="mdi mdi-account-check text-success" style="font-size: 50px"></span>
+                                                <div>
+                                                    Chờ xác nhận
+                                                </div>
+                                            </div>
+                                            <div class="step step-completed">
+                                                <span class="mdi mdi-check text-success step-indicator"></span>
+                                                <span class="mdi mdi-dolly text-success" style="font-size: 50px"></span>
+                                                <div>
+                                                    Chờ lấy hàng
+                                                </div>
+                                            </div>
+                                            <div class="step step-completed">
+                                                <span class="mdi mdi-check text-success step-indicator"></span>
+                                                <span class="mdi mdi-truck-outline text-success" style="font-size: 50px"></span>
+                                                <div>
+                                                    Chờ giao hàng
+                                                </div>
+                                            </div>
+                                            <div class="step step-completed">
+                                                <span class="mdi mdi-check text-success step-indicator"></span>
+                                                <span class="mdi mdi-truck-fast-outline text-success" style="font-size: 50px"></span>
+                                                <div>
+                                                    Đang giao hàng
+                                                </div>
+                                            </div>
+                                            <div class="step step-completed">
+                                                <span class="mdi mdi-check text-success step-indicator"></span>
+                                                <span class="mdi mdi-package-variant-closed-check text-success" style="font-size: 50px"></span>
+                                                <div>Đã giao hàng</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-footer d-flex justify-content-between">
+                                    <div>
+                                        <button class="btn btn-success">Xác nhận</button>
+                                        <button class="btn btn-danger">Huỷ</button>
+                                    </div>
+                                    <div>
+                                        <button class="btn btn-info">Lịch sử</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="col-12">
+                            <div class="card shadow-none" style="border: 1px solid #e9ecef!important;">
+                                <div class="card-header pb-0" style="font-size: 20px; font-weight: bold">
+                                    Thông tin đơn hàng: [[${order.code}]]
+                                    <hr>
+                                </div>
+                                <div class="card-body row">
+                                    <div class="col-6 d-flex flex-column" style="border-right: 1px solid #e9ecef!important">
+                                        <span><span style="font-weight: bold">Trạng thái: </span><span class="badge bg-primary" style="font-size: 14px; padding: 5px 10px">[[${order.statusText}]]</span></span>
+                                        <span><span style="font-weight: bold">Tên người nhận: </span><span>[[${order.toName}]]</span></span>
+                                        <span><span style="font-weight: bold">Địa chỉ: </span><span>[[${order.toAddress}]]</span></span>
+                                        <span><span style="font-weight: bold">Số điện thoại: </span><span>[[${order.toPhone}]]</span></span>
+                                        <span><span style="font-weight: bold">Ghi chú: </span><span>[[${order.note}]]</span></span>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="container">
+                                            <ul class="sessions" style="max-height: 300px; overflow: auto">
+                                                <li th:each="item:${orderHistory}">
+                                                    <div class="time format-time">[[${item.createdAt}]]</div>
+                                                    <p>[[${item.note}]]</p>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="col-12">
+                            <div class="card shadow-none" style="border: 1px solid #e9ecef!important;">
+                                <div class="card-header pb-0" style="font-size: 20px; font-weight: bold">
+                                    Thông tin sản phẩm
+                                    <hr>
+                                </div>
+                                <div class="card-body pt-0 pb-0">
+                                    <table class="table table-bordered">
+                                        <thead>
+                                        <tr>
+                                            <th scope="col" style="width: 50px">STT</th>
+                                            <th scope="col" style="width: 100px">Hình ảnh</th>
+                                            <th scope="col">Tên sản phẩm</th>
+                                            <th scope="col">Kích cỡ</th>
+                                            <th scope="col">Màu sắc</th>
+                                            <th scope="col">Giá bán</th>
+                                            <th scope="col">Số lượng</th>
+                                            <th scope="col"></th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr>
+                                            <th scope="row">1</th>
+                                            <td>Mark</td>
+                                            <td>Otto</td>
+                                            <td>@mdo</td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">2</th>
+                                            <td>Jacob</td>
+                                            <td>Thornton</td>
+                                            <td>@fat</td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="card-footer d-flex justify-content-between">
+                                    <div>
+                                        <button class="btn btn-success">Xác nhận</button>
+                                        <button class="btn btn-danger">Huỷ</button>
+                                    </div>
+                                    <div>
+                                        <button class="btn btn-info">Lịch sử</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+</section>
+<!--default script-->
+<!--jquery-->
+<script th:src="@{/common/jquery/jquery.min.js}"></script>
+<script th:src="@{/common/dayjs/dayjs.min.js}"></script>
+
+<script th:src="@{/admin/script.js}"></script>
+<script th:src="@{/admin/dist/js/vendor.min.js}"></script>
+<script th:src="@{/admin/dist/js/app.min.js}"></script>
+
+<script th:src="@{/admin/plugins/sweetalert/common.js}"></script>
+<script th:src="@{/admin/plugins/sweetalert/sweetalert2.min.js}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/decimal.js/10.2.4/decimal.min.js"></script>
+
+<!--datatables-->
+<script th:src="@{/admin/plugins/datatables/js/jquery.dataTables.min.js}"></script>
+<script th:src="@{/admin/plugins/datatables/js/dataTables.bootstrap5.min.js}"></script>
+<script th:src="@{/admin/plugins/datatables/js/dataTables.responsive.min.js}"></script>
+<script th:src="@{/admin/plugins/datatables/js/responsive.bootstrap5.min.js}"></script>
+<script th:src="@{/admin/plugins/datatables/js/dataTables.checkboxes.min.js}"></script>
+
+<!--custom script-->
+<!--<script type="module" th:src="@{/admin/orders/order-detail.js}"></script>-->
+</body>
+</html>
