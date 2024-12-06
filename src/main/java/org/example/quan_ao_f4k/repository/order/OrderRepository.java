@@ -1,6 +1,7 @@
 package org.example.quan_ao_f4k.repository.order;
 
 import org.example.quan_ao_f4k.dto.response.orders.OrderStatisticsResponse;
+import org.example.quan_ao_f4k.dto.response.product.ProductDetailDTO;
 import org.example.quan_ao_f4k.model.order.Order;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -85,4 +86,7 @@ public interface OrderRepository extends JpaRepository<Order, Long>,
                              @Param("search") String search,
                              @Param("orderType") String orderType,
                              @Param("status") Integer status);
+
+    @Query("SELECT o FROM Order o WHERE o.order_type = :orderType AND (:status is null or o.status = :status) order by o.id desc")
+    List<Order> findOrdersByStatusAndType(@Param("orderType") String orderType, @Param("status") Integer status);
 }

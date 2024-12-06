@@ -14,7 +14,7 @@
     <div class="content">
 
         <!-- Start Content-->
-        <div class="container mt-4">
+        <div class="container-fluid p-5 mt-4">
             <div class="row d-flex justify-content-around position-relative">
                 <!--row left-->
                 <div class="col-xl-3 col-lg-5">
@@ -40,21 +40,21 @@
                         <div class="card-body">
                             <ul class="nav nav-pills bg-nav-pills nav-justified mb-3">
                                 <li class="nav-item">
-                                    <a href="#statusAll" data-bs-toggle="tab" aria-expanded="false"
-                                       class="nav-link rounded-0" style="width: 130px">
+                                    <a href="#status_all" data-bs-toggle="tab" aria-expanded="true"
+                                       class="nav-link rounded-0 active" style="width: 130px">
                                         Tất cả ([[${status_all.size}]])
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="#statusWaitConfirm" data-bs-toggle="tab" aria-expanded="true"
-                                       class="nav-link rounded-0 active" style="width: 170px">
+                                    <a href="#status_wait_confirm" data-bs-toggle="tab" aria-expanded="false"
+                                       class="nav-link rounded-0" style="width: 170px">
                                         Chờ xác nhận ([[${status_wait_confirm.size}]])
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="#statusWaitDelivery" data-bs-toggle="tab" aria-expanded="false"
+                                    <a href="#status_wait_delivery" data-bs-toggle="tab" aria-expanded="false"
                                        class="nav-link rounded-0" style="width: 170px">
-                                        Chờ giao hàng ([[${status_wait_delivery.size}]])
+                                        Chờ lấy hàng ([[${status_wait_delivery.size}]])
                                     </a>
                                 </li>
                                 <li class="nav-item">
@@ -70,213 +70,296 @@
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="#statusWaitCancel" data-bs-toggle="tab" aria-expanded="false"
+                                    <a href="#status_cancel" data-bs-toggle="tab" aria-expanded="false"
                                        class="nav-link rounded-0">
                                         Đã hủy ([[${status_cancel.size}]])
                                     </a>
                                 </li>
                             </ul>
                             <div class="tab-content">
-                                <div class="tab-pane pt-5" id="statusAll"
-                                     style="max-height: 500px; overflow: auto">
+                                <div class="tab-pane show active" id="status_all"
+                                     style="max-height: 800px; overflow: auto">
                                     <div class="table-responsive">
-                                        <table class="table table-borderless table-striped">
-                                            <thead class="table-primary">
-                                            <tr>
-                                                <th scope="col">STT</th>
-                                                <th scope="col">Sản phẩm</th>
-                                                <th scope="col">Số lượng</th>
-                                                <th scope="col">Giá tiền</th>
-                                                <th scope="col">Trạng thái</th>
-                                                <th scope="col">Trạng thái thanh toán</th>
-                                            </tr>
-                                            </thead>
-                                            <tbody>
-                                            <tr th:each="item,index:${status_all}">
-                                                <th scope="row">[[${index.index+1}]]</th>
-                                                <td>
-                                                    <div class="d-flex flex-column">
-                                                        <div>
-                                                            [[${item.productDetail.product.name}]]
+
+                                        <div class="card border mb-4" th:each="item,index:${status_all}">
+                                            <div class="card-body">
+                                                <div class="d-flex justify-content-between">
+                                                    <span style="font-weight: bold">Mã đơn hàng: [[${item.orderDto.code}]]</span>
+                                                    <div class="text-danger" style="font-weight: bold">[[${item.orderDto.statusText}]]</div>
+                                                </div>
+                                                <div class="divider"></div>
+                                                <div th:each="orderDetail: ${item.detailDtoList}">
+                                                    <div class="d-flex justify-content-between">
+                                                        <div class="d-flex">
+                                                            <div class="me-2">
+                                                                <picture th:if="${orderDetail.productDetailDto.product.image != null}" class="overflow-hidden d-block bg-light">
+                                                                    <img class="img-fluid" style="width: 81px!important; height: 81px!important; object-fit: contain"
+                                                                         th:src="${orderDetail.productDetailDto.product.image.fileUrl}" alt="123">
+                                                                </picture>
+                                                                <picture th:if="${orderDetail.productDetailDto.product.image == null}"
+                                                                         class="position-relative overflow-hidden d-block bg-light">
+                                                                    <img class="img-fluid" style="width: 81px!important; height: 81px!important; object-fit: cover"
+                                                                         src="https://firebasestorage.googleapis.com/v0/b/clothes-f4k.appspot.com/o/common%2Fdata_not_found.png?alt=media&token=36148ded-ba2c-4207-8525-2da16e7a8557">
+                                                                </picture>
+                                                            </div>
+                                                            <div class="d-flex flex-column me-2">
+                                                                <span>[[${orderDetail.productDetailDto.product.name}]]</span>
+                                                                <span class="text-muted">Phân loại hàng: Kích cỡ [[${orderDetail.productDetailDto.size.name}]], [[${orderDetail.productDetailDto.color.name}]]</span>
+                                                                <span>Số lượng: [[${orderDetail.quantity}]] </span>
+                                                            </div>
                                                         </div>
-                                                        <div>
-                                                            [[${item.productDetail.color.name}]]/[[${item.productDetail.size.name}]]
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                                <td>[[${item.quantity}]]</td>
-                                                <td class="order-price">[[${item.price}]]</td>
-                                                <td class="order-status">[[${item.order.status}]]</td>
-                                                <td class="payment-status">[[${item.order.paymentStatus}]]</td>
-                                            </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div> <!-- end tab-pane -->
-                                <!-- end about me section content -->
-
-                                <div class="tab-pane show active" id="statusWaitConfirm" style="max-height: 500px; overflow: auto">
-                                    <div class="table-responsive">
-                                        <table class="table table-borderless table-striped">
-                                            <thead class="table-primary">
-                                            <tr>
-                                                <th scope="col">STT</th>
-                                                <th scope="col">Sản phẩm</th>
-                                                <th scope="col">Số lượng</th>
-                                                <th scope="col">Giá tiền</th>
-                                                <th scope="col">Trạng thái</th>
-                                                <th scope="col">Trạng thái thanh toán</th>
-                                                <th></th>
-                                            </tr>
-                                            </thead>
-                                            <tbody>
-                                            <tr th:each="item,index:${status_wait_confirm}">
-                                                <th scope="row">[[${index.index+1}]]</th>
-                                                <td>[[${item.productDetail.product.name}]]</td>
-                                                <td>[[${item.quantity}]]</td>
-                                                <td class="order-price">[[${item.price}]]</td>
-                                                <td class="order-status">[[${item.order.status}]]</td>
-                                                <td class="payment-status">[[${item.order.paymentStatus}]]</td>
-                                                <td>
-                                                    <div>
-                                                        <button class="btn btn-success btn-cancel"
-                                                                th:data-id="${item.order.id}"
-                                                                th:data-value="${item.productDetail.id}"
-                                                                data-bs-toggle="modal" data-bs-target="#exampleModal">
-                                                            Hủy mua hàng
-                                                        </button>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-
-                                <div class="tab-pane" id="statusWaitDelivery" style="max-height: 500px; overflow: auto">
-                                    <div class="table-responsive">
-                                        <table class="table table-borderless table-striped">
-                                            <thead class="table-primary">
-                                            <tr>
-                                                <th scope="col">STT</th>
-                                                <th scope="col">Sản phẩm</th>
-                                                <th scope="col">Số lượng</th>
-                                                <th scope="col">Giá tiền</th>
-                                                <th scope="col">Trạng thái</th>
-                                                <th scope="col">Trạng thái thanh toán</th>
-                                            </tr>
-                                            </thead>
-                                            <tbody>
-                                            <tr th:each="item,index:${status_wait_delivery}">
-                                                <th scope="row">[[${index.index+1}]]</th>
-                                                <td>[[${item.productDetail.product.name}]]</td>
-                                                <td>[[${item.quantity}]]</td>
-                                                <td class="order-price">[[${item.price}]]</td>
-                                                <td class="order-status">[[${item.order.status}]]</td>
-                                                <td class="payment-status">[[${item.order.paymentStatus}]]</td>
-                                            </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-
-                                <div class="tab-pane" id="status_on_delivery" style="max-height: 500px; overflow: auto">
-                                    <div class="table-responsive">
-                                        <table class="table table-borderless table-striped">
-                                            <thead class="table-primary">
-                                            <tr>
-                                                <th scope="col">STT</th>
-                                                <th scope="col">Sản phẩm</th>
-                                                <th scope="col">Số lượng</th>
-                                                <th scope="col">Giá tiền</th>
-                                                <th scope="col">Trạng thái</th>
-                                                <th scope="col">Trạng thái thanh toán</th>
-                                            </tr>
-                                            </thead>
-                                            <tbody>
-                                            <tr th:each="item,index:${status_on_delivery}">
-                                                <th scope="row">[[${index.index+1}]]</th>
-                                                <td>[[${item.productDetail.product.name}]]</td>
-                                                <td>[[${item.quantity}]]</td>
-                                                <td class="order-price">[[${item.price}]]</td>
-                                                <td class="order-status">[[${item.order.status}]]</td>
-                                                <td class="payment-status">[[${item.order.paymentStatus}]]</td>
-                                            </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-
-                                <div class="tab-pane" id="status_complete" style="max-height: 500px; overflow: auto">
-                                    <div class="table-responsive">
-                                        <table class="table table-borderless table-striped">
-                                            <thead class="table-primary">
-                                            <tr>
-                                                <th scope="col">STT</th>
-                                                <th scope="col">Sản phẩm</th>
-                                                <th scope="col">Số lượng</th>
-                                                <th scope="col">Giá tiền</th>
-                                                <th scope="col">Trạng thái</th>
-                                                <th scope="col">Trạng thái thanh toán</th>
-                                            </tr>
-                                            </thead>
-                                            <tbody>
-                                            <tr th:each="item,index:${status_complete}">
-                                                <th scope="row">[[${index.index+1}]]</th>
-                                                <td>[[${item.productDetail.product.name}]]</td>
-                                                <td>[[${item.quantity}]]</td>
-                                                <td class="order-price">[[${item.price}]]</td>
-                                                <td class="order-status">[[${item.order.status}]]</td>
-                                                <td class="payment-status">[[${item.order.paymentStatus}]]</td>
-                                            </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-
-                                <div class="tab-pane" id="statusWaitCancel">
-                                    <div class="table-responsive">
-                                        <table class="table table-borderless table-striped">
-                                            <thead class="table-primary">
-                                            <tr>
-                                                <th scope="col">STT</th>
-                                                <th scope="col">Sản phẩm</th>
-                                                <th scope="col">Số lượng</th>
-                                                <th scope="col">Giá tiền</th>
-                                                <th scope="col">Trạng thái</th>
-                                                <th scope="col">Trạng thái thanh toán</th>
-                                                <th scope="col">Lý do hủy</th>
-                                            </tr>
-                                            </thead>
-                                            <tbody>
-                                            <tr th:each="item,index:${status_cancel}">
-                                                <th scope="row">[[${index.index+1}]]</th>
-                                                <td>
-                                                    <div class="d-flex flex-column">
-                                                        <div>
-                                                            [[${item.productDetail.product.name}]]
-                                                        </div>
-                                                        <div>
-                                                            [[${item.productDetail.color.name}]]/[[${item.productDetail.size.name}]]
+                                                        <div class="d-flex flex-column justify-content-center me-3">
+                                                            <div th:if="${orderDetail.purchasePrice == null}">
+                                                                <span class="order-price text-danger">[[${orderDetail.productDetailDto.price}]]</span>
+                                                            </div>
+                                                            <div th:if="${orderDetail.purchasePrice != null}">
+                                                                <div class="d-flex flex-column" style="text-align: end">
+                                                                    <s class="lh-1 me-2"><span class="fw-bolder m-0 product-price-list text-muted order-price">[[${orderDetail.productDetailDto.price}]]</span></s>
+                                                                    <span class="order-price text-danger">[[${orderDetail.purchasePrice}]]</span>
+                                                                </div>
+                                                            </div>
                                                         </div>
                                                     </div>
-                                                </td>
-                                                <td>[[${item.quantity}]]</td>
-                                                <td class="order-price">[[${item.price}]]</td>
-                                                <td class="order-status">[[${item.order.status}]]</td>
-                                                <td class="payment-status">[[${item.order.paymentStatus}]]</td>
-                                                <td>[[${item.order.note}]]</td>
-                                            </tr>
-                                            </tbody>
-                                        </table>
+                                                    <div class="divider"></div>
+                                                </div>
+                                                <div class="d-flex justify-content-between">
+                                                    <div class="d-flex">
+                                                        <div class="me-2">
+                                                            <a class="btn btn-danger btn-orange-2" style="color: white" th:href="@{/shop/purchase-history-detail/{code}(code=${item.orderDto.code})}">Chi tiết</a>
+                                                        </div>
+                                                        <div th:if="${item.orderDto.status == 5}">
+                                                            <button class="btn btn-danger btn-orange-2 btn-cancel" style="color: white" th:data-value="${item.orderDto.id}">Huỷ hoá đơn</button>
+                                                        </div>
+                                                    </div>
+                                                    <div class="d-flex align-items-center">Thành tiền: <span class="text-danger ms-2 order-price" style="font-size: 20px">[[${item.orderDto.totalPay}]]</span></div>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
 
-                                <div class="tab-pane" id="settings">
+                                <div class="tab-pane" id="status_wait_confirm"
+                                     style="max-height: 800px; overflow: auto">
+                                    <div class="table-responsive">
 
+                                        <div class="card border mb-4" th:each="item,index:${status_wait_confirm}">
+                                            <div class="card-body">
+                                                <div class="d-flex justify-content-between">
+                                                    <span style="font-weight: bold">Mã đơn hàng: [[${item.orderDto.code}]]</span>
+                                                    <div class="text-danger" style="font-weight: bold">[[${item.orderDto.statusText}]]</div>
+                                                </div>
+                                                <div class="divider"></div>
+                                                <div th:each="orderDetail: ${item.detailDtoList}">
+                                                    <div class="d-flex justify-content-between">
+                                                        <div class="d-flex">
+                                                            <div class="me-2">
+                                                                <picture th:if="${orderDetail.productDetailDto.product.image != null}" class="overflow-hidden d-block bg-light">
+                                                                    <img class="img-fluid" style="width: 81px!important; height: 81px!important; object-fit: contain"
+                                                                         th:src="${orderDetail.productDetailDto.product.image.fileUrl}" alt="123">
+                                                                </picture>
+                                                                <picture th:if="${orderDetail.productDetailDto.product.image == null}"
+                                                                         class="position-relative overflow-hidden d-block bg-light">
+                                                                    <img class="img-fluid" style="width: 81px!important; height: 81px!important; object-fit: cover"
+                                                                         src="https://firebasestorage.googleapis.com/v0/b/clothes-f4k.appspot.com/o/common%2Fdata_not_found.png?alt=media&token=36148ded-ba2c-4207-8525-2da16e7a8557">
+                                                                </picture>
+                                                            </div>
+                                                            <div class="d-flex flex-column me-2">
+                                                                <span>[[${orderDetail.productDetailDto.product.name}]]</span>
+                                                                <span class="text-muted">Phân loại hàng: Kích cỡ [[${orderDetail.productDetailDto.size.name}]], [[${orderDetail.productDetailDto.color.name}]]</span>
+                                                                <span>Số lượng: [[${orderDetail.quantity}]] </span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="d-flex flex-column justify-content-center me-3">
+                                                            <div th:if="${orderDetail.purchasePrice == null}">
+                                                                <span class="order-price text-danger">[[${orderDetail.productDetailDto.price}]]</span>
+                                                            </div>
+                                                            <div th:if="${orderDetail.purchasePrice != null}">
+                                                                <div class="d-flex flex-column" style="text-align: end">
+                                                                    <s class="lh-1 me-2"><span class="fw-bolder m-0 product-price-list text-muted order-price">[[${orderDetail.productDetailDto.price}]]</span></s>
+                                                                    <span class="order-price text-danger">[[${orderDetail.purchasePrice}]]</span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="divider"></div>
+                                                </div>
+                                                <div class="d-flex justify-content-between">
+                                                    <div class="d-flex">
+                                                        <div class="me-2">
+                                                            <a class="btn btn-danger btn-orange-2" style="color: white" th:href="@{/shop/purchase-history-detail/{code}(code=${item.orderDto.code})}">Chi tiết</a>
+                                                        </div>
+                                                        <div th:if="${item.orderDto.status == 5}">
+                                                            <button class="btn btn-danger btn-orange-2 btn-cancel" style="color: white" th:data-value="${item.orderDto.id}">Huỷ hoá đơn</button>
+                                                        </div>
+                                                    </div>
+                                                    <div class="d-flex align-items-center">Thành tiền: <span class="text-danger ms-2 order-price" style="font-size: 20px">[[${item.orderDto.totalPay}]]</span></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
-                                <!-- end settings content-->
 
+                                <div class="tab-pane" id="status_wait_delivery"
+                                     style="max-height: 800px; overflow: auto">
+                                    <div class="table-responsive">
+
+                                        <div class="card border mb-4" th:each="item,index:${status_wait_delivery}">
+                                            <div class="card-body">
+                                                <div class="d-flex justify-content-between">
+                                                    <span style="font-weight: bold">Mã đơn hàng: [[${item.orderDto.code}]]</span>
+                                                    <div class="text-danger" style="font-weight: bold">[[${item.orderDto.statusText}]]</div>
+                                                </div>
+                                                <div class="divider"></div>
+                                                <div th:each="orderDetail: ${item.detailDtoList}">
+                                                    <div class="d-flex justify-content-between">
+                                                        <div class="d-flex">
+                                                            <div class="me-2">
+                                                                <picture th:if="${orderDetail.productDetailDto.product.image != null}" class="overflow-hidden d-block bg-light">
+                                                                    <img class="img-fluid" style="width: 81px!important; height: 81px!important; object-fit: contain"
+                                                                         th:src="${orderDetail.productDetailDto.product.image.fileUrl}" alt="123">
+                                                                </picture>
+                                                                <picture th:if="${orderDetail.productDetailDto.product.image == null}"
+                                                                         class="position-relative overflow-hidden d-block bg-light">
+                                                                    <img class="img-fluid" style="width: 81px!important; height: 81px!important; object-fit: cover"
+                                                                         src="https://firebasestorage.googleapis.com/v0/b/clothes-f4k.appspot.com/o/common%2Fdata_not_found.png?alt=media&token=36148ded-ba2c-4207-8525-2da16e7a8557">
+                                                                </picture>
+                                                            </div>
+                                                            <div class="d-flex flex-column me-2">
+                                                                <span>[[${orderDetail.productDetailDto.product.name}]]</span>
+                                                                <span class="text-muted">Phân loại hàng: Kích cỡ [[${orderDetail.productDetailDto.size.name}]], [[${orderDetail.productDetailDto.color.name}]]</span>
+                                                                <span>Số lượng: [[${orderDetail.quantity}]] </span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="d-flex flex-column justify-content-center me-3">
+                                                            <div th:if="${orderDetail.purchasePrice == null}">
+                                                                <span class="order-price text-danger">[[${orderDetail.productDetailDto.price}]]</span>
+                                                            </div>
+                                                            <div th:if="${orderDetail.purchasePrice != null}">
+                                                                <div class="d-flex flex-column" style="text-align: end">
+                                                                    <s class="lh-1 me-2"><span class="fw-bolder m-0 product-price-list text-muted order-price">[[${orderDetail.productDetailDto.price}]]</span></s>
+                                                                    <span class="order-price text-danger">[[${orderDetail.purchasePrice}]]</span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="divider"></div>
+                                                </div>
+                                                <div class="d-flex justify-content-between">
+                                                    <a class="btn btn-danger btn-orange-2" style="color: white" th:href="@{/shop/purchase-history-detail/{code}(code=${item.orderDto.code})}">Chi tiết</a>
+                                                    <div class="d-flex align-items-center">Thành tiền: <span class="text-danger ms-2 order-price" style="font-size: 20px">[[${item.orderDto.totalPay}]]</span></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="tab-pane" id="status_complete"
+                                     style="max-height: 800px; overflow: auto">
+                                    <div class="table-responsive">
+
+                                        <div class="card border mb-4" th:each="item,index:${status_complete}">
+                                            <div class="card-body">
+                                                <div class="d-flex justify-content-between">
+                                                    <span style="font-weight: bold">Mã đơn hàng: [[${item.orderDto.code}]]</span>
+                                                    <div class="text-danger" style="font-weight: bold">[[${item.orderDto.statusText}]]</div>
+                                                </div>
+                                                <div class="divider"></div>
+                                                <div th:each="orderDetail: ${item.detailDtoList}">
+                                                    <div class="d-flex justify-content-between">
+                                                        <div class="d-flex">
+                                                            <div class="me-2">
+                                                                <picture th:if="${orderDetail.productDetailDto.product.image != null}" class="overflow-hidden d-block bg-light">
+                                                                    <img class="img-fluid" style="width: 81px!important; height: 81px!important; object-fit: contain"
+                                                                         th:src="${orderDetail.productDetailDto.product.image.fileUrl}" alt="123">
+                                                                </picture>
+                                                                <picture th:if="${orderDetail.productDetailDto.product.image == null}"
+                                                                         class="position-relative overflow-hidden d-block bg-light">
+                                                                    <img class="img-fluid" style="width: 81px!important; height: 81px!important; object-fit: cover"
+                                                                         src="https://firebasestorage.googleapis.com/v0/b/clothes-f4k.appspot.com/o/common%2Fdata_not_found.png?alt=media&token=36148ded-ba2c-4207-8525-2da16e7a8557">
+                                                                </picture>
+                                                            </div>
+                                                            <div class="d-flex flex-column me-2">
+                                                                <span>[[${orderDetail.productDetailDto.product.name}]]</span>
+                                                                <span class="text-muted">Phân loại hàng: Kích cỡ [[${orderDetail.productDetailDto.size.name}]], [[${orderDetail.productDetailDto.color.name}]]</span>
+                                                                <span>Số lượng: [[${orderDetail.quantity}]] </span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="d-flex flex-column justify-content-center me-3">
+                                                            <div th:if="${orderDetail.purchasePrice == null}">
+                                                                <span class="order-price text-danger">[[${orderDetail.productDetailDto.price}]]</span>
+                                                            </div>
+                                                            <div th:if="${orderDetail.purchasePrice != null}">
+                                                                <div class="d-flex flex-column" style="text-align: end">
+                                                                    <s class="lh-1 me-2"><span class="fw-bolder m-0 product-price-list text-muted order-price">[[${orderDetail.productDetailDto.price}]]</span></s>
+                                                                    <span class="order-price text-danger">[[${orderDetail.purchasePrice}]]</span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="divider"></div>
+                                                </div>
+                                                <div class="d-flex justify-content-between">
+                                                    <a class="btn btn-danger btn-orange-2" style="color: white" th:href="@{/shop/purchase-history-detail/{code}(code=${item.orderDto.code})}">Chi tiết</a>
+                                                    <div class="d-flex align-items-center">Thành tiền: <span class="text-danger ms-2 order-price" style="font-size: 20px">[[${item.orderDto.totalPay}]]</span></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="tab-pane" id="status_cancel"
+                                     style="max-height: 800px; overflow: auto">
+                                    <div class="table-responsive">
+
+                                        <div class="card border mb-4" th:each="item,index:${status_cancel}">
+                                            <div class="card-body">
+                                                <div class="d-flex justify-content-between">
+                                                    <span style="font-weight: bold">Mã đơn hàng: [[${item.orderDto.code}]]</span>
+                                                    <div class="text-danger" style="font-weight: bold">[[${item.orderDto.statusText}]]</div>
+                                                </div>
+                                                <div class="divider"></div>
+                                                <div th:each="orderDetail: ${item.detailDtoList}">
+                                                    <div class="d-flex justify-content-between">
+                                                        <div class="d-flex">
+                                                            <div class="me-2">
+                                                                <picture th:if="${orderDetail.productDetailDto.product.image != null}" class="overflow-hidden d-block bg-light">
+                                                                    <img class="img-fluid" style="width: 81px!important; height: 81px!important; object-fit: contain"
+                                                                         th:src="${orderDetail.productDetailDto.product.image.fileUrl}" alt="123">
+                                                                </picture>
+                                                                <picture th:if="${orderDetail.productDetailDto.product.image == null}"
+                                                                         class="position-relative overflow-hidden d-block bg-light">
+                                                                    <img class="img-fluid" style="width: 81px!important; height: 81px!important; object-fit: cover"
+                                                                         src="https://firebasestorage.googleapis.com/v0/b/clothes-f4k.appspot.com/o/common%2Fdata_not_found.png?alt=media&token=36148ded-ba2c-4207-8525-2da16e7a8557">
+                                                                </picture>
+                                                            </div>
+                                                            <div class="d-flex flex-column me-2">
+                                                                <span>[[${orderDetail.productDetailDto.product.name}]]</span>
+                                                                <span class="text-muted">Phân loại hàng: Kích cỡ [[${orderDetail.productDetailDto.size.name}]], [[${orderDetail.productDetailDto.color.name}]]</span>
+                                                                <span>Số lượng: [[${orderDetail.quantity}]] </span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="d-flex flex-column justify-content-center me-3">
+                                                            <div th:if="${orderDetail.purchasePrice == null}">
+                                                                <span class="order-price text-danger">[[${orderDetail.productDetailDto.price}]]</span>
+                                                            </div>
+                                                            <div th:if="${orderDetail.purchasePrice != null}">
+                                                                <div class="d-flex flex-column" style="text-align: end">
+                                                                    <s class="lh-1 me-2"><span class="fw-bolder m-0 product-price-list text-muted order-price">[[${orderDetail.productDetailDto.price}]]</span></s>
+                                                                    <span class="order-price text-danger">[[${orderDetail.purchasePrice}]]</span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="divider"></div>
+                                                </div>
+                                                <div class="d-flex justify-content-between">
+                                                    <a class="btn btn-danger btn-orange-2" style="color: white" th:href="@{/shop/purchase-history-detail/{code}(code=${item.orderDto.code})}">Chi tiết</a>
+                                                    <div class="d-flex align-items-center">Thành tiền: <span class="text-danger ms-2 order-price" style="font-size: 20px">[[${item.orderDto.totalPay}]]</span></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div> <!-- end tab-content -->
                         </div> <!-- end card body -->
                     </div> <!-- end card -->
@@ -302,7 +385,7 @@
                 <div class="modal-body">
                     <div class="form-check">
                         <input class="form-check-input" type="radio" name="flexRadioDefault" id="1" checked>
-                        <label class="form-check-label" for="1" >
+                        <label class="form-check-label" for="1">
                             Thay đổi địa chỉ giao hàng
                         </label>
                     </div>
@@ -326,7 +409,8 @@
                     </div>
                     <div class="col-md-12">
                         <div class="mb-3">
-                            <textarea rows="3" class="form-control" id="note" name="note" placeholder="Nhập lý do"></textarea>
+                            <textarea rows="3" class="form-control" id="note" name="note"
+                                      placeholder="Nhập lý do"></textarea>
                         </div>
                     </div>
                 </div>
@@ -340,9 +424,6 @@
 </div>
 <!-- / modal-->
 
-<!-- Footer-->
-<!--<footer th:replace="shop/fragments/footer::footer"></footer>-->
-<!-- / Footer-->
 <!-- Cart Offcanvas-->
 <div th:replace="shop/fragments/drawer-cart::div"></div>
 
@@ -364,58 +445,6 @@
 
 
     $(document).ready(function () {
-        $('.order-status').each(function () {
-            const status = $(this).text().trim();
-            switch (status) {
-                case '0':
-                    $(this).text('Hủy đơn');
-                    break;
-                case '1':
-                    $(this).text('Tạo mới');
-                    break;
-                case '2':
-                    $(this).text('Trả hàng');
-                    break;
-                case '3':
-                    $(this).text('Hoàn tất');
-                    break;
-                case '4':
-                    $(this).text('Chờ giao hàng');
-                    break;
-                case '5':
-                    $(this).text('Chờ xác nhận');
-                    break;
-                case '6':
-                    $(this).text('Đang giao hàng');
-                    break;
-                case '7':
-                    $(this).text('Đã giao hàng');
-                    break;
-                case '8':
-                    $(this).text('Chờ lấy hàng');
-                    break;
-                default:
-                    $(this).text('Không xác định');
-            }
-        });
-
-        $('.payment-status').each(function () {
-            const status = $(this).text().trim();
-            switch (status) {
-                case '1':
-                    $(this).text('Chưa thanh toán');
-                    break;
-                case '2':
-                    $(this).text('Đã thanh toán');
-                    break;
-                case '3':
-                    $(this).text('Chờ thanh toán');
-                    break;
-                default:
-                    $(this).text('Không xác định');
-            }
-        });
-
         $('.order-price').each(function () {
             const status = $(this).text().trim();
             $(this).text(convert2Vnd(status));

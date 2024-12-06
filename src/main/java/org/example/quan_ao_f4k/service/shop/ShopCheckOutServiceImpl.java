@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.quan_ao_f4k.dto.response.shop.ShopProductResponse;
 import org.example.quan_ao_f4k.exception.BadRequestException;
+import org.example.quan_ao_f4k.mapper.shop.ShopProductMapper;
 import org.example.quan_ao_f4k.model.authentication.User;
 import org.example.quan_ao_f4k.model.order.*;
 import org.example.quan_ao_f4k.model.promotion.Promotion;
@@ -18,6 +19,7 @@ import org.springframework.ui.Model;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -36,6 +38,9 @@ public class ShopCheckOutServiceImpl implements ShopCheckOutService {
     private final CartRepository cartRepository;
     private final CartProductRepository cartProductRepository;
 
+    private final ShopProductMapper shopProductMapper;
+    private final OrderHistoryRepository orderHistoryRepository;
+
     @Override
     public void addModelCheckout(Model model) {
         User user = f4KUtils.getUser();
@@ -50,47 +55,30 @@ public class ShopCheckOutServiceImpl implements ShopCheckOutService {
         model.addAttribute("shippingInfoList", shippingInfo);
     }
 
-
     @Override
     @Transactional
-    public Order createOrder(HoaDonUtils.PhuongThucMuaHang phuongThucMuaHang) {
-        return createOrder(phuongThucMuaHang, true);
-    }
-
-    @Override
-    @Transactional
-    public Order createOrder(HoaDonUtils.PhuongThucMuaHang phuongThucMuaHang, boolean isClear) {
-        User user = f4KUtils.getUser();
-
-        Cart cart = getUserCart(user);
-        List<CartProduct> cartProducts = getCartProducts(cart);
-
-        for (CartProduct cartProduct: cartProducts) {
-            Order newOrder = initOrder(user, phuongThucMuaHang);
-            Order savedOrder = orderRepository.save(newOrder);
-
-            OrderDetail orderDetails = convertCartProductsToOrderDetails(cartProduct, savedOrder);
-            orderDetailRepository.save(orderDetails);
-        }
-
-
-        if (isClear) clearCart(user);
-        return null;
-    }
-
-    @Override
     public Order createOneOrder(HoaDonUtils.PhuongThucMuaHang phuongThucMuaHang, boolean isClear) {
         User user = f4KUtils.getUser();
 
         Order newOrder = initOrder(user, phuongThucMuaHang);
         Order savedOrder = orderRepository.save(newOrder);
+
+        OrderHistory orderHistory = new OrderHistory();
+        orderHistory.setOrder(savedOrder);
+        orderHistory.setCreatedAt(LocalDateTime.now());
+        orderHistory.setNote("Đơn hàng đã được đặt, chờ phê duyệt");
+        orderHistory.setStatus(savedOrder.getStatus());
+        orderHistoryRepository.save(orderHistory);
+
         Cart cart = getUserCart(user);
         List<CartProduct> cartProducts = getCartProducts(cart);
 
         List<OrderDetail> orderDetails = convertCartProductsToOrderDetails(cartProducts, savedOrder);
-        saveOrderDetails(orderDetails);
+        orderDetailRepository.saveAll(orderDetails);
 
-        if (isClear) clearCart(user);
+        if (isClear) {
+            clearCart(user);
+        }
         return savedOrder;
     }
 
@@ -120,19 +108,83 @@ public class ShopCheckOutServiceImpl implements ShopCheckOutService {
         User user = f4KUtils.getUser();
         model.addAttribute("user", user);
 
-        List<OrderDetail> status_all = orderDetailRepository.findAllByOrderUserIdAndOrderStatus(user.getId(), null);
-        List<OrderDetail> status_wait_confirm = orderDetailRepository.findAllByOrderUserIdAndOrderStatus(user.getId(), HoaDonUtils.TrangThaiHoaDon.CHO_XAC_NHAN.getStatus());
-        List<OrderDetail> status_wait_delivery = orderDetailRepository.findAllByOrderUserIdAndOrderStatus(user.getId(), HoaDonUtils.TrangThaiHoaDon.CHO_LAY_HANG.getStatus());
-        List<OrderDetail> status_on_delivery = orderDetailRepository.findAllByOrderUserIdAndOrderStatus(user.getId(), HoaDonUtils.TrangThaiHoaDon.DANG_GIAO_HANG.getStatus());
-        List<OrderDetail> status_complete = orderDetailRepository.findAllByOrderUserIdAndOrderStatus(user.getId(), HoaDonUtils.TrangThaiHoaDon.HOAN_TAT.getStatus());
-        List<OrderDetail> status_cancel = orderDetailRepository.findAllByOrderUserIdAndOrderStatus(user.getId(), HoaDonUtils.TrangThaiHoaDon.HUY_DON.getStatus());
+        model.addAttribute("status_all", getOrderResponse(user.getId(), null));
+        model.addAttribute("status_wait_confirm", getOrderResponse(user.getId(), HoaDonUtils.TrangThaiHoaDon.CHO_XAC_NHAN.getStatus()));
+        model.addAttribute("status_wait_delivery", getOrderResponse(user.getId(), HoaDonUtils.TrangThaiHoaDon.CHO_LAY_HANG.getStatus()));
+        model.addAttribute("status_on_delivery", getOrderResponse(user.getId(), HoaDonUtils.TrangThaiHoaDon.DANG_GIAO_HANG.getStatus()));
+        model.addAttribute("status_complete", getOrderResponse(user.getId(), HoaDonUtils.TrangThaiHoaDon.HOAN_TAT.getStatus()));
+        model.addAttribute("status_cancel", getOrderResponse(user.getId(), HoaDonUtils.TrangThaiHoaDon.HUY_DON.getStatus()));
+    }
 
-        model.addAttribute("status_all", status_all);
-        model.addAttribute("status_wait_confirm", status_wait_confirm);
-        model.addAttribute("status_wait_delivery", status_wait_delivery);
-        model.addAttribute("status_on_delivery", status_on_delivery);
-        model.addAttribute("status_complete", status_complete);
-        model.addAttribute("status_cancel", status_cancel);
+    @Override
+    public void addModalPurchaseHistoryDetail(Model model, String code) {
+        User user = f4KUtils.getUser();
+        model.addAttribute("user", user);
+
+        ShopProductResponse.OrderResponse orderResponse = getOderDetailResponse(code, user, model);
+        model.addAttribute("orderDetail", orderResponse);
+
+        List<OrderHistory> listOrderHistory = orderHistoryRepository.findByOrderCode(code);
+        model.addAttribute("history", listOrderHistory);
+    }
+
+    private ShopProductResponse.OrderResponse getOderDetailResponse(String code, User user, Model model) {
+        Order order = orderRepository.findByCodeAAndUser_Id(code, user.getId()).orElse(null);
+        if (order == null) {
+            model.addAttribute("errMess", "Không tồn tại đơn hàng: " + code);
+            return null;
+        }
+        ShopProductResponse.OrderDto orderDto = shopProductMapper.toOrderDto(order);
+
+        List<OrderDetail> listOrderDetail = orderDetailRepository.findAllByOrderIdAndUserId(user.getId(), orderDto.getId());
+        List<ShopProductResponse.OrderDetailDto> listOrderDetailDto = getListOrderDetail(listOrderDetail);
+
+        if (orderDto.getTotalPay() != null) {
+            BigDecimal totalCart = orderDto.getTotalPay().subtract(orderDto.getShippingPay());
+            orderDto.setTotalCart(totalCart);
+        }
+
+
+        return ShopProductResponse.OrderResponse.builder()
+                .orderDto(orderDto)
+                .detailDtoList(listOrderDetailDto)
+                .build();
+    }
+
+    private List<ShopProductResponse.OrderResponse> getOrderResponse(Long userId, Integer status) {
+        List<Order> listOrder = orderRepository.findOrdersByStatusAndType(HoaDonUtils.LoaiHoaDon.ONLINE, status);
+        List<ShopProductResponse.OrderDto> listOrderDto = shopProductMapper.toOrderDto(listOrder);
+
+        List<ShopProductResponse.OrderResponse> listOrderResponse = new ArrayList<>();
+
+        for (ShopProductResponse.OrderDto orderDto: listOrderDto) {
+            List<OrderDetail> listOrderDetail = orderDetailRepository.findAllByOrderIdAndUserId(userId, orderDto.getId());
+            List<ShopProductResponse.OrderDetailDto> listOrderDetailDto = getListOrderDetail(listOrderDetail);
+
+            if (orderDto.getTotalPay() != null) {
+                BigDecimal totalCart = orderDto.getTotalPay().subtract(orderDto.getShippingPay());
+                orderDto.setTotalCart(totalCart);
+            }
+
+            ShopProductResponse.OrderResponse orderResponse = ShopProductResponse.OrderResponse.builder()
+                    .orderDto(orderDto)
+                    .detailDtoList(listOrderDetailDto)
+                    .build();
+            listOrderResponse.add(orderResponse);
+        }
+        return listOrderResponse;
+    }
+
+    private List<ShopProductResponse.OrderDetailDto> getListOrderDetail(List<OrderDetail> orderDetails) {
+        List<ShopProductResponse.OrderDetailDto> lstDto = shopProductMapper.toOrderDetailDto(orderDetails);
+        for (ShopProductResponse.OrderDetailDto orderDetailDto: lstDto) {
+            BigDecimal currentPrice = orderDetailDto.getProductDetailDto().getPrice();
+            BigDecimal purchasePrice = (orderDetailDto.getPrice().divide(BigDecimal.valueOf(orderDetailDto.getQuantity())));
+            if (purchasePrice.compareTo(currentPrice) < 0) {
+                orderDetailDto.setPurchasePrice(purchasePrice);
+            }
+        }
+        return lstDto;
     }
 
     @Override
@@ -149,11 +201,6 @@ public class ShopCheckOutServiceImpl implements ShopCheckOutService {
                     return createOrderDetail(cartProduct, savedOrder, key);
                 })
                 .collect(Collectors.toList());
-    }
-
-    private OrderDetail convertCartProductsToOrderDetails(CartProduct cartProduct, Order savedOrder) {
-        OrderProductDetailKey key = createOrderProductDetailKey(savedOrder, cartProduct);
-        return createOrderDetail(cartProduct, savedOrder, key);
     }
 
     private OrderDetail createOrderDetail(CartProduct cartProduct, Order savedOrder, OrderProductDetailKey key) {
@@ -177,10 +224,6 @@ public class ShopCheckOutServiceImpl implements ShopCheckOutService {
                 .build();
     }
 
-    private void saveOrderDetails(List<OrderDetail> orderDetails) {
-        orderDetailRepository.saveAll(orderDetails);
-    }
-
     private OrderProductDetailKey createOrderProductDetailKey(Order savedOrder, CartProduct cartProduct) {
         OrderProductDetailKey key = new OrderProductDetailKey();
         key.setOrderId(savedOrder.getId());
@@ -202,7 +245,10 @@ public class ShopCheckOutServiceImpl implements ShopCheckOutService {
 
     private Order initOrder(User user, HoaDonUtils.PhuongThucMuaHang phuongThucMuaHang) {
         ShippingInfo shippingInfo = getDefaultShippingInfo(user);
-        BigDecimal subtotal = getSubtotal(user);
+//        BigDecimal subtotal = getSubtotal(user);
+        BigDecimal totalShippingCost = calculateShippingCost(shippingInfo);
+        BigDecimal cartTotal = calculateCartTotal(user);
+        BigDecimal subtotal = totalShippingCost.add(cartTotal);
 
         Order order = new Order();
         order.setCode(HoaDonUtils.taoMaHoaDon());
@@ -220,6 +266,7 @@ public class ShopCheckOutServiceImpl implements ShopCheckOutService {
                 , shippingInfo.getProvinceName()));
         order.setToPhone(shippingInfo.getPhoneNumber());
         order.setTotalPay(subtotal);
+        order.setShippingPay(totalShippingCost);
 
         switch (phuongThucMuaHang) {
             case CHUYEN_TIEN -> {
@@ -232,14 +279,6 @@ public class ShopCheckOutServiceImpl implements ShopCheckOutService {
             }
         }
         return order;
-    }
-
-    private BigDecimal getSubtotal(User user) {
-        ShippingInfo shippingInfo = getDefaultShippingInfo(user);
-        BigDecimal totalShippingCost = calculateShippingCost(shippingInfo);
-        BigDecimal cartTotal = calculateCartTotal(user);
-
-        return totalShippingCost.add(cartTotal);
     }
 
     private ShippingInfo getDefaultShippingInfo(User user) {

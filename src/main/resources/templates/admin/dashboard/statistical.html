@@ -5,6 +5,7 @@
     <link th:href="@{/admin/plugins/datatables/css/dataTables.bootstrap5.min.css}" rel="stylesheet" type="text/css"/>
     <link th:href="@{/admin/plugins/datatables/css/responsive.bootstrap5.min.css}" rel="stylesheet" type="text/css"/>
     <link rel="stylesheet" th:href="@{/admin/dist/css/app-f4k.min.css}"/>
+    <link rel="stylesheet" th:href="@{/admin/plugins/datepicker/daterangepicker.css}"/>
     <th:block th:insert="admin/fragments/head :: head"></th:block>
     <link rel="stylesheet" th:href="@{/admin/dist/css/common.css}"/>
     <link rel="stylesheet" th:href="@{/admin/plugins/jqgrid-5.7.0/ui.jqgrid-bootstrap4.css}"/>
@@ -13,12 +14,20 @@
         .widget-flat {
             border-radius: 10px;
             box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            background: #ffffff;
+            padding: 20px;
+            text-align: center;
         }
 
         .widget-icon {
             font-size: 30px;
+            color: #556ee6;
         }
 
+        .header-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
     </style>
 </head>
 
@@ -40,37 +49,12 @@
         <div class="content">
             <!-- Start Content-->
             <div class="container-fluid">
-                <div class="row">
-                    <div class="col-12">
-                        <div class="page-title-box">
-                            <div class="page-title-right">
-                                <form class="d-flex">
-                                    <div class="input-group">
-                                        <input type="text" class="form-control form-control-light"
-                                               id="dash-daterange">
-                                        <span class="input-group-text bg-primary border-primary text-white">
-                                                <i class="mdi mdi-calendar-range font-13"></i>
-                                            </span>
-                                    </div>
-                                    <a href="javascript: void(0);" class="btn btn-primary ms-2">
-                                        <i class="mdi mdi-autorenew"></i>
-                                    </a>
-                                    <a href="javascript: void(0);" class="btn btn-primary ms-1">
-                                        <i class="mdi mdi-filter-variant"></i>
-                                    </a>
-                                </form>
-                            </div>
-                            <h4 class="page-title">Thống kê</h4>
-                        </div>
-                    </div>
-                </div>
 
-                <!--                <div class="container mt-2">-->
-                <div class="row text-center mb-2">
-                    <div class="col-lg-12">
+                <div class="row">
+                    <div class="col-xl-6 col-lg-7">
+
                         <div class="row">
-                            <!-- Đơn hàng -->
-                            <div class="col-lg-4 mb-4">
+                            <div class="col-sm-12">
                                 <div class="card widget-flat">
                                     <div class="card-body">
                                         <div class="float-end">
@@ -78,16 +62,13 @@
                                         </div>
                                         <h5 class="text-muted fw-normal mt-0" title="Number of Orders">Đơn hàng</h5>
                                         <h3 class="mt-3 mb-3" id="totalQuantityOrder" style="font-size: 1.5rem;">0</h3>
-<!--                                        <p class="mb-0 text-muted">-->
-<!--                                            <span class="text-danger me-2"><i class="mdi mdi-arrow-down-bold"></i> 1.08%</span>-->
-<!--                                            <span class="text-nowrap">Kể từ tháng trước</span>-->
-<!--                                        </p>-->
-                                    </div>
-                                </div>
-                            </div>
+                                    </div> <!-- end card-body-->
+                                </div> <!-- end card-->
+                            </div> <!-- end col-->
+                        </div> <!-- end row -->
 
-                            <!-- Doanh thu -->
-                            <div class="col-lg-4 mb-4">
+                        <div class="row">
+                            <div class="col-sm-12">
                                 <div class="card widget-flat">
                                     <div class="card-body">
                                         <div class="float-end">
@@ -95,47 +76,38 @@
                                         </div>
                                         <h5 class="text-muted fw-normal mt-0" title="Average Revenue">Doanh thu</h5>
                                         <h3 class="mt-3 mb-3" id="revenueAmount" style="font-size: 1.5rem;">₫0.00</h3>
-<!--                                        <p class="mb-0 text-muted">-->
-<!--                                            <span class="text-danger me-2"><i class="mdi mdi-arrow-down-bold"></i> 7.00%</span>-->
-<!--                                            <span class="text-nowrap">Kể từ tháng trước</span>-->
-<!--                                        </p>-->
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Sản phẩm -->
-                            <div class="col-lg-4 mb-4">
-                                <div class="card widget-flat">
-                                    <div class="card-body">
-                                        <div class="float-end">
-                                            <i class="mdi mdi-pulse widget-icon" style="font-size: 2rem;"></i>
-                                        </div>
-                                        <h5 class="text-muted fw-normal mt-0" title="Products">Sản phẩm</h5>
-                                        <h3 class="mt-3 mb-3" id="totalQuantityProduct" style="font-size: 1.5rem;">
-                                            0</h3>
-<!--                                        <p class="mb-0 text-muted">-->
-<!--                                            <span class="text-success me-2"><i class="mdi mdi-arrow-up-bold"></i> 4.87%</span>-->
-<!--                                            <span class="text-nowrap">Kể từ tháng trước</span>-->
-<!--                                        </p>-->
-                                    </div>
-                                </div>
-                            </div>
+                                    </div> <!-- end card-body-->
+                                </div> <!-- end card-->
+                            </div> <!-- end col-->
                         </div> <!-- end row -->
-
                     </div> <!-- end col -->
-                </div> <!-- end row -->
 
-                <!-- Phần Biểu đồ -->
+                    <!-- Tổng doanh thu theo loại đơn hàng-->
+                    <div class="col-xl-6 col-lg-5">
+                        <div class="card">
+                            <div class="d-flex card-header justify-content-between align-items-center">
+                                <!--                                <h4 class="header-title">Tổng doanh thu</h4>-->
+                            </div>
+
+                            <div class="card-body pt-0">
+                                <div id="average-revenue">
+                                    <div id="average-chart" style="width:100%; height:400px;"></div>
+                                </div>
+                            </div> <!-- end card-body-->
+                        </div> <!-- end card-->
+                    </div> <!-- end col-->
+                </div>
+
+                <!-- Phần Biểu đồ cột và sp bán chạy nhất-->
                 <div class="row">
-                    <div class="col-9">
+                    <div class="row-xl-12 row-lg-12">
                         <div class="card card-h-100">
                             <div class="card-header d-flex justify-content-between align-items-center">
                                 <h4 class="header-title">Thống kê đơn hàng và doanh thu</h4>
                                 <div class="filterDate d-flex align-items-center">
-                                    <label for="startDate" class="me-2">Từ:</label>
-                                    <input type="date" id="startDate" name="startDate" class="form-control me-2" style="width: 150px;">
-                                    <label for="endDate" class="me-2">Đến:</label>
-                                    <input type="date" id="endDate" name="endDate" class="form-control me-2" style="width: 150px;">
+                                    <input type="text" class="form-control date" id="createDateRanger"
+                                           data-toggle="date-picker" name="createDateRanger">
+                                    <div class="ms-1 invalid-feedback"></div>
                                     <button id="filterButton" class="btn btn-primary">Lọc</button>
                                 </div>
                             </div>
@@ -145,77 +117,63 @@
                         </div>
                     </div>
 
-                    <!-- Tổng doanh thu -->
-                    <div class="col-3 mb-2">
-                        <div class="card">
+                    <!--Thống kê sản phẩm bán chạy nhất-->
+                    <div class="col-xl-12 col-lg-12">
+                        <div class="card card-h-100">
                             <div class="d-flex card-header justify-content-between align-items-center">
-                                <h4 class="header-title">Tổng doanh thu</h4>
-                                <div class="dropdown">
-                                    <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false">
-                                        <i class="mdi mdi-dots-vertical"></i>
-                                    </a>
-                                    <div class="dropdown-menu dropdown-menu-end">
-                                        <a href="javascript:void(0);" class="dropdown-item">Báo cáo doanh thu</a>
-                                        <a href="javascript:void(0);" class="dropdown-item">Xuất báo cáo</a>
-                                        <a href="javascript:void(0);" class="dropdown-item">Lợi nhuận</a>
-                                        <a href="javascript:void(0);" class="dropdown-item">Hoạt động</a>
+                                <h4 class="header-title">Sản phẩm bán chạy nhất</h4>
+                                <div class="d-flex card-header align-items-center">
+                                    <h4 class="header-title me-3">Lọc theo</h4>
+                                    <select id="time-filter" class="form-select me-3" style="width: auto;">
+                                        <option value="day">Ngày</option>
+                                        <option value="week">Tuần</option>
+                                        <option value="year">Năm</option>
+                                        <option value="orderType">Loại đơn hàng</option>
+                                    </select>
+
+                                    <div id="datepicker-container" class="mb-3" style="display: inline-block; width: auto;">
+                                        <label for="datepicker" class="form-label mb-0">Chọn ngày:</label>
+                                        <input type="text" id="datepicker" class="form-control" style="width: auto;">
+                                    </div>
+
+                                    <div id="week-selector" class="mb-3" style="display: inline-block; width: auto;">
+                                        <label for="week" class="form-label mb-0">Chọn tuần:</label>
+                                        <select id="week" class="form-select" style="width: auto;">
+                                            <option value="current">Tuần hiện tại</option>
+                                            <option value="previous">Tuần trước</option>
+                                        </select>
+                                    </div>
+
+                                    <div id="year-selector" class="mb-3" style="display: inline-block; width: auto;">
+                                        <label for="year" class="form-label mb-0">Chọn năm:</label>
+                                        <input type="number" id="year" class="form-control" placeholder="Nhập năm" style="width: auto;">
+                                    </div>
+
+                                    <div id="order-type-selector" class="mb-3" style="display: inline-block; width: auto;">
+                                        <label for="orderType" class="form-label mb-0">Loại đơn hàng:</label>
+                                        <select id="orderType" class="form-select" style="width: auto;">
+                                            <option value="">Tất cả</option>
+                                            <option value="ONLINE">Trực tuyến</option>
+                                            <option value="OFFLINE">Tại cửa hàng</option>
+                                        </select>
                                     </div>
                                 </div>
                             </div>
 
-                            <div class="card-body pt-0">
-                                <div id="average-revenue">
-                                    <div id="average-chart" style="width:100%; height:400px;"></div>
-                                </div>
-
-                                <div class="chart-widget-list">
-                                    <p>
-                                        <i class="mdi mdi-square text-primary"></i> Trực tiếp
-                                        <span class="float-end" id="total-pay-online">0</span>
-                                    </p>
-                                    <p>
-                                        <i class="mdi mdi-square text-danger"></i> Trực tuyến
-                                        <span class="float-end" id="total-pay-offline">0</span>
-                                    </p>
-                                </div>
-                            </div> <!-- end card-body-->
+                            <div id="container" style="height: 500px; width: 100%; margin-top: 20px;"></div>
                         </div> <!-- end card-->
-                    </div> <!-- end col-->
+                    </div> <!-- end col -->
+
                 </div>
-                <!--                </div>-->
-
-                <div class="row">
-                    <div class="col-xl-6 col-lg-12 order-lg-2 order-xl-1">
-                        <div class="card">
-                            <div class="d-flex card-header justify-content-between align-items-center">
-                                <h4 class="header-title">Sản phẩm bán chạy nhất</h4>
-                                <a href="javascript:void(0);" class="btn btn-sm btn-light">Xuất <i
-                                        class="mdi mdi-download ms-1"></i></a>
-                            </div>
-
-                            <div class="card-body pt-0">
-                                <div class="table-responsive">
-                                    <table class="table table-centered table-nowrap table-hover mb-0">
-                                        <tbody>
-                                        <!--Hiển thị dữ liệu tại đây-->
-                                        </tbody>
-                                    </table>
-                                </div> <!-- end table-responsive-->
-                            </div> <!-- end card-body-->
-                        </div> <!-- end card-->
-                    </div> <!-- end col-->
-
-                </div> <!-- end col -->
-                <!-- end row -->
             </div>
-            <!-- container -->
         </div>
         <!-- content -->
     </main>
 </section>
 
+<!--highcharts biểu đồ-->
 <script src="https://code.highcharts.com/highcharts.js"></script>
-
+<!--<script src="https://code.highcharts.com/modules/accessibility.js"></script>-->
 <!--jquery-->
 <script th:src="@{/common/jquery/jquery.min.js}"></script>
 <script th:src="@{/common/dayjs/dayjs.min.js}"></script>
@@ -231,40 +189,11 @@
 <script th:src="@{/admin/plugins/datatables/js/dataTables.responsive.min.js}"></script>
 <script th:src="@{/admin/plugins/datatables/js/responsive.bootstrap5.min.js}"></script>
 <script th:src="@{/admin/plugins/datatables/js/dataTables.checkboxes.min.js}"></script>
+<!--date ranger piker-->
+<script th:src="@{/admin/plugins/datepicker/moment.min.js}"></script>
+<script th:src="@{/admin/plugins/datepicker/daterangepicker.js}"></script>
 <!--custom js-->
 <script th:src="@{/admin/dashboard/statistical.js}"></script>
-<script>
-    // // Dữ liệu cho biểu đồ
-    // Highcharts.chart('average-chart', {
-    //     chart: {
-    //         type: 'pie' // Loại biểu đồ
-    //     },
-    //     title: {
-    //         text: 'Biểu đồ tổng doanh thu'
-    //     },
-    //     series: [{
-    //         name: 'Doanh thu',
-    //         data: [
-    //             { name: 'Trực tiếp', y: 300.56, color: '#36A2EB' },
-    //             { name: 'Trực tuyến', y: 135.18, color: '#FF6384' }
-    //         ],
-    //         showInLegend: true,
-    //         fillColor: '#FFFFFF'
-    //     }],
-    //     tooltip: {
-    //         pointFormat: '<b>{point.y}</b>'
-    //     },
-    //     plotOptions: {
-    //         pie: {
-    //             allowPointSelect: true,
-    //             cursor: 'pointer',
-    //             dataLabels: {
-    //                 enabled: true,
-    //                 format: '<b>{point.name}</b>: {point.percentage:.1f} %'
-    //             }
-    //         }
-    //     }
-    // });
-</script>
+<script></script>
 </body>
 </html>

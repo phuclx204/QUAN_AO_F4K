@@ -6,6 +6,8 @@ import org.example.quan_ao_f4k.mapper.product.BrandMapper;
 import org.example.quan_ao_f4k.mapper.product.CategoryMapper;
 import org.example.quan_ao_f4k.model.authentication.User;
 import org.example.quan_ao_f4k.model.order.CartProduct;
+import org.example.quan_ao_f4k.model.order.Order;
+import org.example.quan_ao_f4k.model.order.OrderDetail;
 import org.example.quan_ao_f4k.model.order.ShippingInfo;
 import org.example.quan_ao_f4k.model.product.Product;
 import org.example.quan_ao_f4k.model.product.ProductDetail;
@@ -43,4 +45,16 @@ public interface ShopProductMapper {
 
     ShopProductResponse.UserDto toUserDto(User user);
     User toUser(ShopProductResponse.UserDto userDto);
+
+    @Mapping(source = "productDetail", target = "productDetailDto")
+    @Mapping(source = "order", target = "orderDto")
+    ShopProductResponse.OrderDetailDto toOrderDetailDto(OrderDetail orderDetail);
+    OrderDetail toOrderDetail(ShopProductResponse.OrderDetailDto orderDetailDto);
+    List<ShopProductResponse.OrderDetailDto> toOrderDetailDto(List<OrderDetail> orderDetails);
+
+    @Mapping(source = "status", target = "statusText", qualifiedByName = "getOrderStatusText")
+    ShopProductResponse.OrderDto toOrderDto(Order order);
+    Order toOrder(ShopProductResponse.OrderDto orderDto);
+    List<ShopProductResponse.OrderDto> toOrderDto(List<Order> orderDetail);
+
 }

@@ -35,6 +35,9 @@ public class Order extends BaseEntity {
     @Column(name = "total_pay", precision = 10, scale = 2)
     private BigDecimal totalPay;
 
+    @Column(name = "shipping_pay", precision = 10, scale = 2)
+    private BigDecimal shippingPay;
+
     @ManyToOne
     @JoinColumn(name = "payment_method_type")
     private PaymentMethod paymentMethod;

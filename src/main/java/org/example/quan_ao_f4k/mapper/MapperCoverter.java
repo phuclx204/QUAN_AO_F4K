@@ -23,6 +23,7 @@ import org.example.quan_ao_f4k.repository.order.PaymentMethodRepository;
 import org.example.quan_ao_f4k.repository.product.*;
 import org.example.quan_ao_f4k.repository.promotion.PromotionRepository;
 import org.example.quan_ao_f4k.util.F4KConstants;
+import org.example.quan_ao_f4k.util.HoaDonUtils;
 import org.mapstruct.Mapper;
 import org.mapstruct.Named;
 import org.mapstruct.ReportingPolicy;
@@ -167,6 +168,11 @@ public abstract class MapperCoverter {
     @Named("getOrderType")
     public String getOrderType(Order order) {
         return order.getOrder_type();
+    }
+
+    @Named("getOrderStatusText")
+    public String getOrderStatusText(Integer status) {
+        return HoaDonUtils.TrangThaiHoaDon.getMessByStatus(status);
     }
 
 }

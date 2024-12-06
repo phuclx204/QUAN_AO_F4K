@@ -15,28 +15,32 @@
 <section id="content">
     <div th:replace="admin/fragments/content::content"></div>
     <main>
-        <div class="button-container d-flex align-items-center mb-3">
-            <div class="invoice-container">
-                <button type="button" class="btn btn-primary me-2" onclick="confirmCreateInvoice()">
-                    <i class="bx bx-plus"></i> Tạo hóa đơn
+        <div class="button-container d-flex align-items-center">
+            <div class="invoice-container m-2">
+                <button class="btn btn-primary" data-toggle="modal" data-target="#productModal" id="add-product"
+                        th:onclick="addProductDetail()">Thêm sản phẩm
                 </button>
-                <div class="d-flex flex-wrap mt-2 new-invoice-container">
-                    <input type="hidden" id="currentOrderId" th:value="${currentOrderId}"/>
-                    <div th:each="order, iterStat : ${listOrder}">
-                        <button th:class="${order.id == currentOrderId} ? 'align-items-center invoice-item active' : 'align-items-center invoice-item'"
-                                th:text="'Hóa đơn ' + ${iterStat.index + 1}"
-                                th:onclick="'viewInvoice(' + ${order.id} + ')'">
-                        </button>
-                    </div>
+                <button type="button" class="btn btn-primary" onclick="confirmCreateInvoice()">
+                    <i class="bx bx-plus"></i>Tạo hóa đơn
+                </button>
+            </div>
+
+            <div class="d-flex flex-wrap align-items-center new-invoice-container">
+                <input type="hidden" id="currentOrderId" th:value="${currentOrderId}"/>
+                <div th:each="order, iterStat : ${listOrder}">
+                    <button th:class="${order.id == currentOrderId} ? 'align-items-center invoice-item active' : 'align-items-center invoice-item'"
+                            th:text="'Hóa đơn ' + ${iterStat.index + 1}"
+                            th:onclick="'viewInvoice(' + ${order.id} + ')'">
+                    </button>
                 </div>
+                <span th:if="${#lists.isEmpty(listOrder)}">
+                        <p colspan="6" class="text-danger">Chưa có hóa đơn</p>
+                </span>
             </div>
         </div>
 
         <div class="row">
-            <div class="col-md-12 mb-7">
-                <button class="btn btn-primary" data-toggle="modal" data-target="#productModal" id="add-product"
-                        th:onclick="addProductDetail()">Thêm sản phẩm
-                </button>
+            <div class="col-md-9">
 
                 <div class="table-responsive mt-2">
                     <table class="table table-bordered table-light text-dark mt-2">
@@ -47,7 +51,7 @@
                             <th scope="col">Giá tiền</th>
                             <th scope="col">Số Lượng</th>
                             <th scope="col">Thành tiền</th>
-                            <th scope="col">Thao tác</th>
+                            <th scope="col" style="width: 50px !important;">Thao tác</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -57,13 +61,17 @@
                                      style="width: 50px; height: 50px;"/>
                             </td>
                             <td th:if="${detail.image == null}">
-                                null
+                                <img th:src="@{/admin/img/people.png}"
+                                     style="width: 50px; height: 50px;"/>
                             </td>
-                            <td th:text="${detail.productDetail.product.name} + ' | Size : ' + ${detail.productDetail.size.name} + ' | Màu : ' + ${detail.productDetail.color.name}"></td>
+                            <td th:text="${detail.productDetail.product.name} + ' - Size : ' + ${detail.productDetail.size.name} + ' - Màu : ' + ${detail.productDetail.color.name}"></td>
                             <td>
-                                <input type="text" class="form-control priceInput"
-                                       th:value="${detail.price}" readonly
-                                       style="width: 100px;"/>
+                                <input type="hidden" class="priceInput"
+                                       th:value="${detail.price}"/>
+                                <span class="priceFormat"
+                                      th:attr="data-price=${detail.price}"
+                                      style="width: 100px;">
+                                </span>
                             </td>
                             <td>
                                 <input type="text" class="form-control quantity-input" th:value="${detail.quantity}"
@@ -71,7 +79,12 @@
                                 <input type="hidden" id="orderId" th:value="${detail.order.id}"/>
                                 <input type="hidden" id="productDetailId" th:value="${detail.productDetail.id}"/>
                             </td>
-                            <td th:text="${detail.price * detail.quantity}"></td>
+                            <td>
+                                 <span class="priceRevenu"
+                                       th:attr="data-price-revenu=${detail.price * detail.quantity}"
+                                       style="width: 100px;">
+                                </span>
+                            </td>
                             <td>
                                 <span data-bs-toggle="tooltip" title="Xóa khỏi giỏ hàng">
                                     <a href="javascript:void(0)" class="delete-btn"
@@ -85,7 +98,7 @@
 
                         </tr>
                         <tr th:if="${#lists.isEmpty(orderDetails)}">
-                            <td colspan="6" class="text-danger">Không có sản phẩm nào trong giỏ.</td>
+                            <td colspan="6" class="text-danger">Đơn hàng của bạn chưa có sản phẩm nào</td>
                         </tr>
                         </tbody>
                     </table>
@@ -102,29 +115,29 @@
                               style="font-size: 10px"><i>(*) Các trường bắt buộc nhập khi đặt hàng</i></span>
                         <div class="row mt-5">
                             <!-- Thông tin cơ bản -->
-                            <div class="col-md-6 mb-3">
-                                <div class="form-group">
-                                    <label for="name" class="form-label fw-bold">Tên khách hàng <span
-                                            class="text-danger">*</span></label>
-                                    <input type="text"
-                                           id="name"
-                                           class="form-control"
-                                           placeholder="Nhập tên khách hàng"/>
-                                    <span id="nameStatus" class="text-danger small"></span>
-                                </div>
-                            </div>
+                            <!--                            <div class="col-md-6 mb-3">-->
+                            <!--                                <div class="form-group">-->
+                            <!--                                    <label for="name" class="form-label fw-bold">Tên khách hàng <span-->
+                            <!--                                            class="text-danger">*</span></label>-->
+                            <!--                                    <input type="text"-->
+                            <!--                                           id="name"-->
+                            <!--                                           class="form-control"-->
+                            <!--                                           placeholder="Nhập tên khách hàng"/>-->
+                            <!--                                    <span id="nameStatus" class="text-danger small"></span>-->
+                            <!--                                </div>-->
+                            <!--                            </div>-->
 
-                            <div class="col-md-6 mb-3">
-                                <div class="form-group">
-                                    <label for="phone" class="form-label fw-bold">Số điện thoại <span
-                                            class="text-danger">*</span></label>
-                                    <input type="text"
-                                           id="phone"
-                                           class="form-control"
-                                           placeholder="Nhập số điện thoại"/>
-                                    <span id="phoneStatus" class="text-danger small"></span>
-                                </div>
-                            </div>
+                            <!--                            <div class="col-md-6 mb-3">-->
+                            <!--                                <div class="form-group">-->
+                            <!--                                    <label for="phone" class="form-label fw-bold">Số điện thoại <span-->
+                            <!--                                            class="text-danger">*</span></label>-->
+                            <!--                                    <input type="text"-->
+                            <!--                                           id="phone"-->
+                            <!--                                           class="form-control"-->
+                            <!--                                           placeholder="Nhập số điện thoại"/>-->
+                            <!--                                    <span id="phoneStatus" class="text-danger small"></span>-->
+                            <!--                                </div>-->
+                            <!--                            </div>-->
 
                             <!-- Địa chỉ chi tiết -->
                             <div class="col-12 mb-3">
@@ -178,13 +191,12 @@
                     </div>
                 </div>
             </div>
-
             <!--            thông tin hóa đơn-->
-            <div class="col-md-5 mt-2 mx-auto">
+            <div class="col-md-3 mt-2">
                 <div class="card mb-3">
                     <div class="card-body">
                         <div th:if="${order == null}">
-                            <p class="text-danger mt-2">Chưa có đơn hàng nào được chọn.</p>
+                            <p class="text-danger mt-2">Chưa có đơn hàng</p>
                         </div>
                         <span th:if="${order != null}">
                             <span class="text-danger btn-outline-secondary" style="cursor: pointer; user-select: none"
@@ -205,21 +217,25 @@
                             </h5>
                         </div>
                         <div class="form-group">
-                            <label>Phương thức thanh toán:</label>
-                            <div>
-                                <div class="form-check">
-                                    <input type="radio" id="paymentCash" name="paymentMethodType" class="form-check-input"
-                                           value="cash" checked>
-                                    <label for="paymentCash" class="form-check-label">
-                                        <i class='bx bx-money'></i> Thanh toán trực tiếp</label>
-                                </div>
-                                <div class="form-check">
-                                    <input type="radio" id="paymentVNPay" name="paymentMethodType" class="form-check-input"
-                                           value="vnpay">
-                                    <label for="paymentVNPay" class="form-check-label">
-                                        <i class='bx bx-credit-card'></i> VNPay</label>
-                                </div>
-                            </div>
+                            <label for="name" class="form-label fw-bold">Tên khách hàng
+<!--                                <span class="text-danger">*</span>-->
+                            </label>
+                            <input type="text"
+                                   id="name"
+                                   class="form-control"
+                                   placeholder="Nhập tên khách hàng"/>
+                            <span id="nameStatus" class="text-danger small"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="phone" class="form-label fw-bold">Số điện thoại
+<!--                                <span class="text-danger">*</span>-->
+                            </label>
+                            <input type="text"
+                                   id="phone"
+                                   class="form-control"
+                                   placeholder="Nhập số điện thoại"/>
+                            <span id="phoneStatus" class="text-danger small"></span>
                         </div>
                         <div class="form-group mt-4">
                             <label for="customerAmount">Tiền khách đưa:
@@ -238,13 +254,11 @@
                             <input type="checkbox" id="invoiceCheckbox" class="form-check-input"/>
                             <label for="invoiceCheckbox" class="form-check-label">In hóa đơn</label>
                         </div>
-                        <span th:if="${order != null}">
-                            <button type="button" class="btn btn-success w-100"
-                                    th:disabled="${order == null || order.code == null || orderDetails.isEmpty()}"
-                                    th:onclick="|confirmOrder(${order.id})|">
-                                Thanh toán
-                            </button>
-                        </span>
+                        <button type="button" class="btn btn-success w-100"
+                                th:disabled="${order == null || order.code == null || orderDetails.isEmpty()}"
+                                th:onclick="${order != null} ? 'confirmOrder(' + ${order.id} + ')' : ''">
+                            Thanh toán
+                        </button>
                     </div>
                 </div>
             </div>
@@ -253,7 +267,7 @@
     <!-- Modal -->
     <div id="productModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="productModalLabel"
          aria-hidden="true">
-        <div class="modal-dialog" role="document" style="max-width: 1070px">
+        <div class="modal-dialog" role="document" style="max-width: 1070px;">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="productModalLabel">Thêm sản phẩm</h5>
@@ -312,8 +326,6 @@
                                             <option value="asc">Giá tăng dần</option>
                                             <option value="desc">Giá giảm dần</option>
                                         </select>
-                                        <!--                                        <input type="number" id="minPrice" class="form-control" placeholder="Min" style="width: 80px; margin-left: 5px;" />-->
-                                        <!--                                        <input type="number" id="maxPrice" class="form-control" placeholder="Max" style="width: 80px; margin-left: 5px;" />-->
                                     </div>
                                 </div>
                             </div>
@@ -324,17 +336,17 @@
                         </form>
                     </header>
                     <main>
-                        <div class="table-responsive mt-2">
-                            <table class="table table-bordered table-centered table-primary">
-                                <thead>
+                        <div class="table-responsive">
+                            <table class="table table-centered table-hover table-primary">
+                                <thead class="thead-light">
                                 <tr>
-                                    <th>Ảnh</th>
-                                    <th>Tên sản phẩm</th>
-                                    <th>Giá</th>
-                                    <th>Màu</th>
-                                    <th>Kích cỡ</th>
-                                    <th>Số lượng</th>
-                                    <th>Thao tác</th>
+                                    <th scope="col">Ảnh</th>
+                                    <th scope="col">Tên sản phẩm</th>
+                                    <th scope="col">Giá</th>
+                                    <th scope="col">Màu</th>
+                                    <th scope="col">Kích cỡ</th>
+                                    <th scope="col">Số lượng</th>
+                                    <th scope="col">Thao tác</th>
                                 </tr>
                                 </thead>
                                 <tbody id="productList">
@@ -355,8 +367,6 @@
             </div>
         </div>
     </div>
-<!--    thông báo-->
-    <span id="notificationMessage" th:if="${message != null}" th:text="${message}" style="display: none;"></span>
 </section>
 
 <!--default script-->
@@ -375,6 +385,7 @@
 <!--custom script-->
 <script th:src="@{/admin/shopping_offline/shopping.js}"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/decimal.js/10.2.4/decimal.min.js"></script>
-<script></script>
+<script>
+</script>
 </body>
 </html>

@@ -66,3 +66,10 @@
     text-decoration: line-through;
     color: #999; /* Màu xám nhạt để thể hiện sự hết hàng */
 }
+
+.btn-orange-2 {
+    background-color: #ee4d2d!important;
+    color: #fff;
+    padding: 10px 30px !important;
+    border-radius: 3px !important;
+}

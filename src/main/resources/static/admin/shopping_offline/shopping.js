@@ -1,25 +1,8 @@
-
 // Load data và hiện modal product detail khi click
 function addProductDetail() {
     loadSelect();
     fetchProductDetails();
 }
-
-document.addEventListener('DOMContentLoaded', function () {
-    const notificationMessage = document.getElementById('notificationMessage');
-    if (notificationMessage) {
-        const message = notificationMessage.innerText;
-        if (message) {
-            Swal.fire({
-                title: 'Thông báo',
-                text: message,
-                icon: 'info',
-                showConfirmButton: true
-            });
-        }
-
-    }
-});
 
 function loadOptions(endpoint, selectElement, defaultOption, selectedId = null) {
     $.get(endpoint, function (data) {
@@ -53,10 +36,10 @@ function confirmCreateInvoice() {
 
     const orderCount = getOrderCount();
 
-    if (orderCount >= 10) {
+    if (orderCount >= 5) {
         Swal.fire({
             title: 'Giới hạn hóa đơn',
-            text: "Bạn đã đạt giới hạn 10 hóa đơn. Không thể tạo thêm hóa đơn mới.",
+            text: "Bạn đã đạt giới hạn 5 hóa đơn. Không thể tạo thêm hóa đơn mới.",
             icon: 'warning',
             confirmButtonColor: '#3085d6',
             confirmButtonText: 'Đóng'
@@ -64,22 +47,7 @@ function confirmCreateInvoice() {
         return;
     }
 
-    Swal.fire({
-        title: 'Xác nhận tạo hóa đơn',
-        text: "Bạn có chắc chắn muốn tạo hóa đơn mới không?",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Có, tạo hóa đơn!',
-        cancelButtonText: 'Hủy'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            createInvoice();
-        } else {
-            handleRemainingInvoices()
-        }
-    });
+    createInvoice();
 }
 
 // tạo hóa đơn với mã tự sinh, trạng thái 1,loại offline
@@ -99,17 +67,7 @@ function createInvoice() {
         data: JSON.stringify(orderData),
         success: function (response) {
             const newInvoiceId = response.id;
-
-            Swal.fire({
-                title: 'Tạo hóa đơn thành công!',
-                text: "Hóa đơn đã được tạo.",
-                icon: 'success',
-                timer: 2000,
-                timerProgressBar: true,
-                willClose: () => {
-                    viewInvoice(newInvoiceId)
-                }
-            });
+            viewInvoice(newInvoiceId)
         },
         error: function (xhr) {
             let errorMessage = 'Không thể tạo hóa đơn.';
@@ -182,7 +140,6 @@ function viewInvoice(orderIds) {
     window.location.href = "/admin/shopping-offline/" + orderIds
 }
 
-
 // tự động cho các trường nhập tiền chỉ được nhập số
 $(document).ready(function () {
     $("#minPrice, #maxPrice,.quantity-input").on("input", function () {
@@ -203,15 +160,16 @@ function checkDiscountAndRenderPrice(productDetailId, originalPrice, callback) {
             productDetailId: productDetailId,
             originalPrice: originalPrice
         },
-        success: function(discountedPrice) {
+        success: function (discountedPrice) {
             callback(discountedPrice); // Gọi callback với giá sau giảm
         },
-        error: function(error) {
+        error: function (error) {
             console.error('Lỗi khi tính giảm giá:', error);
             callback(originalPrice); // Trả về giá gốc nếu có lỗi
         }
     });
 }
+
 // hàm lấy dữ liệu product detail
 function fetchProductDetails(page = 1, size = 5) {
     const search = $("#searchInput").val();
@@ -252,9 +210,10 @@ function fetchProductDetails(page = 1, size = 5) {
 //hàm format price
 function formatPrice(amount) {
     // Chuyển đổi số thành chuỗi và định dạng với dấu phẩy
-    return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") +' ₫';
+    return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") + ' ₫';
 }
 
+// đổ dữ liệu sản phẩm chi tiết ra bảng
 function renderProductList(products) {
 
     const productList = document.getElementById('productList');
@@ -276,9 +235,9 @@ function renderProductList(products) {
         let image = ``;
 
         if (!listImg.length) {
-            image = ''
+            image = `<img src="/admin/img/people.png" alt="${prd.product.thumbnail}" style="width: 50px; height: 50px;object-fit: cover;">`
         } else {
-            image = `<img src="${listImg[0].fileUrl}" alt="${prd.product.name}" style="width: 50px; height: 50px;">`
+            image = `<img src="${listImg[0].fileUrl}" alt="${prd.product.thumbnail}" style="width: 50px; height: 50px;object-fit: cover;">`
         }
 
         productRow.innerHTML = `
@@ -286,29 +245,36 @@ function renderProductList(products) {
             <td>${prd.product.name}</td>
             <td class="original-price">${formatPrice(prd.price)}</td>
             <td>
-                ${prd.color ? `<span class="color-circle" style="background-color: ${prd.color.hex}; display: inline-block; width: 20px; height: 20px; border-radius: 50%;"></span>` : ''}
+                ${prd.color ? `
+                  <span class="color-circle" style="background-color: ${prd.color.hex}; display: inline-block; width: 20px; height: 20px; border-radius: 50%;"></span>
+                  <span class="color-name" style="margin-left: 8px;">${prd.color.name}</span>
+                ` : ''}
             </td>
             <td>${prd.size.name}</td>
             <td>${prd.quantity}</td>
-           <td>
-                <button 
-                    class="btn ${prd.quantity === 0 ? 'btn-secondary' : 'btn-success'}" 
-                    ${prd.quantity === 0 ? 'disabled' : ''} 
-                    onclick="addProductToInvoice(${prd.id})">
-                    ${prd.quantity === 0 ? 'Đang cập nhật' : 'Chọn vào giỏ'}
+            <td>
+                 <button 
+                  ${prd.quantity === 0 ? 'disabled="true"' : ''} 
+                  data-bs-toggle="tooltip" 
+                  data-bs-placement="top"
+                  title="${prd.quantity === 0 ? 'Đang cập nhật' : 'Chọn vào giỏ'}"
+                  onclick="addProductToInvoice(${prd.id})" 
+                  style="cursor: ${prd.quantity === 0 ? 'not-allowed' : 'pointer'};">
+                  <i class='mdi mdi-cart ${prd.quantity === 0 ? 'text-danger' : 'text-success'}' style="font-size: 19px;"></i>
                 </button>
             </td>
         `;
 
         // Kiểm tra giảm giá và cập nhật giao diện
-        checkDiscountAndRenderPrice(prd.id, prd.price, function(discountedPrice) {
+        checkDiscountAndRenderPrice(prd.id, prd.price, function (discountedPrice) {
             const originalPriceCell = productRow.querySelector('.original-price');
             if (discountedPrice !== prd.price) {
                 const discountPercentage = ((prd.price - discountedPrice) / prd.price) * 100;
 
                 originalPriceCell.innerHTML = `
                     <span style="text-decoration: line-through; color: red;">${formatPrice(prd.price)}</span>
-                    <span style="color: black;" class="discountedPrice">${discountedPrice}</span>
+                    <span style="color: black;">${formatPrice(discountedPrice)}</span>
+                    <span class="hidden">${discountedPrice}</span>
                 `;
 
                 // Hiển thị phần trăm giảm
@@ -328,15 +294,19 @@ function renderProductList(products) {
                 originalPriceCell.appendChild(discountLabel);
             } else {
                 originalPriceCell.innerHTML = `
-                    <span style="color: black;" class="discountedPrice">${prd.price}</span>
+                    <span style="color: black;">${formatPrice(prd.price)}</span>
+                    <span style="color: black;" class="hidden">${prd.price}</span>
                 `;
             }
         });
 
         productList.appendChild(productRow);
     });
+    const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    tooltipTriggerList.forEach(function (tooltipTriggerEl) {
+        new bootstrap.Tooltip(tooltipTriggerEl);
+    });
 }
-
 
 //hàm thiết lập phân trang cho product detail
 function setupPagination(totalPages, currentPage) {
@@ -408,17 +378,15 @@ $("#searchButton").on("click", function () {
 
 // Gọi hàm lấy dữ liệu product detail khi nhấn nút Reset
 $("#resetButton").on("click", function () {
-    // Đặt lại giá trị của các trường nhập
     $("#searchInput").val("");
     $("#minPrice").val("");
     $("#maxPrice").val("");
     $("#sortSelect").val("");
-    $("#brandSelect").val(null); // Hoặc giá trị mặc định nếu cần
-    $("#categorySelect").val(null); // Hoặc giá trị mặc định nếu cần
-    $("#sizeSelect").val(null); // Hoặc giá trị mặc định nếu cần
-    $("#colorSelect").val(null); // Hoặc giá trị mặc định nếu cần
+    $("#brandSelect").val(null);
+    $("#categorySelect").val(null);
+    $("#sizeSelect").val(null);
+    $("#colorSelect").val(null);
 
-    // Gọi hàm tìm kiếm để cập nhật danh sách sản phẩm
     fetchProductDetails();
 });
 
@@ -467,7 +435,7 @@ function addProductToInvoice(productDetailId) {
     const currentOrderId = getCurrentOrderId();
 
     if (!currentOrderId) {
-        Swal.fire('Lỗi', 'Vui lòng chọn hóa đơn.', 'error');
+        Swal.fire('Lỗi', 'Chưa có đơn hàng.', 'error');
         return;
     }
 
@@ -476,40 +444,11 @@ function addProductToInvoice(productDetailId) {
 
     if (existingProduct.length > 0) {
         // Sản phẩm đã tồn tại trong giỏ
-        const price = existingProduct.find('.priceInput').val(); // Lấy giá từ input có class priceInput
-        const currentQty = parseInt(existingProduct.find('.quantity-input').val()) || 0; // Lấy số lượng từ input có class quantity-input
-        const newQty = currentQty + 1;
-
-        // Gọi API cập nhật
-        $.ajax({
-            url: `/admin/shopping-offline/${currentOrderId}/${productDetailId}`,
-            type: 'PUT',
-            contentType: 'application/json',
-            data: JSON.stringify({
-                orderId: currentOrderId,
-                productDetailId: productDetailId,
-                quantity: newQty,
-                price: parseFloat(price)
-            }),
-            success: function (response) {
-                if (response) {
-                    updateProductStock(productDetailId, 1);
-                    Swal.fire('Thành công', 'Cập nhật sản phẩm thành công', 'success')
-                        .then(() => {
-                            location.reload();
-                        });
-                } else {
-                    Swal.fire('Lỗi', 'Không thể cập nhật sản phẩm', 'error');
-                }
-            },
-            error: function (xhr) {
-                Swal.fire('Lỗi', 'Đã xảy ra lỗi khi cập nhật sản phẩm', 'error');
-            }
-        });
+        Swal.fire('', 'Sản phẩm đã có trong giỏ', 'warning');
     } else {
         // Sản phẩm chưa có trong giỏ - thêm mới
         const productRow = $(`button[onclick="addProductToInvoice(${productDetailId})"]`).closest('tr');
-        const price = productRow.find('.discountedPrice').text().trim(); // Lấy giá từ bảng sản phẩm
+        const price = productRow.find('.hidden').text().trim(); // Lấy giá từ modal sản phẩm
 
         $.ajax({
             url: '/admin/shopping-offline/add',
@@ -565,19 +504,36 @@ $(document).on('click', '.delete-btn', function () {
 
     confirmDelete(orderId, productDetailId, currentQty);
 });
+
+// tooltip nút xóa ở giỏ hàng,productDetaiil modal
 document.addEventListener('DOMContentLoaded', function () {
+    const priceElements = document.querySelectorAll(".priceFormat");
+    const priceRevenu = document.querySelectorAll(".priceRevenu");
+    priceRevenu.forEach(element => {
+        const price = element.getAttribute("data-price-revenu");
+        if (price) {
+            const formattedPrice = formatPrice(Number(price));
+            element.textContent = formattedPrice;
+        }
+    });
+    priceElements.forEach(element => {
+        const price = element.getAttribute("data-price");
+        if (price) {
+            const formattedPrice = formatPrice(Number(price));
+            element.textContent = formattedPrice;
+        }
+    });
     const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
     tooltipTriggerList.forEach(function (tooltipTriggerEl) {
         new bootstrap.Tooltip(tooltipTriggerEl, {
-            boundary: 'window' // Đảm bảo tooltip hiển thị trong vùng nhìn thấy
+            boundary: 'window'
         });
     });
+
 });
-// tooltip nút xóa
 
 // Hàm xác nhận xóa sản phẩm khỏi giỏ trả lại số lượng
 function confirmDelete(orderId, productDetailId, currentQty) {
-
     Swal.fire({
         title: 'Xác nhận xóa sản phẩm khỏi giỏ ?',
         icon: 'warning',
@@ -655,7 +611,7 @@ $(document).ready(function () {
     });
 });
 
-// hàm render option and data
+// hàm render option and data address
 function populateSelect(selector, items) {
     const $select = $(selector);
     $select.empty().append('<option value="">Chọn</option>');
@@ -671,7 +627,7 @@ $(document).ready(function () {
         $(this).data('originalValue', $(this).val());
     });
 
-    // Lắng nghe sự kiện 'keydown' trên ô nhập số lượng
+    // Lắng nghe sự kiện 'keydown' trên ô nhập số lượng ở giỏ hàng
     $('.quantity-input').on('keydown', function (event) {
         const row = $(this).closest('tr'); // Lấy dòng cha chứa input
         const orderId = row.find(`input[type="hidden"][id="orderId"]`).val();
@@ -713,18 +669,11 @@ $(document).ready(function () {
                 confirmButtonText: 'Xác nhận',
                 cancelButtonText: 'Hủy'
             }).then((result) => {
-                console.log("Order ID:", orderId);
-                console.log("Product Detail ID:", productDetailId);
-                console.log("Product Price:", productPrice);
-                console.log("Quantity:", quantity);
-
                 if (result.isConfirmed) {
                     if (!orderId || !productDetailId) {
                         Swal.fire('Lỗi', 'Không tìm thấy thông tin đơn hàng hoặc chi tiết sản phẩm.', 'error');
                         return;
                     }
-
-                    // Tạo dữ liệu cần gửi đi
                     const updateData = {
                         orderId: orderId,
                         productDetailId: productDetailId,
@@ -778,8 +727,6 @@ $(document).ready(function () {
                                 }
                             });
                         });
-
-
                     } else if (quantity < originalQuantity) {
                         $.ajax({
                             url: `/admin/shopping-offline/${orderId}/${productDetailId}`,
@@ -791,7 +738,7 @@ $(document).ready(function () {
                                     title: 'Thành công',
                                     text: 'Số lượng đã được cập nhật',
                                     icon: 'success',
-                                    timer: 1000,
+                                    timer: 2000,
                                     showConfirmButton: false
                                 }).then(() => {
                                     updateProductQuantity(productDetailId, quantityPlus);
@@ -809,7 +756,6 @@ $(document).ready(function () {
                             }
                         });
                     }
-
                 } else {
                     $(this).val($(this).data('originalValue'));
                 }
@@ -833,34 +779,12 @@ const formatCurrency = (value) => {
     return new Intl.NumberFormat("vi-VN").format(value);
 };
 
-// sự kiện change cho phương thức thanh toán
-document.querySelectorAll('input[name="paymentMethodType"]').forEach((radio) => {
-    radio.addEventListener('change', () => {
-        const inputField = document.getElementById("customerAmount");
-        const changeAmount = document.getElementById("changeAmount");
-        const statusMessage = document.getElementById("statusMessage");
-        const formattedNumber = document.getElementById("formattedNumber");
-
-        if (radio.value === 'vnpay') {
-            inputField.value = 0;
-            inputField.disabled = true;
-
-            changeAmount.textContent = 0;
-            statusMessage.textContent = '';
-            formattedNumber.textContent = 0;
-        } else {
-            inputField.disabled = false;
-        }
-    });
-});
-
 // Handling customer input
 const inputField = document.getElementById("customerAmount");
 const formattedNumber = document.getElementById("formattedNumber");
 const totalAmountElement = document.getElementById("totalAmount");
 const changeAmount = document.getElementById("changeAmount");
 const statusMessage = document.getElementById("statusMessage");
-
 
 const totalAmount = parseInt(totalAmountElement.textContent.replace(/\D/g, ""), 10) || 0;
 totalAmountElement.textContent = formatPrice(totalAmount);
@@ -878,10 +802,9 @@ inputField.addEventListener("input", () => {
 function confirmOrder(orderId) {
     const customerAmount = parseInt(inputField.value.replace(/\D/g, ""), 10) || 0;
     const totalPay = totalAmount;
-    const paymentMethod = document.querySelector('input[name="paymentMethodType"]:checked').value;
 
     Swal.fire({
-        title: 'Xác nhận thanh toán?',
+        title: 'Xác nhận thanh toán ?',
         text: "Bạn có chắc chắn muốn thanh toán!",
         icon: 'info',
         showCancelButton: true,
@@ -890,17 +813,11 @@ function confirmOrder(orderId) {
     }).then((result) => {
 
         if (result.isConfirmed) {
-            if (paymentMethod === 'cash') {
-                if (customerAmount < totalPay) {
-                    Swal.fire({title: 'Cảnh báo', text: 'Tiền khách đưa chưa đủ!', icon: 'warning'});
-                    return;
-                }
-                updateOrderStatus1(orderId, 3, totalPay, 1);
-            } else if (paymentMethod === 'vnpay') {
-                const orderCode = document.getElementById("orderCode").innerText;
-                const orderNote = document.getElementById("orderNote").val;
-                handleVNPayPayment(orderId, totalPay, orderNote, orderCode);
+            if (customerAmount < totalPay) {
+                Swal.fire({title: 'Cảnh báo', text: 'Tiền khách đưa chưa đủ!', icon: 'warning'});
+                return;
             }
+            updateOrderStatus1(orderId, 3, totalPay, 1);
         }
     });
 }
@@ -929,7 +846,7 @@ function updateOrderStatus1(orderId, status, totalPay, paymentMethodId) {
         toAddress: document.getElementById('to_address').value,
         totalPay: totalPay,
         paymentMethodType: paymentMethodId,
-        note:  $('#orderNote').val().trim(),
+        note: $('#orderNote').val().trim(),
         paymentStatus: 2,
         order_type: 'OFFLINE'
     };
@@ -962,30 +879,6 @@ function updateOrderStatus1(orderId, status, totalPay, paymentMethodId) {
     });
 }
 
-//xử lí thanh toán hóa đơn bằng vnpay
-function handleVNPayPayment(orderId, totalPay, orderNote, orderCode) {
-    $.ajax({
-        url: '/admin/shopping-offline/checkout/vnpay/payment',
-        method: 'GET',
-        data: {amount: totalPay, bankCode: 'NCB', orderInfor: orderId, orderNote: orderNote, orderCode: orderCode},
-        success: function (response) {
-            if (response.code === "ok") {
-                Swal.fire({
-                    title: 'Đang chuyển đến VNPay...',
-                    allowOutsideClick: false,
-                    didOpen: () => Swal.showLoading(),
-                });
-                window.location.href = response.paymentUrl;
-            } else {
-                Swal.fire({title: 'Lỗi', text: 'Không thể khởi tạo thanh toán VNPay!', icon: 'error'});
-            }
-        },
-        error: function () {
-            Swal.fire({title: 'Lỗi', text: 'Có lỗi xảy ra khi khởi tạo thanh toán!', icon: 'error'});
-        }
-    });
-}
-
 //chuyển hóa đơn khi thực hiện xong các thao tác như thanh toán thành công,hủy đơn
 function handleRemainingInvoices(orderId) {
     // Lấy danh sách hóa đơn còn lại
@@ -1005,7 +898,7 @@ function handleRemainingInvoices(orderId) {
     } else {
         Swal.fire({
             title: 'Thông báo',
-            text: 'Không có hóa đơn nào, tạo mới?',
+            text: 'Không có hóa đơn nào, tạo mới ?',
             icon: 'info',
             showCancelButton: true,
             confirmButtonText: 'Tạo',
@@ -1020,23 +913,3 @@ function handleRemainingInvoices(orderId) {
     }
 }
 
-// thông tin khách đặt hàng
-// $(document).ready(function () {
-//     // Validate name input
-//     $('#name').on('input', function () {
-//         const nameLength = $(this).val().length;
-//         $('#nameStatus').text(nameLength >= 8 ? 'Hợp lệ' : 'Tên cần ít nhất 8 ký tự').css('color', nameLength >= 8 ? 'green' : 'red');
-//     });
-//
-//     // Validate phone input
-//     $('#phone').on('input', function () {
-//         const phoneNumber = $(this).val();
-//         $('#phoneStatus').text(/^\d{10}$/.test(phoneNumber) ? 'Hợp lệ' : 'Số điện thoại phải có 10 chữ số').css('color', /^\d{10}$/.test(phoneNumber) ? 'green' : 'red');
-//     });
-//
-//     // Validate address input
-//     $('#to_address').on('input', function () {
-//         const address = $(this).val().trim();
-//         $('#addressStatus').text(address ? 'Hợp lệ' : 'Hãy nhập địa chỉ').css('color', address ? 'green' : 'red');
-//     });
-// });
