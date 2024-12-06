@@ -105,7 +105,7 @@ public class VnPayService {
 
         // Cập nhật trạng thái đơn hàng dựa trên kết quả thanh toán
         if (vnPayStatusResponse.isSuccess()) {
-            order.setStatus(HoaDonUtils.TrangThaiHoaDon.CHO_XAC_NHAN.getStatus());
+            order.setStatus(HoaDonUtils.TrangThaiHoaDon.CHO_LAY_HANG.getStatus());
             order.setPaymentStatus(HoaDonUtils.TrangThaiThanhToan.DA_THANH_TOAN);
             order.setNote(vnPayStatusResponse.getMessage());
 
