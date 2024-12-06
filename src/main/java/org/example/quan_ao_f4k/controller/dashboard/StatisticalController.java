@@ -2,6 +2,7 @@ package org.example.quan_ao_f4k.controller.dashboard;
 
 import lombok.RequiredArgsConstructor;
 import org.example.quan_ao_f4k.dto.response.orders.OrderStatisticsResponse;
+import org.example.quan_ao_f4k.dto.response.product.ProductDetailDTO;
 import org.example.quan_ao_f4k.service.order.OrderService;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
@@ -11,7 +12,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.math.BigDecimal;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.temporal.TemporalAdjusters;
+import java.util.List;
 import java.util.Map;
 
 @Controller
@@ -53,5 +57,18 @@ public class StatisticalController {
 		return ResponseEntity.ok(totalByOrderType);
 	}
 
+	@GetMapping("/quantity-best-sale")
+	public ResponseEntity<List<ProductDetailDTO>> getBestSellingProducts(
+			@RequestParam(value = "filterType", required = false) String filterType,
+			@RequestParam(value = "filterValue", required = false) String filterValue,
+			@RequestParam(value = "orderType", required = false) String orderType) {
 
+		List<ProductDetailDTO> bestSellingProducts = orderService.findQuantityProductDetailsByFilter(filterType, filterValue, orderType);
+
+		if (bestSellingProducts.isEmpty()) {
+			return ResponseEntity.noContent().build();
+		}
+
+		return ResponseEntity.ok(bestSellingProducts);
+	}
 }

@@ -8,7 +8,7 @@ const {getValidate, clearValidation} = validateForm;
         username: '',
         email: '',
         password: '',
-        roleId: 3
+        roleId: 2
     }
     const model = Object.assign({}, objDefault);
     const ruleForm = {
