@@ -20,5 +20,7 @@ public interface ProductDetailService extends CrudService<Long, ProductDetailReq
 	boolean isUpdateExistsByProductSizeAndColor(Long productId,Long sizeId, Long colorId,Long id);
 	boolean deleteProductDetail(Long productId, Long id);
 	Integer getQuantity(Long productDetailId);
+
 	Page<ProductDetailResponse> searchProductDetail(int page, int size, String name, List<Long> brandIds, List<Long> categoryIds, List<Long> sizeIds, List<Long> colorIds, BigDecimal priceFrom, BigDecimal priceTo, String orderBy);
+	Page<ProductDetailResponse> getList(int page, int size, String orderBy);
 }

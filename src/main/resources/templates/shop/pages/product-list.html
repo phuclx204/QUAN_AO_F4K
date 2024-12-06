@@ -58,12 +58,15 @@
                                 </div>
                                 <div class="simplebar-wrapper">
                                     <div class="filter-options" data-pixr-simplebar>
-                                        <div class="form-group form-check mb-0" th:each="item : ${listBrand}">
+                                        <div class="form-group form-check mb-0 from-filter-brand" th:each="item : ${listBrand}">
                                             <input type="checkbox" class="form-check-input cb-brand" value="1000000"
                                                    th:data-id="${item.key.id}">
-                                            <label class="form-check-label fw-normal text-body flex-grow-1 d-flex justify-content-between"
-                                            >[[${item.key.name}]]<span
-                                                    class="text-muted">([[${item.value}]])</span></label>
+                                            <div class="d-flex justify-content-between">
+                                                <label class="form-check-label fw-normal text-body flex-grow-1 d-flex justify-content-between brand-name">
+                                                    [[${item.key.name}]]
+                                                </label>
+                                                <span class="text-muted">([[${item.value}]])</span>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -194,7 +197,7 @@
                         </form>
                     </div>
                     <div class="d-flex justify-content-start align-items-center flex-grow-1 mb-4 mb-md-0">
-                        <span class="fw-bolder text-muted-hover text-decoration-underline ms-2 cursor-pointer small btn-clear-all">Clear All</span>
+                        <span class="fw-bolder text-muted-hover text-decoration-underline ms-2 cursor-pointer small btn-clear-all">Làm mới</span>
                     </div>
                     <div class="d-flex align-items-center flex-column flex-md-row">
                         <!-- Filter Trigger-->

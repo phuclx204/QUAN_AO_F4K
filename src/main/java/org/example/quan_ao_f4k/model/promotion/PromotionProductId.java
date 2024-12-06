@@ -8,5 +8,5 @@ import java.io.Serializable;
 @Data
 public class PromotionProductId implements Serializable {
 	private Long promotion;
-	private Long product;
+	private Long productDetail;
 }

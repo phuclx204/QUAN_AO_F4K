@@ -46,5 +46,29 @@ public class OrderController {
 		return ResponseEntity.ok(response);
 	}
 
+	@GetMapping("/search-list")
+	public ResponseEntity<ListResponse<OrderResponse>> searchList(
+			@RequestParam(defaultValue = "1") int page,
+			@RequestParam(defaultValue = "10") int size,
+			@RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
+			@RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate,
+			@RequestParam(required = false) String search,
+			@RequestParam(required = false) String orderType,
+			@RequestParam(required = false) Integer status) {
 
+		if (startDate != null) {
+			startDate = startDate.toLocalDate().atStartOfDay();
+		}
+		if (endDate != null) {
+			endDate = endDate.toLocalDate().atTime(23, 59, 59);
+		}
+
+		ListResponse<OrderResponse> response = orderService.searchList(page, size, "id,desc", startDate, endDate, search, status, orderType);
+		return ResponseEntity.ok(response);
+	}
+
+	@GetMapping("/list")
+	public String showListOrder() {
+		return "/admin/orders/order-list";
+	}
 }

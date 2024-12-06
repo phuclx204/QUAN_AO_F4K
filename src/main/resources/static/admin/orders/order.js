@@ -1,6 +1,8 @@
 $(document).ready(function () {
     loadOrders(); // Tải đơn hàng ban đầu
 
+    let currentStatus = null;
+
     // Xử lý tìm kiếm
     $('#searchForm').on('submit', function (event) {
         event.preventDefault(); // Ngăn chặn hành vi mặc định của form
@@ -10,6 +12,8 @@ $(document).ready(function () {
     // Xử lý click tab để lọc theo status
     $('.tab').on('click', function () {
         const status = $(this).data('status'); // Lấy status từ data attribute của tab
+        console.log(status)
+        currentStatus = !status ? null : status;
         loadOrders(1, 10, status); // Gọi lại hàm loadOrders với page và size mặc định
         $('.tab').removeClass('active'); // Cập nhật trạng thái tab
         $(this).addClass('active');
@@ -145,7 +149,7 @@ $(document).ready(function () {
         // Xử lý sự kiện khi nhấn vào nút trang
         $('.page-button').on('click', function () {
             const page = $(this).data('page');
-            loadOrders(page); // Tải lại đơn hàng với trang đã chọn
+            loadOrders(page, 10, currentStatus); // Tải lại đơn hàng với trang đã chọn
         });
 
         // Ràng buộc sự kiện để nhập trang

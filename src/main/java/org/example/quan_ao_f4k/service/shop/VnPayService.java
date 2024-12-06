@@ -8,7 +8,11 @@ import org.example.quan_ao_f4k.config.VnPayConfig;
 import org.example.quan_ao_f4k.dto.response.shop.VnPayStatusResponse;
 import org.example.quan_ao_f4k.model.authentication.User;
 import org.example.quan_ao_f4k.model.order.Order;
+import org.example.quan_ao_f4k.model.order.OrderDetail;
+import org.example.quan_ao_f4k.model.product.ProductDetail;
+import org.example.quan_ao_f4k.repository.order.OrderDetailRepository;
 import org.example.quan_ao_f4k.repository.order.OrderRepository;
+import org.example.quan_ao_f4k.repository.product.ProductDetailRepository;
 import org.example.quan_ao_f4k.util.F4KUtils;
 import org.example.quan_ao_f4k.util.HoaDonUtils;
 import org.springframework.stereotype.Service;
@@ -29,6 +33,8 @@ public class VnPayService {
     private final ShopCheckOutService shopCheckOutService;
 
     private final OrderRepository orderRepository;
+    private final OrderDetailRepository orderDetailRepository;
+    private final ProductDetailRepository productDetailRepository;
 
     @Transactional
     public String createOrder(HttpServletRequest request, int amount, String orderInfor, String urlReturn) {
@@ -99,9 +105,12 @@ public class VnPayService {
 
         // Cập nhật trạng thái đơn hàng dựa trên kết quả thanh toán
         if (vnPayStatusResponse.isSuccess()) {
-            order.setStatus(HoaDonUtils.TrangThaiHoaDon.CHO_XAC_NHAN.getStatus());
+            order.setStatus(HoaDonUtils.TrangThaiHoaDon.CHO_LAY_HANG.getStatus());
             order.setPaymentStatus(HoaDonUtils.TrangThaiThanhToan.DA_THANH_TOAN);
             order.setNote(vnPayStatusResponse.getMessage());
+
+            // Xoá sản phẩm khi thanh toán xong
+            updateProductDetail(order);
 
             // Thanh toán thành công, xóa giỏ hàng
             shopCheckOutService.clearCart(f4KUtils.getUser());
@@ -117,6 +126,16 @@ public class VnPayService {
         // Cập nhật thời gian và lưu đơn hàng
         order.setUpdatedAt(LocalDateTime.now());
         orderRepository.save(order);
+    }
+
+    private void updateProductDetail(Order order) {
+        List<OrderDetail> orderDetails = orderDetailRepository.findOrderDetailsByOrderId(order.getId());
+        for (OrderDetail orderDetail: orderDetails) {
+            Integer quantity = orderDetail.getProductDetail().getQuantity() - orderDetail.getQuantity();
+            ProductDetail productDetail = orderDetail.getProductDetail();
+            productDetail.setQuantity(quantity);
+            productDetailRepository.save(productDetail);
+        }
     }
 
     private VnPayStatusResponse orderReturn(HttpServletRequest request) {

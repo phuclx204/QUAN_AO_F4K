@@ -13,6 +13,7 @@ import org.example.quan_ao_f4k.mapper.promotion.PromotionProductMapper;
 import org.example.quan_ao_f4k.model.product.Product;
 import org.example.quan_ao_f4k.model.promotion.Promotion;
 import org.example.quan_ao_f4k.model.promotion.PromotionProduct;
+import org.example.quan_ao_f4k.repository.product.ProductDetailRepository;
 import org.example.quan_ao_f4k.repository.product.ProductRepository;
 import org.example.quan_ao_f4k.repository.promotion.PromotionProductRepository;
 import org.example.quan_ao_f4k.repository.promotion.PromotionRepository;
@@ -37,6 +38,7 @@ public class PromotionServiceImpl implements PromotionService {
     private final PromotionRepository promotionRepository;
     private final PromotionProductRepository promotionProductRepository;
     private final ProductRepository productRepository;
+    private final ProductDetailRepository productDetailRepository;
 
     private final PromotionMapper promotionMapper;
     private final PromotionProductMapper promotionProductMapper;
@@ -84,7 +86,7 @@ public class PromotionServiceImpl implements PromotionService {
                     .promotion(promotion)
                     .status(F4KConstants.STATUS_ON)
                     .type(F4KConstants.TYPE_PERCENT)
-                    .product(productRepository.findById(idProduct).get())
+                    .productDetail(productDetailRepository.findById(idProduct).get())
                     .build();
             promotionProductRepository.save(promotionProduct);
         }
@@ -120,7 +122,7 @@ public class PromotionServiceImpl implements PromotionService {
                     .promotion(promotionSave)
                     .status(F4KConstants.STATUS_ON)
                     .type(F4KConstants.TYPE_PERCENT)
-                    .product(productRepository.findById(idProduct).get())
+                    .productDetail(productDetailRepository.findById(idProduct).get())
                     .build();
             promotionProductRepository.save(promotionProduct);
         }
@@ -155,13 +157,6 @@ public class PromotionServiceImpl implements PromotionService {
     public List<Promotion> getActivePromotions() {
         LocalDate now = LocalDate.now(); // Lấy ngày hiện tại
         return promotionRepository.findAllByStatusAndDayStartBeforeAndDayEndAfter(F4KConstants.STATUS_ON, now);
-    }
-
-    @Override
-    public Promotion getBestPromotionForProduct(Long productId) {
-        LocalDate now = LocalDate.now();
-        List<Promotion> promotions = promotionRepository.findActivePromotionsByProductId(productId, now);
-        return promotions.isEmpty() ? null : promotions.get(0);
     }
 
     @Override

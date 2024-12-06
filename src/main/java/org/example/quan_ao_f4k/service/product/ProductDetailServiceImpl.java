@@ -196,4 +196,18 @@ public class ProductDetailServiceImpl implements ProductDetailService {
         Pageable pageable = PageRequest.of(page - 1, size);
         return F4KUtils.toPage(productDetailResponses, pageable);
     }
+
+    @Override
+    public Page<ProductDetailResponse> getList(int page, int size, String orderBy) {
+        List<ProductDetail> productDetails = productDetailRepository.getListProductDetailSearch(null, null, null, null, null, null, null, orderBy);
+
+        List<ProductDetailResponse> productDetailResponses = productDetailMapper.entityToResponse(productDetails);
+        productDetailResponses.forEach(el -> {
+            List<Image> images = imageRepository.getImageByIdParent(el.getProduct().getId(), F4KConstants.TableCode.PRODUCT_DETAIL);
+            el.setImages(images);
+        });
+
+        Pageable pageable = PageRequest.of(page - 1, size);
+        return F4KUtils.toPage(productDetailResponses, pageable);
+    }
 }
