@@ -57,7 +57,7 @@ function createInvoice() {
         code: generateUniqueCode(),
         status: 1,
         paymentStatus: 3,
-        order_type: 'OFFLINE'
+        order_type: 'offline'
     };
 
     $.ajax({
@@ -848,7 +848,7 @@ function updateOrderStatus1(orderId, status, totalPay, paymentMethodId) {
         paymentMethodType: paymentMethodId,
         note: $('#orderNote').val().trim(),
         paymentStatus: 2,
-        order_type: 'OFFLINE'
+        order_type: 'offline'
     };
 
     $.ajax({
