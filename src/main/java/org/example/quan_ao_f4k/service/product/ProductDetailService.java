@@ -23,4 +23,6 @@ public interface ProductDetailService extends CrudService<Long, ProductDetailReq
 
 	Page<ProductDetailResponse> searchProductDetail(int page, int size, String name, List<Long> brandIds, List<Long> categoryIds, List<Long> sizeIds, List<Long> colorIds, BigDecimal priceFrom, BigDecimal priceTo, String orderBy);
 	Page<ProductDetailResponse> getList(int page, int size, String orderBy);
+
+	Page<ProductDetailResponse> searchProductDetail(int page, int size, String name, Long brandId, Long categoryIds, Long sizeId, Long colorId, BigDecimal priceFrom, BigDecimal priceTo, String orderBy);
 }

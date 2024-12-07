@@ -34,8 +34,8 @@ function $confirm(type, text, title = 'Nhắc nhở') {
         showCancelButton: true,
         confirmButtonColor: "#3085d6",
         cancelButtonColor: "#d33",
-        confirmButtonText: "Yes",
-        cancelButtonText: "No",
+        confirmButtonText: "Đồng ý",
+        cancelButtonText: "Huỷ",
     })
 }
 

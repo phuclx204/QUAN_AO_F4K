@@ -5,7 +5,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.example.quan_ao_f4k.util.F4KConstants;
-import org.example.quan_ao_f4k.util.F4KUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -47,39 +46,38 @@ public class WebSecurityConfig {
                         request -> request
                                 .requestMatchers(PUBLIC_ENDPOINTS).permitAll()
                                 .requestMatchers("/authentication/**").permitAll()
-                                .requestMatchers("/**").permitAll()
+//                                .requestMatchers("/**").permitAll()
                                 .requestMatchers("/admin/**").hasAuthority(F4KConstants.ROLE_ADMIN)
                                 .requestMatchers("/shop/**").hasAnyAuthority(F4KConstants.ROLE_USER,F4KConstants.ROLE_ADMIN)
-//                                .requestMatchers("/vnPay/**").hasAnyAuthority(F4KConstants.ROLE_USER, F4KConstants.ROLE_ADMIN)
                                 .anyRequest().authenticated()
                 )
-//                .formLogin((form) -> form
-//                        .loginPage("/authentication/login").permitAll()
-//                        .loginProcessingUrl("/authentication/login")
-//                        .failureUrl("/authentication/login?error=true")
-//                        .defaultSuccessUrl("/shop/home", true)
-//                        .successHandler(new AuthenticationSuccessHandler() {
-//                            @Override
-//                            public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
-//                                UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-//                                String username = userDetails.getUsername();
-//                                System.out.println("The user " + username + " has logged in.");
-//                                boolean hasUserRole = authentication.getAuthorities().stream()
-//                                        .anyMatch(r -> r.getAuthority().equals(F4KConstants.ROLE_USER));
-//                                boolean hasAdminRole = authentication.getAuthorities().stream()
-//                                        .anyMatch(r -> r.getAuthority().equals(F4KConstants.ROLE_ADMIN));
-//                                boolean hasStaffRole = authentication.getAuthorities().stream()
-//                                        .anyMatch(r -> r.getAuthority().equals(F4KConstants.ROLE_STAFF));
-//                                if (hasUserRole){
-//                                    response.sendRedirect("/shop/home");
-//                                }else if (hasAdminRole || hasStaffRole){
-//                                    response.sendRedirect("/admin/products");
-//                                } else {
-//                                    response.sendRedirect("/error/401");
-//                                }
-//                            }
-//                        })
-//                )
+                .formLogin((form) -> form
+                        .loginPage("/authentication/login").permitAll()
+                        .loginProcessingUrl("/authentication/login")
+                        .failureUrl("/authentication/login?error=true")
+                        .defaultSuccessUrl("/shop/home", true)
+                        .successHandler(new AuthenticationSuccessHandler() {
+                            @Override
+                            public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
+                                UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+                                String username = userDetails.getUsername();
+                                System.out.println("The user " + username + " has logged in.");
+                                boolean hasUserRole = authentication.getAuthorities().stream()
+                                        .anyMatch(r -> r.getAuthority().equals(F4KConstants.ROLE_USER));
+                                boolean hasAdminRole = authentication.getAuthorities().stream()
+                                        .anyMatch(r -> r.getAuthority().equals(F4KConstants.ROLE_ADMIN));
+                                boolean hasStaffRole = authentication.getAuthorities().stream()
+                                        .anyMatch(r -> r.getAuthority().equals(F4KConstants.ROLE_STAFF));
+                                if (hasUserRole){
+                                    response.sendRedirect("/shop/home");
+                                }else if (hasAdminRole || hasStaffRole){
+                                    response.sendRedirect("/admin/products");
+                                } else {
+                                    response.sendRedirect("/error/401");
+                                }
+                            }
+                        })
+                )
                 .authenticationProvider(authenticationProvider)
                 .logout(logout -> logout
                         .logoutUrl("/authentication/logout")

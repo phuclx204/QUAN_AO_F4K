@@ -3,6 +3,7 @@ package org.example.quan_ao_f4k.service.product;
 import jakarta.transaction.Transactional;
 import org.example.quan_ao_f4k.dto.request.product.ProductDetailRequest;
 import org.example.quan_ao_f4k.dto.response.product.ProductDetailResponse;
+import org.example.quan_ao_f4k.dto.response.shop.ShopProductResponse;
 import org.example.quan_ao_f4k.exception.BadRequestException;
 import org.example.quan_ao_f4k.list.ListResponse;
 import org.example.quan_ao_f4k.mapper.general.ImageMapper;
@@ -20,6 +21,7 @@ import org.example.quan_ao_f4k.repository.product.ProductDetailRepository;
 import org.example.quan_ao_f4k.repository.product.ProductRepository;
 import org.example.quan_ao_f4k.repository.product.SizeRepository;
 import org.example.quan_ao_f4k.service.common.IImageServiceImpl;
+import org.example.quan_ao_f4k.service.pomotion.PromotionService;
 import org.example.quan_ao_f4k.util.F4KConstants;
 import org.example.quan_ao_f4k.util.F4KUtils;
 import org.example.quan_ao_f4k.util.SearchFields;
@@ -56,6 +58,8 @@ public class ProductDetailServiceImpl implements ProductDetailService {
     private ImageMapper imageMapper;
     @Autowired
     private IImageServiceImpl iImageService;
+    @Autowired
+    private PromotionService promotionService;
 
     @Override
     public ListResponse<ProductDetailResponse> findAll(int page, int size, String sort, String filter, String search, boolean all) {
@@ -209,5 +213,34 @@ public class ProductDetailServiceImpl implements ProductDetailService {
 
         Pageable pageable = PageRequest.of(page - 1, size);
         return F4KUtils.toPage(productDetailResponses, pageable);
+    }
+
+    @Override
+    public Page<ProductDetailResponse> searchProductDetail(int page, int size, String name, Long brandId, Long categoryIds, Long sizeId, Long colorId, BigDecimal priceFrom, BigDecimal priceTo, String orderBy) {
+        List<ProductDetail> productDetails = productDetailRepository.searchProductDetail(name, brandId, categoryIds, sizeId, colorId, priceFrom, priceTo, orderBy);
+
+        List<ProductDetailResponse> productDetailResponses = productDetailMapper.entityToResponse(productDetails);
+
+        applyDiscounts(productDetailResponses);
+
+        Pageable pageable = PageRequest.of(page - 1, size);
+        return F4KUtils.toPage(productDetailResponses, pageable);
+    }
+
+    private void applyDiscounts(List<ProductDetailResponse> listResponse) {
+        listResponse.forEach(el -> {
+            var promotion = promotionService.getBestPromotionForProductDetail(el.getId());
+            if (promotion != null) {
+                BigDecimal finalPrice = promotionService.calculateDiscountedPrice(el.getPrice(), promotion.getDiscountValue());
+                if (finalPrice.compareTo(BigDecimal.ZERO) < 0) {
+                    finalPrice = BigDecimal.ZERO;
+                }
+                el.setDiscountValue(finalPrice);
+                el.setPromotion(promotion);
+            } else {
+                el.setDiscountValue(el.getPrice());
+                el.setPromotion(null);
+            }
+        });
     }
 }

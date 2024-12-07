@@ -117,10 +117,10 @@ function openLoading() {
 function closeLoading() {
   const $preloader = $("#preloader");
   $("#status").fadeOut();
-  $preloader.delay(350).fadeOut("slow");
-  setTimeout(() => $preloader.removeClass("loading-overlay"), 350);
+  $preloader.delay(150).fadeOut("slow");
+  setTimeout(() => $preloader.removeClass("loading-overlay"), 150);
 
   return new Promise(function(resolve, reject) {
-    setTimeout(() => resolve(), 350);
+    setTimeout(() => resolve(), 150);
   });
 }

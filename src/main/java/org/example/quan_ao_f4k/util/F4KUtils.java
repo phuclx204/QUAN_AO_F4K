@@ -72,17 +72,19 @@ public class F4KUtils {
     public User getUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-//        if (authentication != null && authentication.isAuthenticated()) {
-//            Object principal = authentication.getPrincipal();
-//            if (principal instanceof UserDetails) {
-//                return ((UserDetails) principal);
-//            } else {
-//                return null; // Trường hợp này có thể xảy ra nếu không dùng UserDetails
-//            }
-//        }
-//        return null;
         if (userDetails == null) {
             throw new BadRequestException("Lỗi đăng nhập, xem lại tài khoản đang đăng nhập");
+        }
+        return userRepository.findByUsername(userDetails.getUsername()).orElseThrow(
+                () -> new BadRequestException("Lỗi đăng nhập, xem lại tài khoản đang đăng nhập")
+        );
+    }
+
+    public User getUserOrNull() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        if (userDetails == null) {
+            return null;
         }
         return userRepository.findByUsername(userDetails.getUsername()).orElseThrow(
                 () -> new BadRequestException("Lỗi đăng nhập, xem lại tài khoản đang đăng nhập")

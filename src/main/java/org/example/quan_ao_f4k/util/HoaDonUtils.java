@@ -38,23 +38,33 @@ public class HoaDonUtils {
     @Getter
     @AllArgsConstructor
     public enum TrangThaiHoaDon {
-        HUY_DON(0, "Hủy đơn"),
-        TAO_MOI(1, "Tạo mới"),
-        TRA_HANG(2, "Trả hàng"), // bỏ
-        HOAN_TAT(3, "Hoàn tất"),
-        CHO_GIAO_HANG(4, "Chờ giao hàng"),
-        CHO_XAC_NHAN(5, "Chờ xác nhận"),
-        DANG_GIAO_HANG(6, "Đang giao hàng"),
-        DA_GIAO_HANG(7, "Đã giao hàng"), // bỏ
-        CHO_LAY_HANG(8, "Chờ lấy hàng");
+        HUY_DON(0, "Hủy đơn", "Đơn hàng đã bị huỷ"),
+        TAO_MOI(1, "Tạo mới", "Đơn hàng được tạo mới"),
+        TRA_HANG(2, "Trả hàng", ""), // bỏ
+        HOAN_TAT(3, "Hoàn tất", "Giao hàng thành công"),
+        CHO_GIAO_HANG(4, "Chờ giao hàng", "Đơn hàng đang chờ đơn vị vận chuyển lấy"),
+        CHO_XAC_NHAN(5, "Chờ xác nhận", "Đơn hàng đã được xác nhận"),
+        DANG_GIAO_HANG(6, "Đang giao hàng", "Đơn hàng sẽ sớm được giao, vui lòng chú ý điện thoại"),
+        DA_GIAO_HANG(7, "Đã giao hàng", ""), // bỏ
+        CHO_LAY_HANG(8, "Chờ lấy hàng", "Người gửi đang chuẩn bị hàng");
 
         private final int status; // Giá trị trạng thái
         private final String mess; // Mô tả trạng thái
+        private final String note; // Mô tả trạng thái
 
         public static String getMessByStatus(int status) {
             for (TrangThaiHoaDon trangThai : TrangThaiHoaDon.values()) {
                 if (trangThai.getStatus() == status) {
                     return trangThai.getMess();
+                }
+            }
+            return "";
+        }
+
+        public static String getNoteByStatus(int status) {
+            for (TrangThaiHoaDon trangThai : TrangThaiHoaDon.values()) {
+                if (trangThai.getStatus() == status) {
+                    return trangThai.getNote();
                 }
             }
             return "";

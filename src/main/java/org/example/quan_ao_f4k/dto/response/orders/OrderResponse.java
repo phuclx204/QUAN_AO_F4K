@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.example.quan_ao_f4k.dto.response.authentication.UserResponse;
+import org.example.quan_ao_f4k.model.order.PaymentMethod;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -28,6 +29,7 @@ public class OrderResponse {
 	private String statusText;
 	private String order_type;
 
+	private PaymentMethod paymentMethod;
 	private BigDecimal totalPay;
 	private BigDecimal shippingPay;
 	private BigDecimal totalCart;
