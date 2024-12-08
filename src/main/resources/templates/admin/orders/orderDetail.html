@@ -75,11 +75,11 @@
                                 <i class="bx bx-check-circle"></i> Xác Nhận
                             </button>
 
-                            <button type="button" class="btn btn-primary btn-change-status"
+                            <button type="button" class="btn btn-success btn-change-status"
                                     th:if="${order.status == 6}"
                                     th:data-order-id="${order.id}"
                                     th:data-new-status="3">
-                                <i class="bx bx-check-circle"></i> Xác Nhận
+                                <i class="bx bx-check-circle"></i> Xác Nhận Thành Công
                             </button>
 
 
@@ -100,7 +100,7 @@
 
                             <!-- Nút Quay Lại -->
                             <button type="button" class="btn btn-warning btn-go-back"
-                                    th:if="${order.status != 3 && order.status != 0}"
+                                    th:if="${order.status != 3 && order.status != 0 && order.status != 5}"
                                     th:data-order-id="${order.id}"
                                     th:data-previous-status="${order.status - 1}">
                                 <i class="bx bx-undo"></i> Quay Lại
@@ -193,6 +193,7 @@
                                             <td>
                                                 <span data-bs-toggle="tooltip" title="Xóa khỏi giỏ hàng">
                                                     <a href="javascript:void(0)" class="btn-remove-cart"
+                                                       th:if="${order.status == 5}"
                                                        th:data-id="${detail.productDetail.id}">
                                                         <i class="mdi mdi-delete text-danger"
                                                            style="font-size:1.2rem"></i>

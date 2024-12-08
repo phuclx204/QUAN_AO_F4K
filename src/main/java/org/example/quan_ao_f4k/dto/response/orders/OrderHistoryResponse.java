@@ -15,4 +15,7 @@ public class OrderHistoryResponse {
     private LocalDateTime changeDate;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+
+    private String createBy;
+    private String statusText;
 }

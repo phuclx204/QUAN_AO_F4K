@@ -1,21 +1,36 @@
 package org.example.quan_ao_f4k.service.order;
 
 import lombok.AllArgsConstructor;
+import org.example.quan_ao_f4k.dto.request.order.OrderDetailRequest;
+import org.example.quan_ao_f4k.dto.request.order.OrderDetailResponse;
 import org.example.quan_ao_f4k.dto.request.order.OrderRequest;
 import org.example.quan_ao_f4k.dto.response.orders.OrderResponse;
 import org.example.quan_ao_f4k.dto.response.orders.OrderStatisticsResponse;
 import org.example.quan_ao_f4k.dto.response.product.ProductDetailDTO;
+import org.example.quan_ao_f4k.dto.response.product.ProductDetailResponse;
+import org.example.quan_ao_f4k.dto.response.shop.ShopProductResponse;
+import org.example.quan_ao_f4k.exception.BadRequestException;
 import org.example.quan_ao_f4k.list.ListResponse;
+import org.example.quan_ao_f4k.mapper.order.OrderDetailMapper;
+import org.example.quan_ao_f4k.mapper.order.OrderHistoryMapper;
 import org.example.quan_ao_f4k.mapper.order.OrderMapper;
+import org.example.quan_ao_f4k.mapper.product.ProductDetailMapper;
+import org.example.quan_ao_f4k.model.general.Image;
 import org.example.quan_ao_f4k.model.order.Order;
 import org.example.quan_ao_f4k.model.order.OrderDetail;
+import org.example.quan_ao_f4k.model.order.OrderHistory;
 import org.example.quan_ao_f4k.model.product.ProductDetail;
 import org.example.quan_ao_f4k.repository.address.DistrictRepository;
 import org.example.quan_ao_f4k.repository.address.ProvinceRepository;
 import org.example.quan_ao_f4k.repository.address.WardRepository;
 import org.example.quan_ao_f4k.repository.order.OrderDetailRepository;
+import org.example.quan_ao_f4k.repository.order.OrderHistoryRepository;
 import org.example.quan_ao_f4k.repository.order.OrderRepository;
+import org.example.quan_ao_f4k.repository.product.ProductDetailRepository;
+import org.example.quan_ao_f4k.service.product.ProductDetailService;
 import org.example.quan_ao_f4k.service.product.ProductServiceImpl;
+import org.example.quan_ao_f4k.util.F4KConstants;
+import org.example.quan_ao_f4k.util.HoaDonUtils;
 import org.example.quan_ao_f4k.util.SearchFields;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -28,6 +43,7 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -36,13 +52,19 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 @Service
 public class OrderServiceImpl implements OrderService {
-	private OrderMapper orderMapper;
+	private final ProductDetailRepository productDetailRepository;
 	private OrderRepository orderRepository;
 	private OrderDetailRepository orderDetailRepository;
 	private ProductServiceImpl productService;
 	private WardRepository wardRepository;
 	private DistrictRepository districtRepository;
 	private ProvinceRepository provinceRepository;
+	private OrderHistoryRepository orderHistoryRepository;
+
+	private OrderMapper orderMapper;
+	private ProductDetailMapper productDetailMapper;
+	private OrderHistoryMapper orderHistoryMapper;
+	private OrderDetailMapper orderDetailMapper;
 
 	@Override
 	public ListResponse<OrderResponse> findAll(int page, int size, String sort, String filter, String search, boolean all) {

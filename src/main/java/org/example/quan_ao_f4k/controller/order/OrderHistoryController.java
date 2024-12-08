@@ -4,23 +4,42 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.quan_ao_f4k.dto.request.order.OrderHistoryRequest;
 import org.example.quan_ao_f4k.dto.response.orders.OrderHistoryResponse;
+import org.example.quan_ao_f4k.mapper.order.OrderDetailMapper;
 import org.example.quan_ao_f4k.mapper.order.OrderHistoryMapper;
+import org.example.quan_ao_f4k.mapper.product.ProductDetailMapper;
+import org.example.quan_ao_f4k.model.order.Order;
+import org.example.quan_ao_f4k.model.order.OrderDetail;
 import org.example.quan_ao_f4k.model.order.OrderHistory;
+import org.example.quan_ao_f4k.model.product.ProductDetail;
+import org.example.quan_ao_f4k.repository.general.ImageRepository;
+import org.example.quan_ao_f4k.repository.order.OrderDetailRepository;
 import org.example.quan_ao_f4k.repository.order.OrderHistoryRepository;
+import org.example.quan_ao_f4k.repository.order.OrderRepository;
+import org.example.quan_ao_f4k.repository.product.ProductDetailRepository;
+import org.example.quan_ao_f4k.service.order.OrderServiceImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/admin/order-history")
 @AllArgsConstructor
 @Slf4j
 public class OrderHistoryController {
+    private final OrderDetailRepository orderDetailRepository;
+    private OrderServiceImpl orderService;
+    private OrderRepository orderRepository;
+    private ImageRepository imageRepository;
+    private OrderHistoryRepository orderHistoryRepository;
+    private ProductDetailRepository productDetailRepository;
 
-    private final OrderHistoryMapper orderHistoryMapper; // Mapper cho OrderHistory
-    private final OrderHistoryRepository orderHistoryRepository; // Repository cho OrderHistory
+    private ProductDetailMapper productDetailMapper;
+    private OrderHistoryMapper orderHistoryMapper;
+    private OrderDetailMapper orderDetailMapper;
+
 
     // Lấy danh sách tất cả lịch sử đơn hàng
     @GetMapping
@@ -81,4 +100,51 @@ public class OrderHistoryController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); // Trả về lỗi 404 nếu không tìm thấy
         }
     }
+
+    @PutMapping("/{orderId}/update-product-detail")
+    public ResponseEntity<String> updateProductDetail(@PathVariable Long orderId, @RequestParam boolean check) {
+        Optional<Order> optionalOrder = orderRepository.findById(orderId);
+        if (!optionalOrder.isPresent()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Order not found");
+        }
+
+        Order order = optionalOrder.get();
+        List<OrderDetail> orderDetails = orderDetailRepository.findOrderDetailsByOrderId(orderId);
+
+        if (orderDetails.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Order details not found");
+        }
+
+        try {
+            int quantity;
+            if (check) {
+                // Chỉ trừ số lượng sản phẩm khi trạng thái đơn hàng là 5
+                if (order.getStatus() == 8) {
+                    for (OrderDetail orderDetail : orderDetails) {
+                        ProductDetail productDetail = orderDetail.getProductDetail();
+                        quantity = productDetail.getQuantity() - orderDetail.getQuantity();
+                        productDetail.setQuantity(quantity);
+                        productDetailRepository.save(productDetail);
+                    }
+                } else {
+                    return ResponseEntity.ok("Product details updated successfully");
+                }
+            } else {
+              if(order.getStatus() == 0){
+                    for (OrderDetail orderDetail : orderDetails) {
+                        ProductDetail productDetail = orderDetail.getProductDetail();
+                        quantity = productDetail.getQuantity() + orderDetail.getQuantity();
+                        productDetail.setQuantity(quantity);
+                        productDetailRepository.save(productDetail);
+                    }
+                }
+            }
+
+            return ResponseEntity.ok("Product details updated successfully");
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error updating product details: " + e.getMessage());
+        }
+    }
+
 }

@@ -95,6 +95,29 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, Lo
 			@Param("orderBy") String orderBy
 	);
 
+	@Query("SELECT pd FROM ProductDetail pd " +
+			"WHERE pd.product.status = 1 " +
+			"AND pd.status =1" +
+			"AND (:name IS NULL OR LOWER(pd.product.name) LIKE LOWER(CONCAT('%', :name, '%'))) " +
+			"AND (:brandId IS NULL OR pd.product.brand.id = :brandId) " +
+			"AND (:categoryId IS NULL OR pd.product.category.id = :categoryId) " +
+			"AND (:sizeId IS NULL OR pd.size.id = :sizeId) " +
+			"AND (:colorId IS NULL OR pd.color.id = :colorId) " +
+			"AND (:priceFrom IS NULL OR pd.price >= :priceFrom) " +
+			"AND (:priceTo IS NULL OR pd.price <= :priceTo) " +
+			"ORDER BY CASE WHEN :orderBy = 'desc' THEN pd.price END DESC, " +
+			"CASE WHEN :orderBy = 'asc' THEN pd.price END ASC")
+	List<ProductDetail> searchProductDetail(
+			@Param("name") String name,
+			@Param("brandId") Long brandId,
+			@Param("categoryId") Long categoryId,
+			@Param("sizeId") Long sizeId,
+			@Param("colorId") Long colorId,
+			@Param("priceFrom") BigDecimal priceFrom,
+			@Param("priceTo") BigDecimal priceTo,
+			@Param("orderBy") String orderBy
+	);
+
 
 	@Query("SELECT p FROM ProductDetail p " +
 			"Where p.product.slug = :slug " +

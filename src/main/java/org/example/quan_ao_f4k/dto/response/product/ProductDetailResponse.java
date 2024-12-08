@@ -7,6 +7,7 @@ import org.example.quan_ao_f4k.model.product.Color;
 import org.example.quan_ao_f4k.model.product.Guarantee;
 import org.example.quan_ao_f4k.model.product.Product;
 import org.example.quan_ao_f4k.model.product.Size;
+import org.example.quan_ao_f4k.model.promotion.Promotion;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -24,4 +25,7 @@ public class ProductDetailResponse {
     private Integer status;
     private LocalDateTime createdAt;
     private List<Image> images;
+
+    private BigDecimal discountValue;
+    private Promotion promotion;
 }

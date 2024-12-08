@@ -213,4 +213,20 @@ public class ShoppingController {
 
 		return ResponseEntity.ok(discountedPrice);
 	}
+
+	@GetMapping("/search-product-detail")
+	public ResponseEntity<Page<ProductDetailResponse>> searchProductDetail(
+			@RequestParam(defaultValue = "1") int page,
+			@RequestParam(defaultValue = "5") int size,
+			@RequestParam(required = false) String nameProduct,
+			@RequestParam(required = false) Long brandId,
+			@RequestParam(required = false) Long categoryId,
+			@RequestParam(required = false) Long sizeId,
+			@RequestParam(required = false) Long colorId,
+			@RequestParam(required = false) BigDecimal priceFrom,
+			@RequestParam(required = false) BigDecimal priceTo,
+			@RequestParam(defaultValue = "asc") String orderBy
+	) {
+		return ResponseEntity.ok(productDetailService.searchProductDetail(page, size, nameProduct, brandId, categoryId, sizeId, colorId, priceFrom, priceTo, orderBy));
+	}
 }

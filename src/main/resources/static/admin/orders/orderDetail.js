@@ -289,7 +289,7 @@ $(document).ready(async function () {
         const handleAjax = async (url, method, data, successMessage) => {
             try {
                 await $ajax.callApi(url, method, data, null, false)
-                await updateProductStock(productDetailId, 1); // Trừ 1 sản phẩm từ kho
+//                await updateProductStock(productDetailId, 1); // Trừ 1 sản phẩm từ kho
                 showAlert(successMessage, "Sản phẩm đã được thêm vào giỏ", "success", true)
             } catch (e) {
                 let errorMessage = 'Không thể thực hiện thao tác.';
@@ -542,7 +542,7 @@ $(document).ready(async function () {
         // Kiểm tra các giá trị quan trọng có rỗng không
         if (!orderCode || !toName || !toAddress || !toPhone || !totalPay) {
             Swal.fire('Lỗi', 'Vui lòng kiểm tra lại thông tin đơn hàng!', 'error');
-            return; // Dừng việc gửi yêu cầu nếu thiếu thông tin quan trọng
+            return Promise.reject(new Error('Thiếu thông tin quan trọng')); // Trả về Promise bị lỗi
         }
 
         const orderDetails = [];
@@ -583,45 +583,36 @@ $(document).ready(async function () {
             orderDetails: orderDetails
         };
 
-        // Gửi yêu cầu PUT để cập nhật trạng thái đơn hàng
-        $.ajax({
-            url: '/admin/shopping-offline/' + orderId, // URL cập nhật đơn hàng
-            method: 'PUT',
-            contentType: 'application/json',
-            data: JSON.stringify(updateData), // Gửi tất cả dữ liệu cập nhật
-            success: function (response) {
-                // Xử lý thành công
-                Swal.fire({
-                    title: 'Cập nhật trạng thái đơn hàng thành công!',
-                    text: "Đơn hàng đã được cập nhật.",
-                    icon: 'success',
-                    timer: 2000,
-                    timerProgressBar: true,
-                    willClose: () => {
-                        location.reload(); // Tải lại trang sau khi cập nhật
+        return new Promise((resolve, reject) => {
+            // Gửi yêu cầu PUT để cập nhật trạng thái đơn hàng
+            $.ajax({
+                url: '/admin/shopping-offline/' + orderId, // URL cập nhật đơn hàng
+                method: 'PUT',
+                contentType: 'application/json',
+                data: JSON.stringify(updateData), // Gửi tất cả dữ liệu cập nhật
+                success: function (response) {
+                    // Xử lý thành công
+                    resolve(response); // Resolve khi thành công
+                },
+                error: function (xhr) {
+                    let errorMessage = 'Không thể cập nhật trạng thái đơn hàng.';
+                    if (xhr.status === 400 && xhr.responseJSON) {
+                        if (Array.isArray(xhr.responseJSON)) {
+                            errorMessage = xhr.responseJSON.map(error => error.defaultMessage).join(', ');
+                        } else if (xhr.responseJSON.message) {
+                            errorMessage = xhr.responseJSON.message;
+                        }
+                    } else if (xhr.status === 500) {
+                        errorMessage = 'Lỗi máy chủ, vui lòng thử lại sau.';
+                    } else if (xhr.status === 0) {
+                        errorMessage = 'Lỗi kết nối, vui lòng kiểm tra lại internet.';
                     }
-                });
-
-                // Gọi hàm createOrderHistory để tạo lịch sử đơn hàng
-                createOrderHistory(orderId, status);
-            },
-            error: function (xhr) {
-                let errorMessage = 'Không thể cập nhật trạng thái đơn hàng.';
-                if (xhr.status === 400 && xhr.responseJSON) {
-                    if (Array.isArray(xhr.responseJSON)) {
-                        errorMessage = xhr.responseJSON.map(error => error.defaultMessage).join(', ');
-                    } else if (xhr.responseJSON.message) {
-                        errorMessage = xhr.responseJSON.message;
-                    }
-                } else if (xhr.status === 500) {
-                    errorMessage = 'Lỗi máy chủ, vui lòng thử lại sau.';
-                } else if (xhr.status === 0) {
-                    errorMessage = 'Lỗi kết nối, vui lòng kiểm tra lại internet.';
+                    reject(new Error(errorMessage)); // Reject khi có lỗi
                 }
-                Swal.fire('Lỗi', errorMessage, 'error');
-            }
+            });
         });
     }
+
 
 // Function to create order history (Second API call)
     function createOrderHistory(orderId, status) {
@@ -654,23 +645,39 @@ $(document).ready(async function () {
         });
     }
 
-    function cancelOrder(orderId) {
-        Swal.fire({
-            title: 'Xác nhận hủy đơn',
-            text: "Bạn có chắc chắn muốn hủy đơn này không?",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Có, hủy đơn!',
-            cancelButtonText: 'Hủy'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                // Call updateOrderStatus with status = 0 to cancel the order
-                updateOrderStatus(orderId, 0);
-            }
-        });
-    }
+   function cancelOrder(orderId) {
+       Swal.fire({
+           title: 'Xác nhận hủy đơn',
+           text: "Bạn có chắc chắn muốn hủy đơn này không?",
+           icon: 'warning',
+           showCancelButton: true,
+           confirmButtonColor: '#3085d6',
+           cancelButtonColor: '#d33',
+           confirmButtonText: 'Có, hủy đơn!',
+           cancelButtonText: 'Hủy'
+       }).then((result) => {
+           if (result.isConfirmed) {
+               // Gọi API cập nhật trạng thái (status = 0 là hủy đơn)
+               updateOrderStatus(orderId, 0)
+                   .then(() => {
+                       // Gọi updateProductDetail với check = false khi hủy đơn
+                       return updateProductDetail(orderId, false);
+                   })
+                   .then(() => {
+                       // Hiển thị thông báo thành công
+                       Swal.fire('Thành công', 'Đơn hàng đã được hủy và số lượng sản phẩm đã được cập nhật!', 'success')
+                           .then(() => {
+                               location.reload(); // Tải lại trang để cập nhật giao diện
+                           });
+                   })
+                   .catch((error) => {
+                       // Hiển thị thông báo lỗi nếu có
+                       Swal.fire('Thất bại', error.message || 'Có lỗi xảy ra khi hủy đơn hàng!', 'error');
+                   });
+           }
+       });
+   }
+
 
 
 // Event listener for the cancel order button
@@ -679,23 +686,57 @@ $(document).ready(async function () {
         cancelOrder(orderId);
     });
 
-    function changeOrderStatus(orderId, newStatus) {
-        const statusLabel = getStatusLabel(newStatus); // Lấy tên trạng thái từ mã trạng thái
-        Swal.fire({
-            title: 'Xác nhận',
-            text: `Bạn có chắc chắn muốn thay đổi trạng thái đơn hàng sang "${statusLabel}"?`,
-            icon: 'question',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Đồng ý',
-            cancelButtonText: 'Hủy'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                updateOrderStatus(orderId, newStatus); // Gọi hàm cập nhật trạng thái
+   function changeOrderStatus(orderId, newStatus) {
+       const statusLabel = getStatusLabel(newStatus); // Lấy tên trạng thái từ mã trạng thái
+       Swal.fire({
+           title: 'Xác nhận',
+           text: `Bạn có chắc chắn muốn thay đổi trạng thái đơn hàng sang "${statusLabel}"?`,
+           icon: 'question',
+           showCancelButton: true,
+           confirmButtonColor: '#3085d6',
+           cancelButtonColor: '#d33',
+           confirmButtonText: 'Đồng ý',
+           cancelButtonText: 'Hủy'
+       }).then((result) => {
+           if (result.isConfirmed) {
+               // Gọi API cập nhật trạng thái và sau đó gọi API cập nhật số lượng sản phẩm
+               updateOrderStatus(orderId, newStatus)
+                   .then(() => {
+                       // Chỉ gọi updateProductDetail sau khi updateOrderStatus thành công
+                       return updateProductDetail(orderId,true);
+                   })
+                   .then(() => {
+                       Swal.fire('Thành công', 'Trạng thái và số lượng sản phẩm đã được cập nhật!', 'success')
+                           .then(() => {
+                               location.reload(); // Tải lại trang để hiển thị trạng thái mới
+                           });
+                   })
+                   .catch((error) => {
+                       Swal.fire('Thất bại', error.message || 'Có lỗi xảy ra!', 'error');
+                   });
+           }
+       });
+   }
+
+function updateProductDetail(orderId, check) {
+    console.log(`/admin/order-history/${orderId}/update-product-detail?check=${check}`); // Kiểm tra URL
+
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            url: `/admin/order-history/${orderId}/update-product-detail?check=${check}`, // Thêm check vào query string
+            type: 'PUT',
+            success: function () {
+                resolve(); // Resolve khi API trả về thành công
+            },
+            error: function (xhr, status, error) {
+                console.error("Error:", error); // Log lỗi chi tiết
+                reject(new Error('Không thể cập nhật số lượng sản phẩm!')); // Reject khi có lỗi
             }
         });
-    }
+    });
+}
+
+
 
 // Hàm lấy tên trạng thái từ mã trạng thái
     function getStatusLabel(status) {

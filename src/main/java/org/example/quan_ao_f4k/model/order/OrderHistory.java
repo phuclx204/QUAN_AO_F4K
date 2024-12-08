@@ -37,6 +37,9 @@ public class OrderHistory {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    @Column(name = "create_by")
+    private String createBy;
+
 
     @PrePersist
     public void onCreate() {

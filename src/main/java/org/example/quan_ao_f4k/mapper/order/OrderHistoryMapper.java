@@ -21,6 +21,7 @@ public interface OrderHistoryMapper extends GennericMapper<OrderHistory, OrderHi
 
     @Override
     @Mapping(source = "order", target = "orderType", qualifiedByName = "getOrderType")
+    @Mapping(source = "status", target = "statusText", qualifiedByName = "getOrderStatusText")
     OrderHistoryResponse entityToResponse(OrderHistory orderHistory);
 
 }

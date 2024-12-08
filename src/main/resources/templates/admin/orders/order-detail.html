@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <link th:href="@{/admin/plugins/datatables/css/dataTables.bootstrap5.min.css}" rel="stylesheet" type="text/css"/>
+    <link rel="stylesheet" th:href="@{/admin/dist/css/app-f4k.min.css}"/>
+    <th:block th:insert="admin/fragments/head :: head"></th:block>
+    <link rel="stylesheet" th:href="@{/admin/plugins/sweetalert/sweetalert2.min.css}"/>
+    <link rel="stylesheet" th:href="@{/admin/orders/order-detail.css}">
+
+    <meta name="order-id" th:content="${order.id}">
+    <meta name="order-status" th:content="${order.status}">
+    <meta name="order-code" th:content="${order.code}">
+</head>
+<body>
+<div th:replace="admin/fragments/sidebar::sidebar"></div>
+<section id="content">
+    <div th:replace="admin/fragments/loading::div"></div>
+    <div th:replace="admin/fragments/content::content"></div>
+    <main>
+        <div class="main-pane row" style="margin-top: 0">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="col-12 d-flex justify-content-between align-items-center">
+                            <div>
+                                <a href="/admin/orders" class="text-decoration-none d-flex align-items-center"
+                                   style="font-size: 18px; color: black">
+                                    <span class="mdi mdi-keyboard-backspace me-1" style="font-size: 20px"></span>
+                                    <span>Quay lại</span>
+                                </a>
+                            </div>
+                            <div class="page-title-right">
+                                <ol class="breadcrumb m-0 p-0">
+                                    <li class="breadcrumb-item"><a th:href="@{home}"><i class="mdi mdi-home me-1"></i>Trang
+                                        chủ</a></li>
+                                    <li class="breadcrumb-item"><a th:href="@{/admin/orders}">Hoá đơn</a></li>
+                                    <li class="breadcrumb-item active">Hoá đơn chi tiết</li>
+                                </ol>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="col-12">
+                            <div class="card shadow-none" style="border: 1px solid #e9ecef!important;">
+                                <div class="card-header pb-0" style="font-size: 20px; font-weight: bold">
+                                    Theo dõi đơn hàng
+                                    <hr>
+                                </div>
+                                <div class="card-body pb-0">
+                                    <div class="steps">
+                                        <div class="steps-body" id="steps-body">
+                                            <!--step order-->
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-footer d-flex justify-content-between">
+                                    <!-- Kiểm tra nếu đơn hàng đã hủy (status == 0), không hiển thị bất kỳ nút nào -->
+                                    <div class="d-flex gap-1" th:if="${order.status != 0}">
+                                        <!-- Nút Xác Nhận -->
+                                        <button type="button" class="btn btn-primary btn-change-status"
+                                                th:if="${order.status == 5}"
+                                                th:data-new-status="8">
+                                            <i class="mdi mdi-account-check"></i> Xác Nhận
+                                        </button>
+                                        <button type="button" class="btn btn-success btn-change-status"
+                                                th:if="${order.status == 6}"
+                                                th:data-new-status="3">
+                                            <i class="mdi mdi-package-variant-closed-check"></i> Xác Nhận Thành Công
+                                        </button>
+                                        <button type="button" class="btn btn-primary btn-change-status"
+                                                th:if="${order.status == 8}"
+                                                th:data-new-status="4">
+                                            <i class="mdi mdi-truck-outline"></i> Chờ Vận Chuyển
+                                        </button>
+                                        <!-- Nút Vận Chuyển -->
+                                        <button type="button" class="btn btn-primary btn-change-status"
+                                                th:if="${order.status == 4}"
+                                                th:data-new-status="6">
+                                            <i class="mdi mdi-truck-fast-outline"></i> Vận Chuyển
+                                        </button>
+                                        <!-- Nút Quay Lại -->
+                                        <div th:if="${order.status != 3 && order.status != 0 && order.status != 5}">
+                                            <button type="button" class="btn btn-warning btn-go-back"
+                                                    th:if="${order.status == 8}"
+                                                    data-previous-status="5">
+                                                <i class="bx bx-undo"></i> Quay Lại
+                                            </button>
+                                            <button type="button" class="btn btn-warning btn-go-back"
+                                                    th:if="${order.status == 4}"
+                                                    data-previous-status="8">
+                                                <i class="bx bx-undo"></i> Quay Lại
+                                            </button>
+                                            <button type="button" class="btn btn-warning btn-go-back"
+                                                    th:if="${order.status == 6}"
+                                                    data-previous-status="4">
+                                                <i class="bx bx-undo"></i> Quay Lại
+                                            </button>
+                                        </div>
+                                        <!-- Nút Hủy Đơn -->
+                                        <button type="button" class="btn btn-danger btn-cancel-order"
+                                                th:if="${order.status != 3}">
+                                            <i class="bx bx-trash"></i> Hủy Hóa Đơn
+                                        </button>
+                                    </div>
+                                    <div>
+                                        <button type="button" class="btn btn-info" data-bs-toggle="modal"
+                                                data-bs-target="#scrollable-modal">Lịch sử
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="col-12">
+                            <div class="card shadow-none" style="border: 1px solid #e9ecef!important;">
+                                <div class="card-header pb-0" style="font-size: 20px; font-weight: bold">
+                                    Thông tin đơn hàng: [[${order.code}]]
+                                    <hr>
+                                </div>
+                                <div class="card-body row">
+                                    <div class="col-6 d-flex flex-column"
+                                         style="border-right: 1px solid #e9ecef!important">
+                                        <span><span style="font-weight: bold">Trạng thái: </span><span
+                                                class="badge bg-primary" style="font-size: 14px; padding: 5px 10px">[[${order.statusText}]]</span></span>
+                                        <span><span style="font-weight: bold">Tên người nhận: </span><span>[[${order.toName}]]</span></span>
+                                        <span><span style="font-weight: bold">Địa chỉ: </span><span>[[${order.toAddress}]]</span></span>
+                                        <span><span style="font-weight: bold">Số điện thoại: </span><span>[[${order.toPhone}]]</span></span>
+                                        <span><span
+                                                style="font-weight: bold">Ghi chú: </span><span>[[${order.note}]]</span></span>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="container">
+                                            <ul class="sessions" style="max-height: 300px; overflow: auto">
+                                                <li th:each="item:${orderHistory}">
+                                                    <div class="time format-time">[[${item.createdAt}]]</div>
+                                                    <p>[[${item.note}]]</p>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="col-12">
+                            <div class="card shadow-none" style="border: 1px solid #e9ecef!important;">
+                                <div class="card-header pb-0">
+                                    <div class="d-flex justify-content-between">
+                                        <span style="font-size: 20px; font-weight: bold">Thông tin sản phẩm</span>
+                                        <div>
+                                            <button th:if="${order.status == 5}" class="btn btn-info"
+                                                    data-bs-toggle="modal" data-bs-target="#exampleModal">Thêm sản phẩm
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <hr>
+                                </div>
+                                <div class="card-body pt-0 pb-0">
+                                    <table class="table table-bordered">
+                                        <thead>
+                                        <tr>
+                                            <th scope="col" style="width: 50px">STT</th>
+                                            <th scope="col" style="width: 100px">Hình ảnh</th>
+                                            <th scope="col" style="width: 350px!important;">Tên sản phẩm</th>
+                                            <th scope="col" style="width: 100px">Kích cỡ</th>
+                                            <th scope="col" style="width: 100px">Màu sắc</th>
+                                            <th scope="col" style="width: 150px">Giá bán</th>
+                                            <th scope="col">Số lượng</th>
+                                            <th scope="col" th:if="${order.status == 5}"></th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr th:each="item,state:${orderDetails}">
+                                            <th scope="row">
+                                                [[${state.index + 1}]]
+                                                <input type="hidden" id="productDetailId" th:value="${item.productDetail.id}"/>
+                                            </th>
+                                            <td>
+                                                <picture th:if="${item.productDetail.product.image != null}"
+                                                         class="overflow-hidden d-block bg-light">
+                                                    <img class="img-fluid"
+                                                         style="width: 81px!important; height: 81px!important; object-fit: contain"
+                                                         th:src="${item.productDetail.product.image.fileUrl}"
+                                                         alt="123">
+                                                </picture>
+                                                <picture th:if="${item.productDetail.product.image == null}"
+                                                         class="position-relative overflow-hidden d-block bg-light">
+                                                    <img class="img-fluid"
+                                                         style="width: 81px!important; height: 81px!important; object-fit: cover"
+                                                         src="https://firebasestorage.googleapis.com/v0/b/clothes-f4k.appspot.com/o/common%2Fdata_not_found.png?alt=media&token=36148ded-ba2c-4207-8525-2da16e7a8557">
+                                                </picture>
+                                            </td>
+                                            <td>
+                                                <div data-bs-toggle="tooltip"
+                                                     th:title="${item.productDetail.product.name}"
+                                                     style="overflow: hidden; max-width: 350px; white-space: nowrap; text-overflow: ellipsis">
+                                                    [[${item.productDetail.product.name}]]
+                                                </div>
+                                            </td>
+                                            <td>
+                                                [[${item.productDetail.size.name}]]
+                                            </td>
+                                            <td>
+                                                [[${item.productDetail.color.name}]]
+                                            </td>
+                                            <td class="text-start">
+                                                <div th:if="${item.purchasePrice == null}">
+                                                    <span class="order-price text-danger">[[${item.productDetail.price}]]</span>
+                                                </div>
+                                                <div th:if="${item.purchasePrice != null}">
+                                                    <s class="lh-1 me-2"><span
+                                                            class="fw-bolder m-0 product-price-list text-muted order-price">[[${item.productDetail.price}]]</span></s>
+                                                    <span class="order-price text-danger">[[${item.purchasePrice}]]</span>
+                                                </div>
+                                            </td>
+                                            <td th:if="${order.status != 5}">
+                                                [[${item.quantity}]]
+                                            </td>
+                                            <td th:if="${order.status == 5}">
+                                                <div class="d-flex" style="font-size: 14px">
+                                                    <button class="btn border btn-cartIndex-sub"
+                                                            th:data-id="${item.productDetail.id}"
+                                                            th:data-value="${item.quantity - 1}"><span
+                                                            class="mdi mdi-minus"></span></button>
+                                                    <input class="form-control inputQuantity"
+                                                           style="text-align: center; width: 80px"
+                                                           th:value="${item.quantity}"
+                                                           th:data-value="${item.quantity}"/>
+                                                    <button class="btn border btn-cartIndex-plus"
+                                                            th:data-id="${item.productDetail.id}"
+                                                            th:data-value="${item.quantity + 1}"
+                                                            th:data-max="${item.productDetail.quantity}"><span
+                                                            class="mdi mdi-plus"></span></button>
+                                                </div>
+                                            </td>
+                                            <td th:if="${order.status == 5}">
+                                                <button class="btn btn-danger btnDelete" data-bs-toggle="tooltip"
+                                                        th:title="Xoá" th:data-id="${item.productDetail.id}"><span
+                                                        class="mdi mdi-trash-can-outline"></span></button>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                    <div>
+                                        <table class="w-100">
+                                            <thead>
+                                            <th></th>
+                                            <th style="width: 300px;"></th>
+                                            </thead>
+                                            <tbody>
+                                            <tr style="text-align: end; border-bottom: 1px solid #e9ecef; height: 38px">
+                                                <td>Tổng tiền hàng</td>
+                                                <td class="order-price">[[${order.totalCart}]]</td>
+                                            </tr>
+                                            <tr style="text-align: end; border-bottom: 1px solid #e9ecef; height: 38px">
+                                                <td>Phí vận chuyển</td>
+                                                <td class="order-price">[[${order.shippingPay}]]</td>
+                                            </tr>
+                                            <tr style="text-align: end; border-bottom: 1px solid #e9ecef; height: 38px">
+                                                <td>Thành tiền</td>
+                                                <td class="text-danger ms-2 order-price" style="font-size: 20px">
+                                                    [[${order.totalPay}]]
+                                                </td>
+                                            </tr>
+                                            <tr style="text-align: end; border-bottom: 1px solid #e9ecef; height: 38px">
+                                                <td>Phương thức Thanh toán</td>
+                                                <td>[[${order.paymentMethod.name}]]</td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+</section>
+
+<!--modal history-->
+<div class="modal fade" id="scrollable-modal" tabindex="-1" role="dialog" aria-labelledby="scrollableModalTitle"
+     aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="scrollableModalTitle">Lịch sử hoá đơn</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-hidden="true"></button>
+            </div>
+            <div class="modal-body">
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th scope="col">Trạng thái</th>
+                        <th scope="col">Ngày cập nhật</th>
+                        <th scope="col">Ghi chú</th>
+                        <th scope="col">Người thao tác</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="item:${orderHistory}">
+                        <th>[[${item.statusText}]]</th>
+                        <td>
+                            <div class="format-time">[[${item.createdAt}]]</div>
+                        </td>
+                        <td>[[${item.note}]]</td>
+                        <td>[[${item.createBy}]]</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<!--modal add product-->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog  modal-fullscreen">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Thêm sản phẩm</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="formFilter">
+                    <div class="row mb-1">
+                        <div class="col-6 mb-6">
+                            <label class="form-label" for="filterSearch">Tên sản phẩm</label>
+                            <input type="text" class="form-control" id="filterSearch" placeholder="Tên sản phẩm"
+                                   name="search">
+                        </div>
+                        <div class="col-6 mb-6">
+                            <label class="form-label" for="filterSearch">Khoảng giá</label>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="input-group mb-0 border">
+                                    <input id="filterPriceMin" name="priceMin"  type="text" class="form-control-sm flex-grow-1 text-muted border-0" style="width: 50%">
+                                    <div class="input-group-append">
+                                        <span class="input-group-text" style="font-size: 12px; height: 32px; border: none!important;; background-color: transparent!important;">VNĐ</span>
+                                    </div>
+                                </div>
+                                <div class="input-group mb-0 ms-2 border">
+                                    <input id="filterPriceMax" name="priceMax" type="text" class="form-control-sm flex-grow-1 text-muted border-0" style="width: 50%">
+                                    <div class="input-group-append">
+                                        <span class="input-group-text" style="font-size: 12px; height: 32px; border: none!important;; background-color: transparent!important;">VNĐ</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-2 mb-6">
+                            <label class="form-label" for="filterCategory">Danh mục</label>
+                            <select class="form-select" id="filterCategory" name="categoryId">
+                                <option value="">Tất cả</option>
+                                <option th:each="item:${listCategory}" th:value="${item.id}">[[${item.name}]]</option>
+                            </select>
+                        </div>
+                        <div class="col-2 mb-6">
+                            <label class="form-label" for="filterBrand">Nhãn hàng</label>
+                            <select class="form-select" id="filterBrand" name="brandId">
+                                <option value="">Tất cả</option>
+                                <option th:each="item:${listBrand}" th:value="${item.id}">[[${item.name}]]</option>
+                            </select>
+                        </div>
+                        <div class="col-2 mb-6">
+                            <label class="form-label" for="filterSize">Kích thước</label>
+                            <select class="form-select" id="filterSize" name="sizeId">
+                                <option value="">Tất cả</option>
+                                <option th:each="item:${listSize}" th:value="${item.id}">[[${item.name}]]</option>
+                            </select>
+                        </div>
+                        <div class="col-2 mb-6">
+                            <label class="form-label" for="filterColor">Màu sắc</label>
+                            <select class="form-select" id="filterColor" name="colorId">
+                                <option value="">Tất cả</option>
+                                <option th:each="item:${listColor}" th:value="${item.id}">[[${item.name}]]</option>
+                            </select>
+                        </div>
+                        <div class="col-4 mb-6">
+                            <label class="form-label" for="orderPrice">Sắp xếp theo giá</label>
+                            <select class="form-select" id="orderPrice" name="orderPrice">
+                                <option value="desc">Từ cao đến thấp</option>
+                                <option value="asc">Từ thấp đến cao</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="d-flex gap-1 justify-content-center">
+                        <button class="btn btn-primary" id="btnSearchProduct">Tìm kiếm</button>
+                        <button class="btn btn-outline-secondary" id="btnRefresh">Làm mới</button>
+                    </div>
+                    <div class="divider"></div>
+                </form>
+                <div>
+                    <table class="table table-centered w-100 dt-responsive nowrap" id="products-table">
+                        <thead class="table-light">
+                        <tr>
+                            <th style="width: 50px;">STT</th>
+                            <th>Tên sản phẩm</th>
+                            <th>Danh mục</th>
+                            <th>Thương hiệu</th>
+                            <th>Màu sắc</th>
+                            <th>Kích thước</th>
+                            <th>Số lượng</th>
+                            <th>Giá bán</th>
+                            <th style="width: 150px">Thao tác</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+
+                        </tbody>
+                    </table>
+                </div>
+                <div class="divider"></div>
+            </div>
+<!--            <div class="modal-footer">-->
+<!--                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>-->
+<!--                <button type="button" class="btn btn-primary">Save changes</button>-->
+<!--            </div>-->
+        </div>
+    </div>
+</div>
+
+<!--default script-->
+<!--jquery-->
+<script th:src="@{/common/jquery/jquery.min.js}"></script>
+<script th:src="@{/common/dayjs/dayjs.min.js}"></script>
+
+<script th:src="@{/admin/script.js}"></script>
+<script th:src="@{/admin/dist/js/vendor.min.js}"></script>
+<script th:src="@{/admin/dist/js/app.min.js}"></script>
+
+<script th:src="@{/common/sweetalert/common.js}"></script>
+<script th:src="@{/common/sweetalert/sweetalert2.min.js}"></script>
+
+<!--datatables-->
+<script th:src="@{/admin/plugins/datatables/js/jquery.dataTables.min.js}"></script>
+<script th:src="@{/admin/plugins/datatables/js/dataTables.bootstrap5.min.js}"></script>
+<script th:src="@{/admin/plugins/datatables/js/dataTables.responsive.min.js}"></script>
+<script th:src="@{/admin/plugins/datatables/js/responsive.bootstrap5.min.js}"></script>
+<script th:src="@{/admin/plugins/datatables/js/dataTables.checkboxes.min.js}"></script>
+<script th:src="@{/admin/plugins/datatables/common.js}"></script>
+
+<!--custom script-->
+<script type="module" th:src="@{/admin/orders/order-detail.js}"></script>
+</body>
+</html>
