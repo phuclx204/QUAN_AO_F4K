@@ -5,6 +5,7 @@ import org.example.quan_ao_f4k.dto.response.users.CustomerResponse;
 import org.example.quan_ao_f4k.list.ListResponse;
 import org.example.quan_ao_f4k.mapper.users.CustomerMapper;
 import org.example.quan_ao_f4k.model.authentication.User;
+import org.example.quan_ao_f4k.repository.authentication.UserRepository;
 import org.example.quan_ao_f4k.repository.users.CustomerRepository;
 import org.example.quan_ao_f4k.util.F4KUtils;
 import org.example.quan_ao_f4k.util.SearchFields;
@@ -19,10 +20,12 @@ import java.util.List;
 public class CustomerServiceImpl implements CustomerService {
 	private final CustomerRepository customerRepository;
 	private final CustomerMapper customerMapper;
+	private final UserRepository userRepository;
 
-	public CustomerServiceImpl(CustomerRepository customerRepository, CustomerMapper customerMapper) {
+	public CustomerServiceImpl(CustomerRepository customerRepository, CustomerMapper customerMapper, UserRepository userRepository) {
 		this.customerRepository = customerRepository;
 		this.customerMapper = customerMapper;
+		this.userRepository = userRepository;
 	}
 
 	@Override
@@ -56,9 +59,26 @@ public class CustomerServiceImpl implements CustomerService {
 	}
 
 	@Override
-	public Page<CustomerResponse> findCustomersByUserRole(int page, int size, String search) {
+	public Page<CustomerResponse> searchCustomer(int page, int size, String search) {
 		Pageable pageable = PageRequest.of(page - 1, size);
-		List<User> list = customerRepository.findCustomersByUserRole(search);
+		List<User> list = customerRepository.findAllCustomer(search);
 		return F4KUtils.toPage(customerMapper.entityToResponse(list),pageable);
+	}
+
+	@Override
+	public Page<CustomerResponse> searchAccount(int page, int size, String search) {
+		Pageable pageable = PageRequest.of(page - 1, size);
+		List<User> list = customerRepository.findAllAccount(search);
+		return F4KUtils.toPage(customerMapper.entityToResponse(list),pageable);
+	}
+
+	@Override
+	public void saveCustoms(CustomerRequest request) {
+		User user = new User();
+		user.setEmail(request.getEmail());
+		user.setNumberPhone(request.getNumberPhone());
+		user.setFullName(request.getFullName());
+
+		userRepository.save(user);
 	}
 }
