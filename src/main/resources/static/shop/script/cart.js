@@ -41,48 +41,64 @@ const {convert2Vnd} = getCommon();
 
     const addProductCart = (items) => {
         items.forEach(item => {
+            console.log(item)
             const product = item.productDetailDto.product;
             const productDetail = item.productDetailDto;
 
+            const ttHetHang = item.status === 0;
+            const ttNgungKinhDoanh = product.status === 0;
+
             const urlProductDetail = `/shop/product/${product.slug}?color` + productDetail.color.hex.replace("#", "%23") + `&size=${productDetail.size.name}`;
-            const productName = productDetail.status === trangThaiSp.conHang ? `<a href="${urlProductDetail}" class="text-decoration-none">${product.name}</a>` : `${product.name}`;
-
-            const htmlTdQuantity = productDetail.status === trangThaiSp.conHang ?
-                `<div style="padding-left: 15px">Có sẵn ${productDetail.quantity} sản phẩm</div>
-                <div class="px-3 d-flex">
-                    <button class="btn btn-custom border btn-cart-sub" data-id="${productDetail.id}" data-value="${item.quantity - 1}"><span class="mdi mdi-minus"></span></button>
-                         <span class="border pe-3 ps-3 pt-1 pb-1">${item.quantity}</span>
-                    <button class="btn btn-custom border btn-cart-plus" data-id="${productDetail.id}" data-value="${item.quantity + 1}"><span class="mdi mdi-plus"></span></button>
-                </div>`
-                :
-                `<span class="text-muted mt-1"><strike>${item.quantity}</strike></span>`;
-
-            const htmlTdDetailProduct = productDetail.status === trangThaiSp.conHang ?
-                `<div class="ps-sm-3">
-                     <h6 class="mb-2 fw-bolder">${productName}</h6>
-                     <small class="d-block text-muted"> ${productDetail.color.name} / ${productDetail.size.name}</small>
-                </div>`
-                :
-                `<div class="ps-sm-3">
-                     <h6 class="mb-2 fw-bolder">${product.name}</h6>
-                     <small class="d-block text-muted mb-3"> ${productDetail.color.name} / ${productDetail.size.name}</small>
-                     <h5 class="text-danger">Hết hàng</h5>
-                </div>`
-
-            const htmlTdPrice = productDetail.status === trangThaiSp.conHang ?
-                `<div class="d-flex justify-content-between flex-column align-items-end h-100">
-                     <button class="cursor-pointer bg-transparent border-0 btn-remove" data-id="${productDetail.id}"><i class="ri-close-circle-line ri-lg"></i></button>
-                     <p class="fw-bolder mt-3 m-sm-0">${convert2Vnd(item.total + '')}</p>
-                </div>`
-                :
-                `<div class="d-flex justify-content-between flex-column align-items-end h-100">
-                     <button class="cursor-pointer bg-transparent border-0 btn-remove" data-id="${productDetail.id}"><i class="ri-close-circle-line ri-lg"></i></button>
-                     <p class="fw-bolder mt-3 m-sm-0"><strike>${convert2Vnd(item.total + '')}</strike></p>
-                </div>`
-
-            const discountPercent = productDetail.promotion ? `<span class="badge card-badge bg-secondary">-${productDetail.promotion.discountValue}%</span>` : '';
-
             const fileImg = product.image?.fileUrl ? product.image?.fileUrl : imageBlank;
+
+            let htmlProductName = ``; // Cột chi tiết
+            let htmlTdQuantity = ``; // Cột số lượng
+            let htmlTdPrice = ``; // Cột thao tác
+
+            const discountPercent = productDetail.promotion ? `<span class="badge card-badge bg-orange">-${productDetail.promotion.discountValue}%</span>` : '';
+            const discountPrice = productDetail.promotion ?
+                `<div class="d-flex flex-column">
+                    <s class="fw-bolder mt-3 m-sm-0 text-muted">${convert2Vnd(productDetail.price + '')}</s>
+                    <p class="fw-bolder mt-3 m-sm-0">${convert2Vnd(productDetail.discountValue + '')}</p>
+                </div>` :
+                `<p class="fw-bolder mt-3 m-sm-0">${convert2Vnd(productDetail.price + '')}</p>`
+
+            if (ttNgungKinhDoanh) {
+                htmlProductName = `<div><span class="badge bg-danger">Sản phẩm đã ngừng kinh doanh</span></div><div class="fw-bolder">${product.name}</div>`
+
+                htmlTdQuantity = `<span class="text-muted mt-1"><strike>${item.quantity}</strike></span>`;
+
+                htmlTdPrice =
+                    `<div class="d-flex justify-content-between flex-column align-items-end h-100">
+                        <button class="cursor-pointer bg-transparent border-0 btn-remove text-danger" data-id="${productDetail.id}"><i class="ri-close-circle-line ri-lg"></i></button>
+                    </div>`;
+            } else if (ttHetHang) {
+                htmlProductName = `<div><span class="badge bg-orange">Sản phẩm đang hết hàng</span></div><div class="fw-bolder">${product.name}</div>`
+
+                htmlTdQuantity = `<span class="text-muted mt-1"><strike>${item.quantity}</strike></span>`;
+
+                htmlTdPrice =
+                    `<div class="d-flex justify-content-between flex-column align-items-end h-100">
+                        <button class="cursor-pointer bg-transparent border-0 btn-remove text-danger" data-id="${productDetail.id}"><i class="ri-close-circle-line ri-lg"></i></button>
+                        <s>${discountPrice}</s>
+                    </div>`;
+            } else {
+                htmlProductName = `<a href="${urlProductDetail}" class="text-decoration-none">${product.name}</a>`
+
+                htmlTdQuantity =
+                    `<div style="padding-left: 15px">Có sẵn ${productDetail.quantity} sản phẩm</div>
+                    <div class="px-3 d-flex">
+                        <button class="btn btn-custom border btn-cart-sub" data-id="${productDetail.id}" data-value="${item.quantity - 1}"><span class="mdi mdi-minus"></span></button>
+                             <span class="border pe-3 ps-3 pt-1 pb-1">${item.quantity}</span>
+                        <button class="btn btn-custom border btn-cart-plus" data-id="${productDetail.id}" data-value="${item.quantity + 1}"><span class="mdi mdi-plus"></span></button>
+                    </div>`
+
+                htmlTdPrice =
+                    `<div class="d-flex justify-content-between flex-column align-items-end h-100">
+                        <button class="cursor-pointer bg-transparent border-0 btn-remove text-danger" data-id="${productDetail.id}"><i class="ri-close-circle-line ri-lg"></i></button>
+                        ${discountPrice}
+                    </div>`
+            }
 
             const $row = $(`
                 <tr>
@@ -93,7 +109,12 @@ const {convert2Vnd} = getCommon();
                         </picture>
                     </td>
                     <td>
-                        ${htmlTdDetailProduct}
+                        <div class="ps-sm-3">
+                            <div class="mb-2 d-flex flex-column">
+                               ${htmlProductName}
+                            </div>
+                            <small class="d-block">Màu: ${productDetail.color.name} / size: ${productDetail.size.name}</small>
+                        </div>
                     </td>
                     <td>
                         ${htmlTdQuantity}

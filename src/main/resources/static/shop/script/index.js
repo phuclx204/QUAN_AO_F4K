@@ -60,23 +60,28 @@ export {URL, imageBlank}
 
         const id = productDetail.id;
         const srcImg = !product.image ? imageBlank : product.image.fileUrl;
-        const total = convert2Vnd(item.total ? item.total : 0 + '');
+        // const total = convert2Vnd(item.total ? item.total : 0 + '');
+        const total = productDetail.discountValue != null ? `<s class="text-muted">${convert2Vnd(productDetail.price + '')}</s> ${convert2Vnd(productDetail.discountValue + '')}` : `${convert2Vnd(productDetail.price + '')}`;
 
         const urlProductDetail = `/shop/product/${product.slug}?color` + productDetail.color.hex.replace("#", "%23") + `&size=${productDetail.size.name}`;
         const productName = productDetail.status === trangThaiSp.conHang ? `<a href="${urlProductDetail}" class="text-decoration-none">${product.name}</a>` : `${product.name}`;
 
-        const discountPercent = productDetail.promotion ? `<span class="badge card-badge bg-secondary">-${productDetail.promotion.discountValue}%</span>` : '';
+        const discountPercent = productDetail.promotion ? `<span class="badge card-badge bg-orange">-${productDetail.promotion.discountValue}%</span>` : '';
 
         let htmlFooter = ``
         if (item.status === 1) {
-            htmlFooter += `<div class="d-flex" style="font-size: 1.1rem">
-                                <button class="btn btn-custom border btn-cartIndex-sub" data-id="${productDetail.id}" data-value="${item.quantity - 1}"><span class="mdi mdi-minus"></span></button>
-                                    <span class="border pe-3 ps-3">${item.quantity}</span>
-                                <button class="btn btn-custom border btn-cartIndex-plus" data-id="${productDetail.id}" data-value="${item.quantity + 1}"><span class="mdi mdi-plus"></span></button>
+            htmlFooter += `<div>
+                                <div class="d-flex" style="font-size: 1.1rem">
+                                    <button class="btn btn-custom border btn-cartIndex-sub" data-id="${productDetail.id}" data-value="${item.quantity - 1}"><span class="mdi mdi-minus"></span></button>
+                                        <span class="border pe-3 ps-3">${item.quantity}</span>
+                                    <button class="btn btn-custom border btn-cartIndex-plus" data-id="${productDetail.id}" data-value="${item.quantity + 1}"><span class="mdi mdi-plus"></span></button>
+                                </div>
                             </div>
-                            <p class="fw-bolder text-end m-0">${total}</p>`
-        } else {
-            htmlFooter += `<span class="text-danger">Hết hàng</span><strike class="fw-bolder text-end m-0">${total}</strike>`
+                            <div class="d-flex flex-column">${total}</div>`
+        } else if (product.status === 0) {
+            htmlFooter += `<span class="text-danger">Sản phẩm đã ngừng kinh doanh</span>`
+        } else  {
+            htmlFooter += `<span class="text-danger">Hết hàng</span><s class="d-flex flex-column">${total}</s>`
         }
 
         const htmlCartItem =

@@ -82,6 +82,10 @@ public class ShopProductServiceImpl implements ShopProductService {
         ProductDetail productDetail = productDetailRepository.findProductDetailBySlugProduct(slug, colorHex, sizeName)
                 .orElseThrow(() -> new BadRequestException("Lỗi không tìm thấy sản phẩm"));
 
+        if (productDetail.getProduct().getStatus() == F4KConstants.STATUS_OFF) {
+            throw new BadRequestException("Sản phậm hiện đang ngưng bán");
+        }
+
         List<ProductDetail> productDetailList = productDetailRepository.findProductDetailBySlugProduct(slug, productDetail.getColor().getHex());
 
         List<Size> listSize = productDetailList.stream().map(el -> {

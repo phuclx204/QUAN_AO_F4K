@@ -39,7 +39,7 @@ public class VnPayService {
     @Transactional
     public String createOrder(HttpServletRequest request, int amount, String orderInfor, String urlReturn) {
         try {
-            Order order = shopCheckOutService.createOneOrder(HoaDonUtils.PhuongThucMuaHang.CHUYEN_TIEN, false);
+            Order order = shopCheckOutService.createOneOrder(HoaDonUtils.PhuongThucMuaHang.CHUYEN_TIEN, "Đơn hàng đã thanh toán" ,false);
 
             // tạo sanbox thanh toán online
             Map<String, String> vnp_Params = initParamVnPay(
@@ -217,7 +217,7 @@ public class VnPayService {
         String vnp_CreateDate = formatter.format(cld.getTime());
         vnp_Params.put("vnp_CreateDate", vnp_CreateDate);
 
-        cld.add(Calendar.SECOND, 30);
+        cld.add(Calendar.MINUTE, 2);
         String vnp_ExpireDate = formatter.format(cld.getTime());
         vnp_Params.put("vnp_ExpireDate", vnp_ExpireDate);
 

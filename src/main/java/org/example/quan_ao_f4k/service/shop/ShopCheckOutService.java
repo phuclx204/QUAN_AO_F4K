@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface ShopCheckOutService {
     void addModelCheckout(Model model);
-    Order createOneOrder(HoaDonUtils.PhuongThucMuaHang phuongThucMuaHang, boolean isClear);
+    Order createOneOrder(HoaDonUtils.PhuongThucMuaHang phuongThucMuaHang, String note, boolean isClear);
     void cancelOrder(Long orderId, String note);
     void clearCart(User user);
     List<OrderDetail> getOrderDetailByOrder(Order order);

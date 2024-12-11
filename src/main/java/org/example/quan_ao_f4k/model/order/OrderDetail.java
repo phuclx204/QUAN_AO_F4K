@@ -35,6 +35,9 @@ public class OrderDetail {
     @Column(name = "price", precision = 65, scale = 2)
     private BigDecimal price;
 
+    @Column(name = "discount_price", precision = 65, scale = 2)
+    private BigDecimal discountPrice;
+
     @Transient  // Đảm bảo thuộc tính này không được lưu vào database
     private Image image;
 }

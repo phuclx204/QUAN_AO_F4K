@@ -16,4 +16,5 @@ public class OrderDetailResponse {
     private ProductDetailResponse productDetail;
     private OrderResponse order;
     private BigDecimal purchasePrice;
+    private BigDecimal discountPrice;
 }

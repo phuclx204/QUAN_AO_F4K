@@ -1,6 +1,7 @@
-import {$ajax, getCommon, ref, syncFormWithDataObject} from "/common/public.js";
+import {$ajax, getCommon, ref, syncFormWithDataObject, validateForm} from "/common/public.js";
 
 const {transformData, convert2Vnd, formatNumberByDot} = getCommon();
+const {getValidate, clearValidation} = validateForm;
 
 (function () {
 
@@ -176,7 +177,7 @@ const {transformData, convert2Vnd, formatNumberByDot} = getCommon();
         $query.val(formatNumberByDot(cleanedInput.toString()));
     }
 
-    const handlePriceBlur = async (type, minSelector, maxSelector) => {
+    const handlePriceBlur = (type, minSelector, maxSelector) => {
         let min = parseInt($(minSelector).val().replace(/[^0-9]/g, ''), 10);
         let max = parseInt($(maxSelector).val().replace(/[^0-9]/g, ''), 10);
 
@@ -200,10 +201,14 @@ const {transformData, convert2Vnd, formatNumberByDot} = getCommon();
         }
     });
 
-    $(document).on("keydown", ".inputQuantity", function (e) {
+    $(document).on("keydown", ".inputQuantity", async function (e) {
         if (e.key === "Enter") {
-            const value = e.value();
-            console.log(value)
+            if ($(this).val()) {
+                const productDetailId = $(this).data("id");
+                await updateQuantity(productDetailId, $(this).val());
+            } else {
+                e.preventDefault();
+            }
         }
     })
 
@@ -442,6 +447,36 @@ const {transformData, convert2Vnd, formatNumberByDot} = getCommon();
     $(document).on("click", ".action-update", async function (e) {
         e.preventDefault();
         await addProductToInvoice($(this).data("id"), $(this).data("price"));
+    })
+
+    // cancel order
+    const $modalCancel = $("#modalCancel");
+    const $btnCancel = $("#btnCancel");
+
+    const rules = {
+        inputNoteCancel: [
+            {rule: (value) => value.trim() !== "", message: "Lý do bắt buộc"}
+        ]
+    };
+
+    $(document).on("submit", "#formCancelOrder", function (e) {
+        e.preventDefault();
+    })
+
+    $(document).on("click", "#btnCancel", async function (e) {
+        const isValid = await getValidate("formCancelOrder", rules);
+        if (!isValid) return;
+
+        const value = $("#inputNoteCancel").val();
+        const result = await $confirm("warning", `Bạn có chắc chắn muốn hủy đơn này không?`, 'Xác nhận hủy đơn');
+        if (result.isConfirmed) {
+            openLoading();
+            await $ajax.get("/admin/order-detail/update-status/" + orderId, {status: 0, note: value});
+            await closeLoading();
+            showAlert("success", "'Đơn hàng đã được hủy và số lượng sản phẩm đã được cập nhật!").then(_rs => {
+                window.location.href = '/admin/order-detail/' + orderCode;
+            });
+        }
     })
 
     //

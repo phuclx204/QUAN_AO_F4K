@@ -786,8 +786,13 @@ const totalAmountElement = document.getElementById("totalAmount");
 const changeAmount = document.getElementById("changeAmount");
 const statusMessage = document.getElementById("statusMessage");
 
-const totalAmount = parseInt(totalAmountElement.textContent.replace(/\D/g, ""), 10) || 0;
-totalAmountElement.textContent = formatPrice(totalAmount);
+let totalAmount
+try {
+    totalAmount = parseInt(totalAmountElement.textContent.replace(/\D/g, ""), 10) || 0;
+    totalAmountElement.textContent = formatPrice(totalAmount);
+} catch (e) {
+
+}
 
 inputField.addEventListener("input", () => {
     const numericValue = parseInt(inputField.value.replace(/[^0-9]/g, ""), 10) || 0;

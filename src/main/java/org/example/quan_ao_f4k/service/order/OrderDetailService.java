@@ -18,6 +18,6 @@ public interface OrderDetailService extends CrudService<OrderProductDetailKey, O
 
 	void addModelOrderDetail(Model model, String code);
 	void updateQuantityOrderDetail(OrderDetailRequest request);
-	void updateStatusOrder(Long orderId, Integer newStatus);
+	void updateStatusOrder(Long orderId, Integer newStatus, String note);
 	void refreshOrder(Long orderId);
 }
