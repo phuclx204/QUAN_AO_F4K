@@ -148,7 +148,7 @@ $(document).ready(async function () {
                     return meta.row + meta.settings._iDisplayStart + 1;
                 }
             },
-            {data: 'name', title: 'Tên sản phẩm'},
+            {data: 'name', title: 'Tên  màu sắc'},
             {
                 data: 'hex', title: 'Mã màu',
                 render: (data, type, full, meta) => {

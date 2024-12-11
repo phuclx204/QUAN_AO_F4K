@@ -52,6 +52,7 @@ public class ShopProductResponse {
         private ProductDetailDto productDetailDto;
         private int quantity;
         private BigDecimal total;
+        private BigDecimal price;
         private Integer status;
     }
 
@@ -103,6 +104,7 @@ public class ShopProductResponse {
         private BigDecimal totalPay;
         private BigDecimal shippingPay;
         private BigDecimal totalCart;
+        private BigDecimal invoiceTotal;
         private PaymentMethod paymentMethod;
         private Integer paymentStatus;
         private String note;
@@ -121,6 +123,7 @@ public class ShopProductResponse {
         private ProductDetailDto productDetailDto;
         private Integer quantity;
         private BigDecimal price;
+        private BigDecimal discountPrice;
         private BigDecimal purchasePrice;
     }
 

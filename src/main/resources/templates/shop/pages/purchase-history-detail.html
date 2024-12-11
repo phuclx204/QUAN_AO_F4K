@@ -78,7 +78,7 @@
                                             <ul class="sessions" style="max-height: 400px; overflow: auto">
                                                 <li th:each="item:${history}">
                                                     <div class="time format-time">[[${item.createdAt}]]</div>
-                                                    <p>[[${item.note}]]</p>
+                                                    <p th:utext="${item.note}"></p>
                                                 </li>
                                             </ul>
                                         </div>
@@ -126,8 +126,7 @@
                                             </div>
                                             <div th:if="${item.purchasePrice != null}">
                                                 <div class="d-flex flex-column" style="text-align: end">
-                                                    <s class="lh-1 me-2"><span
-                                                            class="fw-bolder m-0 product-price-list text-muted order-price">[[${item.productDetailDto.price}]]</span></s>
+                                                    <s class="lh-1 me-2 fw-bolder m-0 product-price-list text-muted order-price">[[${item.productDetailDto.price}]]</s>
                                                     <span class="order-price text-danger">[[${item.purchasePrice}]]</span>
                                                 </div>
                                             </div>
@@ -153,7 +152,7 @@
                                         <tr style="text-align: end; border-bottom: 1px solid #e9ecef; height: 38px">
                                             <td>Thành tiền</td>
                                             <td class="text-danger ms-2 order-price" style="font-size: 20px">
-                                                [[${orderDetail.orderDto.totalPay}]]
+                                                [[${orderDetail.orderDto.invoiceTotal}]]
                                             </td>
                                         </tr>
                                         <tr style="text-align: end; border-bottom: 1px solid #e9ecef; height: 38px">
@@ -288,7 +287,7 @@
                 </div>`;
         });
 
-        const nullStepsCount = 5 - steps.length; // Giả sử tổng số bước là 5
+        const nullStepsCount = 5 - steps.length;
         html += getHtmlStatusNull(nullStepsCount);
 
         return html;

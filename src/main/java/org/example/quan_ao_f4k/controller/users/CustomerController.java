@@ -27,7 +27,7 @@ public class CustomerController {
 	public ResponseEntity<Page<CustomerResponse>> listCustomer(@RequestParam(defaultValue = "1") int page,
 	                                                           @RequestParam(defaultValue = "10") int size,
 	                                                           @RequestParam(required = false) String search) {
-		return ResponseEntity.ok(customerService.findCustomersByUserRole(page, size, search));
+		return ResponseEntity.ok(customerService.searchCustomer(page, size, search));
 	}
 	@GetMapping("/detail")
 	public ResponseEntity<?> detailCustomer(@RequestParam Long id) {
@@ -54,5 +54,24 @@ public class CustomerController {
 		}
 		CustomerResponse customerResponse = customerService.save(customerRequest.getId(),customerRequest);
 		return ResponseEntity.status(HttpStatus.CREATED).body(customerResponse);
+	}
+
+	// account-manager
+	@GetMapping({"/account"})
+	public String showAccountManager() {
+		return "/admin/users/account-manager";
+	}
+
+	@GetMapping("/account/list")
+	public ResponseEntity<Page<CustomerResponse>> searchAccountUser(@RequestParam(defaultValue = "1") int page,
+															   @RequestParam(defaultValue = "10") int size,
+															   @RequestParam(required = false) String search) {
+		return ResponseEntity.ok(customerService.searchAccount(page, size, search));
+	}
+
+	@PostMapping("/save-customer")
+	public ResponseEntity<?> saveCustomer(@Valid @RequestBody CustomerRequest customerRequest) {
+		customerService.saveCustoms(customerRequest);
+		return ResponseEntity.ok().build();
 	}
 }

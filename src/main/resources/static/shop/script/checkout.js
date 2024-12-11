@@ -113,7 +113,10 @@ const {getValidate, clearValidation} = validateForm;
             const productDetail = item.productDetailDto;
             const product = item.productDetailDto.product;
 
-            const discountPercent = productDetail.promotion ? `<span class="badge card-badge bg-secondary">-${productDetail.promotion.discountValue}%</span>` : '';
+            const ttHetHang = item.status === 0;
+            const ttNgungKinhDoanh = product.status === 0;
+
+            const discountPercent = productDetail.promotion ? `<span class="badge card-badge bg-orange">-${productDetail.promotion.discountValue}%</span>` : '';
 
             const cartItemHTML = `
                 <div class="d-none d-md-flex justify-content-between align-items-start py-2">
@@ -391,7 +394,12 @@ const {getValidate, clearValidation} = validateForm;
 
         const paymentMethod = $('input[name="checkoutShippingMethod"]:checked').attr('id');
         if (paymentMethod === 'checkoutShippingMethodOne') {
-            window.location.href = `/shop/create-order?buyType=THANH_TOAN_SAU_NHAN_HANG`;
+            const params = {
+                buyType: 'THANH_TOAN_SAU_NHAN_HANG',
+                note: $('#createNote').val()
+            }
+            $ajax.createUrl('/shop/create-order', params);
+            window.location.href = $ajax.createUrl('/shop/create-order', params);
         } else if (paymentMethod === 'checkoutShippingMethodTwo') {
             const totalAmount = subtotal.value + shippingFee.value;
             window.location.href = `/vnPay/submit-order?amount=${totalAmount}&orderInfo=thanh-toan-hoa-don`;

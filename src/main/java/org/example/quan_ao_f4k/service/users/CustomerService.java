@@ -8,5 +8,9 @@ import org.springframework.stereotype.Service;
 
 @Service
 public interface CustomerService extends CrudService<Long, CustomerRequest, CustomerResponse> {
-	Page<CustomerResponse> findCustomersByUserRole(int page,int size,String search);
+	Page<CustomerResponse> searchCustomer(int page,int size,String search);
+
+	Page<CustomerResponse> searchAccount(int page,int size,String search);
+
+	void saveCustoms(CustomerRequest request);
 }

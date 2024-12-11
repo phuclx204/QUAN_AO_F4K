@@ -215,6 +215,13 @@ public class OrderServiceImpl implements OrderService {
 				.map(orderMapper::entityToResponse)
 				.collect(Collectors.toList());
 
+		orderResponses.forEach(el -> {
+			el.setTotalCart(el.getTotalPay());
+			if (el.getShippingPay() != null) {
+				el.setTotalPay(el.getTotalPay().add(el.getShippingPay()));
+			}
+		});
+
 		return new ListResponse<>(orderResponses, orders);
 	}
 

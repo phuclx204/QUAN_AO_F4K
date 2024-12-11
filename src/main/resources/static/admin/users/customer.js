@@ -1,296 +1,155 @@
-// const avatarInput = document.getElementById('avatar');
-// const avatarPreview = document.getElementById('avatar-preview');
-//
-// avatarInput.addEventListener('change', function () {
-//     if (this.files && this.files[0]) {
-//         const reader = new FileReader();
-//         reader.onload = function (e) {
-//             avatarPreview.src = e.target.result;
-//             avatarPreview.style.display = 'block';
-//         }
-//         reader.readAsDataURL(this.files[0]);
-//     }
-// });
+import {$ajax, syncFormWithDataObject, validateForm} from "/common/public.js";
+const {getValidate, clearValidation} = validateForm;
 
-$(document).ready(function () {
-    // === Khởi động ===
-    initEventListeners();
-    loadCustomer();
+(function () {
+    "use strict";
 
-    /**
-     * Gán sự kiện cho các phần tử HTML
-     */
-    function initEventListeners() {
-        $('#modal-create').on('hidden.bs.modal', function () {
-            // Reset các trường input
-            $(this).find('form')[0].reset();
-            $(this).find('.is-invalid').removeClass('is-invalid');
-            $(this).find('.invalid-feedback').text('');
-            // Ẩn ảnh preview
-            $('#avatar-preview').attr('src', '#').hide();
-        });
+    /** Biến toàn cục  **/
+    const idFormCreate = 'formAddAttributes';
+    const STATUS_ON = 1;
+    const STATUS_OFF = 0;
+    const $modalCustomer = $('#modalAddCustomer');
 
-        // Kiểm tra các trường
-        $('#email').on('blur', validateEmail);
-        $('#numberPhone').on('blur', validateNumberPhone);
-        $('#fullName').on('blur', validateFullName);
-
-        // Thay đổi số lượng hiển thị khách hàng
-        $('#pageSize').on('change', function () {
-            loadCustomer(1, $(this).val());
-        });
-
-        // Gửi form để lưu hoặc cập nhật khách hàng
-        $('#formCreate').on('submit', function (e) {
-            e.preventDefault();
-            saveOrUpdateCustomer();
-        });
-
-        // Mở modal tạo mới khách hàng
-        $(document).on("click", ".action-create", function (e) {
-            e.preventDefault();
-            openModal("create");
-        });
-
-        // Mở modal cập nhật khách hàng
-        $(document).on("click", ".action-update", function (e) {
-            e.preventDefault();
-            openModal("update", $(this));
-        });
+    const formDefault = {
+        fullName: '',
+        phoneNumber: '',
+        email: ''
     }
+    const objCreate = Object.assign({}, {...formDefault});
 
-    const closeModal = () => {
-        $('#modal-create').modal('hide');
-    }
+    syncFormWithDataObject({
+        selectorParent: idFormCreate,
+        dataObject: objCreate,
+        initialValues: formDefault,
+    });
 
-    /**
-     * Kiểm tra email,sdt,fullname có hợp lệ hay không
-     */
-    function validateEmail() {
-        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        const emailInput = $(this);
-        const feedback = emailInput.siblings('.invalid-feedback');
-
-        if (!emailPattern.test(emailInput.val())) {
-            emailInput.addClass('is-invalid');
-            feedback.text('Email không hợp lệ.');
-        } else {
-            emailInput.removeClass('is-invalid');
-            feedback.text('');
-        }
-    }
-
-    function validateNumberPhone() {
-        const phonePattern = /^(?:\+84|0)\d{9,10}$/;
-        if (!phonePattern.test($(this).val())) {
-            $(this).addClass('is-invalid').siblings('.invalid-feedback').text('Số điện thoại không hợp lệ (đầu +84 hoặc 0 và 9-10 số)');
-        } else {
-            $(this).removeClass('is-invalid');
-        }
-    }
-
-    function validateFullName() {
-        if ($(this).val().trim() === '') {
-            $(this).addClass('is-invalid').siblings('.invalid-feedback').text('Họ và tên không được để trống.');
-        } else {
-            $(this).removeClass('is-invalid');
-        }
-    }
-
-    /**
-     * Tải dữ liệu khách hàng
-     * @param {number} page Số trang hiện tại
-     * @param {number} size Số lượng bản ghi trên mỗi trang
-     */
-    function loadCustomer(page = 1, size = 5) {
-        const search = $('#searchName').val();
-        $.get('/admin/customer/list', {page, size, search})
-            .done(function (response) {
-                renderCustomer(response.content);
-                setupPagination(response.totalPages, page);
-                $('#totalData').text(`Có ${response.totalElements} khách hàng`);
-            })
-            .fail(function (error) {
-                console.error('Không thể tải dữ liệu:', error);
-            });
-    }
-
-    /**
-     * Hiển thị dữ liệu khách hàng vào bảng
-     */
-    function renderCustomer(customers) {
-        const tbody = $('tbody').empty();
-
-        if (!customers.length) {
-            tbody.append('<tr><td colspan="9" class="text-center text-danger">Không có dữ liệu!</td></tr>');
-            return;
-        }
-
-        customers.forEach((customer, index) => {
-            const genderText = customer.gender === 1 ? 'Nam' : 'Nữ';
-            tbody.append(`
-                <tr>
-                    <td>${index + 1}</td>
-                    <td><img src="${customer.avatarUrl}" alt="${customer.avatarUrl}" width="50" height="50" /></td>
-                    <td>${customer.fullName}</td>
-                    <td>${customer.email}</td>
-                    <td>${customer.numberPhone}</td>
-                    <td>${customer.birthDate}</td>
-                    <td>${genderText}</td>
-                    <td class="table-action">
-                        <a href="javascript:void(0);" class="action-icon action-update" data-id="${customer.id}">
-                            <i class="mdi mdi-square-edit-outline"></i>
-                        </a>
-                        <a href="javascript:void(0);" class="action-icon">
-                            <i class="mdi mdi-eye"></i>
-                        </a>
-                    </td>
-                </tr>
-            `);
-        });
-    }
-
-    /**
-     * Thiết lập phân trang
-     */
-    function setupPagination(totalPages, currentPage) {
-        const pagination = $('#pagination');
-        if (totalPages === 0) {
-            pagination.hide();
-            return;
-        } else {
-            pagination.show();
-        }
-        pagination.empty();
-
-        const pageSize = parseInt($('#pageSize').val()); // Lấy số lượng hiển thị hiện tại
-
-        // Nút "Trước"
-        pagination.append(`
-        <button class="btn btn-outline-primary page-button" ${currentPage === 1 ? 'disabled' : ''} data-page="${currentPage - 1}">
-            Trước
-        </button>
-    `);
-
-        // Trường nhập số trang
-        pagination.append(`
-        <input type="text" id="pageInput" value="${currentPage}" style="width: 50px; text-align: center;" />
-        <span> / ${totalPages}</span>
-    `);
-
-        // Nút "Tiếp theo"
-        pagination.append(`
-        <button class="btn btn-outline-primary page-button" ${currentPage === totalPages ? 'disabled' : ''} data-page="${currentPage + 1}">
-            Tiếp theo
-        </button>
-    `);
-
-        $('.page-button').on('click', function () {
-            const page = $(this).data('page');
-            if (page >= 1 && page <= totalPages) {
-                loadCustomer(page, pageSize); // Truyền thêm `pageSize` hiện tại
+    const rules = {
+        'createName': [
+            {
+                rule: (value) => value.trim() !== "",
+                message: "Tên bắt buộc",
+                type: 'text'
             }
+        ],
+        'createPhoneNumber': [
+            {rule: (value) => value.trim() !== "", message: "Số điện thoại bắt buộc"},
+            {rule: (value) => /^(0[3|5|7|8|9])[0-9]{8}$/.test(value), message: "Số điện thoại không đúng định dạng"},
+        ],
+        'createEmail': [
+            {
+                rule: (value) => {
+                    if (value) {
+                        return /^\S+@\S+\.\S+$/.test(value)
+                    } else {
+                        return true
+                    }
+                },
+                message: "Email không hợp lệ."
+            }
+        ]
+    };
+
+    /** Function scope **/
+    const refreshFilter = () => {
+        $("#filterSearch").val("");
+    }
+
+    /** Event **/
+    $("#btnRefresh").on("click", function (e) {
+        refreshFilter();
+        reloadTable();
+    })
+
+    $(document).on("click", "#btnCreateCustomer", function (e) {
+        e.preventDefault();
+
+        $modalCustomer.modal("show")
+    })
+
+    $(document).on("keydown", "#filterSearch", async function (e) {
+        if (e.key === "Enter") {
+            e.preventDefault();
+            reloadTable();
+        }
+    });
+
+    $(document).on("submit", "#formAddAttributes", async function (e) {
+        e.preventDefault();
+
+        const isValid = await getValidate('formAddAttributes', rules);
+        if (!isValid) return;
+
+        await $ajax.post("/admin/customer/save-customer", {
+            numberPhone: objCreate.phoneNumber,
+            email: objCreate.email,
+            fullName: objCreate.fullName
         });
 
-        // Ràng buộc sự kiện để nhập trang
-        $('#pageInput').on('input', function () {
-            this.value = this.value.replace(/[^0-9]/g, ''); // Chỉ cho phép nhập số
-        });
+        $alter("success" ,"Thêm mới thành công");
+        reloadTable();
+        $modalCustomer.modal("hide");
+    })
 
-        $('#pageInput').on('keypress', function (e) {
-            if (e.key === 'Enter') {
-                let inputPage = parseInt($(this).val());
-
-                if (isNaN(inputPage) || inputPage < 1) {
-                    inputPage = 1;
-                } else if (inputPage > totalPages) {
-                    inputPage = totalPages;
+    // Khởi tạo table
+    const $tableProduct = $('#products-table').DataTable({
+        info: false,
+        serverSide: true,
+        searching: false,
+        bLengthChange: false,
+        pageLength: 5,
+        ajax: {
+            url: "/admin/customer/list",
+            type: 'GET',
+            data: function (data) {
+                return {
+                    page: Math.floor(data.start / data.length) + 1,
+                    search: $("#filterSearch").val().trim()
                 }
-
-                loadCustomer(inputPage, pageSize); // Truyền thêm `pageSize` hiện tại
             }
-        });
-    }
-
-    /**
-     * Lưu hoặc cập nhật khách hàng
-     */
-    function saveOrUpdateCustomer() {
-        const url = $('#formCreate').attr('action');
-        const method = $('#customerId').val() ? 'PUT' : 'POST';
-        // Lấy dữ liệu từ từng trường
-        const fullName = $('#fullName').val();
-        const email = $('#email').val();
-        const numberPhone = $('#numberPhone').val();
-        const gender = $('input[name="gender"]:checked').val(); // Lấy giá trị radio đã chọn
-        const birthDate = $('#birthDate').val();
-        const user = $('#username').val();
-        const pass = $('#password').val();
-        const customerId = $('#customerId').val();
-
-        const formData = {
-            fullName: fullName,
-            email: email,
-            numberPhone: numberPhone,
-            username: user,
-            password: pass,
-            gender: gender,
-            birthDate: birthDate,
-            id: customerId
-        };
-        // Gửi dữ liệu lên server
-        $.ajax({
-            url: url,
-            method: method,
-            data: JSON.stringify(formData),
-            contentType: 'application/json',
-            success: function (response) {
-                closeModal();
-                loadCustomer();
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Thành công',
-                    text: 'Lưu khách hàng thành công!',
-                    timer:2000,
-                    timerProgressBar: true,
-                });
+        },
+        columns: [
+            {
+                data: null,
+                title: "STT",
+                render: (data, type, full, meta) => {
+                    return meta.row + meta.settings._iDisplayStart + 1;
+                }
             },
-            error: function (error) {
-                console.error('Lỗi:', error);
+            {data: 'fullName', title: 'Tên'},
+            {data: 'email', title: 'Email'},
+            {data: 'numberPhone', title: 'Số đện thoại'},
+            {data: 'address', title: 'Địa chỉ'},
+            {
+                data: null,
+                title: 'Hành động',
+                render: function (data, type, row) {
+                    return `<td class="table-action">
+                              <span data-bs-toggle="tooltip" title="Chi tiết sản phẩm">
+                                <a href="/admin/products/product-detail/${row.id}" class="action-icon action-update" data-id="${row.id}"> <i class="text-info mdi mdi mdi-magnify"></i></a>
+                              </span>
+                              <span data-bs-toggle="tooltip" title="Cập nhật">
+                                <a href="/admin/products/update-product/${row.id}" class="action-icon action-update" data-id="${row.id}"> <i class="text-warning mdi mdi-square-edit-outline"></i></a>
+                              </span>
+                             </td>`;
+                }
             }
-        });
+        ]
+    });
+
+    const reloadTable = () => {
+        $tableProduct.ajax.reload(null, false);
     }
 
-    /**
-     * Mở modal thêm mới hoặc cập nhật khách hàng
-     */
-    function openModal(mode, $this) {
-        if (mode === "create") {
-            $('#modal-create .modal-title').text("Thêm mới khách hàng");
-            $('#formCreate').attr('action', '/admin/customer');
-            $('#customerId').val('');  // Reset id
-        } else if (mode === "update") {
-            const customerId = $this.data('id');
-            $('#modal-create .modal-title').text("Cập nhật khách hàng");
-            $('#formCreate').attr('action', `/admin/customer`);
+    $(document).on("click", ".action-update", function (e) {
+        console.log('vao update')
+    })
 
-            $.get(`/admin/customer/detail`, {id: customerId})
-                .done(function (customer) {
-                    $('#birthDate').val(customer.birthDate);
-                    $('#customerId').val(customer.id);
-                    $('#fullName').val(customer.fullName);
-                    $('#email').val(customer.email);
-                    $('#username').val(customer.username);
-                    $('#password').val(customer.password);
-                    $('#numberPhone').val(customer.numberPhone);
-                    $('#gender').val(customer.gender);
-                    // $('#avatar-preview').attr('src', customer.avatarUrl).show();
-                })
-                .fail(function () {
-                    alert('Không thể tải thông tin khách hàng');
-                });
-        }
+    $(document).ready(async function () {
 
-        $('#modal-create').modal('show');
-    }
-});
+    })
+})()
+
+
+
+
+

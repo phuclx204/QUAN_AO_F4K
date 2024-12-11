@@ -1,5 +1,6 @@
 package org.example.quan_ao_f4k.repository.order;
 
+import org.example.quan_ao_f4k.dto.response.orders.PdfShopOfflineDTO;
 import org.example.quan_ao_f4k.model.order.OrderDetail;
 import org.example.quan_ao_f4k.model.order.OrderProductDetailKey;
 import org.example.quan_ao_f4k.model.product.ProductDetail;
@@ -26,9 +27,6 @@ public interface OrderDetailRepository extends JpaRepository<OrderDetail, OrderP
 
 	@Query("SELECT o FROM OrderDetail o WHERE o.order.id = :orderId and o.productDetail.id = :productDetailId")
 	OrderDetail findByProductDetailIdAndOrderId(@Param("orderId") Long orderId, @Param("productDetailId") Long productDetailId);
-
-	@Query("SELECT od FROM OrderDetail od WHERE od.order.id = :orderId")
-	List<OrderDetail> findProductDetailsByOrderId(@Param("orderId") Long orderId);
 
 	// sonng - shop site
 	@Query("SELECT o from OrderDetail o where o.order.user.id = :userId and (:status is null or o.order.status = :status) order by o.order.id desc ")

@@ -11,6 +11,7 @@ import org.example.quan_ao_f4k.model.authentication.User;
 import org.example.quan_ao_f4k.model.order.*;
 import org.example.quan_ao_f4k.model.promotion.Promotion;
 import org.example.quan_ao_f4k.repository.order.*;
+import org.example.quan_ao_f4k.util.F4KConstants;
 import org.example.quan_ao_f4k.util.F4KUtils;
 import org.example.quan_ao_f4k.util.HoaDonUtils;
 import org.example.quan_ao_f4k.util.JacksonEx;
@@ -21,6 +22,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -57,16 +59,21 @@ public class ShopCheckOutServiceImpl implements ShopCheckOutService {
 
     @Override
     @Transactional
-    public Order createOneOrder(HoaDonUtils.PhuongThucMuaHang phuongThucMuaHang, boolean isClear) {
+    public Order createOneOrder(HoaDonUtils.PhuongThucMuaHang phuongThucMuaHang, String note, boolean isClear) {
         User user = f4KUtils.getUser();
 
-        Order newOrder = initOrder(user, phuongThucMuaHang);
+        Order newOrder = initOrder(user, phuongThucMuaHang, note);
         Order savedOrder = orderRepository.save(newOrder);
 
         OrderHistory orderHistory = new OrderHistory();
         orderHistory.setOrder(savedOrder);
         orderHistory.setCreatedAt(LocalDateTime.now());
-        orderHistory.setNote("Đơn hàng đã được đặt, chờ phê duyệt");
+        if (note == null || note.isEmpty()) {
+            orderHistory.setNote("Đơn hàng đã được đặt, chờ phê duyệt");
+        } else {
+            orderHistory.setNote("Đơn hàng đã được đặt, chờ phê duyệt <br/> ghi chú: " + note);
+        }
+        orderHistory.setCreateBy("Người dùng");
         orderHistory.setStatus(savedOrder.getStatus());
         orderHistoryRepository.save(orderHistory);
 
@@ -131,8 +138,7 @@ public class ShopCheckOutServiceImpl implements ShopCheckOutService {
     private ShopProductResponse.OrderResponse getOderDetailResponse(String code, User user, Model model) {
         Order order = orderRepository.findByCodeAAndUser_Id(code, user.getId()).orElse(null);
         if (order == null) {
-            model.addAttribute("errMess", "Không tồn tại đơn hàng: " + code);
-            return null;
+            throw new NoSuchElementException("Không tồn tại đơn hàng: " + code);
         }
         ShopProductResponse.OrderDto orderDto = shopProductMapper.toOrderDto(order);
 
@@ -140,8 +146,12 @@ public class ShopCheckOutServiceImpl implements ShopCheckOutService {
         List<ShopProductResponse.OrderDetailDto> listOrderDetailDto = getListOrderDetail(listOrderDetail);
 
         if (orderDto.getTotalPay() != null) {
-            BigDecimal totalCart = orderDto.getTotalPay().subtract(orderDto.getShippingPay());
+//            BigDecimal totalCart = orderDto.getTotalPay().subtract(orderDto.getShippingPay());
+            BigDecimal totalCart = orderDto.getTotalPay();
             orderDto.setTotalCart(totalCart);
+            if (orderDto.getShippingPay() != null) {
+                orderDto.setInvoiceTotal(totalCart.add(orderDto.getShippingPay()));
+            }
         }
 
 
@@ -162,8 +172,12 @@ public class ShopCheckOutServiceImpl implements ShopCheckOutService {
             List<ShopProductResponse.OrderDetailDto> listOrderDetailDto = getListOrderDetail(listOrderDetail);
 
             if (orderDto.getTotalPay() != null) {
-                BigDecimal totalCart = orderDto.getTotalPay().subtract(orderDto.getShippingPay());
+//            BigDecimal totalCart = orderDto.getTotalPay().subtract(orderDto.getShippingPay());
+                BigDecimal totalCart = orderDto.getTotalPay();
                 orderDto.setTotalCart(totalCart);
+                if (orderDto.getShippingPay() != null) {
+                    orderDto.setInvoiceTotal(totalCart.add(orderDto.getShippingPay()));
+                }
             }
 
             ShopProductResponse.OrderResponse orderResponse = ShopProductResponse.OrderResponse.builder()
@@ -179,8 +193,8 @@ public class ShopCheckOutServiceImpl implements ShopCheckOutService {
         List<ShopProductResponse.OrderDetailDto> lstDto = shopProductMapper.toOrderDetailDto(orderDetails);
         for (ShopProductResponse.OrderDetailDto orderDetailDto: lstDto) {
             BigDecimal currentPrice = orderDetailDto.getProductDetailDto().getPrice();
-            BigDecimal purchasePrice = (orderDetailDto.getPrice().divide(BigDecimal.valueOf(orderDetailDto.getQuantity())));
-            if (purchasePrice.compareTo(currentPrice) < 0) {
+            BigDecimal purchasePrice = orderDetailDto.getDiscountPrice();
+            if (purchasePrice != null && purchasePrice.compareTo(currentPrice) < 0) {
                 orderDetailDto.setPurchasePrice(purchasePrice);
             }
         }
@@ -196,6 +210,14 @@ public class ShopCheckOutServiceImpl implements ShopCheckOutService {
 
     private List<OrderDetail> convertCartProductsToOrderDetails(List<CartProduct> cartProducts, Order savedOrder) {
         return cartProducts.stream()
+                .filter(cartProduct -> {
+                    if (cartProduct.getProductDetail().getProduct().getStatus() == F4KConstants.STATUS_ON
+                            && cartProduct.getProductDetail().getQuantity() > 0) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                })
                 .map(cartProduct -> {
                     OrderProductDetailKey key = createOrderProductDetailKey(savedOrder, cartProduct);
                     return createOrderDetail(cartProduct, savedOrder, key);
@@ -204,24 +226,26 @@ public class ShopCheckOutServiceImpl implements ShopCheckOutService {
     }
 
     private OrderDetail createOrderDetail(CartProduct cartProduct, Order savedOrder, OrderProductDetailKey key) {
+        OrderDetail orderDetail = new OrderDetail();
+
         Promotion promotion = shopProductService.getBestPromotionForProductDetail(cartProduct.getProductDetail().getId());
 
         BigDecimal price = cartProduct.getProductDetail().getPrice();
         Integer quantity = cartProduct.getQuantity();
 
         if (promotion != null) {
-            price = shopProductService.calculateDiscountedPrice(price, promotion.getDiscountValue());
+            BigDecimal discountedPrice = shopProductService.calculateDiscountedPrice(price, promotion.getDiscountValue());
+            orderDetail.setDiscountPrice(discountedPrice);
         }
 
-        BigDecimal finaPrice = price.multiply(BigDecimal.valueOf(quantity));
+//        BigDecimal finaPrice = price.multiply(BigDecimal.valueOf(quantity));
 
-        return OrderDetail.builder()
-                .order(savedOrder)
-                .productDetail(cartProduct.getProductDetail())
-                .quantity(quantity)
-                .price(finaPrice)
-                .orderProductDetailKey(key)
-                .build();
+        orderDetail.setOrder(savedOrder);
+        orderDetail.setOrderProductDetailKey(key);
+        orderDetail.setProductDetail(cartProduct.getProductDetail());
+        orderDetail.setQuantity(quantity);
+        orderDetail.setPrice(price);
+        return orderDetail;
     }
 
     private OrderProductDetailKey createOrderProductDetailKey(Order savedOrder, CartProduct cartProduct) {
@@ -243,12 +267,13 @@ public class ShopCheckOutServiceImpl implements ShopCheckOutService {
                 });
     }
 
-    private Order initOrder(User user, HoaDonUtils.PhuongThucMuaHang phuongThucMuaHang) {
+    private Order initOrder(User user, HoaDonUtils.PhuongThucMuaHang phuongThucMuaHang, String note) {
         ShippingInfo shippingInfo = getDefaultShippingInfo(user);
 //        BigDecimal subtotal = getSubtotal(user);
         BigDecimal totalShippingCost = calculateShippingCost(shippingInfo);
-        BigDecimal cartTotal = calculateCartTotal(user);
-        BigDecimal subtotal = totalShippingCost.add(cartTotal);
+//        BigDecimal cartTotal = calculateCartTotal(user);
+//        BigDecimal subtotal = totalShippingCost.add(cartTotal);
+        BigDecimal subtotal = calculateCartTotal(user);
 
         Order order = new Order();
         order.setCode(HoaDonUtils.taoMaHoaDon());
@@ -277,6 +302,10 @@ public class ShopCheckOutServiceImpl implements ShopCheckOutService {
                 order.setPaymentMethod(paymentMethodRepository.findById(1L).get());
                 order.setNote(HoaDonUtils.ORDER_NOTE);
             }
+        }
+
+        if (note != null && !note.isEmpty()) {
+            order.setNote(order.getNote() + "<br/> ghi chú: " + note);
         }
         return order;
     }

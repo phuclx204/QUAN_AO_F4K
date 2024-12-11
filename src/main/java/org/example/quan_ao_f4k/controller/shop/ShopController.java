@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Controller
 @RequestMapping("/shop")
@@ -172,14 +173,21 @@ public class ShopController {
 
     @GetMapping("/purchase-history-detail/{code}")
     public String purchaseHistoryDetail(@PathVariable String code, Model model) {
-        shopCheckOutService.addModalPurchaseHistoryDetail(model, code);
+        try {
+            shopCheckOutService.addModalPurchaseHistoryDetail(model, code);
+        } catch (NoSuchElementException e) {
+            return "/shop/error/404";
+        }
+
         return "/shop/pages/purchase-history-detail";
     }
 
-
     @GetMapping("/create-order")
-    public String createOrder(@RequestParam("buyType") HoaDonUtils.PhuongThucMuaHang phuongThucMuaHang, RedirectAttributes redirectAttributes) {
-        shopCheckOutService.createOneOrder(phuongThucMuaHang, true);
+    public String createOrder(
+            @RequestParam("buyType") HoaDonUtils.PhuongThucMuaHang phuongThucMuaHang
+            , @RequestParam("note") String note
+            , RedirectAttributes redirectAttributes) {
+        shopCheckOutService.createOneOrder(phuongThucMuaHang, note, true);
         redirectAttributes.addFlashAttribute("createOrderSuccess", true);
         return "redirect:/shop/purchase-history";
     }

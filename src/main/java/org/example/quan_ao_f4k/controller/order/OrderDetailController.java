@@ -78,8 +78,8 @@ public class OrderDetailController {
 	}
 
 	@GetMapping("/update-status/{orderId}")
-	public ResponseEntity<?> updateStatus(@PathVariable Long orderId, @RequestParam("status") Integer status) {
-		orderDetailService.updateStatusOrder(orderId, status);
+	public ResponseEntity<?> updateStatus(@PathVariable Long orderId, @RequestParam("status") Integer status, @RequestParam(required = false, name = "note") String note) {
+		orderDetailService.updateStatusOrder(orderId, status, note);
 		return ResponseEntity.ok().build();
 	}
 

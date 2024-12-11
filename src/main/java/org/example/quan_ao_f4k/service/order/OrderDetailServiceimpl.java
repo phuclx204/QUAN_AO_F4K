@@ -7,6 +7,7 @@ import org.example.quan_ao_f4k.dto.request.order.OrderDetailRequest;
 import org.example.quan_ao_f4k.dto.request.order.OrderDetailResponse;
 import org.example.quan_ao_f4k.dto.response.orders.OrderHistoryResponse;
 import org.example.quan_ao_f4k.dto.response.orders.OrderResponse;
+import org.example.quan_ao_f4k.dto.response.orders.PdfShopOfflineDTO;
 import org.example.quan_ao_f4k.dto.response.product.ProductDetailResponse;
 import org.example.quan_ao_f4k.dto.response.shop.ShopProductResponse;
 import org.example.quan_ao_f4k.exception.BadRequestException;
@@ -82,8 +83,22 @@ public class OrderDetailServiceimpl implements OrderDetailService {
         pk.setOrderId(orderDetail.getOrder().getId());
         pk.setProductDetailId(orderDetail.getProductDetail().getId());
         orderDetail.setOrderProductDetailKey(pk);
+        orderDetail.setPrice(orderDetail.getProductDetail().getPrice());
+
+        Promotion promotion = promotionService.getBestPromotionForProductDetail(orderDetail.getProductDetail().getId());
+        if (promotion != null) {
+            BigDecimal finalPrice = promotionService.calculateDiscountedPrice(orderDetail.getProductDetail().getPrice(), promotion.getDiscountValue());
+            if (finalPrice.compareTo(BigDecimal.ZERO) < 0) {
+                orderDetail.setDiscountPrice(null);
+            } else {
+                orderDetail.setDiscountPrice(finalPrice);
+            }
+        } else {
+            orderDetail.setDiscountPrice(null);
+        }
 
         OrderDetail savedOrderDetail = orderDetailRepository.save(orderDetail);
+        orderHistoryService.insertOrderHistory(orderDetail.getOrder(), orderDetail.getOrder().getStatus(), "Thêm sản phẩm", f4KUtils.getUser());
         return orderDetailMapper.entityToResponse(savedOrderDetail);
     }
 
@@ -142,8 +157,8 @@ public class OrderDetailServiceimpl implements OrderDetailService {
         }
     }
     @Override
-    public List<OrderDetail> getProductDetailsByOrderId(Long orderId) {
-        return orderDetailRepository.findProductDetailsByOrderId(orderId);
+    public List<OrderDetail> getOrderDetailsByOrderId(Long orderId) {
+        return orderDetailRepository.findOrderDetailsByOrderId(orderId);
     }
 
     /** Cấm khứa nào đụng - sonng **/
@@ -154,9 +169,8 @@ public class OrderDetailServiceimpl implements OrderDetailService {
         orderResponse.setStatusText(HoaDonUtils.TrangThaiHoaDon.getMessByStatus(orderResponse.getStatus()));
 
         orderResponse.setTotalCart(orderResponse.getTotalPay());
-        if (orderResponse.getTotalPay() != null && orderResponse.getShippingPay() != null) {
-            BigDecimal totalCart = orderResponse.getTotalPay().subtract(orderResponse.getShippingPay());
-            orderResponse.setTotalCart(totalCart);
+        if (orderResponse.getShippingPay() != null) {
+            orderResponse.setTotalPay(orderResponse.getShippingPay().add(orderResponse.getTotalPay()));
         }
 
         List<OrderHistory> orderHistories = orderHistoryRepository.findByOrderId(order.getId());
@@ -178,6 +192,8 @@ public class OrderDetailServiceimpl implements OrderDetailService {
         model.addAttribute("orderDetails", listOrderDetailResponse);
         model.addAttribute("orderHistory", listOrderHistoryResponse);
         model.addAttribute("order", orderResponse);
+        model.addAttribute("hasPromotion", checkOrderHasPromotion(listOrderDetail));
+        model.addAttribute("isOnline", orderResponse.getOrder_type().equals(HoaDonUtils.LoaiHoaDon.ONLINE));
     }
     private List<OrderDetailResponse> getListOrderDetail(List<OrderDetail> orderDetails) {
         List<OrderDetailResponse> lstResponse = new ArrayList<>();
@@ -187,9 +203,8 @@ public class OrderDetailServiceimpl implements OrderDetailService {
             orderDetailResponse.setProductDetail(productDetail);
 
             BigDecimal currentPrice = productDetail.getPrice();
-            BigDecimal purchasePrice = orderDetail.getPrice();
-
-            if (purchasePrice.compareTo(currentPrice) < 0) {
+            BigDecimal purchasePrice = orderDetailResponse.getDiscountPrice();
+            if (purchasePrice != null && purchasePrice.compareTo(currentPrice) < 0) {
                 orderDetailResponse.setPurchasePrice(purchasePrice);
             }
 
@@ -197,6 +212,14 @@ public class OrderDetailServiceimpl implements OrderDetailService {
         }
 
         return lstResponse;
+    }
+    private Boolean checkOrderHasPromotion(List<OrderDetail> orderDetails) {
+        for (OrderDetail orderDetail: orderDetails) {
+           if (orderDetail.getDiscountPrice() != null) {
+               return true;
+           }
+        }
+        return false;
     }
     @Override
     @Transactional
@@ -245,7 +268,7 @@ public class OrderDetailServiceimpl implements OrderDetailService {
 
     @Override
     @Transactional
-    public void updateStatusOrder(Long orderId, Integer newStatus) {
+    public void updateStatusOrder(Long orderId, Integer newStatus, String note) {
         Order order =  orderRepository.findById(orderId).orElseThrow(
                 () -> new BadRequestException("Không tồn tại hoá đơn")
         );
@@ -269,6 +292,9 @@ public class OrderDetailServiceimpl implements OrderDetailService {
 
         //TODO: Cần thêm check trạng thái phù hợp trc khi update
         order.setStatus(newStatus);
+        if (newStatus == HoaDonUtils.TrangThaiHoaDon.HUY_DON.getStatus()) {
+            order.setNote(note);
+        }
         orderRepository.save(order);
 
         orderHistoryService.insertOrderHistory(order, order.getStatus(), HoaDonUtils.TrangThaiHoaDon.getNoteByStatus(order.getStatus()), f4KUtils.getUser());
@@ -304,18 +330,20 @@ public class OrderDetailServiceimpl implements OrderDetailService {
 
     private void updateTotalOrder(Order order) {
         BigDecimal shippingPay = order.getShippingPay();
-        BigDecimal totalPay = BigDecimal.ZERO;
-        List<OrderDetail> listOrderDetail = orderDetailRepository.findProductDetailsByOrderId(order.getId());
+        BigDecimal totalCart = BigDecimal.ZERO;
+        List<OrderDetail> listOrderDetail = orderDetailRepository.findOrderDetailsByOrderId(order.getId());
 
         for (OrderDetail orderDetail: listOrderDetail) {
-            totalPay = totalPay.add(orderDetail.getPrice().multiply(BigDecimal.valueOf(orderDetail.getQuantity())));
+            if (orderDetail.getDiscountPrice() != null) {
+                totalCart = totalCart.add(orderDetail.getDiscountPrice().multiply(BigDecimal.valueOf(orderDetail.getQuantity())));
+            } else {
+                totalCart = totalCart.add(orderDetail.getPrice().multiply(BigDecimal.valueOf(orderDetail.getQuantity())));
+            }
         }
 
-        if (shippingPay != null) {
-            totalPay = totalPay.add(shippingPay);
-        }
+        order.setTotalPay(totalCart);
+        order.setShippingPay(shippingPay);
 
-        order.setTotalPay(totalPay);
         orderRepository.save(order);
     }
     // Code từ đây xuống cấm ngắt bên trên

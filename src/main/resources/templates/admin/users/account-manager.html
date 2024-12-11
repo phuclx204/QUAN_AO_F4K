@@ -34,7 +34,7 @@
                                 <ol class="breadcrumb m-0">
                                     <li class="breadcrumb-item"><a th:href="@{home}"><i class="mdi mdi-home me-1"></i>Trang
                                         chủ</a></li>
-                                    <li class="breadcrumb-item active">Quản lý khách hàng</li>
+                                    <li class="breadcrumb-item active">Quản lý tài khoản người dùng</li>
                                 </ol>
                             </div>
                         </div>
@@ -64,7 +64,7 @@
                                                     class="mdi mdi-refresh"></i>
                                                 Làm mới
                                             </button>
-                                            <a th:href="@{/admin/products/add-product}" type="button" class="btn btn-info mb-2" id="btnCreateCustomer"><i
+                                            <a th:href="@{/admin/products/add-product}" type="button" class="btn btn-info mb-2" id="btnCreateProduct"><i
                                                     class="mdi mdi-plus"></i> Thêm khách hàng
                                             </a>
                                         </div>
@@ -76,17 +76,17 @@
                         <hr>
 
                         <div class="row mb-2 mt-2">
-                            <h5>Danh sách khách hàng</h5>
+                            <h5>Danh sách tài khoản</h5>
                             <div class="table-responsive">
                                 <table class="table table-centered w-100 dt-responsive nowrap" id="products-table">
                                     <thead class="table-light">
                                     <tr>
                                         <th style="width: 50px;">STT</th>
                                         <td>Tên</td>
+                                        <td>Username</td>
                                         <th>Email</th>
                                         <th>Số đện thoại</th>
                                         <th>Địa chỉ</th>
-                                        <th style="width: 150px">Thao tác</th>
                                     </tr>
                                     </thead>
                                     <tbody>
@@ -104,46 +104,6 @@
     <!--    end modal-->
 </section>
 <!-- END wrapper -->
-
-<!--modal add customer-->
-<div id="modalAddCustomer" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalCreateLabel"
-     data-bs-backdrop="static">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <form id="formAddAttributes" novalidate>
-                <div class="modal-header">
-                    <h4 class="modal-title" id="standard-modalCreateLabel">Thêm mới khách hàng</h4>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="row">
-                        <div class="col-6 mb-3">
-                            <label class="form-label" for="createName">Tên</label>
-                            <input type="text" class="form-control" id="createName" required name="fullName">
-                            <div class="invalid-feedback"></div>
-                        </div>
-                        <div class="col-6 mb-3">
-                            <label class="form-label" for="createPhoneNumber">Số điện thoại</label>
-                            <input type="text" class="form-control" id="createPhoneNumber" required name="phoneNumber">
-                            <div class="invalid-feedback"></div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-12 mb-3">
-                            <label class="form-label" for="createEmail">Email</label>
-                            <input type="text" class="form-control" id="createEmail" name="email">
-                            <div class="invalid-feedback"></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer has-spinner">
-                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Đóng</button>
-                    <button type="submit" class="btn btn-primary action-save">Lưu</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
 
 <!--default script-->
 <script th:src="@{/admin/script.js}"></script>
@@ -165,6 +125,6 @@
 <!--common-->
 <script type="module" th:src="@{/common/public.js}"></script>
 <!--custom script-->
-<script type="module" th:src="@{/admin/users/customer.js}"></script>
+<script type="module" th:src="@{/admin/users/account-manager.js}"></script>
 </body>
 </html>

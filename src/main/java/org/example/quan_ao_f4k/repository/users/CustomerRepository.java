@@ -16,11 +16,24 @@ public interface CustomerRepository extends JpaRepository<User, Long>,
            SELECT u 
            FROM User u 
            WHERE u.role.name = 'USER' 
+           AND u.username IS NOT NULL
            AND (:search IS NULL OR 
                 LOWER(u.fullName) LIKE LOWER(CONCAT('%', :search, '%')) OR 
                 LOWER(u.numberPhone) LIKE LOWER(CONCAT('%', :search, '%')) OR 
                 LOWER(u.email) LIKE LOWER(CONCAT('%', :search, '%')))
            ORDER BY u.id DESC
            """)
-	List<User> findCustomersByUserRole(String search);
+	List<User> findAllAccount(String search);
+
+	@Query("""
+       SELECT u 
+       FROM User u 
+       WHERE u.username IS NULL 
+       AND (:search IS NULL OR 
+            LOWER(u.fullName) LIKE LOWER(CONCAT('%', :search, '%')) OR 
+            LOWER(u.numberPhone) LIKE LOWER(CONCAT('%', :search, '%')) OR 
+            LOWER(u.email) LIKE LOWER(CONCAT('%', :search, '%')))
+       ORDER BY u.id DESC
+       """)
+	List<User> findAllCustomer(String search);
 }

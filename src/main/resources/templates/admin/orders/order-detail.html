@@ -40,72 +40,94 @@
                             </div>
                         </div>
                         <hr>
-                        <div class="col-12">
-                            <div class="card shadow-none" style="border: 1px solid #e9ecef!important;">
-                                <div class="card-header pb-0" style="font-size: 20px; font-weight: bold">
-                                    Theo dõi đơn hàng
-                                    <hr>
-                                </div>
-                                <div class="card-body pb-0">
-                                    <div class="steps">
-                                        <div class="steps-body" id="steps-body">
-                                            <!--step order-->
+                        <div th:if="${isOnline}">
+                            <div class="col-12" th:if="${order.status != 0}">
+                                <div class="card shadow-none" style="border: 1px solid #e9ecef!important;">
+                                    <div class="card-header pb-0" style="font-size: 20px; font-weight: bold">
+                                        Theo dõi đơn hàng
+                                        <hr>
+                                    </div>
+                                    <div class="card-body pb-0">
+                                        <div class="steps">
+                                            <div class="steps-body" id="steps-body">
+                                                <!--step order-->
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                                <div class="card-footer d-flex justify-content-between">
-                                    <!-- Kiểm tra nếu đơn hàng đã hủy (status == 0), không hiển thị bất kỳ nút nào -->
-                                    <div class="d-flex gap-1" th:if="${order.status != 0}">
-                                        <!-- Nút Xác Nhận -->
-                                        <button type="button" class="btn btn-primary btn-change-status"
-                                                th:if="${order.status == 5}"
-                                                th:data-new-status="8">
-                                            <i class="mdi mdi-account-check"></i> Xác Nhận
-                                        </button>
-                                        <button type="button" class="btn btn-success btn-change-status"
-                                                th:if="${order.status == 6}"
-                                                th:data-new-status="3">
-                                            <i class="mdi mdi-package-variant-closed-check"></i> Xác Nhận Thành Công
-                                        </button>
-                                        <button type="button" class="btn btn-primary btn-change-status"
-                                                th:if="${order.status == 8}"
-                                                th:data-new-status="4">
-                                            <i class="mdi mdi-truck-outline"></i> Chờ Vận Chuyển
-                                        </button>
-                                        <!-- Nút Vận Chuyển -->
-                                        <button type="button" class="btn btn-primary btn-change-status"
-                                                th:if="${order.status == 4}"
-                                                th:data-new-status="6">
-                                            <i class="mdi mdi-truck-fast-outline"></i> Vận Chuyển
-                                        </button>
-                                        <!-- Nút Quay Lại -->
-                                        <div th:if="${order.status != 3 && order.status != 0 && order.status != 5}">
-                                            <button type="button" class="btn btn-warning btn-go-back"
-                                                    th:if="${order.status == 8}"
-                                                    data-previous-status="5">
-                                                <i class="bx bx-undo"></i> Quay Lại
+                                    <div class="card-footer d-flex justify-content-between">
+                                        <!-- Kiểm tra nếu đơn hàng đã hủy (status == 0), không hiển thị bất kỳ nút nào -->
+                                        <div class="d-flex gap-1" th:if="${order.status != 0}">
+                                            <!-- Nút Xác Nhận -->
+                                            <button type="button" class="btn btn-primary btn-change-status"
+                                                    th:if="${order.status == 5}"
+                                                    th:data-new-status="8">
+                                                <i class="mdi mdi-account-check"></i> Xác Nhận
                                             </button>
-                                            <button type="button" class="btn btn-warning btn-go-back"
-                                                    th:if="${order.status == 4}"
-                                                    data-previous-status="8">
-                                                <i class="bx bx-undo"></i> Quay Lại
-                                            </button>
-                                            <button type="button" class="btn btn-warning btn-go-back"
+                                            <button type="button" class="btn btn-success btn-change-status"
                                                     th:if="${order.status == 6}"
-                                                    data-previous-status="4">
-                                                <i class="bx bx-undo"></i> Quay Lại
+                                                    th:data-new-status="3">
+                                                <i class="mdi mdi-package-variant-closed-check"></i> Xác Nhận Thành Công
+                                            </button>
+                                            <button type="button" class="btn btn-primary btn-change-status"
+                                                    th:if="${order.status == 8}"
+                                                    th:data-new-status="4">
+                                                <i class="mdi mdi-truck-outline"></i> Chờ Vận Chuyển
+                                            </button>
+                                            <!-- Nút Vận Chuyển -->
+                                            <button type="button" class="btn btn-primary btn-change-status"
+                                                    th:if="${order.status == 4}"
+                                                    th:data-new-status="6">
+                                                <i class="mdi mdi-truck-fast-outline"></i> Vận Chuyển
+                                            </button>
+                                            <!-- Nút Quay Lại -->
+                                            <div th:if="${order.status != 3 && order.status != 0 && order.status != 5}">
+                                                <button type="button" class="btn btn-warning btn-go-back"
+                                                        th:if="${order.status == 8}"
+                                                        data-previous-status="5">
+                                                    <i class="bx bx-undo"></i> Quay Lại
+                                                </button>
+                                                <button type="button" class="btn btn-warning btn-go-back"
+                                                        th:if="${order.status == 4}"
+                                                        data-previous-status="8">
+                                                    <i class="bx bx-undo"></i> Quay Lại
+                                                </button>
+                                                <button type="button" class="btn btn-warning btn-go-back"
+                                                        th:if="${order.status == 6}"
+                                                        data-previous-status="4">
+                                                    <i class="bx bx-undo"></i> Quay Lại
+                                                </button>
+                                            </div>
+                                            <!-- Nút Hủy Đơn -->
+                                            <button type="button" class="btn btn-danger"
+                                                    th:if="${order.status != 3}" data-bs-toggle="modal" data-bs-target="#modalCancel">
+                                                <i class="bx bx-trash"></i> Hủy Hóa Đơn
                                             </button>
                                         </div>
-                                        <!-- Nút Hủy Đơn -->
-                                        <button type="button" class="btn btn-danger btn-cancel-order"
-                                                th:if="${order.status != 3}">
-                                            <i class="bx bx-trash"></i> Hủy Hóa Đơn
-                                        </button>
+                                        <div>
+                                            <button type="button" class="btn btn-info" data-bs-toggle="modal"
+                                                    data-bs-target="#scrollable-modal">Lịch sử
+                                            </button>
+                                        </div>
                                     </div>
-                                    <div>
-                                        <button type="button" class="btn btn-info" data-bs-toggle="modal"
-                                                data-bs-target="#scrollable-modal">Lịch sử
-                                        </button>
+                                </div>
+                            </div>
+                            <div class="col-12" th:if="${order.status == 0}">
+                                <div class="card shadow-none" style="border: 1px solid #e9ecef!important;">
+                                    <div class="card-header pb-0" style="font-size: 20px; font-weight: bold">
+                                        <div class="d-flex justify-content-between">
+                                            <div>Theo dõi đơn hàng</div>
+                                            <div>
+                                                <button type="button" class="btn btn-info" data-bs-toggle="modal"
+                                                        data-bs-target="#scrollable-modal">Lịch sử
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <hr>
+                                    </div>
+                                    <div class="card-body" style="background-color: #FFFCF6">
+                                        <h4 class="text-danger">Đã hủy đơn hàng</h4>
+                                        <div>Vào <span class="format-time">[[${order.updatedAt}]]</span></div>
+                                        <div style="font-size: 20px">Lý do: [[${order.note}]]</div>
                                     </div>
                                 </div>
                             </div>
@@ -128,16 +150,26 @@
                                         <span><span
                                                 style="font-weight: bold">Ghi chú: </span><span>[[${order.note}]]</span></span>
                                     </div>
-                                    <div class="col-6">
+                                    <div class="col-6" th:if="${isOnline}">
                                         <div class="container">
                                             <ul class="sessions" style="max-height: 300px; overflow: auto">
                                                 <li th:each="item:${orderHistory}">
                                                     <div class="time format-time">[[${item.createdAt}]]</div>
-                                                    <p>[[${item.note}]]</p>
+                                                    <p th:utext="${item.note}"></p>
                                                 </li>
                                             </ul>
                                         </div>
                                     </div>
+<!--                                    <div class="col-6" th:if="${!isOnline}">-->
+<!--                                        <div class="container">-->
+<!--                                            <ul class="sessions" style="max-height: 300px; overflow: auto">-->
+<!--                                                <li>-->
+<!--                                                    <div class="time format-time">[[${order.createdAt}]]</div>-->
+<!--                                                    <p th:utext="${item.note}"></p>-->
+<!--                                                </li>-->
+<!--                                            </ul>-->
+<!--                                        </div>-->
+<!--                                    </div>-->
                                 </div>
                             </div>
                         </div>
@@ -148,6 +180,10 @@
                                     <div class="d-flex justify-content-between">
                                         <span style="font-size: 20px; font-weight: bold">Thông tin sản phẩm</span>
                                         <div>
+<!--                                            <button th:if="${order.status == 5 && !hasPromotion}" class="btn btn-info"-->
+<!--                                                    data-bs-toggle="modal" data-bs-target="#exampleModal">Thêm sản phẩm-->
+<!--                                            </button>-->
+<!--                                            <button th:if="${order.status == 5 && hasPromotion}" class="btn btn-info disabled">Thêm sản phẩm</button>-->
                                             <button th:if="${order.status == 5}" class="btn btn-info"
                                                     data-bs-toggle="modal" data-bs-target="#exampleModal">Thêm sản phẩm
                                             </button>
@@ -217,20 +253,26 @@
                                                 [[${item.quantity}]]
                                             </td>
                                             <td th:if="${order.status == 5}">
-                                                <div class="d-flex" style="font-size: 14px">
-                                                    <button class="btn border btn-cartIndex-sub"
-                                                            th:data-id="${item.productDetail.id}"
-                                                            th:data-value="${item.quantity - 1}"><span
-                                                            class="mdi mdi-minus"></span></button>
-                                                    <input class="form-control inputQuantity"
-                                                           style="text-align: center; width: 80px"
-                                                           th:value="${item.quantity}"
-                                                           th:data-value="${item.quantity}"/>
-                                                    <button class="btn border btn-cartIndex-plus"
-                                                            th:data-id="${item.productDetail.id}"
-                                                            th:data-value="${item.quantity + 1}"
-                                                            th:data-max="${item.productDetail.quantity}"><span
-                                                            class="mdi mdi-plus"></span></button>
+                                                <div class="d-flex flex-column">
+                                                    <span>Có sẵn [[${item.productDetail.quantity}]] sản phẩm</span>
+                                                    <div class="d-flex" style="font-size: 14px">
+                                                        <button class="btn border btn-cartIndex-sub"
+                                                                th:data-id="${item.productDetail.id}"
+                                                                th:data-value="${item.quantity - 1}"><span
+                                                                class="mdi mdi-minus"></span></button>
+                                                        <input class="form-control inputQuantity"
+                                                               style="text-align: center; width: 80px"
+                                                               th:value="${item.quantity}"
+                                                               th:data-value="${item.quantity}"
+                                                               th:data-id="${item.productDetail.id}"
+                                                        />
+                                                        <button class="btn border btn-cartIndex-plus"
+                                                                th:data-id="${item.productDetail.id}"
+                                                                th:data-value="${item.quantity + 1}"
+                                                                th:data-max="${item.productDetail.quantity}">
+                                                            <span class="mdi mdi-plus"></span>
+                                                        </button>
+                                                    </div>
                                                 </div>
                                             </td>
                                             <td th:if="${order.status == 5}">
@@ -241,18 +283,18 @@
                                         </tr>
                                         </tbody>
                                     </table>
-                                    <div>
+                                    <div th:if="${order.status != 0}">
                                         <table class="w-100">
                                             <thead>
                                             <th></th>
                                             <th style="width: 300px;"></th>
                                             </thead>
                                             <tbody>
-                                            <tr style="text-align: end; border-bottom: 1px solid #e9ecef; height: 38px">
+                                            <tr style="text-align: end; border-bottom: 1px solid #e9ecef; height: 38px" th:if="${isOnline}">
                                                 <td>Tổng tiền hàng</td>
                                                 <td class="order-price">[[${order.totalCart}]]</td>
                                             </tr>
-                                            <tr style="text-align: end; border-bottom: 1px solid #e9ecef; height: 38px">
+                                            <tr style="text-align: end; border-bottom: 1px solid #e9ecef; height: 38px" th:if="${isOnline}">
                                                 <td>Phí vận chuyển</td>
                                                 <td class="order-price">[[${order.shippingPay}]]</td>
                                             </tr>
@@ -262,7 +304,7 @@
                                                     [[${order.totalPay}]]
                                                 </td>
                                             </tr>
-                                            <tr style="text-align: end; border-bottom: 1px solid #e9ecef; height: 38px">
+                                            <tr style="text-align: end; border-bottom: 1px solid #e9ecef; height: 38px" th:if="${isOnline}">
                                                 <td>Phương thức Thanh toán</td>
                                                 <td>[[${order.paymentMethod.name}]]</td>
                                             </tr>
@@ -305,7 +347,7 @@
                         <td>
                             <div class="format-time">[[${item.createdAt}]]</div>
                         </td>
-                        <td>[[${item.note}]]</td>
+                        <td th:utext="${item.note}"></td>
                         <td>[[${item.createBy}]]</td>
                     </tr>
                     </tbody>
@@ -425,6 +467,28 @@
     </div>
 </div>
 
+<!--modal cancel order-->
+<div class="modal fade" id="modalCancel" tabindex="-1" aria-labelledby="cancelOrderLabel" aria-hidden="true" data-bs-backdrop="static">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="cancelOrderLabel">Lý do huỷ hoá đơn</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form action="#" id="formCancelOrder">
+                    <label class="form-label" for="inputNoteCancel">Lý do</label>
+                    <input type="text" class="form-control" id="inputNoteCancel" placeholder="Lý do" name="note" required>
+                    <div class="invalid-feedback"></div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                <button type="button" class="btn btn-primary" id="btnCancel">Lưu</button>
+            </div>
+        </div>
+    </div>
+</div>
 <!--default script-->
 <!--jquery-->
 <script th:src="@{/common/jquery/jquery.min.js}"></script>
