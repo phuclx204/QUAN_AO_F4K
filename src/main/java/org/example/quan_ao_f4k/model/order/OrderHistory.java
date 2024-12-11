@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.example.quan_ao_f4k.model.BaseEntity;
 
 import java.time.LocalDateTime;
 
@@ -14,42 +15,21 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Getter
 @Setter
-public class OrderHistory {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
+public class OrderHistory extends BaseEntity{
     @ManyToOne
     @JoinColumn(name = "order_id", nullable = false)
     private Order order;
 
+    @Column(name = "status")
     private Integer status;
 
+    @Column(name = "change_date")
     private LocalDateTime changeDate;
 
     @Column(name = "note")
     private String note;
 
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private LocalDateTime createdAt;
-
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
-
     @Column(name = "create_by")
     private String createBy;
-
-
-    @PrePersist
-    public void onCreate() {
-        this.createdAt = LocalDateTime.now();
-    }
-
-    @PreUpdate
-    public void onUpdate() {
-        this.updatedAt = LocalDateTime.now();
-    }
-
 
 }

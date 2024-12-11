@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-
 <head>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Hóa đơn</title>
+
     <style>
         @font-face {
             font-family: 'Roboto';
@@ -67,9 +67,7 @@
             font-size: 12px;
         }
     </style>
-
 </head>
-
 <body>
 <div class="invoice-container">
     <!-- Header -->
@@ -77,11 +75,13 @@
         <h1>F4K Shop</h1>
         <p>48 Liên Hồng - Đan Phượng - Hà Nội</p>
         <p>Hotline: +84 865 290 067</p>
+        <h3>Hóa đơn bán lẻ</h3>
     </div>
 
     <!-- Invoice Details -->
     <div class="invoice-details">
-        <strong>Khách hàng: Khách bán lẻ</strong>
+        <strong>Khách hàng: <span th:text="${toName}"></span></strong>
+        <strong>SDT: <span th:text="${toPhone}"></span></strong>
         <p>Ngày xuất hóa đơn: <span th:text="${currentDateTime}"></span></p>
     </div>
 
@@ -99,21 +99,18 @@
         <tbody>
         <tr th:each="orderD, iterStat : ${orderDetails}">
             <td th:text="${iterStat.index + 1}"></td>
-            <td th:text="${orderD.productDetail.product.name}"></td>
-            <td th:text="${orderD.quantity}">1</td>
-            <td th:text="${orderD.price}">1000</td>
-            <td th:text="${orderD.quantity * orderD.price}"></td>
+            <td th:text="${orderD.productName}"></td>
+            <td th:text="${orderD.quantity}"></td>
+            <td th:text="${orderD.priceFormatted}"></td>
+            <td th:text="${orderD.totalFormatted}"></td>
         </tr>
-        <tr>
-            <td colspan="2"><strong>Tổng SL:</strong></td>
-            <td><strong>3</strong></td>
-        </tr>
-<!--        <tr>-->
-<!--            <td colspan="4"><strong>Tổng tiền:</strong></td>-->
-<!--            <td><strong>${orderD.order.totalPay}</strong></td>-->
-<!--        </tr>-->
         </tbody>
     </table>
+
+    <div class="summary">
+        <p><strong>Tổng số lượng sản phẩm:</strong> <span th:text="${totalQuantity}"></span></p>
+        <p><strong>Tổng tiền:</strong> <span id="totalPay" th:text="${totalPay}"></span></p>
+    </div>
 
     <!-- Footer -->
     <div class="invoice-footer">
@@ -121,6 +118,6 @@
         <p>Hẹn gặp lại!</p>
     </div>
 </div>
-</body>
 
+</body>
 </html>

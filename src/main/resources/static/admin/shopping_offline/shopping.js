@@ -525,6 +525,7 @@ document.addEventListener('DOMContentLoaded', function () {
             element.textContent = formattedPrice;
         }
     });
+
     const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
     tooltipTriggerList.forEach(function (tooltipTriggerEl) {
         new bootstrap.Tooltip(tooltipTriggerEl, {
@@ -845,7 +846,7 @@ function confirmOrder(orderId) {
     });
 
     const customerAmount = parseInt($("#customerAmount").val().replace(/\D/g, ""), 10) || 0;
-    const totalPay = parseInt($("#totalAmount").text(), 10) || 0; // Assuming totalAmount is a span
+    const totalPay = totalAmount
     if (!isValid) {
         return;
     }
@@ -901,23 +902,40 @@ function updateOrderStatus1(orderId, status, totalPay, paymentMethodId) {
         order_type: 'offline'
     };
 
+    const invoiceCheckbox = document.getElementById('invoiceCheckbox').checked;
+
     $.ajax({
         url: '/admin/shopping-offline/' + orderId,
         method: 'PUT',
         contentType: 'application/json',
         data: JSON.stringify(updateData),
         success: function () {
-            Swal.fire({
-                title: 'Thanh toán thành công!',
-                icon: 'success',
-                showConfirmButton: true,
-                confirmButtonText: 'OK',
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    addOrderToHistory(orderId, updateData.note);
-                    handleRemainingInvoices(orderId);
-                }
-            });
+            if (invoiceCheckbox) {
+                Swal.fire({
+                    title: 'Thanh toán thành công!',
+                    icon: 'success',
+                    showConfirmButton: true,
+                    confirmButtonText: 'OK',
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        addOrderToHistory(orderId, updateData.note);
+                        handleRemainingInvoices(orderId);
+                        window.location.href = `/admin/shopping-offline/generate-pdf/${orderId}`;
+                    }
+                });
+            } else {
+                Swal.fire({
+                    title: 'Thanh toán thành công!',
+                    icon: 'success',
+                    showConfirmButton: true,
+                    confirmButtonText: 'OK',
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        addOrderToHistory(orderId, updateData.note);
+                        handleRemainingInvoices(orderId);
+                    }
+                });
+            }
         },
         error: function (xhr) {
             let errorMessage = 'Không thể thanh toán đơn hàng.';
@@ -961,4 +979,3 @@ function handleRemainingInvoices(orderId) {
         });
     }
 }
-

@@ -7,6 +7,7 @@ import org.example.quan_ao_f4k.dto.request.order.OrderDetailRequest;
 import org.example.quan_ao_f4k.dto.request.order.OrderDetailResponse;
 import org.example.quan_ao_f4k.dto.response.orders.OrderHistoryResponse;
 import org.example.quan_ao_f4k.dto.response.orders.OrderResponse;
+import org.example.quan_ao_f4k.dto.response.orders.PdfShopOfflineDTO;
 import org.example.quan_ao_f4k.dto.response.product.ProductDetailResponse;
 import org.example.quan_ao_f4k.dto.response.shop.ShopProductResponse;
 import org.example.quan_ao_f4k.exception.BadRequestException;
@@ -142,8 +143,8 @@ public class OrderDetailServiceimpl implements OrderDetailService {
         }
     }
     @Override
-    public List<OrderDetail> getProductDetailsByOrderId(Long orderId) {
-        return orderDetailRepository.findProductDetailsByOrderId(orderId);
+    public List<OrderDetail> getOrderDetailsByOrderId(Long orderId) {
+        return orderDetailRepository.findOrderDetailsByOrderId(orderId);
     }
 
     /** Cấm khứa nào đụng - sonng **/
@@ -305,7 +306,7 @@ public class OrderDetailServiceimpl implements OrderDetailService {
     private void updateTotalOrder(Order order) {
         BigDecimal shippingPay = order.getShippingPay();
         BigDecimal totalPay = BigDecimal.ZERO;
-        List<OrderDetail> listOrderDetail = orderDetailRepository.findProductDetailsByOrderId(order.getId());
+        List<OrderDetail> listOrderDetail = orderDetailRepository.findOrderDetailsByOrderId(order.getId());
 
         for (OrderDetail orderDetail: listOrderDetail) {
             totalPay = totalPay.add(orderDetail.getPrice().multiply(BigDecimal.valueOf(orderDetail.getQuantity())));
