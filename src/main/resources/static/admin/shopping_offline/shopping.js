@@ -153,25 +153,6 @@ $(document).ready(function () {
 
 });
 
-//hàm kiểm tra xem có giảm giá hay không
-function checkDiscountAndRenderPrice(productDetailId, originalPrice, callback) {
-    $.ajax({
-        url: `/admin/shopping-offline/is-on-sale`,
-        type: 'GET',
-        data: {
-            productDetailId: productDetailId,
-            originalPrice: originalPrice
-        },
-        success: function (discountedPrice) {
-            callback(discountedPrice);
-        },
-        error: function (error) {
-            console.error('Lỗi khi tính giảm giá:', error);
-            callback(originalPrice);
-        }
-    });
-}
-
 // hàm lấy dữ liệu product detail
 function fetchProductDetails(page = 1, size = 5) {
     const search = $("#searchInput").val();
@@ -184,7 +165,7 @@ function fetchProductDetails(page = 1, size = 5) {
     const orderBy = $("#sortSelect").val() || 'asc';
 
     $.ajax({
-        url: `/admin/shopping-offline/product-detail-list`,
+        url: `/admin/shopping-offline/search-product-detail`,
         method: 'GET',
         data: {
             page: page,
@@ -201,6 +182,7 @@ function fetchProductDetails(page = 1, size = 5) {
         dataType: 'json'
     })
         .done(function (data) {
+            console.log(data)
             renderProductList(data.content);
             setupPagination(data.totalPages, page);
         })
@@ -211,99 +193,63 @@ function fetchProductDetails(page = 1, size = 5) {
 
 //hàm format price
 function formatPrice(amount) {
-    return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") + ' ₫';
+    // Làm tròn xuống số nguyên gần nhất
+    const roundedAmount = Math.floor(amount);
+    return roundedAmount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") + ' ₫';
 }
 
-// đổ dữ liệu sản phẩm chi tiết ra bảng
 function renderProductList(products) {
-
     const productList = document.getElementById('productList');
     productList.innerHTML = '';
-
     if (products.length === 0) {
         productList.innerHTML = `
             <tr>
-                <td colspan="6" style="text-align: center; color: red;">Không có dữ liệu!</td>
+                <td colspan="7" style="text-align: center; color: red;">Không có dữ liệu!</td>
             </tr>
         `;
         return;
     }
 
-    products.forEach((prd, index) => {
+    products.forEach((prd) => {
         const productRow = document.createElement('tr');
 
-        const listImg = prd.images;
-        let image = ``;
+        const image = prd.product.image
+            ? `<img src="${prd.product.image.fileUrl}" alt="${prd.product.thumbnail}" style="width: 50px; height: 50px; object-fit: cover;">`
+            : `<img src="/admin/img/people.png" alt="No Image" style="width: 50px; height: 50px; object-fit: cover;">`;
 
-        if (!listImg.length) {
-            image = `<img src="/admin/img/people.png" alt="${prd.product.thumbnail}" style="width: 50px; height: 50px;object-fit: cover;">`
-        } else {
-            image = `<img src="${listImg[0].fileUrl}" alt="${prd.product.thumbnail}" style="width: 50px; height: 50px;object-fit: cover;">`
-        }
+        const discountInfo = prd.discountValue && prd.discountValue < prd.price
+            ? `<span class="original-price text-danger" style="text-decoration: line-through;">${formatPrice(prd.price)}</span>
+               <br>
+               <span class="discounted-price text-success">${formatPrice(prd.discountValue)}</span>`
+            : `<span>${formatPrice(prd.price)}</span>`;
 
         productRow.innerHTML = `
             <td>${image}</td>
             <td>${prd.product.name}</td>
-            <td class="original-price">${formatPrice(prd.price)}</td>
+            <td>${discountInfo}</td>
             <td>
                 ${prd.color ? `
-                  <span class="color-circle" style="background-color: ${prd.color.hex}; display: inline-block; width: 20px; height: 20px; border-radius: 50%;"></span>
-                  <span class="color-name" style="margin-left: 8px;">${prd.color.name}</span>
+                    <span class="color-circle" style="background-color: ${prd.color.hex}; display: inline-block; width: 20px; height: 20px; border-radius: 50%;"></span>
+                    <span class="color-name" style="margin-left: 8px;">${prd.color.name}</span>
                 ` : ''}
             </td>
             <td>${prd.size.name}</td>
             <td>${prd.quantity}</td>
             <td>
-                 <button 
-                  ${prd.quantity === 0 ? 'disabled="true"' : ''} 
-                  data-bs-toggle="tooltip" 
-                  data-bs-placement="top"
-                  title="${prd.quantity === 0 ? 'Đang cập nhật' : 'Chọn vào giỏ'}"
-                  onclick="addProductToInvoice(${prd.id})" 
-                  style="cursor: ${prd.quantity === 0 ? 'not-allowed' : 'pointer'};">
-                  <i class='mdi mdi-cart ${prd.quantity === 0 ? 'text-danger' : 'text-success'}' style="font-size: 19px;"></i>
+                <button 
+                    ${prd.quantity === 0 ? 'disabled="true"' : ''} 
+                    data-bs-toggle="tooltip" 
+                    data-bs-placement="top"
+                    title="${prd.quantity === 0 ? 'Đang cập nhật' : 'Chọn vào giỏ'}"
+                    onclick="addProductToInvoice(${prd.id})" 
+                    style="cursor: ${prd.quantity === 0 ? 'not-allowed' : 'pointer'};">
+                    <i class='mdi mdi-cart ${prd.quantity === 0 ? 'text-danger' : 'text-success'}' style="font-size: 19px;"></i>
                 </button>
             </td>
         `;
-
-        // Kiểm tra giảm giá và cập nhật giao diện
-        checkDiscountAndRenderPrice(prd.id, prd.price, function (discountedPrice) {
-            discountedPrice = Math.floor(discountedPrice);
-            const originalPriceCell = productRow.querySelector('.original-price');
-            if (discountedPrice !== prd.price) {
-                const discountPercentage = ((prd.price - discountedPrice) / prd.price) * 100;
-
-                originalPriceCell.innerHTML = `
-                    <span style="text-decoration: line-through; color: red;">${formatPrice(prd.price)}</span>
-                    <span style="color: black;">${formatPrice(discountedPrice)}</span>
-                    <span class="hidden">${discountedPrice}</span>
-                `;
-
-                // Hiển thị phần trăm giảm
-                const discountLabel = document.createElement('span');
-                discountLabel.classList.add('discount-label');
-                discountLabel.textContent = `- ${discountPercentage.toFixed(0)}%`;
-                discountLabel.style.color = '#ff5733';
-                discountLabel.style.fontWeight = 'bold';
-                discountLabel.style.fontSize = '14px';
-                discountLabel.style.backgroundColor = 'rgba(255, 87, 51, 0.1)';
-                discountLabel.style.padding = '2px 8px';
-                discountLabel.style.borderRadius = '4px';
-                discountLabel.style.marginLeft = '10px';
-                discountLabel.style.display = 'inline-block';
-
-                // Thêm nhãn giảm giá vào giá sau giảm
-                originalPriceCell.appendChild(discountLabel);
-            } else {
-                originalPriceCell.innerHTML = `
-                    <span style="color: black;">${formatPrice(prd.price)}</span>
-                    <span style="color: black;" class="hidden">${prd.price}</span>
-                `;
-            }
-        });
-
         productList.appendChild(productRow);
     });
+
     const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
     tooltipTriggerList.forEach(function (tooltipTriggerEl) {
         new bootstrap.Tooltip(tooltipTriggerEl);
@@ -514,14 +460,14 @@ document.addEventListener('DOMContentLoaded', function () {
     priceRevenu.forEach(element => {
         const price = element.getAttribute("data-price-revenu");
         if (price) {
-            const formattedPrice = formatPrice(Number(price));
+            const formattedPrice = formatPrice(Number(Math.floor(price)));
             element.textContent = formattedPrice;
         }
     });
     priceElements.forEach(element => {
         const price = element.getAttribute("data-price");
         if (price) {
-            const formattedPrice = formatPrice(Number(price));
+            const formattedPrice = formatPrice(Number(Math.floor(price)));
             element.textContent = formattedPrice;
         }
     });
@@ -772,7 +718,7 @@ $(document).ready(function () {
 });
 // Format tổng tiền
 const totalAmountElement = document.getElementById("totalAmount");
-const totalAmount = parseInt(totalAmountElement.textContent.replace(/\D/g, ""), 10) || 0;
+const totalAmount = Math.floor(parseFloat(totalAmountElement.textContent)) || 0;
 totalAmountElement.textContent = formatPrice(totalAmount);
 // Handling customer input
 const inputField = document.getElementById("customerAmount");
@@ -920,7 +866,7 @@ function updateOrderStatus1(orderId, status, totalPay, paymentMethodId) {
                     if (result.isConfirmed) {
                         addOrderToHistory(orderId, updateData.note);
                         handleRemainingInvoices(orderId);
-                        window.location.href = `/admin/shopping-offline/generate-pdf/${orderId}`;
+                        window.location.href = `/generate-pdf/shopping-offline/${orderId}`;
                     }
                 });
             } else {

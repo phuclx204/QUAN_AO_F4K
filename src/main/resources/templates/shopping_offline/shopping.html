@@ -67,13 +67,11 @@
                             </td>
                             <td th:text="${detail.productDetail.product.name} + ' - Size : ' + ${detail.productDetail.size.name} + ' - Màu : ' + ${detail.productDetail.color.name}"></td>
                             <td>
-                                <input type="hidden" class="priceInput"
-                                       th:value="${detail.price}"/>
-                                <span class="priceFormat"
-                                      th:attr="data-price=${detail.price}"
-                                      style="width: 100px;">
-                                </span>
-                            </td>
+                            <span class="priceFormat"
+                                  th:attr="data-price=${detail.discountPrice != null ? detail.discountPrice : detail.price}"
+                                  style="width: 100px;">
+                            </span>
+
                             <td>
                                 <input type="text" class="form-control quantity-input" th:value="${detail.quantity}"
                                        style="width:50px;"/>
@@ -81,9 +79,8 @@
                                 <input type="hidden" id="productDetailId" th:value="${detail.productDetail.id}"/>
                             </td>
                             <td>
-                                 <span class="priceRevenu"
-                                       th:attr="data-price-revenu=${detail.price * detail.quantity}"
-                                       style="width: 100px;">
+                                <span class="priceRevenu" style="width: 100px;"
+                                      th:attr="data-price-revenu=${(detail.discountPrice != null ? detail.discountPrice : detail.price) * detail.quantity}">
                                 </span>
                             </td>
                             <td>
@@ -240,7 +237,8 @@
                         </div>
 
                         <div class="form-group">
-                            <textarea type="text" class="form-control" placeholder="Nhập ghi chú ở đây" id="orderNote"></textarea>
+                            <textarea type="text" class="form-control" placeholder="Nhập ghi chú ở đây"
+                                      id="orderNote"></textarea>
                         </div>
                         <div class="form-check">
                             <input type="checkbox" id="invoiceCheckbox" class="form-check-input"/>

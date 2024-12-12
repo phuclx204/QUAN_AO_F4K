@@ -13,6 +13,7 @@ import org.example.quan_ao_f4k.model.product.Color;
 import org.example.quan_ao_f4k.model.product.Product;
 import org.example.quan_ao_f4k.model.product.ProductDetail;
 import org.example.quan_ao_f4k.model.product.Size;
+import org.example.quan_ao_f4k.model.promotion.Promotion;
 import org.example.quan_ao_f4k.repository.general.ImageRepository;
 import org.example.quan_ao_f4k.repository.order.CartProductRepository;
 import org.example.quan_ao_f4k.repository.order.OrderDetailRepository;
@@ -233,13 +234,13 @@ public class ProductDetailServiceImpl implements ProductDetailService {
             if (promotion != null) {
                 BigDecimal finalPrice = promotionService.calculateDiscountedPrice(el.getPrice(), promotion.getDiscountValue());
                 if (finalPrice.compareTo(BigDecimal.ZERO) < 0) {
-                    finalPrice = BigDecimal.ZERO;
+                    el.setDiscountValue(null);
+                } else {
+                    el.setDiscountValue(finalPrice);
+                    el.setPromotion(promotion);
                 }
-                el.setDiscountValue(finalPrice);
-                el.setPromotion(promotion);
             } else {
-                el.setDiscountValue(el.getPrice());
-                el.setPromotion(null);
+                el.setDiscountValue(null);
             }
         });
     }

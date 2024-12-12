@@ -70,6 +70,7 @@ public class ShoppingController {
     private final ImageRepository imageRepository;
     private final AddressServiceImpl addressService;
     private final PromotionServiceImpl promotionServiceImpl;
+    private final OrderDetailServiceimpl orderDetailServiceimpl;
 
     @GetMapping({"", "/"})
     public String getOrdersWithStatusFive(Model model) {
@@ -173,103 +174,6 @@ public class ShoppingController {
         return ResponseEntity.ok(productDetails);
     }
 
-    @GetMapping("/generate-pdf/{orderId}")
-    @ResponseBody
-    public void generatePdf(@PathVariable Long orderId,
-                            HttpServletResponse response,
-                            Model model) throws Exception {
-        DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
-        String currentDateTime = dateFormatter.format(new Date());
-        model.addAttribute("currentDateTime", currentDateTime);
-
-        List<OrderDetail> orderDetails = orderDetailService.getOrderDetailsByOrderId(orderId);
-
-        List<PdfShopOfflineDTO> formattedOrderDetails = new ArrayList<>();
-
-        int totalQuantity = 0;
-        String totalPay = null;
-        String toName = null;
-        String toPhone = null;
-        String orderCode = null;
-
-        for (OrderDetail detail : orderDetails) {
-            PdfShopOfflineDTO dto = new PdfShopOfflineDTO();
-
-            dto.setProductName(detail.getProductDetail().getProduct().getName() + "-"
-                    + detail.getProductDetail().getSize().getName() + "-"
-                    + detail.getProductDetail().getColor().getName());
-            dto.setQuantity(detail.getQuantity());
-            dto.setPrice(detail.getPrice());
-
-            BigDecimal quantity = new BigDecimal(detail.getQuantity());
-            BigDecimal total = quantity.multiply(detail.getPrice());
-            dto.setTotal(total);
-
-            dto.setPriceFormatted(formatCurrency(detail.getPrice()));
-            dto.setTotalFormatted(formatCurrency(total));
-            formattedOrderDetails.add(dto);
-
-
-            totalQuantity += detail.getQuantity();
-            totalPay = formatCurrency(detail.getOrder().getTotalPay());
-            toName = detail.getOrder().getToName();
-            toPhone = detail.getOrder().getToPhone();
-            orderCode = detail.getOrder().getCode();
-
-        }
-        model.addAttribute("orderDetails", formattedOrderDetails);
-        model.addAttribute("totalQuantity", totalQuantity);
-        model.addAttribute("totalPay", totalPay);
-        model.addAttribute("toName", toName);
-        model.addAttribute("toPhone", toPhone);
-
-        System.out.println("orderDetails   "+ formattedOrderDetails);
-        System.out.println("totalQuantity   "+ totalQuantity);
-        System.out.println("totalPay   "+ totalPay);
-        System.out.println("toName   "+ toName);
-        System.out.println("toPhone   "+ toPhone);
-
-        // Sử dụng Flying Saucer để chuyển HTML thành PDF
-        ITextRenderer renderer = new ITextRenderer();
-        String fontPath = new ClassPathResource("fonts/Roboto-Regular.ttf").getPath();
-        renderer.getFontResolver().addFont(fontPath, BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
-
-        // Tạo dữ liệu cho template Thymeleaf
-        Context context = new Context();
-        context.setVariables(model.asMap());
-        String htmlContent = templateEngine
-                .process("shopping_offline/orderPDF", context);
-
-        // Cấu hình header cho response để tải PDF
-        response.setContentType("application/pdf");
-        response.setHeader("Content-Disposition", "attachment; filename=\"invoice-" + orderCode + ".pdf\"");
-        renderer.setDocumentFromString(htmlContent);
-        renderer.layout();
-
-        // Ghi PDF vào OutputStream (browser)
-        try (OutputStream os = response.getOutputStream()) {
-            renderer.createPDF(os);
-        }
-    }
-
-
-    private String formatCurrency(BigDecimal amount) {
-        return String.format("%,.0f VND", amount.setScale(0, RoundingMode.HALF_UP).doubleValue());
-    }
-
-    @GetMapping("/is-on-sale")
-    public ResponseEntity<BigDecimal> calculateDiscount(
-            @RequestParam Long productDetailId,
-            @RequestParam BigDecimal originalPrice) {
-
-        BigDecimal discountedPrice = promotionServiceImpl.isProductDetailOnSale(productDetailId, originalPrice);
-
-        if (discountedPrice == null) {
-            return ResponseEntity.ok(originalPrice); // Nếu không có giảm giá, trả về giá gốc
-        }
-
-        return ResponseEntity.ok(discountedPrice);
-    }
 
     @GetMapping("/search-product-detail")
     public ResponseEntity<Page<ProductDetailResponse>> searchProductDetail(
@@ -284,6 +188,7 @@ public class ShoppingController {
             @RequestParam(required = false) BigDecimal priceTo,
             @RequestParam(defaultValue = "asc") String orderBy
     ) {
-        return ResponseEntity.ok(productDetailService.searchProductDetail(page, size, nameProduct, brandId, categoryId, sizeId, colorId, priceFrom, priceTo, orderBy));
+        Page<ProductDetailResponse> result = productDetailService.searchProductDetail(page, size, nameProduct, brandId, categoryId, sizeId, colorId, priceFrom, priceTo, orderBy);
+        return ResponseEntity.ok(result);
     }
 }
