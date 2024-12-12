@@ -14,14 +14,14 @@ const {getValidate, clearValidation} = validateForm;
     const statusConfig = {
         3: [
             {icon: "mdi-account-check", text: "Chờ xác nhận", type: "completed"},
-            {icon: "mdi-dolly", text: "Chờ lấy hàng", type: "completed"},
+            {icon: "mdi-dolly", text: "đang sử lý", type: "completed"},
             {icon: "mdi-truck-outline", text: "Chờ giao hàng", type: "completed"},
             {icon: "mdi-truck-fast-outline", text: "Đang giao hàng", type: "completed"},
             {icon: "mdi-package-variant-closed-check", text: "Đã giao hàng", type: "completed"},
         ],
         6: [
             {icon: "mdi-account-check", text: "Chờ xác nhận", type: "completed"},
-            {icon: "mdi-dolly", text: "Chờ lấy hàng", type: "completed"},
+            {icon: "mdi-dolly", text: "đang sử lý", type: "completed"},
             {icon: "mdi-truck-outline", text: "Chờ giao hàng", type: "completed"},
             {icon: "mdi-truck-fast-outline", text: "Đang giao hàng", type: "active"},
         ],
@@ -30,11 +30,11 @@ const {getValidate, clearValidation} = validateForm;
         ],
         8: [
             {icon: "mdi-account-check", text: "Chờ xác nhận", type: "completed"},
-            {icon: "mdi-dolly", text: "Chờ lấy hàng", type: "active"},
+            {icon: "mdi-dolly", text: "đang sử lý", type: "active"},
         ],
         4: [
             {icon: "mdi-account-check", text: "Chờ xác nhận", type: "completed"},
-            {icon: "mdi-dolly", text: "Chờ lấy hàng", type: "completed"},
+            {icon: "mdi-dolly", text: "đang sử lý", type: "completed"},
             {icon: "mdi-truck-outline", text: "Chờ giao hàng", type: "active"},
         ],
     };

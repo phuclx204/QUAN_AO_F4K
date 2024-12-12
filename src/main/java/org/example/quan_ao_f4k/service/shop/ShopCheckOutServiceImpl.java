@@ -71,7 +71,7 @@ public class ShopCheckOutServiceImpl implements ShopCheckOutService {
         if (note == null || note.isEmpty()) {
             orderHistory.setNote("Đơn hàng đã được đặt, chờ phê duyệt");
         } else {
-            orderHistory.setNote("Đơn hàng đã được đặt, chờ phê duyệt <br/> ghi chú: " + note);
+            orderHistory.setNote("Đơn hàng đã được đặt, chờ phê duyệt \n ghi chú: " + note);
         }
         orderHistory.setCreateBy("Người dùng");
         orderHistory.setStatus(savedOrder.getStatus());
@@ -305,7 +305,7 @@ public class ShopCheckOutServiceImpl implements ShopCheckOutService {
         }
 
         if (note != null && !note.isEmpty()) {
-            order.setNote(order.getNote() + "<br/> ghi chú: " + note);
+            order.setNote(order.getNote() + "\n ghi chú: " + note);
         }
         return order;
     }
