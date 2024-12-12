@@ -397,7 +397,6 @@ function addProductToInvoice(productDetailId) {
         // Sản phẩm chưa có trong giỏ - thêm mới
         const productRow = $(`button[onclick="addProductToInvoice(${productDetailId})"]`).closest('tr');
         const price = productRow.find('.hidden').text().trim(); // Lấy giá từ modal sản phẩm
-
         $.ajax({
             url: '/admin/shopping-offline/add',
             type: 'POST',

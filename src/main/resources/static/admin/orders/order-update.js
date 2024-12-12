@@ -22,7 +22,7 @@ $(document).ready(async function () {
         {status: 5, mess: "Chờ xác nhận"},
         {status: 6, mess: "Đang giao hàng"},
         {status: 7, mess: "Đã giao hàng"},
-        {status: 8, mess: "Chờ lấy hàng"},
+        {status: 8, mess: "đang sử lý"},
     ];
     const getStateByPaymentMethod = (phuongThuc, currentStatus = null) => {
         const stateOffline = [1];

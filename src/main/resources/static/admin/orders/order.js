@@ -109,7 +109,7 @@ $(document).ready(function () {
             case 0: return 'Đã hủy';
             case 5: return 'Chờ xác nhận';
             case 2: return 'Trả hàng';
-            case 8: return 'Chờ lấy hàng';
+            case 8: return 'đang sử lý';
             case 4: return 'Chờ giao hàng';
             case 6: return 'Đang giao hàng';
             case 7: return 'Đã giao hàng';

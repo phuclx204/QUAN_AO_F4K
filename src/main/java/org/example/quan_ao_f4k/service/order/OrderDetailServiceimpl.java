@@ -194,6 +194,7 @@ public class OrderDetailServiceimpl implements OrderDetailService {
         model.addAttribute("order", orderResponse);
         model.addAttribute("hasPromotion", checkOrderHasPromotion(listOrderDetail));
         model.addAttribute("isOnline", orderResponse.getOrder_type().equals(HoaDonUtils.LoaiHoaDon.ONLINE));
+        model.addAttribute("isPaid", orderResponse.getOrder_type().equals(HoaDonUtils.LoaiHoaDon.ONLINE));
     }
     private List<OrderDetailResponse> getListOrderDetail(List<OrderDetail> orderDetails) {
         List<OrderDetailResponse> lstResponse = new ArrayList<>();
