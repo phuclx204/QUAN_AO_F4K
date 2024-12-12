@@ -168,8 +168,8 @@ $(document).ready(function () {
         method: 'GET',
         success: function (response) {
             const revenueData = {
-                OFFLINE: response.OFFLINE || 0,
-                ONLINE: response.ONLINE || 0
+                offline: response.offline || 0,
+                online: response.online || 0
             };
             drawPieChart(revenueData);
         },
@@ -181,9 +181,9 @@ $(document).ready(function () {
     // Hàm hiển thị biểu đồ tròn
     function drawPieChart(data) {
         const chartData = Object.keys(data).map(key => ({
-            name: key === 'OFFLINE' ? 'Tại cửa hàng' : 'Trực tuyến',
+            name: key === 'offline' ? 'Tại cửa hàng' : 'Trực tuyến',
             y: parseFloat(data[key]),
-            color: key === 'OFFLINE' ? '#36A2EB' : '#FF6384'
+            color: key === 'offline' ? '#36A2EB' : '#FF6384'
         }));
 
         Highcharts.chart('average-chart', {
