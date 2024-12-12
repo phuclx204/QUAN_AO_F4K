@@ -206,17 +206,4 @@ public class PromotionServiceImpl implements PromotionService {
             promotionRepository.saveAll(updatedPromotions); // Lưu batch
         }
     }
-
-    public BigDecimal isProductDetailOnSale(Long productDetailId, BigDecimal originalPrice) {
-        // Lấy khuyến mãi tốt nhất
-        Promotion promotion = getBestPromotionForProductDetail(productDetailId);
-
-        if (promotion == null) {
-            return null;
-        }
-
-        // Tính giá sau giảm
-        return calculateDiscountedPrice(originalPrice, promotion.getDiscountValue());
-    }
-
 }

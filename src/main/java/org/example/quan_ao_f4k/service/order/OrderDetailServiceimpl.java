@@ -214,7 +214,7 @@ public class OrderDetailServiceimpl implements OrderDetailService {
 
         return lstResponse;
     }
-    private Boolean checkOrderHasPromotion(List<OrderDetail> orderDetails) {
+    public Boolean checkOrderHasPromotion(List<OrderDetail> orderDetails) {
         for (OrderDetail orderDetail: orderDetails) {
            if (orderDetail.getDiscountPrice() != null) {
                return true;
