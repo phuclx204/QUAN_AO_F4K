@@ -34,4 +34,6 @@ public class CustomerResponse {
 
 	private Integer status=1;
 
+	private String addressDetail;
+
 }

@@ -46,7 +46,7 @@ public class HoaDonUtils {
         CHO_XAC_NHAN(5, "Chờ xác nhận", "Đơn hàng đã được xác nhận"),
         DANG_GIAO_HANG(6, "Đang giao hàng", "Đơn hàng sẽ sớm được giao, vui lòng chú ý điện thoại"),
         DA_GIAO_HANG(7, "Đã giao hàng", ""), // bỏ
-        CHO_LAY_HANG(8, "đang sử lý", "Người gửi đang chuẩn bị hàng");
+        CHO_LAY_HANG(8, "đang xử lý", "Người gửi đang chuẩn bị hàng");
 
         private final int status; // Giá trị trạng thái
         private final String mess; // Mô tả trạng thái

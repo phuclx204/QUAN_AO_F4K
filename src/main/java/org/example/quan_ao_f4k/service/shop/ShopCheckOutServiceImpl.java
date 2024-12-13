@@ -297,6 +297,7 @@ public class ShopCheckOutServiceImpl implements ShopCheckOutService {
             case CHUYEN_TIEN -> {
                 order.setPaymentMethod(paymentMethodRepository.findById(2L).get());
                 order.setNote(HoaDonUtils.ORDER_NOTE_ONLINE);
+                order.setPaymentStatus(HoaDonUtils.TrangThaiThanhToan.DA_THANH_TOAN);
             }
             case THANH_TOAN_SAU_NHAN_HANG -> {
                 order.setPaymentMethod(paymentMethodRepository.findById(1L).get());

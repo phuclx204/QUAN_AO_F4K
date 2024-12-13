@@ -27,6 +27,11 @@ const {getValidate, clearValidation} = validateForm;
                 rule: (value) => value.trim() !== "",
                 message: "Tên bắt buộc",
                 type: 'text'
+            },
+            {
+                rule: (value) => value.trim().length > 6,
+                message: "Tên ít nhất là 6 ký tự",
+                type: 'text'
             }
         ],
         'createValue': [
@@ -186,6 +191,7 @@ const {getValidate, clearValidation} = validateForm;
         const isValidate = await getValidate(idFormPromotion, ruleForm);
         if (!isValidate) return;
 
+        model.name = model.name.trim();
         model.productIds = getSelectValue();
         model.dayStart = formatDate(dayStart.value);
         model.dayEnd = formatDate(dayEnd.value);
@@ -233,7 +239,7 @@ const {getValidate, clearValidation} = validateForm;
 
     $(document).ready(async function () {
         const data = await getData();
-        console.log(data)
+
         setTimeout(() => setSelectValue(data.products.map(el => el.productDetail.id)), 350)
         dayStart.value =  moment(data.dayStart).format("DD/MM/YYYY")
         dayEnd.value =  moment(data.dayEnd).format("DD/MM/YYYY")

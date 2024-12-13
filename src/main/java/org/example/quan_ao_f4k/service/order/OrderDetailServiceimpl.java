@@ -291,6 +291,10 @@ public class OrderDetailServiceimpl implements OrderDetailService {
             updateProductDetail(order, false);
         }
 
+        if (newStatus == HoaDonUtils.TrangThaiHoaDon.HOAN_TAT.getStatus()) {
+            order.setPaymentStatus(HoaDonUtils.TrangThaiThanhToan.DA_THANH_TOAN);
+        }
+
         //TODO: Cần thêm check trạng thái phù hợp trc khi update
         order.setStatus(newStatus);
         if (newStatus == HoaDonUtils.TrangThaiHoaDon.HUY_DON.getStatus()) {

@@ -149,7 +149,7 @@ const {transformData, convert2Vnd} = getCommon();
                     } else if (data === 7) {
                         return '<span class="badge bg-delivered">Đã giao hàng</span>';
                     } else if (data === 8) {
-                        return '<span class="badge bg-wait-pickup">đang sử lý</span>';
+                        return '<span class="badge bg-wait-pickup">đang xử lý</span>';
                     }
                 }
             },

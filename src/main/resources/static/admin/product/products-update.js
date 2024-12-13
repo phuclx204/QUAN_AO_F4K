@@ -160,6 +160,11 @@ $(document).ready(async function () {
                 rule: (value) => value.trim() !== "",
                 message: "Tên sản phẩm tính bắt buộc",
                 type: 'text'
+            },
+            {
+                rule: (value) => value.trim().length >= 6,
+                message: "Tên sản phẩm tối thiểu 6 ký tự",
+                type: 'text'
             }
         ],
         'createCategory': [
@@ -186,10 +191,10 @@ $(document).ready(async function () {
         buttonSpinner.show();
         const data = {
             productId: objectCreateProduct.productId,
-            name: objectCreateProduct.name,
+            name: objectCreateProduct.name.trim(),
             categoryId: objectCreateProduct.categoryId,
             brandId: objectCreateProduct.brandId,
-            description: objectCreateProduct.description,
+            description: objectCreateProduct.description.trim(),
             status: '1'
         }
         if (fileCreate.value.getFile() != null) {

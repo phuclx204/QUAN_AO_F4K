@@ -26,6 +26,11 @@ const {getValidate, clearValidation} = validateForm;
                 rule: (value) => value.trim() !== "",
                 message: "Tên bắt buộc",
                 type: 'text'
+            },
+            {
+                rule: (value) => value.trim().length > 6,
+                message: "Tên ít nhất là 6 ký tự",
+                type: 'text'
             }
         ],
         'createValue': [
@@ -175,6 +180,7 @@ const {getValidate, clearValidation} = validateForm;
         const isValidate = await getValidate(idFormPromotion, ruleForm);
         if (!isValidate) return;
 
+        model.name = model.name.trim();
         model.productIds = getSelectValue();
         model.dayStart = dayStart.value;
         model.dayEnd = dayEnd.value;

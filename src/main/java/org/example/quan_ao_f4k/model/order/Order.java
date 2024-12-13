@@ -32,7 +32,7 @@ public class Order extends BaseEntity {
     @Column(name = "to_phone")
     private String toPhone;
 
-    @Column(name = "total_pay", precision = 10, scale = 2)
+    @Column(name = "total_pay", precision = 65, scale = 2)
     private BigDecimal totalPay;
 
     @Column(name = "shipping_pay", precision = 10, scale = 2)

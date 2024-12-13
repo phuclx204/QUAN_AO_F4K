@@ -95,7 +95,7 @@ $(document).ready(async function () {
             {data: 'username', title: 'Username'},
             {data: 'email', title: 'Email'},
             {data: 'numberPhone', title: 'Số đện thoại'},
-            {data: 'address', title: 'Địa chỉ'}
+            {data: 'addressDetail', title: 'Địa chỉ'}
         ]
     });
 

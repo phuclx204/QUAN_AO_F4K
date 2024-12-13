@@ -228,7 +228,7 @@ $(document).ready(async function () {
     $(document).on("click", ".action-update", function (e) {
         const data = getRowById($(this).data("id"));
         idRow.value = $(this).data("id");
-        openModalAttributes("Cập nhật thuộc tính", "Tên danh mục", modalType, data);
+        openModalAttributes("Cập nhật thuộc tính", "Tên màu sắc", modalType, data);
         $modalAddAttributes.modal("show");
     })
 
@@ -236,7 +236,7 @@ $(document).ready(async function () {
     $(document).on("click", "#btnCreateProduct", function (e) {
         e.preventDefault();
         idRow.value = null;
-        openModalAttributes('Thêm mới thuộc tính', "Tên danh mục", modalType);
+        openModalAttributes('Thêm mới thuộc tính', "Tên màu sắc", modalType);
         $modalAddAttributes.modal("show");
     })
 
