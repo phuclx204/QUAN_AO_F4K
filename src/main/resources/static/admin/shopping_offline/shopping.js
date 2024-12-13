@@ -173,7 +173,7 @@ function fetchProductDetails(page = 1, size = 5) {
         dataType: 'json'
     })
         .done(function (data) {
-            console.log(data)
+            // console.log(data)
             renderProductList(data.content);
             setupPagination(data.totalPages, page);
         })
@@ -208,14 +208,34 @@ function renderProductList(products) {
             ? `<img src="${prd.product.image.fileUrl}" alt="${prd.product.thumbnail}" style="width: 50px; height: 50px; object-fit: cover;">`
             : `<img src="/admin/img/people.png" alt="No Image" style="width: 50px; height: 50px; object-fit: cover;">`;
 
+
+        // Tính phần trăm giảm giá (nếu có)
+        let discountLabel = '';
+        if (prd.discountValue && prd.discountValue < prd.price) {
+            const discountPercentage = Math.round(((prd.price - prd.discountValue) / prd.price) * 100);
+             discountLabel = prd.discountValue && prd.discountValue < prd.price
+                ? `<span class="custom-badge">-${discountPercentage}%</span>`
+                : '';
+
+        }
+
+
         const discountInfo = prd.discountValue && prd.discountValue < prd.price
             ? `<span class="original-price text-danger" style="text-decoration: line-through;">${formatPrice(prd.price)}</span>
                <br>
-               <span class="discounted-price text-success">${formatPrice(prd.discountValue)}</span>`
+               <span class="discounted-price text-behance">${formatPrice(prd.discountValue)}</span>`
             : `<span>${formatPrice(prd.price)}</span>`;
 
+        // Kết hợp nhãn giảm giá với ảnh sản phẩm
+        const imageWithLabel = `
+            <div style="position: relative; display: inline-block;">
+                ${image}
+                ${discountLabel}
+            </div>
+        `;
+
         productRow.innerHTML = `
-            <td>${image}</td>
+            <td>${imageWithLabel}</td>
             <td>${prd.product.name}</td>
             <td>${discountInfo}</td>
             <td>
@@ -474,9 +494,46 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
 
+    // Tạo nhãn giảm giá
+    const productImages = document.querySelectorAll('.product-image');
+
+    productImages.forEach(image => {
+        const price = parseFloat(image.getAttribute("data-price"));
+        const discountPrice = parseFloat(image.getAttribute("data-discount-price"));
+
+        if (price && discountPrice && discountPrice < price) {
+            const discountPercentage = Math.round((1 - discountPrice / price) * 100);
+
+            // Tạo nhãn
+            const badge = document.createElement('div');
+            badge.className = 'custom-badge-cart';
+            badge.textContent = `-${discountPercentage}%`;
+
+            // Thêm nhãn vào góc trên bên trái ảnh
+            image.parentElement.style.position = 'relative';
+            image.parentElement.appendChild(badge);
+        }
+    });
+
     priceElements.forEach(element => {
         const price = element.getAttribute("data-price");
-        if (price) {
+        const valuePrice = element.getAttribute("data-value");
+        const valueDiscount = element.getAttribute("data-value-discount");
+        if (valueDiscount) {
+            const originalPrice = document.createElement('span');
+            originalPrice.className = "original-price text-danger";
+            originalPrice.style.textDecoration = "line-through";
+            originalPrice.textContent = formatPrice(Number(valuePrice));
+
+            const discountedPrice = document.createElement('span');
+            discountedPrice.textContent = formatPrice(Number(price));
+
+            // Xóa nội dung cũ và thêm các thành phần mới
+            element.textContent = "";
+            element.appendChild(originalPrice);
+            element.appendChild(document.createTextNode(" ")); // Thêm khoảng trắng
+            element.appendChild(discountedPrice);
+        } else if (price) {
             const formattedPrice = formatPrice(Number(Math.floor(price)));
             element.textContent = formattedPrice;
         }
@@ -900,7 +957,7 @@ function updateOrderStatus1(orderId, status, totalPay, paymentMethodId) {
                                 window.open(`/generate-pdf/shopping-offline/${orderId}`, '_blank'),
                                 new Promise((resolve) => {
                                     handleRemainingInvoices(orderId);
-                                        resolve(); // Resolve để Promise được hoàn thành
+                                    resolve(); // Resolve để Promise được hoàn thành
                                 })
                             ]).catch(err => console.error(err));
 
