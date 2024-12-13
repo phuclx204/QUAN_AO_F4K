@@ -6,8 +6,8 @@ import lombok.AllArgsConstructor;
 import org.example.quan_ao_f4k.dto.response.orders.PdfShopOfflineDTO;
 import org.example.quan_ao_f4k.model.order.OrderDetail;
 import org.example.quan_ao_f4k.service.order.OrderDetailService;
+import org.example.quan_ao_f4k.service.order.OrderServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
-import org.thymeleaf.spring6.SpringTemplateEngine;
 import org.xhtmlrenderer.pdf.ITextRenderer;
 
 import java.io.OutputStream;
@@ -29,7 +28,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 
 @Controller
 @AllArgsConstructor
@@ -39,6 +37,8 @@ public class PdfController {
     TemplateEngine templateEngine;
     @Autowired
     private OrderDetailService orderDetailService;
+    @Autowired
+    private OrderServiceImpl orderService;
 
     @GetMapping("/generate-pdf/shopping-offline/{orderId}")
     @ResponseBody
@@ -62,20 +62,20 @@ public class PdfController {
         for (OrderDetail detail : orderDetails) {
             PdfShopOfflineDTO dto = new PdfShopOfflineDTO();
 
+            BigDecimal effectivePrice = detail.getDiscountPrice() != null ? detail.getDiscountPrice() : detail.getPrice();
+
             dto.setProductName(detail.getProductDetail().getProduct().getName() + "-"
                     + detail.getProductDetail().getSize().getName() + "-"
                     + detail.getProductDetail().getColor().getName());
             dto.setQuantity(detail.getQuantity());
-            dto.setPrice(detail.getPrice());
+            dto.setPrice(effectivePrice);
 
-            BigDecimal quantity = new BigDecimal(detail.getQuantity());
-            BigDecimal total = quantity.multiply(detail.getPrice());
+            BigDecimal total = orderService.calculateAmount(detail);
             dto.setTotal(total);
 
-            dto.setPriceFormatted(formatCurrency(detail.getPrice()));
+            dto.setPriceFormatted(formatCurrency(effectivePrice));
             dto.setTotalFormatted(formatCurrency(total));
             formattedOrderDetails.add(dto);
-
 
             totalQuantity += detail.getQuantity();
             totalPay = formatCurrency(detail.getOrder().getTotalPay());

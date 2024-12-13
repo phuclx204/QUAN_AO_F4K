@@ -10,5 +10,4 @@ import lombok.NoArgsConstructor;
 public class ProductDetailDTO {
 	private String productName;
 	private Integer quantity;
-
 }
