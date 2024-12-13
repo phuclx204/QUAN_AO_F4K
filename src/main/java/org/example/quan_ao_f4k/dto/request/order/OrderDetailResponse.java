@@ -18,5 +18,4 @@ public class OrderDetailResponse {
     private OrderResponse order;
     private BigDecimal purchasePrice;
     private BigDecimal discountPrice;
-    private Image image;
 }
