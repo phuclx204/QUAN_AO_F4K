@@ -95,12 +95,14 @@ public class ShoppingController {
 
     @GetMapping("/{id}")
     public String getOrderById(@PathVariable Long id, Model model) {
-        OrderResponse orderResponse = orderService.findById(id);
+        OrderResponse orderResponse = orderService.findOrderOfflineById(id);
         if (orderResponse == null) {
             return "/error/error_404";
         }
         List<OrderDetail> orderDetails = orderService.findCart(id);
-
+        if (orderDetails == null) {
+            return "/error/error_404";
+        }
         List<Image> images = new ArrayList<>();
         for (OrderDetail orderDetail : orderDetails) {
             // Lấy hình ảnh của sản phẩm tương ứng với ProductDetail
@@ -146,6 +148,7 @@ public class ShoppingController {
         key.setOrderId(orderId);
         key.setProductDetailId(productDetailId);
         System.out.println("Price " + request.getPrice());
+        System.out.println("DiscountPrice " + request.getDiscountPrice());
 
         OrderDetailResponse response = orderDetailService.save(key, request);
 

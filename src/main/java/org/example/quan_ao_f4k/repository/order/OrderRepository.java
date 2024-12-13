@@ -16,6 +16,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Repository
@@ -89,4 +90,7 @@ public interface OrderRepository extends JpaRepository<Order, Long>,
 
     @Query("SELECT o FROM Order o WHERE o.order_type = :orderType AND (:status is null or o.status = :status) order by o.id desc")
     List<Order> findOrdersByStatusAndType(@Param("orderType") String orderType, @Param("status") Integer status);
+
+    @Query("SELECT o FROM Order o WHERE o.id = :orderId AND o.order_type = 'offline' AND o.status = 1")
+    Order findOrderOffline(@Param("orderId") Long orderId);
 }

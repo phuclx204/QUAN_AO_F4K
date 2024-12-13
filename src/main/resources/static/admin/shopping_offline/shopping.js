@@ -87,10 +87,13 @@ function generateUniqueCode() {
 // cập nhật trạng thái cho đơn hủy = 0
 function updateOrderStatus(orderId, status) {
     const orderCode = document.getElementById('orderCode').innerText;
+    console.log(orderId)
     const updateData = {
         status: status,
-        code: orderCode
+        code: orderCode,
+        order_type: 'offline'
     }
+    console.log(updateData)
 
     $.ajax({
         url: `/admin/shopping-offline/` + orderId + `/order-details`,
@@ -103,13 +106,6 @@ function updateOrderStatus(orderId, status) {
                 contentType: 'application/json',
                 data: JSON.stringify(updateData),
                 success: function (response) {
-                    Swal.fire({
-                        title: 'Hủy đơn thành công!',
-                        text: "Đơn hàng đã được hủy.",
-                        icon: 'success',
-                        confirmButtonText: 'OK',
-                        timerProgressBar: true,
-                    });
                     // Tăng số lượng tồn kho cho từng sản phẩm
                     res.forEach(prD => {
                         updateProductQuantity(prD.productDetail.id, prD.quantity);
@@ -131,11 +127,6 @@ function updateOrderStatus(orderId, status) {
         }
     });
 
-}
-
-//view hóa đơn được chọn
-function viewInvoice(orderIds) {
-    window.location.href = "/admin/shopping-offline/" + orderIds
 }
 
 // tự động cho các trường nhập tiền chỉ được nhập số
@@ -427,6 +418,7 @@ function addProductToInvoice(productDetailId) {
 
 // hủy hóa đơn đang chọn
 function cancelOrder(orderId) {
+    console.log(orderId)
     Swal.fire({
         title: 'Xác nhận hủy đơn',
         text: "Bạn có chắc chắn muốn hủy đơn này không?",
@@ -438,7 +430,17 @@ function cancelOrder(orderId) {
         cancelButtonText: 'Hủy bỏ'
     }).then((result) => {
         if (result.isConfirmed) {
-            updateOrderStatus(orderId, 0);
+            Swal.fire({
+                text: "Hoá đơn đã được hủy.",
+                icon: 'success',
+                confirmButtonText: 'OK',
+                timer: 3000,
+                timerProgressBar: true,
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    updateOrderStatus(orderId, 0);
+                }
+            });
         }
     });
 }
@@ -455,14 +457,23 @@ $(document).on('click', '.delete-btn', function () {
 // tooltip nút xóa ở giỏ hàng,productDetaiil modal
 document.addEventListener('DOMContentLoaded', function () {
     const priceElements = document.querySelectorAll(".priceFormat");
-    const priceRevenu = document.querySelectorAll(".priceRevenu");
-    priceRevenu.forEach(element => {
-        const price = element.getAttribute("data-price-revenu");
-        if (price) {
-            const formattedPrice = formatPrice(Number(Math.floor(price)));
-            element.textContent = formattedPrice;
-        }
+    const priceRevenuElements = document.querySelectorAll(".priceRevenu");
+
+    priceRevenuElements.forEach(element => {
+        const price = parseFloat(element.getAttribute("data-price-revenu")) || null;
+        const discountPrice = parseFloat(element.getAttribute("data-discount-price")) || null;
+        const quantity = parseInt(element.getAttribute("data-quantity")) || 0;
+        // console.log(price)
+        // console.log(discountPrice)
+        // console.log(quantity)
+        // console.log('---------')
+
+        const finalPrice = (discountPrice != null ? discountPrice : price) * quantity;
+        // console.log(finalPrice)
+        element.textContent = formatPrice(finalPrice);
     });
+
+
     priceElements.forEach(element => {
         const price = element.getAttribute("data-price");
         if (price) {
@@ -579,7 +590,16 @@ $(document).ready(function () {
         const orderId = row.find(`input[type="hidden"][id="orderId"]`).val();
         const productDetailId = row.find(`input[type="hidden"][id="productDetailId"]`).val();
         const existingProduct = $(`input#productDetailId[value="${productDetailId}"]`).closest('tr');
-        const productPrice = existingProduct.find('.priceInput').val();
+        const priceRevenuElements = existingProduct.find(".priceRevenu");
+        let price = null, discountPrice = null;
+
+        price = parseFloat(priceRevenuElements.data('price-revenu')) || null;
+        discountPrice = parseFloat(priceRevenuElements.data('discount-price')) || null;
+        //
+        // console.log("ProductDetailId:", productDetailId);
+        // console.log("Price:", price);
+        // console.log("Discount Price:", discountPrice);
+        // console.log("--------");
 
         if (event.key === 'Enter') {
             event.preventDefault();
@@ -621,7 +641,8 @@ $(document).ready(function () {
                         orderId: orderId,
                         productDetailId: productDetailId,
                         quantity: quantity,
-                        price: productPrice
+                        price: price,
+                        discountPrice: discountPrice
                     };
 
                     const originalQuantity = $(this).data('originalValue'); //số lượng trên giỏ
@@ -729,10 +750,13 @@ function formatCustomerPrice(value) {
 }
 
 inputField.addEventListener("input", () => {
-    const numericValue = parseInt(inputField.value.replace(/[^0-9]/g, ""), 10) || '';
+    let numericValue = parseInt(inputField.value.replace(/[^0-9]/g, ""), 10) || '';
+
+    if (numericValue > 1000000000) {
+        numericValue = 1000000000;
+    }
     inputField.value = formatCustomerPrice(numericValue);
     const change = numericValue - totalAmount;
-
     if (numericValue >= totalAmount) {
         changeAmount.textContent = formatCustomerPrice(change) + ' ₫';
         changeAmount.classList.remove("text-danger");
@@ -847,40 +871,47 @@ function updateOrderStatus1(orderId, status, totalPay, paymentMethodId) {
         order_type: 'offline'
     };
 
-    const invoiceCheckbox = document.getElementById('invoiceCheckbox').checked;
-
     $.ajax({
         url: '/admin/shopping-offline/' + orderId,
         method: 'PUT',
         contentType: 'application/json',
         data: JSON.stringify(updateData),
         success: function () {
-            if (invoiceCheckbox) {
-                Swal.fire({
-                    title: 'Thanh toán thành công!',
-                    icon: 'success',
-                    showConfirmButton: true,
-                    confirmButtonText: 'OK',
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        addOrderToHistory(orderId, updateData.note);
-                        handleRemainingInvoices(orderId);
-                        window.location.href = `/generate-pdf/shopping-offline/${orderId}`;
-                    }
-                });
-            } else {
-                Swal.fire({
-                    title: 'Thanh toán thành công!',
-                    icon: 'success',
-                    showConfirmButton: true,
-                    confirmButtonText: 'OK',
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        addOrderToHistory(orderId, updateData.note);
-                        handleRemainingInvoices(orderId);
-                    }
-                });
-            }
+            Swal.fire({
+                title: 'Thanh toán thành công!',
+                icon: 'success',
+                showConfirmButton: true,
+                timer: 3000,
+                confirmButtonText: 'OK',
+                allowOutsideClick: false,
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire({
+                        title: 'Xuất hóa đơn?!',
+                        icon: 'info',
+                        showCancelButton: true,
+                        confirmButtonText: 'Xuất',
+                        cancelButtonText: 'Hủy',
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            addOrderToHistory(orderId, updateData.note);
+
+                            Promise.all([
+                                window.open(`/generate-pdf/shopping-offline/${orderId}`, '_blank'),
+                                new Promise((resolve) => {
+                                    handleRemainingInvoices(orderId);
+                                        resolve(); // Resolve để Promise được hoàn thành
+                                })
+                            ]).catch(err => console.error(err));
+
+                        } else {
+                            addOrderToHistory(orderId, updateData.note);
+                            handleRemainingInvoices(orderId);
+                        }
+                    });
+                }
+            });
+
         },
         error: function (xhr) {
             let errorMessage = 'Không thể thanh toán đơn hàng.';
@@ -898,7 +929,7 @@ function handleRemainingInvoices(orderId) {
     let nextOrderId = null;
 
     allOrders.forEach(order => {
-        const idOrder = order.getAttribute('onclick').match(/\d+/)[0]; // Lấy ID từ onclick
+        const idOrder = order.getAttribute('onclick').match(/\d+/)[0];
         if (idOrder != orderId) {
             nextOrderId = idOrder;
             return false;
@@ -923,4 +954,9 @@ function handleRemainingInvoices(orderId) {
             }
         });
     }
+}
+
+//view hóa đơn được chọn
+function viewInvoice(orderIds) {
+    window.location.href = "/admin/shopping-offline/" + orderIds
 }
