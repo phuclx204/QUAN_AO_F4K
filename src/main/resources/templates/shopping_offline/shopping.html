@@ -63,7 +63,7 @@
                                      style="width: 50px; height: 50px;"
                                      class="product-image"
                                      th:attr="data-discount-price=${detail.discountPrice},
-                                              data-price=${detail.price}"/>
+                                              data-price-image=${detail.price}"/>
                             </td>
                             <td th:text="${detail.productDetail.product.name} + ' - Size : ' + ${detail.productDetail.size.name} + ' - Màu : ' + ${detail.productDetail.color.name}"></td>
                             <td>
@@ -84,7 +84,7 @@
                             <td>
                                   <span class="priceRevenu" style="width: 100px;"
                                         th:attr="data-price-revenu=${detail.price},
-                                                 data-discount-price=${detail.discountPrice},
+                                                 data-discount=${detail.discountPrice},
                                                  data-quantity=${detail.quantity}">
                                   </span>
                             </td>

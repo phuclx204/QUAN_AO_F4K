@@ -475,43 +475,47 @@ document.addEventListener('DOMContentLoaded', function () {
 
     priceRevenuElements.forEach(element => {
         const price = parseFloat(element.getAttribute("data-price-revenu")) || null;
-        const discountPrice = parseFloat(element.getAttribute("data-discount-price"));
+        const discountPrice = parseFloat(element.getAttribute("data-discount"));
         const quantity = parseInt(element.getAttribute("data-quantity")) || 0;
-        console.log(price)
-        console.log(discountPrice)
-        console.log(quantity)
-        console.log('---------')
 
-        const finalPrice = (discountPrice != null ? discountPrice : price) * quantity;
-        // console.log(finalPrice)
+        const effectivePrice = (discountPrice != null && discountPrice >= 0 && discountPrice <= price)
+            ? discountPrice
+            : price;
+
+        const finalPrice = (effectivePrice != null ? effectivePrice : 0) * quantity;
+
         element.textContent = formatPrice(finalPrice);
     });
 
 
     // Tạo nhãn giảm giá
+    // Tạo nhãn giảm giá
     const productImages = document.querySelectorAll('.product-image');
 
     productImages.forEach(image => {
-        const price = parseFloat(image.getAttribute("data-price")) || null;
+        // Chuyển đổi giá trị thành số
+        const price = parseFloat(image.getAttribute("data-price-image")) || 0;
         const discountPrice = parseFloat(image.getAttribute("data-discount-price"));
 
-        const discountPercentage = Math.round((1 - discountPrice / price) * 100);
-        // console.log(discountPercentage)
-        // Tạo nhãn
-        const badge = document.createElement('div');
-        badge.className = 'custom-badge-cart';
-        badge.textContent = `-${discountPercentage}%`;
+        // Kiểm tra giá trị hợp lệ và tính phần trăm giảm giá
+        if (price > 0 && discountPrice >= 0 && discountPrice <= price) {
+            const discountPercentage = Math.round((1 - discountPrice / price) * 100);
+            // Tạo nhãn
+            const badge = document.createElement('div');
+            badge.className = 'custom-badge-cart';
+            badge.textContent = `-${discountPercentage}%`;
 
-        // Thêm nhãn vào góc trên bên trái ảnh
-        image.parentElement.style.position = 'relative';
-        image.parentElement.appendChild(badge);
+            // Thêm nhãn vào góc trên bên trái ảnh
+            image.parentElement.style.position = 'relative';
+            image.parentElement.appendChild(badge);
+        }
     });
 
     priceElements.forEach(element => {
         const price = element.getAttribute("data-price");
         const valuePrice = element.getAttribute("data-value");
         const valueDiscount = element.getAttribute("data-value-discount");
-        if (valueDiscount) {
+        if (valueDiscount != null && valueDiscount >= 0 && valueDiscount <= price) {
             const originalPrice = document.createElement('span');
             originalPrice.className = "original-price text-danger";
             originalPrice.style.textDecoration = "line-through";
@@ -523,7 +527,7 @@ document.addEventListener('DOMContentLoaded', function () {
             // Xóa nội dung cũ và thêm các thành phần mới
             element.textContent = "";
             element.appendChild(originalPrice);
-            element.appendChild(document.createTextNode(" ")); // Thêm khoảng trắng
+            element.appendChild(document.createElement("br")); // Thêm khoảng trắng
             element.appendChild(discountedPrice);
         } else if (price) {
             const formattedPrice = formatPrice(Number(Math.floor(price)));
@@ -643,7 +647,7 @@ $(document).ready(function () {
         let price = null, discountPrice = null;
 
         price = parseFloat(priceRevenuElements.data('price-revenu')) || null;
-        discountPrice = parseFloat(priceRevenuElements.data('discount-price'));
+        discountPrice = parseFloat(priceRevenuElements.data('discount'));
         //
         // console.log("ProductDetailId:", productDetailId);
         // console.log("Price:", price);
