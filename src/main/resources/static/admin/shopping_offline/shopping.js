@@ -185,7 +185,7 @@ function fetchProductDetails(page = 1, size = 5) {
 //hàm format price
 function formatPrice(amount) {
     // Làm tròn xuống số nguyên gần nhất
-    const roundedAmount = Math.floor(amount);
+    const roundedAmount = amount;
     return roundedAmount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") + ' ₫';
 }
 
@@ -209,18 +209,12 @@ function renderProductList(products) {
             : `<img src="/admin/img/people.png" alt="No Image" style="width: 50px; height: 50px; object-fit: cover;">`;
 
 
-        // Tính phần trăm giảm giá (nếu có)
-        let discountLabel = '';
-        if (prd.discountValue && prd.discountValue < prd.price) {
-            const discountPercentage = Math.round(((prd.price - prd.discountValue) / prd.price) * 100);
-             discountLabel = prd.discountValue && prd.discountValue < prd.price
-                ? `<span class="custom-badge">-${discountPercentage}%</span>`
-                : '';
+        // Hiển thị phần trăm (nếu có)
+        let discountLabel = prd.discountValue != null && prd.promotion.discountValue != null
+            ? `<span class="custom-badge">-${prd.promotion.discountValue}%</span>`
+            : '';
 
-        }
-
-
-        const discountInfo = prd.discountValue && prd.discountValue < prd.price
+        const discountInfo = prd.discountValue != null && prd.promotion.discountValue != null
             ? `<span class="original-price text-danger" style="text-decoration: line-through;">${formatPrice(prd.price)}</span>
                <br>
                <span class="discounted-price text-behance">${formatPrice(prd.discountValue)}</span>`
@@ -481,12 +475,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
     priceRevenuElements.forEach(element => {
         const price = parseFloat(element.getAttribute("data-price-revenu")) || null;
-        const discountPrice = parseFloat(element.getAttribute("data-discount-price")) || null;
+        const discountPrice = parseFloat(element.getAttribute("data-discount-price"));
         const quantity = parseInt(element.getAttribute("data-quantity")) || 0;
-        // console.log(price)
-        // console.log(discountPrice)
-        // console.log(quantity)
-        // console.log('---------')
+        console.log(price)
+        console.log(discountPrice)
+        console.log(quantity)
+        console.log('---------')
 
         const finalPrice = (discountPrice != null ? discountPrice : price) * quantity;
         // console.log(finalPrice)
@@ -498,21 +492,19 @@ document.addEventListener('DOMContentLoaded', function () {
     const productImages = document.querySelectorAll('.product-image');
 
     productImages.forEach(image => {
-        const price = parseFloat(image.getAttribute("data-price"));
+        const price = parseFloat(image.getAttribute("data-price")) || null;
         const discountPrice = parseFloat(image.getAttribute("data-discount-price"));
 
-        if (price && discountPrice && discountPrice < price) {
-            const discountPercentage = Math.round((1 - discountPrice / price) * 100);
+        const discountPercentage = Math.round((1 - discountPrice / price) * 100);
+        // console.log(discountPercentage)
+        // Tạo nhãn
+        const badge = document.createElement('div');
+        badge.className = 'custom-badge-cart';
+        badge.textContent = `-${discountPercentage}%`;
 
-            // Tạo nhãn
-            const badge = document.createElement('div');
-            badge.className = 'custom-badge-cart';
-            badge.textContent = `-${discountPercentage}%`;
-
-            // Thêm nhãn vào góc trên bên trái ảnh
-            image.parentElement.style.position = 'relative';
-            image.parentElement.appendChild(badge);
-        }
+        // Thêm nhãn vào góc trên bên trái ảnh
+        image.parentElement.style.position = 'relative';
+        image.parentElement.appendChild(badge);
     });
 
     priceElements.forEach(element => {
@@ -651,7 +643,7 @@ $(document).ready(function () {
         let price = null, discountPrice = null;
 
         price = parseFloat(priceRevenuElements.data('price-revenu')) || null;
-        discountPrice = parseFloat(priceRevenuElements.data('discount-price')) || null;
+        discountPrice = parseFloat(priceRevenuElements.data('discount-price'));
         //
         // console.log("ProductDetailId:", productDetailId);
         // console.log("Price:", price);

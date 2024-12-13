@@ -62,7 +62,7 @@
                                      alt="images.jpg"
                                      style="width: 50px; height: 50px;"
                                      class="product-image"
-                                     th:attr="data-discount-price=${detail.discountPrice != null ? detail.discountPrice : ''},
+                                     th:attr="data-discount-price=${detail.discountPrice},
                                               data-price=${detail.price}"/>
                             </td>
                             <td th:text="${detail.productDetail.product.name} + ' - Size : ' + ${detail.productDetail.size.name} + ' - Màu : ' + ${detail.productDetail.color.name}"></td>
