@@ -29,4 +29,6 @@ public interface OrderService extends CrudService<Long, OrderRequest, OrderRespo
 	ListResponse<OrderResponse> searchList(int page, int size, String sort, LocalDateTime startDate, LocalDateTime endDate,
 											 String search, Integer status, String orderType);
 	List<ProductDetailDTO> findQuantityProductDetailsByFilter(String filterType, String filterValue, String orderType);
+
+    OrderResponse findOrderOfflineById(Long aLong);
 }

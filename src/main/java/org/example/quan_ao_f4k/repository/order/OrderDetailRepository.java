@@ -1,6 +1,7 @@
 package org.example.quan_ao_f4k.repository.order;
 
 import org.example.quan_ao_f4k.dto.response.orders.PdfShopOfflineDTO;
+import org.example.quan_ao_f4k.model.order.Order;
 import org.example.quan_ao_f4k.model.order.OrderDetail;
 import org.example.quan_ao_f4k.model.order.OrderProductDetailKey;
 import org.example.quan_ao_f4k.model.product.ProductDetail;
@@ -36,5 +37,8 @@ public interface OrderDetailRepository extends JpaRepository<OrderDetail, OrderP
 	List<OrderDetail> findAllByOrderIdAndUserId(@Param("userId") Long userId, @Param("orderId") Long orderId);
 
 	List<OrderDetail> findAllByOrder_Id(Long orderId);
+
+	@Query("SELECT o FROM OrderDetail o WHERE o.order.id = :orderId AND o.order.order_type = 'offline' AND o.order.status = 1")
+	List<OrderDetail> findCartOffline(@Param("orderId") Long orderId);
 
 }

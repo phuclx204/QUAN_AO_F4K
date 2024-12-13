@@ -1,24 +1,17 @@
 package org.example.quan_ao_f4k.service.order;
 
 import lombok.AllArgsConstructor;
-import org.example.quan_ao_f4k.dto.request.order.OrderDetailRequest;
-import org.example.quan_ao_f4k.dto.request.order.OrderDetailResponse;
 import org.example.quan_ao_f4k.dto.request.order.OrderRequest;
 import org.example.quan_ao_f4k.dto.response.orders.OrderResponse;
 import org.example.quan_ao_f4k.dto.response.orders.OrderStatisticsResponse;
 import org.example.quan_ao_f4k.dto.response.product.ProductDetailDTO;
-import org.example.quan_ao_f4k.dto.response.product.ProductDetailResponse;
-import org.example.quan_ao_f4k.dto.response.shop.ShopProductResponse;
-import org.example.quan_ao_f4k.exception.BadRequestException;
 import org.example.quan_ao_f4k.list.ListResponse;
 import org.example.quan_ao_f4k.mapper.order.OrderDetailMapper;
 import org.example.quan_ao_f4k.mapper.order.OrderHistoryMapper;
 import org.example.quan_ao_f4k.mapper.order.OrderMapper;
 import org.example.quan_ao_f4k.mapper.product.ProductDetailMapper;
-import org.example.quan_ao_f4k.model.general.Image;
 import org.example.quan_ao_f4k.model.order.Order;
 import org.example.quan_ao_f4k.model.order.OrderDetail;
-import org.example.quan_ao_f4k.model.order.OrderHistory;
 import org.example.quan_ao_f4k.model.product.ProductDetail;
 import org.example.quan_ao_f4k.repository.address.DistrictRepository;
 import org.example.quan_ao_f4k.repository.address.ProvinceRepository;
@@ -27,9 +20,7 @@ import org.example.quan_ao_f4k.repository.order.OrderDetailRepository;
 import org.example.quan_ao_f4k.repository.order.OrderHistoryRepository;
 import org.example.quan_ao_f4k.repository.order.OrderRepository;
 import org.example.quan_ao_f4k.repository.product.ProductDetailRepository;
-import org.example.quan_ao_f4k.service.product.ProductDetailService;
 import org.example.quan_ao_f4k.service.product.ProductServiceImpl;
-import org.example.quan_ao_f4k.util.F4KConstants;
 import org.example.quan_ao_f4k.util.HoaDonUtils;
 import org.example.quan_ao_f4k.util.SearchFields;
 import org.springframework.data.domain.Page;
@@ -42,8 +33,6 @@ import java.math.BigDecimal;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -106,11 +95,11 @@ public class OrderServiceImpl implements OrderService {
     }
 
     public List<OrderDetail> findCart(Long idOrder) {
-        return orderDetailRepository.findOrderDetailsByOrderId(idOrder);
+        return orderDetailRepository.findCartOffline(idOrder);
     }
 
     public void addModelOrder(Model model) {
-        model.addAttribute("listOrder", this.findOrdersByOrderType("OFFLINE", 1));
+        model.addAttribute("listOrder", this.findOrdersByOrderType(HoaDonUtils.LoaiHoaDon.OFFLINE, 1));
         model.addAttribute("wards", wardRepository.findAll());
         model.addAttribute("districts", districtRepository.findAll());
         model.addAttribute("provinces", provinceRepository.findAll());
@@ -118,28 +107,16 @@ public class OrderServiceImpl implements OrderService {
 
     // Tính tổng số tiền từ danh sách chi tiết đơn hàng
     public BigDecimal calculateTotalAmount(List<OrderDetail> orderDetails) {
-        BigDecimal totalAmount;
-
-        if (orderDetailServiceimpl.checkOrderHasPromotion(orderDetails)) {
-            totalAmount = orderDetails.stream()
-                    .map(detail -> detail.getDiscountPrice() != null
-                            ? detail.getDiscountPrice().multiply(BigDecimal.valueOf(detail.getQuantity()))
-                            : BigDecimal.ZERO)
-                    .reduce(BigDecimal.ZERO, BigDecimal::add);
-        } else {
-            totalAmount = orderDetails.stream()
-                    .map(this::calculateAmount)
-                    .reduce(BigDecimal.ZERO, BigDecimal::add);
-        }
-
-        return totalAmount;
+        return orderDetails.stream()
+                .map(this::calculateAmount)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
     // Tính số tiền từ chi tiết đơn hàng
     private BigDecimal calculateAmount(OrderDetail detail) {
-        BigDecimal price = detail.getPrice();
+        BigDecimal effectivePrice = detail.getDiscountPrice() != null ? detail.getDiscountPrice() : detail.getPrice();
         BigDecimal quantity = BigDecimal.valueOf(detail.getQuantity());
-        return (price != null ? price.multiply(quantity) : BigDecimal.ZERO);
+        return (effectivePrice != null ? effectivePrice.multiply(quantity) : BigDecimal.ZERO);
     }
 
     @Override
@@ -312,4 +289,9 @@ public class OrderServiceImpl implements OrderService {
         return !createdAt.isBefore(startOfWeek) && !createdAt.isAfter(endOfWeek);
     }
 
+    @Override
+    public OrderResponse findOrderOfflineById(Long aLong) {
+        Order order = orderRepository.findOrderOffline(aLong);
+        return orderMapper.entityToResponse(order);
+    }
 }

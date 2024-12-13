@@ -67,11 +67,11 @@
                             </td>
                             <td th:text="${detail.productDetail.product.name} + ' - Size : ' + ${detail.productDetail.size.name} + ' - Màu : ' + ${detail.productDetail.color.name}"></td>
                             <td>
-                            <span class="priceFormat"
-                                  th:attr="data-price=${detail.discountPrice != null ? detail.discountPrice : detail.price}"
-                                  style="width: 100px;">
-                            </span>
-
+                                <span class="priceFormat"
+                                      th:attr="data-price=${detail.discountPrice != null ? detail.discountPrice : detail.price}"
+                                      style="width: 100px;">
+                                </span>
+                            </td>
                             <td>
                                 <input type="text" class="form-control quantity-input" th:value="${detail.quantity}"
                                        style="width:50px;"/>
@@ -79,9 +79,11 @@
                                 <input type="hidden" id="productDetailId" th:value="${detail.productDetail.id}"/>
                             </td>
                             <td>
-                                <span class="priceRevenu" style="width: 100px;"
-                                      th:attr="data-price-revenu=${(detail.discountPrice != null ? detail.discountPrice : detail.price) * detail.quantity}">
-                                </span>
+                                  <span class="priceRevenu" style="width: 100px;"
+                                        th:attr="data-price-revenu=${detail.price},
+                                                 data-discount-price=${detail.discountPrice},
+                                                 data-quantity=${detail.quantity}">
+                                  </span>
                             </td>
                             <td>
                                 <span data-bs-toggle="tooltip" title="Xóa khỏi giỏ hàng">
