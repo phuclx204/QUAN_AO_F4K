@@ -113,7 +113,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     // Tính số tiền từ chi tiết đơn hàng
-    private BigDecimal calculateAmount(OrderDetail detail) {
+    public BigDecimal calculateAmount(OrderDetail detail) {
         BigDecimal effectivePrice = detail.getDiscountPrice() != null ? detail.getDiscountPrice() : detail.getPrice();
         BigDecimal quantity = BigDecimal.valueOf(detail.getQuantity());
         return (effectivePrice != null ? effectivePrice.multiply(quantity) : BigDecimal.ZERO);
