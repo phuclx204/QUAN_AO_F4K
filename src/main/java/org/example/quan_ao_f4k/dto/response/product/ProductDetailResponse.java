@@ -28,4 +28,5 @@ public class ProductDetailResponse {
 
     private BigDecimal discountValue;
     private Promotion promotion;
+
 }

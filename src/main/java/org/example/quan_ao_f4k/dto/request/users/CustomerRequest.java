@@ -15,7 +15,6 @@ public class CustomerRequest {
 	private Long id;
 	private String email;
 
-	@Nullable
 	private Long addressId=15L;
 
 	private String username;
@@ -32,10 +31,7 @@ public class CustomerRequest {
 
 	private LocalDate birthDate;
 
-	@Nullable
-	private String avatarUrl;
+	private Integer status = 1;
 
-	private Integer status=1;
-
-	private Long roleId=2L;
+	private Long roleId;
 }

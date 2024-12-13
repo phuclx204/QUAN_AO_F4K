@@ -54,7 +54,7 @@
                                 <li class="nav-item">
                                     <a href="#status_wait_delivery" data-bs-toggle="tab" aria-expanded="false"
                                        class="nav-link rounded-0" style="width: 170px">
-                                        Chờ lấy hàng ([[${status_wait_delivery.size}]])
+                                        đang sử lý ([[${status_wait_delivery.size}]])
                                     </a>
                                 </li>
                                 <li class="nav-item">
@@ -131,7 +131,7 @@
                                                             <button class="btn btn-danger btn-orange-2 btn-cancel" style="color: white" th:data-value="${item.orderDto.id}">Huỷ hoá đơn</button>
                                                         </div>
                                                     </div>
-                                                    <div class="d-flex align-items-center">Thành tiền: <span class="text-danger ms-2 order-price" style="font-size: 20px">[[${item.orderDto.totalPay}]]</span></div>
+                                                    <div class="d-flex align-items-center">Thành tiền: <span class="text-danger ms-2 order-price" style="font-size: 20px">[[${item.orderDto.invoiceTotal}]]</span></div>
                                                 </div>
                                             </div>
                                         </div>
@@ -192,7 +192,7 @@
                                                             <button class="btn btn-danger btn-orange-2 btn-cancel" style="color: white" th:data-value="${item.orderDto.id}">Huỷ hoá đơn</button>
                                                         </div>
                                                     </div>
-                                                    <div class="d-flex align-items-center">Thành tiền: <span class="text-danger ms-2 order-price" style="font-size: 20px">[[${item.orderDto.totalPay}]]</span></div>
+                                                    <div class="d-flex align-items-center">Thành tiền: <span class="text-danger ms-2 order-price" style="font-size: 20px">[[${item.orderDto.invoiceTotal}]]</span></div>
                                                 </div>
                                             </div>
                                         </div>
@@ -246,7 +246,61 @@
                                                 </div>
                                                 <div class="d-flex justify-content-between">
                                                     <a class="btn btn-danger btn-orange-2" style="color: white" th:href="@{/shop/purchase-history-detail/{code}(code=${item.orderDto.code})}">Chi tiết</a>
-                                                    <div class="d-flex align-items-center">Thành tiền: <span class="text-danger ms-2 order-price" style="font-size: 20px">[[${item.orderDto.totalPay}]]</span></div>
+                                                    <div class="d-flex align-items-center">Thành tiền: <span class="text-danger ms-2 order-price" style="font-size: 20px">[[${item.orderDto.invoiceTotal}]]</span></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="tab-pane" id="status_on_delivery"
+                                     style="max-height: 800px; overflow: auto">
+                                    <div class="table-responsive">
+
+                                        <div class="card border mb-4" th:each="item,index:${status_on_delivery}">
+                                            <div class="card-body">
+                                                <div class="d-flex justify-content-between">
+                                                    <span style="font-weight: bold">Mã đơn hàng: [[${item.orderDto.code}]]</span>
+                                                    <div class="text-danger" style="font-weight: bold">[[${item.orderDto.statusText}]]</div>
+                                                </div>
+                                                <div class="divider"></div>
+                                                <div th:each="orderDetail: ${item.detailDtoList}">
+                                                    <div class="d-flex justify-content-between">
+                                                        <div class="d-flex">
+                                                            <div class="me-2">
+                                                                <picture th:if="${orderDetail.productDetailDto.product.image != null}" class="overflow-hidden d-block bg-light">
+                                                                    <img class="img-fluid" style="width: 81px!important; height: 81px!important; object-fit: contain"
+                                                                         th:src="${orderDetail.productDetailDto.product.image.fileUrl}" alt="123">
+                                                                </picture>
+                                                                <picture th:if="${orderDetail.productDetailDto.product.image == null}"
+                                                                         class="position-relative overflow-hidden d-block bg-light">
+                                                                    <img class="img-fluid" style="width: 81px!important; height: 81px!important; object-fit: cover"
+                                                                         src="https://firebasestorage.googleapis.com/v0/b/clothes-f4k.appspot.com/o/common%2Fdata_not_found.png?alt=media&token=36148ded-ba2c-4207-8525-2da16e7a8557">
+                                                                </picture>
+                                                            </div>
+                                                            <div class="d-flex flex-column me-2">
+                                                                <span>[[${orderDetail.productDetailDto.product.name}]]</span>
+                                                                <span class="text-muted">Phân loại hàng: Kích cỡ [[${orderDetail.productDetailDto.size.name}]], [[${orderDetail.productDetailDto.color.name}]]</span>
+                                                                <span>Số lượng: [[${orderDetail.quantity}]] </span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="d-flex flex-column justify-content-center me-3">
+                                                            <div th:if="${orderDetail.purchasePrice == null}">
+                                                                <span class="order-price text-danger">[[${orderDetail.productDetailDto.price}]]</span>
+                                                            </div>
+                                                            <div th:if="${orderDetail.purchasePrice != null}">
+                                                                <div class="d-flex flex-column" style="text-align: end">
+                                                                    <s class="lh-1 me-2"><span class="fw-bolder m-0 product-price-list text-muted order-price">[[${orderDetail.productDetailDto.price}]]</span></s>
+                                                                    <span class="order-price text-danger">[[${orderDetail.purchasePrice}]]</span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="divider"></div>
+                                                </div>
+                                                <div class="d-flex justify-content-between">
+                                                    <a class="btn btn-danger btn-orange-2" style="color: white" th:href="@{/shop/purchase-history-detail/{code}(code=${item.orderDto.code})}">Chi tiết</a>
+                                                    <div class="d-flex align-items-center">Thành tiền: <span class="text-danger ms-2 order-price" style="font-size: 20px">[[${item.orderDto.invoiceTotal}]]</span></div>
                                                 </div>
                                             </div>
                                         </div>
@@ -300,7 +354,7 @@
                                                 </div>
                                                 <div class="d-flex justify-content-between">
                                                     <a class="btn btn-danger btn-orange-2" style="color: white" th:href="@{/shop/purchase-history-detail/{code}(code=${item.orderDto.code})}">Chi tiết</a>
-                                                    <div class="d-flex align-items-center">Thành tiền: <span class="text-danger ms-2 order-price" style="font-size: 20px">[[${item.orderDto.totalPay}]]</span></div>
+                                                    <div class="d-flex align-items-center">Thành tiền: <span class="text-danger ms-2 order-price" style="font-size: 20px">[[${item.orderDto.invoiceTotal}]]</span></div>
                                                 </div>
                                             </div>
                                         </div>
@@ -354,7 +408,7 @@
                                                 </div>
                                                 <div class="d-flex justify-content-between">
                                                     <a class="btn btn-danger btn-orange-2" style="color: white" th:href="@{/shop/purchase-history-detail/{code}(code=${item.orderDto.code})}">Chi tiết</a>
-                                                    <div class="d-flex align-items-center">Thành tiền: <span class="text-danger ms-2 order-price" style="font-size: 20px">[[${item.orderDto.totalPay}]]</span></div>
+                                                    <div class="d-flex align-items-center">Thành tiền: <span class="text-danger ms-2 order-price" style="font-size: 20px">[[${item.orderDto.invoiceTotal}]]</span></div>
                                                 </div>
                                             </div>
                                         </div>

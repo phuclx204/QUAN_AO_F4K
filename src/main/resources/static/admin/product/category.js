@@ -142,7 +142,7 @@ $(document).ready(async function () {
                     return meta.row + meta.settings._iDisplayStart + 1;
                 }
             },
-            {data: 'name', title: 'Tên sản phẩm'},
+            {data: 'name', title: 'Tên danh mục'},
             {
                 data: 'status',
                 title: 'Trạng thái',

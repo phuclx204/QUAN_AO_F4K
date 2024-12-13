@@ -57,34 +57,36 @@
                         </thead>
                         <tbody>
                         <tr th:each="detail, iterStat : ${orderDetails}">
-                            <td th:if="${detail.image != null}">
-                                <img th:src="${detail.image.fileUrl}" alt="images.jpg"
-                                     style="width: 50px; height: 50px;"/>
-                            </td>
-                            <td th:if="${detail.image == null}">
-                                <img th:src="@{/admin/img/people.png}"
-                                     style="width: 50px; height: 50px;"/>
+                            <td style="position: relative;">
+                                <img th:src="${detail.image != null ? detail.image.fileUrl : '/admin/img/people.png'}"
+                                     alt="images.jpg"
+                                     style="width: 50px; height: 50px;"
+                                     class="product-image"
+                                     th:attr="data-discount-price=${detail.discountPrice != null ? detail.discountPrice : ''},
+                                              data-price=${detail.price}"/>
                             </td>
                             <td th:text="${detail.productDetail.product.name} + ' - Size : ' + ${detail.productDetail.size.name} + ' - Màu : ' + ${detail.productDetail.color.name}"></td>
                             <td>
-                                <input type="hidden" class="priceInput"
-                                       th:value="${detail.price}"/>
                                 <span class="priceFormat"
-                                      th:attr="data-price=${detail.price}"
+                                      th:attr="data-price=${detail.discountPrice != null ? detail.discountPrice : detail.price},
+                                               data-value=${detail.price},data-value-discount=${detail.discountPrice}"
                                       style="width: 100px;">
                                 </span>
                             </td>
                             <td>
+                                <span data-bs-toggle="tooltip" title="Enter để xác nhận">
                                 <input type="text" class="form-control quantity-input" th:value="${detail.quantity}"
                                        style="width:50px;"/>
+                                </span>
                                 <input type="hidden" id="orderId" th:value="${detail.order.id}"/>
                                 <input type="hidden" id="productDetailId" th:value="${detail.productDetail.id}"/>
                             </td>
                             <td>
-                                 <span class="priceRevenu"
-                                       th:attr="data-price-revenu=${detail.price * detail.quantity}"
-                                       style="width: 100px;">
-                                </span>
+                                  <span class="priceRevenu" style="width: 100px;"
+                                        th:attr="data-price-revenu=${detail.price},
+                                                 data-discount-price=${detail.discountPrice},
+                                                 data-quantity=${detail.quantity}">
+                                  </span>
                             </td>
                             <td>
                                 <span data-bs-toggle="tooltip" title="Xóa khỏi giỏ hàng">
@@ -240,12 +242,13 @@
                         </div>
 
                         <div class="form-group">
-                            <textarea type="text" class="form-control" placeholder="Nhập ghi chú ở đây" id="orderNote"></textarea>
+                            <textarea type="text" class="form-control" placeholder="Nhập ghi chú ở đây"
+                                      id="orderNote"></textarea>
                         </div>
-                        <div class="form-check">
-                            <input type="checkbox" id="invoiceCheckbox" class="form-check-input"/>
-                            <label for="invoiceCheckbox" class="form-check-label">In hóa đơn</label>
-                        </div>
+                        <!--                        <div class="form-check">-->
+                        <!--                            <input type="checkbox" id="invoiceCheckbox" class="form-check-input"/>-->
+                        <!--                            <label for="invoiceCheckbox" class="form-check-label">In hóa đơn</label>-->
+                        <!--                        </div>-->
                         <button type="button" class="btn btn-success w-100"
                                 id="submitButton"
                                 th:disabled="${order == null || order.code == null || orderDetails.isEmpty()}"

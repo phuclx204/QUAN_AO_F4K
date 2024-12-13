@@ -1,4 +1,57 @@
 
+/*nhãn giảm giá modal sản phẩm*/
+.custom-badge {
+    position: absolute;
+    top: 0px; /* Đặt ở góc trên */
+    right: 40px; /* Canh bên trái */
+    background: linear-gradient(135deg, #ff4d4f, #ff7875);
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
+    padding: 5px 12px;
+    border-radius: 15px;
+    z-index: 10;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    clip-path: polygon(
+            10% 0, /* Đỉnh bên trái */
+            90% 0, /* Đỉnh bên phải */
+            100% 50%, /* Điểm nhọn bên phải */
+            90% 100%, /* Dưới phải */
+            10% 100%, /* Dưới trái */
+            0 50% /* Điểm nhọn bên trái */
+    );
+}
+
+/* Tạo hiệu ứng bo góc mềm mại */
+.custom-badge span {
+    display: inline-block;
+    padding: 5px;
+    border-radius: 15px;
+}
+.custom-badge-cart {
+    position: absolute;
+    top: 10px; /* Vị trí trên ảnh */
+    left: -5px; /* Căn trái ảnh */
+    background: linear-gradient(135deg, #ff4d4f, #ff7875);
+    color: white;
+    font-size: 10px;
+    font-weight: bold;
+    padding: 5px 8px;
+    border-radius: 5px;
+    z-index: 10;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    clip-path: polygon(
+            15% 0%, /* Đỉnh trên bên trái */
+            85% 0%, /* Đỉnh trên bên phải */
+            100% 50%, /* Điểm nhọn bên phải */
+            85% 100%, /* Dưới bên phải */
+            15% 100%, /* Dưới bên trái */
+            0% 50% /* Điểm nhọn bên trái */
+    );
+    text-align: center;
+}
+
+
 /*Floating-label*/
 .form-group.floating>label {
     bottom: 34px;

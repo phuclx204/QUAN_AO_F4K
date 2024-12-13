@@ -87,10 +87,13 @@ function generateUniqueCode() {
 // cập nhật trạng thái cho đơn hủy = 0
 function updateOrderStatus(orderId, status) {
     const orderCode = document.getElementById('orderCode').innerText;
+    console.log(orderId)
     const updateData = {
         status: status,
-        code: orderCode
+        code: orderCode,
+        order_type: 'offline'
     }
+    console.log(updateData)
 
     $.ajax({
         url: `/admin/shopping-offline/` + orderId + `/order-details`,
@@ -103,13 +106,6 @@ function updateOrderStatus(orderId, status) {
                 contentType: 'application/json',
                 data: JSON.stringify(updateData),
                 success: function (response) {
-                    Swal.fire({
-                        title: 'Hủy đơn thành công!',
-                        text: "Đơn hàng đã được hủy.",
-                        icon: 'success',
-                        confirmButtonText: 'OK',
-                        timerProgressBar: true,
-                    });
                     // Tăng số lượng tồn kho cho từng sản phẩm
                     res.forEach(prD => {
                         updateProductQuantity(prD.productDetail.id, prD.quantity);
@@ -133,11 +129,6 @@ function updateOrderStatus(orderId, status) {
 
 }
 
-//view hóa đơn được chọn
-function viewInvoice(orderIds) {
-    window.location.href = "/admin/shopping-offline/" + orderIds
-}
-
 // tự động cho các trường nhập tiền chỉ được nhập số
 $(document).ready(function () {
     $(".quantity-input").on("input", function () {
@@ -153,25 +144,6 @@ $(document).ready(function () {
 
 });
 
-//hàm kiểm tra xem có giảm giá hay không
-function checkDiscountAndRenderPrice(productDetailId, originalPrice, callback) {
-    $.ajax({
-        url: `/admin/shopping-offline/is-on-sale`,
-        type: 'GET',
-        data: {
-            productDetailId: productDetailId,
-            originalPrice: originalPrice
-        },
-        success: function (discountedPrice) {
-            callback(discountedPrice);
-        },
-        error: function (error) {
-            console.error('Lỗi khi tính giảm giá:', error);
-            callback(originalPrice);
-        }
-    });
-}
-
 // hàm lấy dữ liệu product detail
 function fetchProductDetails(page = 1, size = 5) {
     const search = $("#searchInput").val();
@@ -184,7 +156,7 @@ function fetchProductDetails(page = 1, size = 5) {
     const orderBy = $("#sortSelect").val() || 'asc';
 
     $.ajax({
-        url: `/admin/shopping-offline/product-detail-list`,
+        url: `/admin/shopping-offline/search-product-detail`,
         method: 'GET',
         data: {
             page: page,
@@ -201,6 +173,7 @@ function fetchProductDetails(page = 1, size = 5) {
         dataType: 'json'
     })
         .done(function (data) {
+            // console.log(data)
             renderProductList(data.content);
             setupPagination(data.totalPages, page);
         })
@@ -211,99 +184,83 @@ function fetchProductDetails(page = 1, size = 5) {
 
 //hàm format price
 function formatPrice(amount) {
-    return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") + ' ₫';
+    // Làm tròn xuống số nguyên gần nhất
+    const roundedAmount = Math.floor(amount);
+    return roundedAmount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") + ' ₫';
 }
 
-// đổ dữ liệu sản phẩm chi tiết ra bảng
 function renderProductList(products) {
-
     const productList = document.getElementById('productList');
     productList.innerHTML = '';
-
     if (products.length === 0) {
         productList.innerHTML = `
             <tr>
-                <td colspan="6" style="text-align: center; color: red;">Không có dữ liệu!</td>
+                <td colspan="7" style="text-align: center; color: red;">Không có dữ liệu!</td>
             </tr>
         `;
         return;
     }
 
-    products.forEach((prd, index) => {
+    products.forEach((prd) => {
         const productRow = document.createElement('tr');
 
-        const listImg = prd.images;
-        let image = ``;
+        const image = prd.product.image
+            ? `<img src="${prd.product.image.fileUrl}" alt="${prd.product.thumbnail}" style="width: 50px; height: 50px; object-fit: cover;">`
+            : `<img src="/admin/img/people.png" alt="No Image" style="width: 50px; height: 50px; object-fit: cover;">`;
 
-        if (!listImg.length) {
-            image = `<img src="/admin/img/people.png" alt="${prd.product.thumbnail}" style="width: 50px; height: 50px;object-fit: cover;">`
-        } else {
-            image = `<img src="${listImg[0].fileUrl}" alt="${prd.product.thumbnail}" style="width: 50px; height: 50px;object-fit: cover;">`
+
+        // Tính phần trăm giảm giá (nếu có)
+        let discountLabel = '';
+        if (prd.discountValue && prd.discountValue < prd.price) {
+            const discountPercentage = Math.round(((prd.price - prd.discountValue) / prd.price) * 100);
+             discountLabel = prd.discountValue && prd.discountValue < prd.price
+                ? `<span class="custom-badge">-${discountPercentage}%</span>`
+                : '';
+
         }
 
+
+        const discountInfo = prd.discountValue && prd.discountValue < prd.price
+            ? `<span class="original-price text-danger" style="text-decoration: line-through;">${formatPrice(prd.price)}</span>
+               <br>
+               <span class="discounted-price text-behance">${formatPrice(prd.discountValue)}</span>`
+            : `<span>${formatPrice(prd.price)}</span>`;
+
+        // Kết hợp nhãn giảm giá với ảnh sản phẩm
+        const imageWithLabel = `
+            <div style="position: relative; display: inline-block;">
+                ${image}
+                ${discountLabel}
+            </div>
+        `;
+
         productRow.innerHTML = `
-            <td>${image}</td>
+            <td>${imageWithLabel}</td>
             <td>${prd.product.name}</td>
-            <td class="original-price">${formatPrice(prd.price)}</td>
+            <td>${discountInfo}</td>
             <td>
                 ${prd.color ? `
-                  <span class="color-circle" style="background-color: ${prd.color.hex}; display: inline-block; width: 20px; height: 20px; border-radius: 50%;"></span>
-                  <span class="color-name" style="margin-left: 8px;">${prd.color.name}</span>
+                    <span class="color-circle" style="background-color: ${prd.color.hex}; display: inline-block; width: 20px; height: 20px; border-radius: 50%;"></span>
+                    <span class="color-name" style="margin-left: 8px;">${prd.color.name}</span>
                 ` : ''}
             </td>
             <td>${prd.size.name}</td>
             <td>${prd.quantity}</td>
             <td>
-                 <button 
-                  ${prd.quantity === 0 ? 'disabled="true"' : ''} 
-                  data-bs-toggle="tooltip" 
-                  data-bs-placement="top"
-                  title="${prd.quantity === 0 ? 'Đang cập nhật' : 'Chọn vào giỏ'}"
-                  onclick="addProductToInvoice(${prd.id})" 
-                  style="cursor: ${prd.quantity === 0 ? 'not-allowed' : 'pointer'};">
-                  <i class='mdi mdi-cart ${prd.quantity === 0 ? 'text-danger' : 'text-success'}' style="font-size: 19px;"></i>
+                <button 
+                    ${prd.quantity === 0 ? 'disabled="true"' : ''} 
+                    data-bs-toggle="tooltip" 
+                    data-bs-placement="top"
+                    title="${prd.quantity === 0 ? 'Đang cập nhật' : 'Chọn vào giỏ'}"
+                    onclick="addProductToInvoice(${prd.id})" 
+                    style="cursor: ${prd.quantity === 0 ? 'not-allowed' : 'pointer'};">
+                    <i class='mdi mdi-cart ${prd.quantity === 0 ? 'text-danger' : 'text-success'}' style="font-size: 19px;"></i>
                 </button>
             </td>
         `;
-
-        // Kiểm tra giảm giá và cập nhật giao diện
-        checkDiscountAndRenderPrice(prd.id, prd.price, function (discountedPrice) {
-            discountedPrice = Math.floor(discountedPrice);
-            const originalPriceCell = productRow.querySelector('.original-price');
-            if (discountedPrice !== prd.price) {
-                const discountPercentage = ((prd.price - discountedPrice) / prd.price) * 100;
-
-                originalPriceCell.innerHTML = `
-                    <span style="text-decoration: line-through; color: red;">${formatPrice(prd.price)}</span>
-                    <span style="color: black;">${formatPrice(discountedPrice)}</span>
-                    <span class="hidden">${discountedPrice}</span>
-                `;
-
-                // Hiển thị phần trăm giảm
-                const discountLabel = document.createElement('span');
-                discountLabel.classList.add('discount-label');
-                discountLabel.textContent = `- ${discountPercentage.toFixed(0)}%`;
-                discountLabel.style.color = '#ff5733';
-                discountLabel.style.fontWeight = 'bold';
-                discountLabel.style.fontSize = '14px';
-                discountLabel.style.backgroundColor = 'rgba(255, 87, 51, 0.1)';
-                discountLabel.style.padding = '2px 8px';
-                discountLabel.style.borderRadius = '4px';
-                discountLabel.style.marginLeft = '10px';
-                discountLabel.style.display = 'inline-block';
-
-                // Thêm nhãn giảm giá vào giá sau giảm
-                originalPriceCell.appendChild(discountLabel);
-            } else {
-                originalPriceCell.innerHTML = `
-                    <span style="color: black;">${formatPrice(prd.price)}</span>
-                    <span style="color: black;" class="hidden">${prd.price}</span>
-                `;
-            }
-        });
-
         productList.appendChild(productRow);
     });
+
     const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
     tooltipTriggerList.forEach(function (tooltipTriggerEl) {
         new bootstrap.Tooltip(tooltipTriggerEl);
@@ -451,7 +408,6 @@ function addProductToInvoice(productDetailId) {
         // Sản phẩm chưa có trong giỏ - thêm mới
         const productRow = $(`button[onclick="addProductToInvoice(${productDetailId})"]`).closest('tr');
         const price = productRow.find('.hidden').text().trim(); // Lấy giá từ modal sản phẩm
-
         $.ajax({
             url: '/admin/shopping-offline/add',
             type: 'POST',
@@ -482,6 +438,7 @@ function addProductToInvoice(productDetailId) {
 
 // hủy hóa đơn đang chọn
 function cancelOrder(orderId) {
+    console.log(orderId)
     Swal.fire({
         title: 'Xác nhận hủy đơn',
         text: "Bạn có chắc chắn muốn hủy đơn này không?",
@@ -493,7 +450,17 @@ function cancelOrder(orderId) {
         cancelButtonText: 'Hủy bỏ'
     }).then((result) => {
         if (result.isConfirmed) {
-            updateOrderStatus(orderId, 0);
+            Swal.fire({
+                text: "Hoá đơn đã được hủy.",
+                icon: 'success',
+                confirmButtonText: 'OK',
+                timer: 3000,
+                timerProgressBar: true,
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    updateOrderStatus(orderId, 0);
+                }
+            });
         }
     });
 }
@@ -510,18 +477,64 @@ $(document).on('click', '.delete-btn', function () {
 // tooltip nút xóa ở giỏ hàng,productDetaiil modal
 document.addEventListener('DOMContentLoaded', function () {
     const priceElements = document.querySelectorAll(".priceFormat");
-    const priceRevenu = document.querySelectorAll(".priceRevenu");
-    priceRevenu.forEach(element => {
-        const price = element.getAttribute("data-price-revenu");
-        if (price) {
-            const formattedPrice = formatPrice(Number(price));
-            element.textContent = formattedPrice;
+    const priceRevenuElements = document.querySelectorAll(".priceRevenu");
+
+    priceRevenuElements.forEach(element => {
+        const price = parseFloat(element.getAttribute("data-price-revenu")) || null;
+        const discountPrice = parseFloat(element.getAttribute("data-discount-price")) || null;
+        const quantity = parseInt(element.getAttribute("data-quantity")) || 0;
+        // console.log(price)
+        // console.log(discountPrice)
+        // console.log(quantity)
+        // console.log('---------')
+
+        const finalPrice = (discountPrice != null ? discountPrice : price) * quantity;
+        // console.log(finalPrice)
+        element.textContent = formatPrice(finalPrice);
+    });
+
+
+    // Tạo nhãn giảm giá
+    const productImages = document.querySelectorAll('.product-image');
+
+    productImages.forEach(image => {
+        const price = parseFloat(image.getAttribute("data-price"));
+        const discountPrice = parseFloat(image.getAttribute("data-discount-price"));
+
+        if (price && discountPrice && discountPrice < price) {
+            const discountPercentage = Math.round((1 - discountPrice / price) * 100);
+
+            // Tạo nhãn
+            const badge = document.createElement('div');
+            badge.className = 'custom-badge-cart';
+            badge.textContent = `-${discountPercentage}%`;
+
+            // Thêm nhãn vào góc trên bên trái ảnh
+            image.parentElement.style.position = 'relative';
+            image.parentElement.appendChild(badge);
         }
     });
+
     priceElements.forEach(element => {
         const price = element.getAttribute("data-price");
-        if (price) {
-            const formattedPrice = formatPrice(Number(price));
+        const valuePrice = element.getAttribute("data-value");
+        const valueDiscount = element.getAttribute("data-value-discount");
+        if (valueDiscount) {
+            const originalPrice = document.createElement('span');
+            originalPrice.className = "original-price text-danger";
+            originalPrice.style.textDecoration = "line-through";
+            originalPrice.textContent = formatPrice(Number(valuePrice));
+
+            const discountedPrice = document.createElement('span');
+            discountedPrice.textContent = formatPrice(Number(price));
+
+            // Xóa nội dung cũ và thêm các thành phần mới
+            element.textContent = "";
+            element.appendChild(originalPrice);
+            element.appendChild(document.createTextNode(" ")); // Thêm khoảng trắng
+            element.appendChild(discountedPrice);
+        } else if (price) {
+            const formattedPrice = formatPrice(Number(Math.floor(price)));
             element.textContent = formattedPrice;
         }
     });
@@ -634,7 +647,16 @@ $(document).ready(function () {
         const orderId = row.find(`input[type="hidden"][id="orderId"]`).val();
         const productDetailId = row.find(`input[type="hidden"][id="productDetailId"]`).val();
         const existingProduct = $(`input#productDetailId[value="${productDetailId}"]`).closest('tr');
-        const productPrice = existingProduct.find('.priceInput').val();
+        const priceRevenuElements = existingProduct.find(".priceRevenu");
+        let price = null, discountPrice = null;
+
+        price = parseFloat(priceRevenuElements.data('price-revenu')) || null;
+        discountPrice = parseFloat(priceRevenuElements.data('discount-price')) || null;
+        //
+        // console.log("ProductDetailId:", productDetailId);
+        // console.log("Price:", price);
+        // console.log("Discount Price:", discountPrice);
+        // console.log("--------");
 
         if (event.key === 'Enter') {
             event.preventDefault();
@@ -676,7 +698,8 @@ $(document).ready(function () {
                         orderId: orderId,
                         productDetailId: productDetailId,
                         quantity: quantity,
-                        price: productPrice
+                        price: price,
+                        discountPrice: discountPrice
                     };
 
                     const originalQuantity = $(this).data('originalValue'); //số lượng trên giỏ
@@ -772,7 +795,7 @@ $(document).ready(function () {
 });
 // Format tổng tiền
 const totalAmountElement = document.getElementById("totalAmount");
-const totalAmount = parseInt(totalAmountElement.textContent.replace(/\D/g, ""), 10) || 0;
+const totalAmount = Math.floor(parseFloat(totalAmountElement.textContent)) || 0;
 totalAmountElement.textContent = formatPrice(totalAmount);
 // Handling customer input
 const inputField = document.getElementById("customerAmount");
@@ -784,10 +807,13 @@ function formatCustomerPrice(value) {
 }
 
 inputField.addEventListener("input", () => {
-    const numericValue = parseInt(inputField.value.replace(/[^0-9]/g, ""), 10) || '';
+    let numericValue = parseInt(inputField.value.replace(/[^0-9]/g, ""), 10) || '';
+
+    if (numericValue > 1000000000) {
+        numericValue = 1000000000;
+    }
     inputField.value = formatCustomerPrice(numericValue);
     const change = numericValue - totalAmount;
-
     if (numericValue >= totalAmount) {
         changeAmount.textContent = formatCustomerPrice(change) + ' ₫';
         changeAmount.classList.remove("text-danger");
@@ -902,40 +928,47 @@ function updateOrderStatus1(orderId, status, totalPay, paymentMethodId) {
         order_type: 'offline'
     };
 
-    const invoiceCheckbox = document.getElementById('invoiceCheckbox').checked;
-
     $.ajax({
         url: '/admin/shopping-offline/' + orderId,
         method: 'PUT',
         contentType: 'application/json',
         data: JSON.stringify(updateData),
         success: function () {
-            if (invoiceCheckbox) {
-                Swal.fire({
-                    title: 'Thanh toán thành công!',
-                    icon: 'success',
-                    showConfirmButton: true,
-                    confirmButtonText: 'OK',
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        addOrderToHistory(orderId, updateData.note);
-                        handleRemainingInvoices(orderId);
-                        window.location.href = `/admin/shopping-offline/generate-pdf/${orderId}`;
-                    }
-                });
-            } else {
-                Swal.fire({
-                    title: 'Thanh toán thành công!',
-                    icon: 'success',
-                    showConfirmButton: true,
-                    confirmButtonText: 'OK',
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        addOrderToHistory(orderId, updateData.note);
-                        handleRemainingInvoices(orderId);
-                    }
-                });
-            }
+            Swal.fire({
+                title: 'Thanh toán thành công!',
+                icon: 'success',
+                showConfirmButton: true,
+                timer: 3000,
+                confirmButtonText: 'OK',
+                allowOutsideClick: false,
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire({
+                        title: 'Xuất hóa đơn?!',
+                        icon: 'info',
+                        showCancelButton: true,
+                        confirmButtonText: 'Xuất',
+                        cancelButtonText: 'Hủy',
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            addOrderToHistory(orderId, updateData.note);
+
+                            Promise.all([
+                                window.open(`/generate-pdf/shopping-offline/${orderId}`, '_blank'),
+                                new Promise((resolve) => {
+                                    handleRemainingInvoices(orderId);
+                                    resolve(); // Resolve để Promise được hoàn thành
+                                })
+                            ]).catch(err => console.error(err));
+
+                        } else {
+                            addOrderToHistory(orderId, updateData.note);
+                            handleRemainingInvoices(orderId);
+                        }
+                    });
+                }
+            });
+
         },
         error: function (xhr) {
             let errorMessage = 'Không thể thanh toán đơn hàng.';
@@ -953,7 +986,7 @@ function handleRemainingInvoices(orderId) {
     let nextOrderId = null;
 
     allOrders.forEach(order => {
-        const idOrder = order.getAttribute('onclick').match(/\d+/)[0]; // Lấy ID từ onclick
+        const idOrder = order.getAttribute('onclick').match(/\d+/)[0];
         if (idOrder != orderId) {
             nextOrderId = idOrder;
             return false;
@@ -978,4 +1011,9 @@ function handleRemainingInvoices(orderId) {
             }
         });
     }
+}
+
+//view hóa đơn được chọn
+function viewInvoice(orderIds) {
+    window.location.href = "/admin/shopping-offline/" + orderIds
 }

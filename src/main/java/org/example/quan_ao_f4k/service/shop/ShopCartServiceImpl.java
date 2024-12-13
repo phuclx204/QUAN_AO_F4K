@@ -65,7 +65,7 @@ public class ShopCartServiceImpl implements ShopCartService{
 
     private void updateCartByStatusProduct(List<CartProduct> listCartProduct) {
         for (CartProduct cartProduct : listCartProduct) {
-            if (cartProduct.getProductDetail().getStatus() == F4KConstants.STATUS_OFF){
+            if (cartProduct.getProductDetail().getStatus() == F4KConstants.STATUS_OFF || cartProduct.getProductDetail().getProduct().getStatus() == F4KConstants.STATUS_OFF ){
                 cartProduct.setStatus(F4KConstants.HET_HANG);
             } else {
                 int quantity = productDetailRepository.findQuantityByProductDetailId(cartProduct.getProductDetail().getId());
@@ -126,6 +126,7 @@ public class ShopCartServiceImpl implements ShopCartService{
             if (productDetail.getQuantity() < quantity) {
                 throw new BadRequestException("Số lượng sản phẩm không đủ");
             }
+
             Cart cart = getCart(f4KUtils.getUser().getId());
             CartProduct cartProductTmp = cartProductRepository.findByCart_IdAndProductDetail_Id(cart.getId(), productDetail.getId()).orElse(null);
             CartProduct cartProduct = new CartProduct();
@@ -139,14 +140,17 @@ public class ShopCartServiceImpl implements ShopCartService{
             } else {
                 int productQuantity = cartProductTmp.getQuantity() + quantity;
                 if (productQuantity > productDetail.getQuantity()) {
-                    productQuantity = productDetail.getQuantity();
+                    throw new BadRequestException("Không đủ sản phẩm để thêm");
+//                    productQuantity = productDetail.getQuantity();
                 }
                 cartProduct = cartProductTmp;
                 cartProduct.setQuantity(productQuantity);
             }
             cartProductRepository.save(cartProduct);
             return cartProductRepository.countProductDetailByCartId(cart.getId()) + "";
-        } catch (RuntimeException e) {
+        } catch (BadRequestException e) {
+            throw new BadRequestException(e.getMessage());
+        }  catch (RuntimeException e) {
             throw new BadRequestException("Đã có lỗi xảy ra xin hãy thao tác lại");
         }
     }
