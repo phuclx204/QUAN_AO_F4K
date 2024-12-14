@@ -121,7 +121,7 @@ const {getValidate, clearValidation} = validateForm;
 
             const discountPercent = productDetail.promotion ? `<span class="badge card-badge bg-orange">-${productDetail.promotion.discountValue}%</span>` : '';
 
-            const path = srcImg?.fileUrl || imageBlank;
+            const path = product?.image?.fileUrl || imageBlank;
 
             const cartItemHTML = `
                 <div class="d-none d-md-flex justify-content-between align-items-start py-2">
