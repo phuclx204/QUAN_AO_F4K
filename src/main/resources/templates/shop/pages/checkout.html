@@ -260,7 +260,6 @@
 <script type="text/javascript" th:inline="javascript">
     const mess = [[${errMessage}]];
 
-    console.log(mess, ' -mess')
     if (mess != null) {
         $alterTop("error", mess)
     }
