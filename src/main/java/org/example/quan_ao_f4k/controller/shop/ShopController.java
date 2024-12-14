@@ -190,14 +190,14 @@ public class ShopController {
         try {
             shopCheckOutService.createOneOrder(phuongThucMuaHang, note, true);
             redirectAttributes.addFlashAttribute("createOrderSuccess", true);
-            model.addAttribute("errMessage", null);
+            redirectAttributes.addFlashAttribute("errMessage", true);
             return "redirect:/shop/purchase-history";
         } catch (BadRequestException e) {
-            model.addAttribute("errMessage", e.getMessage());
-            return "/shop/pages/checkout";
+            redirectAttributes.addFlashAttribute("errMessage", e.getMessage());
+            return "redirect:/shop/checkout";
         } catch (RuntimeException e) {
-            model.addAttribute("errMessage", "Trang hiện đang bảo trì vui lòng thử lại sau");
-            return "/shop/pages/checkout";
+            redirectAttributes.addFlashAttribute("errMessage", e.getMessage());
+            return "redirect:/shop/checkout";
         }
     }
 
