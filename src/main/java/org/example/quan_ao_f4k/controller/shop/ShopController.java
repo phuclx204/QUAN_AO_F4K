@@ -186,10 +186,19 @@ public class ShopController {
     public String createOrder(
             @RequestParam("buyType") HoaDonUtils.PhuongThucMuaHang phuongThucMuaHang
             , @RequestParam("note") String note
-            , RedirectAttributes redirectAttributes) {
-        shopCheckOutService.createOneOrder(phuongThucMuaHang, note, true);
-        redirectAttributes.addFlashAttribute("createOrderSuccess", true);
-        return "redirect:/shop/purchase-history";
+            , RedirectAttributes redirectAttributes, Model model) {
+        try {
+            shopCheckOutService.createOneOrder(phuongThucMuaHang, note, true);
+            redirectAttributes.addFlashAttribute("createOrderSuccess", true);
+            model.addAttribute("errMessage", null);
+            return "redirect:/shop/purchase-history";
+        } catch (BadRequestException e) {
+            model.addAttribute("errMessage", e.getMessage());
+            return "/shop/pages/checkout";
+        } catch (RuntimeException e) {
+            model.addAttribute("errMessage", "Trang hiện đang bảo trì vui lòng thử lại sau");
+            return "/shop/pages/checkout";
+        }
     }
 
     @GetMapping("/cancel-order")

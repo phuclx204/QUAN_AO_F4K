@@ -256,5 +256,12 @@
 <script th:replace="shop/fragments/script::div"></script>
 <script th:src="@{/shop/dist/js/select2.full.min.js}"></script>
 <script type="module" th:src="@{/shop/script/checkout.js}"></script>
+
+<script type="text/javascript" th:inline="javascript">
+    const mess = [[${errMessage}]];
+    if (mess != null || mess != "") {
+        $alterTop("error", mess)
+    }
+</script>
 </body>
 </html>
