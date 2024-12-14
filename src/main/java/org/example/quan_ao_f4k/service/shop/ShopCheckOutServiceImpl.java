@@ -54,7 +54,6 @@ public class ShopCheckOutServiceImpl implements ShopCheckOutService {
         ShopProductResponse.CartResponse cartResponse = shopCartService.getListCart(user.getUsername());
 
         List<ShippingInfo> shippingInfo = shippingInfoRepository.findAllByUserId(user.getId());
-
         model.addAttribute("cartId", cart.getId());
         model.addAttribute("carts", cartResponse);
         model.addAttribute("shippingInfoList", shippingInfo);

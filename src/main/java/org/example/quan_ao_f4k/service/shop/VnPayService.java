@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.quan_ao_f4k.config.VnPayConfig;
 import org.example.quan_ao_f4k.dto.response.shop.VnPayStatusResponse;
+import org.example.quan_ao_f4k.exception.BadRequestException;
 import org.example.quan_ao_f4k.model.authentication.User;
 import org.example.quan_ao_f4k.model.order.Order;
 import org.example.quan_ao_f4k.model.order.OrderDetail;
@@ -37,7 +38,7 @@ public class VnPayService {
     private final ProductDetailRepository productDetailRepository;
 
     @Transactional
-    public String createOrder(HttpServletRequest request, int amount, String orderInfor, String urlReturn) {
+    public String createOrder(HttpServletRequest request, int amount, String orderInfor, String urlReturn, RedirectAttributes redirectAttributes) {
         try {
             Order order = shopCheckOutService.createOneOrder(HoaDonUtils.PhuongThucMuaHang.CHUYEN_TIEN, "Đơn hàng đã thanh toán" ,false);
 
@@ -83,6 +84,8 @@ public class VnPayService {
             queryUrl += "&vnp_SecureHash=" + vnp_SecureHash;
             String paymentUrl = VnPayConfig.vnp_PayUrl + "?" + queryUrl;
             return paymentUrl;
+        } catch (BadRequestException e) {
+            throw new BadRequestException(e.getMessage());
         } catch (Exception e) {
             log.error(e.getMessage());
             return "/shop/checkout";

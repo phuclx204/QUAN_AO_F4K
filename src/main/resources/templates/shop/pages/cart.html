@@ -55,11 +55,14 @@
                 <!--                   role="button"><i class="ri-secure-payment-line align-bottom"></i> Proceed to checkout</a>-->
                 <!--                <a href="./checkout.html" class="btn btn-orange w-100 text-center mt-3"-->
                 <!--                   role="button"><i class="ri-paypal-line align-bottom"></i> Checkout with PayPal</a>-->
-                <a th:href="@{/shop/checkout}" class="btn btn-orange w-100 text-center mt-3"
+                <a th:href="@{/shop/checkout}" class="btn btn-orange w-100 text-center mt-3" th:if="${!disableBtn}"
                    th:classappend="${carts.items.size <= 0} ? 'disabled' : ''"
                    th:attr="style=${carts.items.size <= 0} ? 'pointer-events: none;' : ''" id="btn-payment">
                     <i class="ri-secure-payment-line align-bottom"></i> Thanh toán
                 </a>
+                <span class="btn btn-orange w-100 text-center mt-3 disabled" th:if="${disableBtn}">
+                    <i class="ri-secure-payment-line align-bottom"></i> Thanh toán
+                </span>
                 <!-- Checkout Button-->
             </div>
 

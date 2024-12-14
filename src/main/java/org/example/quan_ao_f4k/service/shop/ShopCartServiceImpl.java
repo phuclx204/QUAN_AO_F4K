@@ -41,6 +41,10 @@ public class ShopCartServiceImpl implements ShopCartService{
     public void addModelCart(Model model) {
         ShopProductResponse.CartResponse cartResponse = getListCart(f4KUtils.getUser().getUsername());
         model.addAttribute("carts", cartResponse);
+        model.addAttribute("disableBtn", false);
+        if (cartResponse.getItems().size() == 1 && cartResponse.getItems().get(0).getStatus() == F4KConstants.STATUS_OFF) {
+            model.addAttribute("disableBtn", true);
+        }
     }
 
     @Override

@@ -2,6 +2,7 @@ package org.example.quan_ao_f4k.controller.shop;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.example.quan_ao_f4k.dto.response.shop.VnPayStatusResponse;
+import org.example.quan_ao_f4k.exception.BadRequestException;
 import org.example.quan_ao_f4k.service.shop.ShopProductService;
 import org.example.quan_ao_f4k.service.shop.VnPayService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,10 +28,19 @@ public class VnPayController {
     @GetMapping("/submit-order")
     public String submidOrder(@RequestParam("amount") int orderTotal,
                               @RequestParam("orderInfo") String orderInfo,
-                              HttpServletRequest request) {
-        String baseUrl = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
-        String vnpayUrl = vnPayService.createOrder(request, orderTotal, orderInfo, baseUrl);
-        return "redirect:" + vnpayUrl;
+                              HttpServletRequest request,
+                              RedirectAttributes redirectAttributes) {
+       try {
+           String baseUrl = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
+           String vnpayUrl = vnPayService.createOrder(request, orderTotal, orderInfo, baseUrl, redirectAttributes);
+           return "redirect:" + vnpayUrl;
+       } catch (BadRequestException e) {
+            redirectAttributes.addFlashAttribute("errMessage", e.getMessage());
+            return "redirect:/shop/checkout";
+        } catch (RuntimeException e) {
+            redirectAttributes.addFlashAttribute("errMessage", e.getMessage());
+            return "redirect:/shop/checkout";
+        }
     }
 
     @GetMapping("/vnpay-payment-return")
