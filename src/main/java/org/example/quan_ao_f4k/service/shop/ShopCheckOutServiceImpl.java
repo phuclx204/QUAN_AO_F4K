@@ -9,8 +9,10 @@ import org.example.quan_ao_f4k.exception.BadRequestException;
 import org.example.quan_ao_f4k.mapper.shop.ShopProductMapper;
 import org.example.quan_ao_f4k.model.authentication.User;
 import org.example.quan_ao_f4k.model.order.*;
+import org.example.quan_ao_f4k.model.product.ProductDetail;
 import org.example.quan_ao_f4k.model.promotion.Promotion;
 import org.example.quan_ao_f4k.repository.order.*;
+import org.example.quan_ao_f4k.repository.product.ProductDetailRepository;
 import org.example.quan_ao_f4k.util.F4KConstants;
 import org.example.quan_ao_f4k.util.F4KUtils;
 import org.example.quan_ao_f4k.util.HoaDonUtils;
@@ -42,6 +44,7 @@ public class ShopCheckOutServiceImpl implements ShopCheckOutService {
 
     private final ShopProductMapper shopProductMapper;
     private final OrderHistoryRepository orderHistoryRepository;
+    private final ProductDetailRepository productDetailRepository;
 
     @Override
     public void addModelCheckout(Model model) {
@@ -62,6 +65,11 @@ public class ShopCheckOutServiceImpl implements ShopCheckOutService {
     public Order createOneOrder(HoaDonUtils.PhuongThucMuaHang phuongThucMuaHang, String note, boolean isClear) {
         User user = f4KUtils.getUser();
 
+        Cart cart = getUserCart(user);
+        List<CartProduct> cartProducts = getCartProducts(cart);
+
+        checkStock(cartProducts);
+
         Order newOrder = initOrder(user, phuongThucMuaHang, note);
         Order savedOrder = orderRepository.save(newOrder);
 
@@ -76,9 +84,6 @@ public class ShopCheckOutServiceImpl implements ShopCheckOutService {
         orderHistory.setCreateBy("Người dùng");
         orderHistory.setStatus(savedOrder.getStatus());
         orderHistoryRepository.save(orderHistory);
-
-        Cart cart = getUserCart(user);
-        List<CartProduct> cartProducts = getCartProducts(cart);
 
         List<OrderDetail> orderDetails = convertCartProductsToOrderDetails(cartProducts, savedOrder);
         orderDetailRepository.saveAll(orderDetails);
@@ -335,6 +340,17 @@ public class ShopCheckOutServiceImpl implements ShopCheckOutService {
         return cartResponse.getItems().stream()
                 .map(ShopProductResponse.CartProductDto::getTotal)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    private void checkStock(List<CartProduct> productList) {
+        for (CartProduct cartProduct : productList) {
+            ProductDetail productDetail = productDetailRepository.findById(cartProduct.getProductDetail().getId()).orElseThrow(
+                    () -> new BadRequestException("Trong giỏ hàng không tồn tại sản phẩm")
+            );
+            if (productDetail.getQuantity() <= 0) {
+                throw new BadRequestException(String.format("sản phẩm %s trong giỏ hàng hiện đang hết hàng, không thể thanh toán", productDetail.getProduct().getName()));
+            }
+        }
     }
 
 }

@@ -4,6 +4,9 @@ const {convert2Vnd, transformData} = getCommon();
 const {getValidate, clearValidation} = validateForm;
 
 (function () {
+
+    const imageBlank = "https://firebasestorage.googleapis.com/v0/b/clothes-f4k.appspot.com/o/common%2Fdata_not_found.png?alt=media&token=36148ded-ba2c-4207-8525-2da16e7a8557";
+
     const storedUserInfo = JSON.parse(localStorage.getItem("@f4k/account-basic-info"));
     if (!storedUserInfo) return alert("LOG: Người dùng chưa đăng nhập");
 
@@ -118,13 +121,15 @@ const {getValidate, clearValidation} = validateForm;
 
             const discountPercent = productDetail.promotion ? `<span class="badge card-badge bg-orange">-${productDetail.promotion.discountValue}%</span>` : '';
 
+            const path = srcImg?.fileUrl || imageBlank;
+
             const cartItemHTML = `
                 <div class="d-none d-md-flex justify-content-between align-items-start py-2">
                     <div class="d-flex flex-grow-1 justify-content-start align-items-start">
                         <div class="position-relative f-w-20 border p-2 me-4  position-relative">
                             ${discountPercent}
                             <span class="checkout-item-qty">${item.quantity}</span>
-                            <img src="${product.image.fileUrl}" alt="${product.image.nameFile}" class="rounded img-fluid">
+                            <img src="${path}" alt="image" class="rounded img-fluid">
                         </div>
                         <div>
                             <p class="mb-1 fs-6 fw-bolder">${product.name}</p>
