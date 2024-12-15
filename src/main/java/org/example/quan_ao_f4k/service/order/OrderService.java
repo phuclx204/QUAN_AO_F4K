@@ -5,6 +5,7 @@ import org.example.quan_ao_f4k.dto.response.orders.OrderResponse;
 import org.example.quan_ao_f4k.dto.response.orders.OrderStatisticsResponse;
 import org.example.quan_ao_f4k.dto.response.product.ProductDetailDTO;
 import org.example.quan_ao_f4k.list.ListResponse;
+import org.example.quan_ao_f4k.model.order.Order;
 import org.example.quan_ao_f4k.model.order.OrderDetail;
 import org.example.quan_ao_f4k.service.CrudService;
 import org.springframework.stereotype.Service;
@@ -25,10 +26,11 @@ public interface OrderService extends CrudService<Long, OrderRequest, OrderRespo
 	Integer getTotalQuantityOrders();
 	Integer getTotalProductQuantityInCompletedOrders();
 	Map<String, BigDecimal> getTotalPayByOrderType();
+	Integer findOnlineOrderWaitConfirm();
 
 	ListResponse<OrderResponse> searchList(int page, int size, String sort, LocalDateTime startDate, LocalDateTime endDate,
 											 String search, Integer status, String orderType);
-	List<ProductDetailDTO> findQuantityProductDetailsByFilter(String filterType, String filterValue, String orderType);
 
     OrderResponse findOrderOfflineById(Long aLong);
+	List<ProductDetailDTO> findQuantityProductDetailsByFilter(LocalDate startDate,LocalDate endDate,  String orderType);
 }

@@ -1,8 +1,10 @@
 package org.example.quan_ao_f4k.controller.dashboard;
 
 import lombok.RequiredArgsConstructor;
+import org.example.quan_ao_f4k.dto.response.orders.OrderResponse;
 import org.example.quan_ao_f4k.dto.response.orders.OrderStatisticsResponse;
 import org.example.quan_ao_f4k.dto.response.product.ProductDetailDTO;
+import org.example.quan_ao_f4k.model.order.Order;
 import org.example.quan_ao_f4k.service.order.OrderService;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
@@ -51,6 +53,10 @@ public class StatisticalController {
 		Integer totalRevenue = orderService.getTotalProductQuantityInCompletedOrders();
 		return ResponseEntity.ok(totalRevenue);
 	}
+	@GetMapping("/order-wait-confirm")
+	public ResponseEntity<Integer> getOrderWaitConfirm() {
+		return ResponseEntity.ok(orderService.findOnlineOrderWaitConfirm());
+	}
 	@GetMapping("/total-by-order-type")
 	public ResponseEntity<Map<String, BigDecimal>> getTotalByOrderType() {
 		Map<String, BigDecimal> totalByOrderType = orderService.getTotalPayByOrderType();
@@ -59,16 +65,16 @@ public class StatisticalController {
 
 	@GetMapping("/quantity-best-sale")
 	public ResponseEntity<List<ProductDetailDTO>> getBestSellingProducts(
-			@RequestParam(value = "filterType", required = false) String filterType,
-			@RequestParam(value = "filterValue", required = false) String filterValue,
+			@RequestParam(value = "startDate", required = false) LocalDate startDate,
+			@RequestParam(value = "endDate", required = false) LocalDate endDate,
 			@RequestParam(value = "orderType", required = false) String orderType) {
 
-		List<ProductDetailDTO> bestSellingProducts = orderService.findQuantityProductDetailsByFilter(filterType, filterValue, orderType);
+		List<ProductDetailDTO> bestSellingProducts = orderService.findQuantityProductDetailsByFilter( startDate, endDate, orderType);
 
 		if (bestSellingProducts.isEmpty()) {
 			return ResponseEntity.noContent().build();
 		}
-
 		return ResponseEntity.ok(bestSellingProducts);
 	}
+
 }

@@ -3,6 +3,7 @@ package org.example.quan_ao_f4k.repository.order;
 import org.example.quan_ao_f4k.dto.response.orders.OrderStatisticsResponse;
 import org.example.quan_ao_f4k.dto.response.product.ProductDetailDTO;
 import org.example.quan_ao_f4k.model.order.Order;
+import org.example.quan_ao_f4k.model.product.ProductDetail;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -61,7 +62,7 @@ public interface OrderRepository extends JpaRepository<Order, Long>,
 
     @Query("SELECT o.order_type, COALESCE(SUM(o.totalPay), 0) " +
             "FROM Order o " +
-            "WHERE o.order_type IN ('OFFLINE', 'ONLINE') AND o.status = 3 " +
+            "WHERE o.order_type IN ('offline','online') AND o.status = 3 " +
             "GROUP BY o.order_type")
     List<Object[]> getTotalPayByOrderType();
 
@@ -93,4 +94,28 @@ public interface OrderRepository extends JpaRepository<Order, Long>,
 
     @Query("SELECT o FROM Order o WHERE o.id = :orderId AND o.order_type = 'offline' AND o.status = 1")
     Order findOrderOffline(@Param("orderId") Long orderId);
+
+    @Query("SELECT COUNT(o) FROM Order o WHERE o.status = 5 AND o.order_type = 'online'")
+    Integer findOnlineOrdersWithStatus5();
+
+    @Query("SELECT new org.example.quan_ao_f4k.dto.response.product.ProductDetailDTO("
+            + "CONCAT(pd.product.name, ' - ', s.name, ' - ', c.name), "
+            + "SUM(od.quantity)) "
+            + "FROM OrderDetail od "
+            + "JOIN od.productDetail pd "
+            + "JOIN pd.size s "
+            + "JOIN pd.color c "
+            + "JOIN od.order o "
+            + "WHERE o.status = 3 "
+            + "AND (:orderType IS NULL OR o.order_type = :orderType) "
+            + "AND ( DATE(o.createdAt) BETWEEN :startDate AND :endDate) "
+            + "GROUP BY pd.product.name, s.name, c.name "
+            + "ORDER BY SUM(od.quantity) DESC")
+    List<ProductDetailDTO> findBestSellingProductsByFilter(
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate,
+            @Param("orderType") String orderType
+    );
+
+
 }

@@ -156,7 +156,7 @@ function fetchProductDetails(page = 1, size = 5) {
     const orderBy = $("#sortSelect").val() || 'asc';
 
     $.ajax({
-        url: `/admin/shopping-offline/search-product-detail`,
+        url: `/admin/shopping-offline/product-detail-list`,
         method: 'GET',
         data: {
             page: page,

@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 
@@ -28,6 +29,14 @@
             font-size: 1.2rem;
             font-weight: 600;
         }
+        #realtime-clock {
+            font-size: 2rem;
+            font-weight: bold;
+        }
+        #realtime-date {
+            font-size: 1.2rem;
+            color: gray;
+        }
     </style>
 </head>
 
@@ -52,35 +61,82 @@
 
                 <div class="row">
                     <div class="col-xl-6 col-lg-7">
+                        <div class="card card-h-100">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h4 class="header-title">Tổng quan</h4>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <div class="col-sm-12">
+                                        <div class="card widget-flat">
+                                            <div class="card-body">
+                                                <div class="float-end">
+                                                    <i class="mdi mdi-cart-plus widget-icon"
+                                                       style="font-size: 2rem;"></i>
+                                                </div>
+                                                <h5 class="text-muted fw-normal mt-0" title="Number of Orders">Tổng đơn
+                                                    hàng</h5>
+                                                <h3 class="mt-3 mb-3" id="totalQuantityOrder"
+                                                    style="font-size: 1.5rem;">0</h3>
+                                            </div> <!-- end card-body-->
+                                        </div> <!-- end card-->
+                                    </div> <!-- end col-->
+                                </div> <!-- end row -->
 
-                        <div class="row">
-                            <div class="col-sm-12">
-                                <div class="card widget-flat">
-                                    <div class="card-body">
-                                        <div class="float-end">
-                                            <i class="mdi mdi-cart-plus widget-icon" style="font-size: 2rem;"></i>
-                                        </div>
-                                        <h5 class="text-muted fw-normal mt-0" title="Number of Orders">Đơn hàng</h5>
-                                        <h3 class="mt-3 mb-3" id="totalQuantityOrder" style="font-size: 1.5rem;">0</h3>
-                                    </div> <!-- end card-body-->
-                                </div> <!-- end card-->
-                            </div> <!-- end col-->
-                        </div> <!-- end row -->
+                                <div class="col">
+                                    <div class="col-sm-12">
+                                        <div class="card widget-flat">
+                                            <div class="card-body">
+                                                <div class="float-end">
+                                                    <i class="mdi mdi-currency-usd widget-icon"
+                                                       style="font-size: 2rem;"></i>
+                                                </div>
+                                                <h5 class="text-muted fw-normal mt-0" title="Average Revenue">Tổng doanh
+                                                    thu</h5>
+                                                <h3 class="mt-3 mb-3" id="revenueAmount" style="font-size: 1.5rem;">
+                                                    ₫0.00</h3>
+                                            </div> <!-- end card-body-->
+                                        </div> <!-- end card-->
+                                    </div> <!-- end col-->
+                                </div> <!-- end row -->
+                            </div>
 
-                        <div class="row">
-                            <div class="col-sm-12">
-                                <div class="card widget-flat">
-                                    <div class="card-body">
-                                        <div class="float-end">
-                                            <i class="mdi mdi-currency-usd widget-icon" style="font-size: 2rem;"></i>
-                                        </div>
-                                        <h5 class="text-muted fw-normal mt-0" title="Average Revenue">Doanh thu</h5>
-                                        <h3 class="mt-3 mb-3" id="revenueAmount" style="font-size: 1.5rem;">₫0.00</h3>
-                                    </div> <!-- end card-body-->
-                                </div> <!-- end card-->
-                            </div> <!-- end col-->
-                        </div> <!-- end row -->
-                    </div> <!-- end col -->
+                            <div class="row">
+                                <div class="col">
+                                    <a href="/admin/orders/" th:href="@{/admin/orders/}">
+                                    <div class="col-sm-12">
+                                        <div class="card widget-flat">
+                                            <div class="card-body">
+                                                <div class="float-end">
+                                                    <i class="mdi mdi-cart-plus widget-icon"
+                                                       style="font-size: 2rem;"></i>
+                                                </div>
+                                                <h5 class="text-muted fw-normal mt-0" title="Number of Orders">Đang chờ xác nhận</h5>
+                                                <h3 class="mt-3 mb-3" id="orderWaitConfirm"
+                                                    style="font-size: 1.5rem;">0</h3>
+                                            </div> <!-- end card-body-->
+                                        </div> <!-- end card-->
+                                    </div> <!-- end col--></a>
+                                </div>
+
+                                <div class="col">
+                                    <div class="col-sm-12">
+                                        <div class="card widget-flat">
+                                            <div class="card-body">
+                                                <div class="float-end">
+                                                    <i class="mdi mdi-clock-outline widget-icon" style="font-size: 2rem;"></i>
+                                                </div>
+                                                <h5 class="text-muted fw-normal mb-3" id="realtime-date" title="Realtime Clock"></h5>
+                                                <h3 class="mt-3" id="realtime-clock" style="font-size: 1.5rem;">
+                                                    00:00:00
+                                                </h3>
+                                            </div> <!-- end card-body-->
+                                        </div> <!-- end card-->
+                                    </div> <!-- end col-->
+                                </div> <!-- end row -->
+                            </div> <!-- end col -->
+                        </div>
+                    </div>
 
                     <!-- Tổng doanh thu theo loại đơn hàng-->
                     <div class="col-xl-6 col-lg-5">
@@ -117,36 +173,16 @@
                         </div>
                     </div>
 
-                    <!--Thống kê sản phẩm bán chạy nhất-->
+                    <!-- Thống kê sản phẩm bán chạy nhất -->
                     <div class="col-xl-12 col-lg-12">
                         <div class="card card-h-100">
                             <div class="d-flex card-header justify-content-between align-items-center">
                                 <h4 class="header-title">Sản phẩm bán chạy nhất</h4>
                                 <div class="d-flex card-header align-items-center">
-                                    <h4 class="header-title me-3">Lọc theo</h4>
-                                    <select id="time-filter" class="form-select me-3" style="width: auto;">
-                                        <option value="day">Ngày</option>
-                                        <option value="week">Tuần</option>
-                                        <option value="year">Năm</option>
-                                        <option value="orderType">Loại đơn hàng</option>
-                                    </select>
 
                                     <div id="datepicker-container" class="mb-3" style="display: inline-block; width: auto;">
                                         <label for="datepicker" class="form-label mb-0">Chọn ngày:</label>
                                         <input type="text" id="datepicker" class="form-control" style="width: auto;">
-                                    </div>
-
-                                    <div id="week-selector" class="mb-3" style="display: inline-block; width: auto;">
-                                        <label for="week" class="form-label mb-0">Chọn tuần:</label>
-                                        <select id="week" class="form-select" style="width: auto;">
-                                            <option value="current">Tuần hiện tại</option>
-                                            <option value="previous">Tuần trước</option>
-                                        </select>
-                                    </div>
-
-                                    <div id="year-selector" class="mb-3" style="display: inline-block; width: auto;">
-                                        <label for="year" class="form-label mb-0">Chọn năm:</label>
-                                        <input type="number" id="year" class="form-control" placeholder="Nhập năm" style="width: auto;">
                                     </div>
 
                                     <div id="order-type-selector" class="mb-3" style="display: inline-block; width: auto;">
@@ -163,6 +199,7 @@
                             <div id="container" style="height: 500px; width: 100%; margin-top: 20px;"></div>
                         </div> <!-- end card-->
                     </div> <!-- end col -->
+
 
                 </div>
             </div>
@@ -196,6 +233,33 @@
 <script th:src="@{/admin/plugins/datepicker/daterangepicker.js}"></script>
 <!--custom js-->
 <script th:src="@{/admin/dashboard/statistical.js}"></script>
-<script></script>
+<script>
+    function updateClock() {
+        const now = new Date();
+
+        // Lấy giờ, phút, giây
+        let hours = now.getHours();
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+        const seconds = String(now.getSeconds()).padStart(2, '0');
+        const period = hours >= 12 ? 'PM' : 'AM';
+
+        hours = hours % 12 || 12;
+
+        const timeString = `${String(hours).padStart(2, '0')}:${minutes}:${seconds} ${period}`;
+
+        // Lấy ngày, tháng, năm
+        const day = String(now.getDate()).padStart(2, '0');
+        const month = String(now.getMonth() + 1).padStart(2, '0'); // Tháng bắt đầu từ 0
+        const year = now.getFullYear();
+        const dateString = `${day}-${month}-${year}`;
+
+        $('#realtime-clock').text(timeString);
+        $('#realtime-date').text(dateString);
+    }
+
+    setInterval(updateClock, 1000);
+    updateClock();
+</script>
+
 </body>
 </html>
