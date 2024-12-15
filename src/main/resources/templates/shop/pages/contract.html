@@ -17,141 +17,23 @@
 <section class="mt-5 container ">
     <!-- Page Content Goes Here -->
 
-    <h1 class="mb-4 display-5 fw-bold text-center">Thanh toán hóa đơn</h1>
-    <p class="text-center mx-auto">
-        Vui lòng điền đầy đủ thông tin bên dưới để hoàn tất đơn hàng</p>
-    <!--    . Already registered?-->
-    <!--    <a href="#">Login here.</a>-->
+    <h1 class="mb-4 display-5 fw-bold text-center">Thông tin liên hệ</h1>
     <div class="row g-md-8 mt-4">
-        <!-- Checkout Panel Left -->
-        <div class="col-12 col-lg-6 col-xl-7">
-            <!-- Checkout Shipping Address -->
-            <div class="checkout-panel" th:if="${shippingInfoList.size > 0}">
-                <h5 class="title-checkout">Địa chỉ nhận hàng
-                    <a class="text-decoration cursor-pointer" data-bs-toggle="modal" data-bs-target="#exampleModal"
-                       style="font-size: 16px; color: red">
-                        Thay đổi
-                    </a>
-                </h5>
-                <div class="d-flex flex-column">
-                    <span style="font-weight: bold" id="detailReceiver"></span>
-                    <span id="detailAddress"></span>
-                </div>
-            </div>
-            <!-- Checkout Shipping Address -->
-            <div class="checkout-panel" th:if="${shippingInfoList.size == 0}">
-                <h5 class="title-checkout">Địa chỉ nhận hàng</h5>
-                <form action="" id="formCreateAddress">
-                    <div class="row mb-3">
-                        <div class="col-6">
-                            <label for="createName" class="form-label">Họ và tên</label>
-                            <input type="text" class="form-control" id="createName" required
-                                   placeholder="Họ và tên" name="recipientName">
-                            <div class="invalid-feedback"></div>
-                        </div>
-                        <div class="col-6">
-                            <label for="createPhoneNumber" class="form-label">Số điện thoại</label>
-                            <input type="text" class="form-control" id="createPhoneNumber" required
-                                   placeholder="Số điện thoại" name="phoneNumber">
-                            <div class="invalid-feedback"></div>
-                        </div>
-                    </div>
-                    <div class="row mb-3">
-                        <div class="col-12 mb-3">
-                            <label for="datalistProvince" class="form-label">Thành phố</label>
-                            <select class="form-select" id="datalistProvince"
-                                    data-placeholder="Chọn thành phố" name="province"></select>
-                            <div class="invalid-feedback"></div>
-                        </div>
-                        <div class="col-12 mb-3">
-                            <label for="datalistDistrict" class="form-label">Quận/Huyện</label>
-                            <select class="form-select" id="datalistDistrict" data-placeholder="Chọn quận/huyện"
-                                    disabled name="district"></select>
-                            <div class="invalid-feedback"></div>
-                        </div>
-                        <div class="col-12 mb-3">
-                            <label for="datalistWard" class="form-label">Phường/Xã</label>
-                            <select class="form-select" id="datalistWard" data-placeholder="Chọn phường/xã"
-                                    disabled name="ward"></select>
-                            <div class="invalid-feedback"></div>
-                        </div>
-                    </div>
-                    <div class="col-12 mb-3">
-                        <label for="createAddressDetail" class="form-label">Địa chỉ cụ thể</label>
-                        <input type="text" class="form-control" id="createAddressDetail" name="addressDetail"></input>
-                        <div class="invalid-feedback"></div>
-                    </div>
-                </form>
-            </div>
-            <!-- Checkout Shipping Method-->
-            <!--ghi chú-->
-            <div class="divider"></div>
-            <div class="checkout-panel">
-                <label for="createNote" class="form-label" style="font-size: 18px">Ghi chú</label>
-                <div class="col-12 mb-3">
-                    <textarea class="form-control" id="createNote" rows="3" name="note"></textarea>
-                </div>
-            </div>
-            <!--/ghi chú-->
-            <div class="checkout-panel">
-                <h5 class="title-checkout">Phương thức thanh toán</h5>
-                <!-- Shipping Option-->
-                <div class="form-check form-group form-check-custom form-radio-custom mb-3">
-                    <input class="form-check-input" type="radio" name="checkoutShippingMethod"
-                           id="checkoutShippingMethodOne" checked>
-                    <label class="form-check-label" for="checkoutShippingMethodOne">
-                          <span class="d-flex justify-content-between align-items-start">
-                            <span>
-                              <span class="mb-0 fw-bolder d-block">Nhận hàng rồi mới thanh toán</span>
-                            </span>
-                          </span>
-                    </label>
-                </div>
-                <div class="form-check form-group form-check-custom form-radio-custom mb-3">
-                    <input class="form-check-input" type="radio" name="checkoutShippingMethod"
-                           id="checkoutShippingMethodTwo">
-                    <label class="form-check-label" for="checkoutShippingMethodTwo">
-                          <span class="d-flex justify-content-between align-items-start">
-                            <span>
-                              <span class="mb-0 fw-bolder d-block">Chuyển khoản</span>
-                                <!--                              <small class="fw-bolder">For all orders placed before 1pm Monday to Thursday</small>-->
-                            </span>
-                            <span class="small fw-bolder text-uppercase" id="showFee"></span>
-                          </span>
-                    </label>
-                </div>
-            </div>
-            <!-- /Checkout Shipping Method -->
+        <!-- Panel Left -->
+        <div class="col-12 col-lg-8 col-xl-8">
+            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3723.86769794004!2d105.74729339999999!3d21.037979099999998!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3134550062c10f09%3A0xa42821736f81fe80!2sF4K%20Shop!5e0!3m2!1svi!2s!4v1734185967058!5m2!1svi!2s" width="800" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
         </div>
-        <!-- / Checkout Panel Left -->
+        <!-- / Panel Left -->
 
-        <!-- Checkout Panel Summary -->
-        <div class="col-12 col-lg-6 col-xl-5">
+        <!-- Checkout Right -->
+        <div class="col-12 col-lg-4 col-xl-4">
             <div class="bg-light p-4 sticky-md-top top-5" id="cart-container">
-                <div class="border-bottom pb-3" id="cart-items"></div>
                 <div class="py-3 border-bottom">
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <p class="m-0 fw-bolder fs-6">Thành tiền</p>
-                        <p class="m-0 fs-6 fw-bolder" id="subtotal">0</p>
-                    </div>
-                    <div class="d-flex justify-content-between align-items-center">
-                        <p class="m-0 fw-bolder fs-6">Giá vận chuyển</p>
-                        <p class="m-0 fs-6 fw-bolder" id="shippingPrice">0</p>
-                    </div>
+                    <strong>Địa chỉ cửa hàng:</strong> 22 P. Trịnh Văn Bô, Xuân Phương, Nam Từ Liêm, Hà Nội
                 </div>
-                <div class="py-3 border-bottom">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <p class="m-0 fw-bold fs-5">Tổng tiền</p>
-                            <!--                            <span class="text-muted small">Inc $45.89 sales tax</span>-->
-                        </div>
-                        <p class="m-0 fs-5 fw-bold" id="total">$0.00</p>
-                    </div>
-                </div>
-                <a href="#" class="btn btn-dark w-100" role="button" id="buttonPayment">Thanh toán</a>
             </div>
         </div>
-        <!-- /Checkout Panel Summary -->
+        <!-- /Panel Right -->
     </div>
 
     <!-- /Page Content -->
@@ -160,97 +42,6 @@
 
 <!-- Footer-->
 <footer th:replace="shop/fragments/footer::footer"></footer>
-
-<!-- Modal address-->
-<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-scrollable">
-        <div class="modal-content">
-            <div class="modal-header">
-                <div class="d-flex align-items-center">
-                    <h1 class="modal-title fs-5 me-2" id="exampleModalLabel">Địa Chỉ Của Tôi</h1>
-                    <button class="btn btn-outline-danger btn-custom btn-create">Thêm mới</button>
-                </div>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div id="body-address" class="body-address mb-4">
-                    <!--                    jquery show here-->
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-                <button type="button" class="btn btn-primary btn-set-default-address">Xác nhận</button>
-            </div>
-        </div>
-    </div>
-</div>
-<!-- Modal create-edit address-->
-<div class="modal fade" id="modalForm" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-scrollable">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h1 class="modal-title fs-5" id="modalFormLabel">Địa chỉ mới</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <pre id="output"></pre>
-                <form class="mt-2 needs-validation" novalidate id="formShippingInfo">
-                    <div class="row mb-3">
-                        <div class="col-6">
-                            <label for="createName" class="form-label">Họ và tên</label>
-                            <input type="text" class="form-control" id="createName" required
-                                   placeholder="Họ và tên" name="recipientName">
-                            <div class="invalid-feedback"></div>
-                        </div>
-                        <div class="col-6">
-                            <label for="createPhoneNumber" class="form-label">Số điện thoại</label>
-                            <input type="text" class="form-control" id="createPhoneNumber" required
-                                   placeholder="Số điện thoại" name="phoneNumber">
-                            <div class="invalid-feedback"></div>
-                        </div>
-                    </div>
-                    <div class="row mb-3">
-                        <div class="col-12 mb-3">
-                            <label for="datalistProvince" class="form-label">Thành phố</label>
-                            <select class="form-select" id="datalistProvince"
-                                    data-placeholder="Chọn thành phố" name="province"></select>
-                            <div class="invalid-feedback"></div>
-                        </div>
-                        <div class="col-12 mb-3">
-                            <label for="datalistDistrict" class="form-label">Quận/Huyện</label>
-                            <select class="form-select" id="datalistDistrict" data-placeholder="Chọn quận/huyện"
-                                    disabled name="district"></select>
-                            <div class="invalid-feedback"></div>
-                        </div>
-                        <div class="col-12 mb-3">
-                            <label for="datalistWard" class="form-label">Phường/Xã</label>
-                            <select class="form-select" id="datalistWard" data-placeholder="Chọn phường/xã"
-                                    disabled name="ward"></select>
-                            <div class="invalid-feedback"></div>
-                        </div>
-                    </div>
-                    <div class="col-12 mb-3">
-                        <label for="createAddressDetail" class="form-label">Địa chỉ cụ thể</label>
-                        <textarea class="form-control" id="createAddressDetail" rows="3" name="addressDetail"></textarea>
-                        <div class="invalid-feedback"></div>
-                    </div>
-                    <div class="col-12 mb-3">
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" value="" id="createIdDefault" name="isDefault">
-                            <label class="form-check-label" for="createIdDefault">
-                                Địa chỉ mặc định
-                            </label>
-                        </div>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer  has-spinner">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-                <button type="button" class="btn btn-primary btn-submit">Xác nhận</button>
-            </div>
-        </div>
-    </div>
-</div>
 
 <!--script-->
 <script th:replace="shop/fragments/script::div"></script>

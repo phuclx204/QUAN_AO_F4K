@@ -270,4 +270,10 @@ public class ShopController {
         List<Brand> lstBrand = brandRepository.findByStatus(F4KConstants.STATUS_ON);
         return ResponseEntity.ok(lstBrand);
     }
+
+    // contract
+    @GetMapping("/contract")
+    public String showContract() {
+        return "/shop/pages/contract";
+    }
 }

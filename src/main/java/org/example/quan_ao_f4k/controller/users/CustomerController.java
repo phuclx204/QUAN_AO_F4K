@@ -4,6 +4,9 @@ import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.example.quan_ao_f4k.dto.request.users.CustomerRequest;
 import org.example.quan_ao_f4k.dto.response.users.CustomerResponse;
+import org.example.quan_ao_f4k.exception.BadRequestException;
+import org.example.quan_ao_f4k.model.authentication.User;
+import org.example.quan_ao_f4k.repository.authentication.UserRepository;
 import org.example.quan_ao_f4k.service.users.CustomerService;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -17,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 @AllArgsConstructor
 public class CustomerController {
 	private final CustomerService customerService;
+	private final UserRepository userRepository;
 
 	@GetMapping({"/",""})
 	public String getAllCustomers() {
@@ -72,6 +76,16 @@ public class CustomerController {
 	@PostMapping("/save-customer")
 	public ResponseEntity<?> saveCustomer(@Valid @RequestBody CustomerRequest customerRequest) {
 		customerService.saveCustoms(customerRequest);
+		return ResponseEntity.ok().build();
+	}
+
+	@GetMapping("/update-status")
+	public ResponseEntity<?> updateStatus(@RequestParam("idUser") Long id, @RequestParam("status") Integer status) {
+		User user = userRepository.findById(id).orElseThrow(
+				() -> new BadRequestException("Không tìm thấy tài khoản người dùng")
+		);
+		user.setStatus(status);
+		userRepository.save(user);
 		return ResponseEntity.ok().build();
 	}
 }

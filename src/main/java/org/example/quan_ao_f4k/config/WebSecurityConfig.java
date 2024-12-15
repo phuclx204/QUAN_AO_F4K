@@ -9,15 +9,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.RememberMeServices;
 
 import java.io.IOException;
+import java.net.URLEncoder;
 
 @Configuration
 @EnableWebSecurity
@@ -55,6 +59,20 @@ public class WebSecurityConfig {
                         .loginPage("/authentication/login").permitAll()
                         .loginProcessingUrl("/authentication/login")
                         .failureUrl("/authentication/login?error=true")
+//                        .failureHandler(new AuthenticationFailureHandler() {
+//                            @Override
+//                            public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
+//                                String errorMessage;
+//                                if (exception.getClass().isAssignableFrom(BadCredentialsException.class)) {
+//                                    errorMessage = "Tên đăng nhập hoặc mật khẩu không chính xác!";
+//                                } else if (exception.getMessage().contains("bị cấm")) {
+//                                    errorMessage = exception.getMessage();
+//                                } else {
+//                                    errorMessage = "Đã xảy ra lỗi không xác định!";
+//                                }
+//                                response.sendRedirect("/authentication/login?error=true&message=" + URLEncoder.encode(errorMessage, "UTF-8"));
+//                            }
+//                        })
                         .defaultSuccessUrl("/shop/home", true)
                         .successHandler(new AuthenticationSuccessHandler() {
                             @Override

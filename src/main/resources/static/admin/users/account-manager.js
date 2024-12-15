@@ -95,7 +95,34 @@ $(document).ready(async function () {
             {data: 'username', title: 'Username'},
             {data: 'email', title: 'Email'},
             {data: 'numberPhone', title: 'Số đện thoại'},
-            {data: 'addressDetail', title: 'Địa chỉ'}
+            {data: 'addressDetail', title: 'Địa chỉ'},
+            {
+                data: 'status',
+                title: 'Trạng thái',
+                render: function (data, type, row) {
+                    if (data === 1) {
+                        return '<span class="badge bg-success">Hoạt động</span>';
+                    } else {
+                        return '<span class="badge bg-warning">Vô hiệu hóa</span>';
+                    }
+                }
+            },
+            {
+                data: null,
+                title: 'Hành động',
+                render: function (data, type, row) {
+                    let htmlAction = '';
+                    htmlAction = (row?.status === 1) ?
+                        `<span data-bs-toggle="tooltip" title="Vô hiệu hóa">
+                           <a href="javascript:void(0);" class="action-icon action-lock" data-id="${row.id}"> <i class="text-danger mdi mdi-lock-outline"></i></a>
+                        </span>`
+                        :
+                        `<span data-bs-toggle="tooltip" title="Kích hoạt">
+                           <a href="javascript:void(0);" class="action-icon action-open" data-id="${row.id}"> <i class="text-success mdi mdi-lock-open-variant-outline"></i></a>
+                        </span>`
+                    return `${htmlAction}`;
+                }
+            }
         ]
     });
 
@@ -105,10 +132,10 @@ $(document).ready(async function () {
 
     $(document).on("click", ".action-lock", async function (e) {
         e.preventDefault();
-        const isConfirmed = await $confirm("info", "Nhắc nhở", "Bạn có chắc muốn vô hiệu hóa sản phẩm không?");
+        const isConfirmed = await $confirm("info", "Nhắc nhở", "Bạn có chắc muốn vô hiệu tài khoản này không?");
         if (isConfirmed.isConfirmed) {
-            const productId = $(this).data("id");
-            await $ajax.patch("/admin/products/"+productId, {status: STATUS_OFF});
+            const userId = $(this).data("id");
+            await $ajax.get("/admin/customer/update-status", {idUser: userId, status: STATUS_OFF});
             $alter("success", "Thông báo", "Cập nhật thành công");
             reloadTable();
         }
@@ -116,10 +143,10 @@ $(document).ready(async function () {
 
     $(document).on("click", ".action-open", async function (e) {
         e.preventDefault();
-        const isConfirmed = await $confirm("info", "Nhắc nhở", "Bạn có chắc muốn kích hoạt sản phẩm không?");
+        const isConfirmed = await $confirm("info", "Nhắc nhở", "Bạn có chắc muốn kích hoạt tài khoản này không?");
         if (isConfirmed.isConfirmed) {
-            const productId = $(this).data("id");
-            await $ajax.patch("/admin/products/" + productId, {status: STATUS_ON});
+            const userId = $(this).data("id");
+            await $ajax.get("/admin/customer/update-status", {idUser: userId, status: STATUS_ON});
             $alter("success", "Thông báo", "Cập nhật thành công");
             reloadTable();
         }
