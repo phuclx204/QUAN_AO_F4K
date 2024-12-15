@@ -1,7 +1,11 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 
-<head th:replace="shop/fragments/header::head"></head>
+<head>
+    <th:block th:insert="shop/fragments/header::head"></th:block>
+
+    <meta name="is-login" th:content="${isLogin}">
+</head>
 <body>
 <div th:replace="shop/fragments/navbar-2::navbar(isError = ${isLogin}, isHidden = false)"></div>
 
