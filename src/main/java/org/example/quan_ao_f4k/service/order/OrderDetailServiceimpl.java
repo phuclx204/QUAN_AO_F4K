@@ -248,17 +248,18 @@ public class OrderDetailServiceimpl implements OrderDetailService {
             throw new BadRequestException("Số lượng sản phẩm không thể nhỏ hơn 0");
         }
 
-        // Khi cập nhật lại không lấy theo promotion mà lấy theo giá lúc mua lưu trong db?
-        // Promotion promotion = promotionService.getBestPromotionForProductDetail(request.getProductDetailId());
-        // if (promotion != null) {
-        //     BigDecimal totalPay = promotionService.calculateDiscountedPrice(orderDetail.getProductDetail().getPrice() ,promotion.getDiscountValue());
-        //     orderDetail.setPrice(totalPay.divide(BigDecimal.valueOf(request.getQuantity())));
-        //     orderDetail.setQuantity(request.getQuantity());
-        // } else {
-        //     BigDecimal totalPay = orderDetail.getProductDetail().getPrice();
-        //     orderDetail.setPrice(totalPay.divide(BigDecimal.valueOf(request.getQuantity())));
-        //     orderDetail.setQuantity(request.getQuantity());
-        // }
+
+        if (orderDetail.getDiscountPrice() != null) {
+            Promotion promotion = promotionService.getBestPromotionForProductDetail(request.getProductDetailId());
+            if (promotion != null) {
+                BigDecimal discountValue = promotionService.calculateDiscountedPrice(orderDetail.getProductDetail().getPrice(), promotion.getDiscountValue());
+                orderDetail.setDiscountPrice(discountValue);
+                orderDetail.setPrice(orderDetail.getProductDetail().getPrice());
+            } else {
+                orderDetail.setDiscountPrice(null);
+                orderDetail.setPrice(orderDetail.getProductDetail().getPrice());
+            }
+        }
 
         orderDetail.setQuantity(request.getQuantity());
 

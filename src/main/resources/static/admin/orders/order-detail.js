@@ -50,21 +50,41 @@ const {getValidate, clearValidation} = validateForm;
         })
     }
 
-    const updateQuantity = async (productDetailId, value) => {
-        openLoading();
+    const updateQuantity = async (productDetailId, value, isPromotion = false, double = false) => {
         const data = {
             orderId: orderId,
             productDetailId: productDetailId,
             quantity: value
         }
-        try {
-            await $ajax.put("/admin/order-detail/update-quantity", data);
-            await closeLoading();
-            showAlert("success", "Cập nhật số lượng thành công").then(_rs => {
-                window.location.href = '/admin/order-detail/' + orderCode;
-            });
-        } finally {
-            await closeLoading();
+
+        if (isPromotion) {
+            let demo = await $confirm("info", "Nhắc nhở", "Sản phẩm này có giảm giá nếu cạp nhật lại sẽ có thể về giá ban đâu, bạn có muốn cập nhật không?");
+            if (double) {
+                demo = await $confirm("info", "Nhắc nhở", "Sản phẩm này có giảm giá nếu cạp nhật lại sẽ có thể về giá ban đâu, bạn có muốn cập nhật không?");
+            }
+            if (demo.isConfirmed) {
+                try {
+                    openLoading();
+                    await $ajax.put("/admin/order-detail/update-quantity", data);
+                    await closeLoading();
+                    showAlert("success", "Cập nhật số lượng thành công").then(_rs => {
+                        window.location.href = '/admin/order-detail/' + orderCode;
+                    });
+                } finally {
+                    await closeLoading();
+                }
+            }
+        } else {
+            try {
+                openLoading();
+                await $ajax.put("/admin/order-detail/update-quantity", data);
+                await closeLoading();
+                showAlert("success", "Cập nhật số lượng thành công").then(_rs => {
+                    window.location.href = '/admin/order-detail/' + orderCode;
+                });
+            } finally {
+                await closeLoading();
+            }
         }
     }
 
@@ -205,7 +225,7 @@ const {getValidate, clearValidation} = validateForm;
         if (e.key === "Enter") {
             if ($(this).val()) {
                 const productDetailId = $(this).data("id");
-                await updateQuantity(productDetailId, $(this).val());
+                await updateQuantity(productDetailId, $(this).val(), $(this).data("promotion"), true);
             } else {
                 e.preventDefault();
             }
@@ -220,7 +240,7 @@ const {getValidate, clearValidation} = validateForm;
         if (value === 0) {
             await deleteOrderDetail(productDetailId);
         } else {
-            await updateQuantity(productDetailId, value);
+            await updateQuantity(productDetailId, value, $(this).data("promotion"));
         }
     })
 
@@ -234,7 +254,7 @@ const {getValidate, clearValidation} = validateForm;
         if (value > max) {
             $alterTop("warning", "Số lượng sản phẩm không đủ")
         } else {
-            await updateQuantity(productDetailId, value);
+            await updateQuantity(productDetailId, value, $(this).data("promotion"));
         }
     })
 

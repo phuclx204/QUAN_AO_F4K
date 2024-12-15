@@ -258,18 +258,23 @@
                                                     <div class="d-flex" style="font-size: 14px">
                                                         <button class="btn border btn-cartIndex-sub"
                                                                 th:data-id="${item.productDetail.id}"
-                                                                th:data-value="${item.quantity - 1}"><span
+                                                                th:data-value="${item.quantity - 1}"
+                                                                th:data-promotion="${item.purchasePrice != null}"
+                                                                ><span
                                                                 class="mdi mdi-minus"></span></button>
                                                         <input class="form-control inputQuantity"
                                                                style="text-align: center; width: 80px"
                                                                th:value="${item.quantity}"
                                                                th:data-value="${item.quantity}"
                                                                th:data-id="${item.productDetail.id}"
+                                                               th:data-promotion="${item.purchasePrice != null}"
                                                         />
                                                         <button class="btn border btn-cartIndex-plus"
                                                                 th:data-id="${item.productDetail.id}"
                                                                 th:data-value="${item.quantity + 1}"
-                                                                th:data-max="${item.productDetail.quantity}">
+                                                                th:data-max="${item.productDetail.quantity}"
+                                                                th:data-promotion="${item.purchasePrice != null}"
+                                                        >
                                                             <span class="mdi mdi-plus"></span>
                                                         </button>
                                                     </div>
