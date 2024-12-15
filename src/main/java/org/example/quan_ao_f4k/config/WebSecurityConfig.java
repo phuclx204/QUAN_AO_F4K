@@ -35,7 +35,9 @@ public class WebSecurityConfig {
             "/admin/plugins/**",
             "/vnPay/**",
             "/shop/script/**",
-            "/shop/dist/**"
+            "/shop/dist/**",
+            "/shop/contract",
+            "/shop/pages/**"
     };
 
     private static final String[] SECURITY_ENDPOINTS = {

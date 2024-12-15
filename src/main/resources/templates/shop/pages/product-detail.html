@@ -3,7 +3,7 @@
 
 <head th:replace="shop/fragments/header::head"></head>
 <body>
-<div th:replace="shop/fragments/navbar-2::navbar(${isLogin})"></div>
+<div th:replace="shop/fragments/navbar-2::navbar(isError = ${isLogin}, isHidden = false)"></div>
 
 <!-- Main Section-->
 <section class="mt-5 ">

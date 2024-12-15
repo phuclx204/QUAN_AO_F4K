@@ -1,5 +1,5 @@
 <html xmlns:th="http://www.thymeleaf.org">
-<div class="position-relative z-index-30" th:fragment="navbar(isError)">
+<div class="position-relative z-index-30" th:fragment="navbar(isError, isHidden)">
     <nav
             class="navbar navbar-expand-lg navbar-light bg-white border-bottom mx-0 p-0 flex-column  ">
         <div class="w-100 pb-lg-0 pt-lg-0 pt-4 pb-3">
@@ -117,7 +117,7 @@
                     <!-- /Navbar Login-->
 
                     <!-- Navbar Cart-->
-                    <li class="ms-1 d-inline-block position-relative" th:if="${isError}"  id="drawerCart" >
+                    <li class="ms-1 d-inline-block position-relative" th:if="${isError && !isHidden}"  id="drawerCart" >
                         <button
                                 class="btn btn-link px-2 text-decoration-none d-flex align-items-center disable-child-pointer toggle-offcanvasCart"
                                 data-bs-toggle="offcanvas" data-bs-target="#offcanvasCart"
