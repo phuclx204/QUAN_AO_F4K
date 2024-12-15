@@ -98,32 +98,13 @@
                     </li>
                     <!-- /Navbar Toggle Icon-->
 
-                    <!-- Navbar Search-->
-<!--                    <li class="ms-1 d-inline-block" th:if="${!isError ?: true}">-->
-<!--                        <button-->
-<!--                                class="btn btn-link px-2 text-decoration-none d-flex align-items-center"-->
-<!--                                data-pr-search>-->
-<!--                            <i class="ri-search-2-line ri-lg align-middle"></i>-->
-<!--                        </button>-->
-<!--                    </li>-->
-                    <!-- /Navbar Search-->
-
-                    <!-- Navbar Wishlist-->
-<!--                    <li class="ms-1 d-none d-lg-inline-block" th:if="${!isError ?: true}">-->
-<!--                        <a class="btn btn-link px-2 py-0 text-decoration-none d-flex align-items-center"-->
-<!--                           href="#">-->
-<!--                            <i class="ri-heart-line ri-lg align-middle"></i>-->
-<!--                        </a>-->
-<!--                    </li>-->
-                    <!-- /Navbar Wishlist-->
-
                     <!-- Navbar Login-->
                     <li class="nav-item dropdown">
                         <a class="nav-link fw-bolder dropdown-toggle py-lg-4" href="#" role="button"
                            data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <i class="ri-user-line ri-lg align-middle"></i>
                         </a>
-                        <ul class="dropdown-menu dropdown-menu-dark cs-user-dropdown">
+                        <ul class="dropdown-menu dropdown-menu-dark cs-user-dropdown" id="userDropdown">
                             <li><a class="dropdown-item" href="/shop/account-setting">Trang cá nhân</a></li>
                             <li><a class="dropdown-item" th:href="@{/shop/cart}">Giỏ hàng</a></li>
                             <li><a class="dropdown-item" th:href="@{/shop/purchase-history}">Lịch sử mua hàng</a></li>
@@ -136,7 +117,7 @@
                     <!-- /Navbar Login-->
 
                     <!-- Navbar Cart-->
-                    <li class="ms-1 d-inline-block position-relative" th:if="${!isError}">
+                    <li class="ms-1 d-inline-block position-relative" th:if="${isError}"  id="drawerCart" >
                         <button
                                 class="btn btn-link px-2 text-decoration-none d-flex align-items-center disable-child-pointer toggle-offcanvasCart"
                                 data-bs-toggle="offcanvas" data-bs-target="#offcanvasCart"

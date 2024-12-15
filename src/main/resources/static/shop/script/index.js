@@ -5,6 +5,16 @@ const imageBlank = "https://firebasestorage.googleapis.com/v0/b/clothes-f4k.apps
 
 export {URL, imageBlank}
 (function () {
+
+    let isLogin = document.querySelector('meta[name="is-login"]');
+    let isLoggedIn = false;
+
+    if (isLogin != null) {
+        const tmp = isLogin.getAttribute("content");
+        isLoggedIn = tmp === "true";
+    }
+
+    console.log(isLoggedIn)
     // fix cứng user
     const addUserLocalStorage = () => {
         const userInfo = {
@@ -24,6 +34,24 @@ export {URL, imageBlank}
     }
 
     const {convert2Vnd} = getCommon();
+
+    /** Account Setting **/
+    const setDropdownUserSetting = () => {
+        const $dropdownUser = $("#userDropdown");
+        $dropdownUser.empty()
+
+        if (!isLoggedIn) {
+            $dropdownUser.append(`<li><a class="dropdown-item" href="/authentication/login">Đăng nhập</a></li>`)
+        } else {
+            $dropdownUser.append(`<li><a class="dropdown-item" href="/shop/account-setting">Trang cá nhân</a></li>
+                            <li><a class="dropdown-item" th:href="@{/shop/cart}">Giỏ hàng</a></li>
+                            <li><a class="dropdown-item" th:href="@{/shop/purchase-history}">Lịch sử mua hàng</a></li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li><a class="dropdown-item" href="/authentication/logout">Đăng xuất</a></li>`)
+        }
+    }
 
     /** Xử lý drawer cart **/
     const drawerCart = document.getElementById('offcanvasCart')
@@ -158,7 +186,7 @@ export {URL, imageBlank}
         await updateQuantity(productDetailId, value);
     })
 
-    if (drawerCart != null) {
+    if (drawerCart != null && isLoggedIn) {
         drawerCart.addEventListener('show.bs.offcanvas', async event => {
             await updateHtmlCart();
         })
@@ -196,9 +224,11 @@ export {URL, imageBlank}
     }
 
     $(document).ready(async () => {
-        await getListPromotion();
+        setDropdownUserSetting();
+
         await getDataCart();
 
+        await getListPromotion();
         await getListBard();
     })
 })()

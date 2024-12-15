@@ -21,6 +21,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -35,6 +36,8 @@ import java.util.NoSuchElementException;
 @Slf4j
 @AllArgsConstructor
 public class ShopController {
+    private final F4KUtils f4kUtils;
+
     private final ShopProductService shopProductService;
     private final ShopCheckOutService shopCheckOutService;
     private final ShopCartService shopCartService;
@@ -49,6 +52,7 @@ public class ShopController {
     // home
     @GetMapping("/home")
     public String index(Model model) {
+        f4KUtils.addModelIsLogin(model);
         shopProductService.addModelHome(model);
         return "/shop/pages/index";
     }
@@ -56,6 +60,7 @@ public class ShopController {
     // product list
     @GetMapping("/collections")
     public String category(Model model) {
+        f4KUtils.addModelIsLogin(model);
         shopProductService.addModelFilter(model);
         return "/shop/pages/product-list";
     }
@@ -72,6 +77,7 @@ public class ShopController {
             , @RequestParam(value = "color", required = false) String colorHex
             , @RequestParam(value = "size", required = false) String sizeName) {
         try {
+            f4KUtils.addModelIsLogin(model);
             shopProductService.addModelProductDetail(model, slug, colorHex, sizeName);
         } catch (Exception e) {
             log.error("Có lỗi trong quá trình tìm kiếm sản phẩm: {}", e.getMessage());
@@ -83,6 +89,7 @@ public class ShopController {
     // cart
     @GetMapping("/cart")
     public String showCart(Model model) {
+        f4KUtils.addModelIsLogin(model);
         shopCartService.addModelCart(model);
         return "/shop/pages/cart";
     }
@@ -96,7 +103,11 @@ public class ShopController {
     public ResponseEntity<?> addCart(@PathVariable Long id
             , @RequestParam(value = "quantity", required = false) Integer quantity
             , @RequestParam(value = "color", required = false) Integer color
-            , @RequestParam(value = "size", required = false) Integer size) {
+            , @RequestParam(value = "size", required = false) Integer size
+            , Authentication authentication) {
+        if (authentication == null) {
+            throw new BadRequestException("Người dùng cần đăng nhập để chọn mặt hàng");
+        }
         return ResponseEntity.ok(shopCartService.addCart(id, quantity));
     }
 
@@ -115,6 +126,7 @@ public class ShopController {
     // checkout
     @GetMapping("/checkout")
     public String checkout(Model model) {
+        f4KUtils.addModelIsLogin(model);
         shopCheckOutService.addModelCheckout(model);
         return "/shop/pages/checkout";
     }
@@ -167,6 +179,7 @@ public class ShopController {
 
     @GetMapping("/purchase-history")
     public String purchaseHistory(Model model) {
+        f4KUtils.addModelIsLogin(model);
         shopCheckOutService.addModalPurchaseHistory(model);
         return "/shop/pages/purchase-history";
     }
@@ -174,6 +187,7 @@ public class ShopController {
     @GetMapping("/purchase-history-detail/{code}")
     public String purchaseHistoryDetail(@PathVariable String code, Model model) {
         try {
+            f4KUtils.addModelIsLogin(model);
             shopCheckOutService.addModalPurchaseHistoryDetail(model, code);
         } catch (NoSuchElementException e) {
             return "/shop/error/404";
@@ -215,6 +229,7 @@ public class ShopController {
 
     @GetMapping("/promotion/{id}")
     public String detailPromotion(@PathVariable Long id, Model model) {
+        f4KUtils.addModelIsLogin(model);
         shopProductService.addModelPromotion(model, id);
         return "/shop/pages/promotion-detail";
     }
@@ -222,6 +237,7 @@ public class ShopController {
     // Account setting
     @GetMapping("/account-setting")
     public String account(Model model) {
+        f4KUtils.addModelIsLogin(model);
         model.addAttribute("userInfo", f4KUtils.getUser());
         return "/shop/pages/account-setting";
     }
@@ -273,7 +289,8 @@ public class ShopController {
 
     // contract
     @GetMapping("/contract")
-    public String showContract() {
+    public String showContract(Model model) {
+        f4KUtils.addModelIsLogin(model);
         return "/shop/pages/contract";
     }
 }

@@ -10,7 +10,7 @@
 <body class="">
 
 <!-- Navbar -->
-<div th:replace="shop/fragments/navbar-2::navbar(isError = true)"></div>
+<div th:replace="shop/fragments/navbar-2::navbar(${isLogin})"></div>
 <!-- / Navbar-->
 
 <!-- Main Section-->
@@ -45,6 +45,5 @@
 
 <!--script-->
 <script th:replace="shop/fragments/script::div"></script>
-<script th:src="@{/shop/dist/js/select2.full.min.js}"></script>
 </body>
 </html>

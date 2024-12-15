@@ -11,6 +11,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
+import org.springframework.ui.Model;
 
 import java.security.SecureRandom;
 import java.text.Normalizer;
@@ -89,5 +90,14 @@ public class F4KUtils {
         return userRepository.findByUsername(userDetails.getUsername()).orElseThrow(
                 () -> new BadRequestException("Lỗi đăng nhập, xem lại tài khoản đang đăng nhập")
         );
+    }
+
+    public void addModelIsLogin(Model model) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || "anonymousUser".equals(authentication.getPrincipal())) {
+            model.addAttribute("isLogin", false);
+        } else {
+            model.addAttribute("isLogin", true);
+        }
     }
 }

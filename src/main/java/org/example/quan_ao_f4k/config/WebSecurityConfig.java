@@ -33,7 +33,13 @@ public class WebSecurityConfig {
             "/common/**",
             "/verify_account/**",
             "/admin/plugins/**",
-            "/vnPay/**"
+            "/vnPay/**",
+            "/shop/script/**",
+            "/shop/dist/**"
+    };
+
+    private static final String[] SECURITY_ENDPOINTS = {
+            "/shop/cart",
     };
 
     @Autowired
@@ -49,10 +55,10 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests(
                         request -> request
                                 .requestMatchers(PUBLIC_ENDPOINTS).permitAll()
+                                .requestMatchers(SECURITY_ENDPOINTS).hasAnyAuthority(F4KConstants.ROLE_USER, F4KConstants.ROLE_ADMIN)
                                 .requestMatchers("/authentication/**").permitAll()
-//                                .requestMatchers("/**").permitAll()
+                                .requestMatchers("/shop/**").permitAll()
                                 .requestMatchers("/admin/**").hasAuthority(F4KConstants.ROLE_ADMIN)
-                                .requestMatchers("/shop/**").hasAnyAuthority(F4KConstants.ROLE_USER,F4KConstants.ROLE_ADMIN)
                                 .anyRequest().authenticated()
                 )
                 .formLogin((form) -> form

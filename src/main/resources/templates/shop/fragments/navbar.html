@@ -1,5 +1,5 @@
 <html xmlns:th="http://www.thymeleaf.org">
-<div class="position-relative z-index-30" th:fragment="navbar">
+<div class="position-relative z-index-30" th:fragment="navbar(isError)">
     <!-- Navbar -->
     <nav
             class="navbar navbar-expand-lg navbar-light bg-white border-bottom mx-0 p-0 flex-column  border-0 position-absolute w-100 z-index-30 bg-transparent navbar-dark navbar-transparent bg-white-hover transition-all">
@@ -95,36 +95,12 @@
                         </button>
                     </li>
                     <!-- /Navbar Toggle Icon-->
-
-                    <!-- Navbar Search-->
-                    <li class="ms-1 d-inline-block">
-                        <button class="btn btn-link px-2 text-decoration-none d-flex align-items-center"
-                                data-pr-search>
-                            <i class="ri-search-2-line ri-lg align-middle"></i>
-                        </button>
-                    </li>
-                    <!-- /Navbar Search-->
-
-                    <!-- Navbar Wishlist-->
-<!--                    <li class="ms-1 d-none d-lg-inline-block">-->
-<!--                        <a class="btn btn-link px-2 py-0 text-decoration-none d-flex align-items-center" href="#">-->
-<!--                            <i class="ri-heart-line ri-lg align-middle"></i>-->
-<!--                        </a>-->
-<!--                    </li>-->
-                    <!-- /Navbar Wishlist-->
-
-                    <!-- Navbar Login-->
-                    <!--                    <li class="ms-1 d-none d-lg-inline-block">-->
-                    <!--                        <a class="btn btn-link px-2 text-decoration-none d-flex align-items-center" href="#">-->
-                    <!--                            <i class="ri-user-line ri-lg align-middle"></i>-->
-                    <!--                        </a>-->
-                    <!--                    </li>-->
                     <li class="nav-item dropdown d-none d-lg-inline-block">
                         <a class="btn btn-link fw-bolder dropdown-toggle py-lg-4" href="#" role="button"
                            data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <i class="ri-user-line ri-lg align-middle"></i>
                         </a>
-                        <ul class="dropdown-menu dropdown-menu-dark cs-user-dropdown">
+                        <ul class="dropdown-menu dropdown-menu-dark cs-user-dropdown" id="userDropdown">
                             <li><a class="dropdown-item" href="/shop/account-setting">Trang cá nhân</a></li>
                             <li><a class="dropdown-item" th:href="@{/shop/cart}">Giỏ hàng</a></li>
                             <li><a class="dropdown-item" th:href="@{/shop/purchase-history}">Lịch sử mua hàng</a></li>
@@ -134,10 +110,8 @@
                             <li><a class="dropdown-item" href="/authentication/logout">Đăng xuất</a></li>
                         </ul>
                     </li>
-                    <!-- /Navbar Login-->
-
                     <!-- Navbar Cart-->
-                    <li class="ms-1 d-inline-block position-relative">
+                    <li class="ms-1 d-inline-block position-relative hidden" id="drawerCart" th:if="${isError}" >
                         <button
                                 class="btn btn-link px-2 text-decoration-none d-flex align-items-center disable-child-pointer toggle-offcanvasCart"
                                 data-bs-toggle="offcanvas" data-bs-target="#offcanvasCart"
