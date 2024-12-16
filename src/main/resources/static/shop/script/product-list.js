@@ -87,7 +87,7 @@ const addDomListProduct = (item) => {
         finalPrice = `<p class="fw-bolder m-0 mt-2">${convert2Vnd(item.price)}</p>`
     }
 
-    let discountPercent = item.promotion ? `<span class="badge card-badge bg-secondary">-${item.promotion.discountValue}%</span>` : '';
+    let discountPercent = item.promotion ? `<span class="badge card-badge bg-orange">-${item.promotion.discountValue}%</span>` : '';
 
     let cartAction =
         `<div class="card-actions">
