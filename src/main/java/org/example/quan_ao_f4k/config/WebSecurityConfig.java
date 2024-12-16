@@ -97,7 +97,7 @@ public class WebSecurityConfig {
                                 if (hasUserRole){
                                     response.sendRedirect("/shop/home");
                                 }else if (hasAdminRole || hasStaffRole){
-                                    response.sendRedirect("/admin/products");
+                                    response.sendRedirect("/admin/statistical  ");
                                 } else {
                                     response.sendRedirect("/error/401");
                                 }
