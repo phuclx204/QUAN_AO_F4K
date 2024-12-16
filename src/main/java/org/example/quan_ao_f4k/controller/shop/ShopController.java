@@ -36,8 +36,6 @@ import java.util.NoSuchElementException;
 @Slf4j
 @AllArgsConstructor
 public class ShopController {
-    private final F4KUtils f4kUtils;
-
     private final ShopProductService shopProductService;
     private final ShopCheckOutService shopCheckOutService;
     private final ShopCartService shopCartService;

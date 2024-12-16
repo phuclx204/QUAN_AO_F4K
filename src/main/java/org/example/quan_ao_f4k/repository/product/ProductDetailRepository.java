@@ -48,14 +48,14 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, Lo
 	// ==== sonng - shop site - start ====
 	@Query("SELECT pd FROM ProductDetail pd " +
 			"WHERE pd.id = (" +
-			"   SELECT MAX(pdi.id) FROM ProductDetail pdi WHERE pdi.product.id = pd.product.id" +
+			"   SELECT MAX(pdi.id) FROM ProductDetail pdi WHERE pdi.product.id = pd.product.id " +
+			"AND (:sizeIds IS NULL OR pdi.size.id IN :sizeIds)" +
+			"AND (:colorIds IS NULL OR pdi.color.id IN :colorIds)" +
 			") " +
 			"AND pd.product.status = 1 " +
 			"AND (:name IS NULL OR LOWER(pd.product.name) LIKE LOWER(CONCAT('%', :name, '%'))) " +
 			"AND (:brandIds IS NULL OR pd.product.brand.id IN :brandIds) " +
 			"AND (:categoryIds IS NULL OR pd.product.category.id IN :categoryIds) " +
-			"AND (:sizeIds IS NULL OR pd.size.id IN :sizeIds) " +
-			"AND (:colorIds IS NULL OR pd.color.id IN :colorIds) " +
 			"AND (:priceFrom IS NULL OR pd.price >= :priceFrom) " +
 			"AND (:priceTo IS NULL OR pd.price <= :priceTo) " +
 			"ORDER BY CASE WHEN :orderBy = 'desc' THEN pd.price END DESC, " +
