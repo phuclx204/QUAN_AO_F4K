@@ -422,6 +422,7 @@ public class ProductServiceImpl implements ProductService {
 
         Product productRequest = productMapper.requestToEntity(request);
         productRequest.setId(id);
+        productRequest.setSlug(product.getSlug());
         Product savedProduct = productRepository.save(productRequest);
 
         if (request.getThumbnail() != null) {
