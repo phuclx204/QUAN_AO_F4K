@@ -1,3 +1,36 @@
+.custom-select {
+    max-height: 300px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    background-color: #fff;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    padding: 5px;
+    font-size: 14px;
+    scrollbar-width: thin; /* Dành cho Firefox */
+    scrollbar-color: #6c757d #f1f1f1; /* Màu thanh cuộn và nền thanh cuộn */
+}
+
+/* Tùy chỉnh thanh cuộn cho Webkit (Chrome, Edge, Safari) */
+.custom-select::-webkit-scrollbar {
+    width: 8px; /* Độ rộng của thanh cuộn */
+    height: 8px; /* Độ cao của thanh cuộn ngang (nếu có) */
+}
+
+.custom-select::-webkit-scrollbar-track {
+    background: #f1f1f1; /* Màu nền thanh cuộn */
+    border-radius: 4px; /* Bo góc */
+}
+
+.custom-select::-webkit-scrollbar-thumb {
+    background: #6c757d; /* Màu của thanh cuộn */
+    border-radius: 4px; /* Bo góc */
+    border: 2px solid #f1f1f1; /* Viền để tạo hiệu ứng đẹp */
+}
+
+.custom-select::-webkit-scrollbar-thumb:hover {
+    background: #495057; /* Màu thanh cuộn khi hover */
+}
 
 /*nhãn giảm giá modal sản phẩm*/
 .custom-badge {
@@ -59,7 +92,7 @@
     position: relative;
     background-color: white;
     padding: 0px 5px 0px 5px;
-    font-size: 1.1em;
+    font-size: 0.7em;
     transition: 0.1s;
     pointer-events: none;
     font-weight: 350 !important;

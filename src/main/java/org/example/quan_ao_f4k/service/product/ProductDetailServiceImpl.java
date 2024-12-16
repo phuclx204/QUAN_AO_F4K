@@ -198,6 +198,7 @@ public class ProductDetailServiceImpl implements ProductDetailService {
             List<Image> images = imageRepository.getImageByIdParent(el.getProduct().getId(), F4KConstants.TableCode.PRODUCT_DETAIL);
             el.setImages(images);
         });
+        applyDiscounts(productDetailResponses);
         Pageable pageable = PageRequest.of(page - 1, size);
         return F4KUtils.toPage(productDetailResponses, pageable);
     }

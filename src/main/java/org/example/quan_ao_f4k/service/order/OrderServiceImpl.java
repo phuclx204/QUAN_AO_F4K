@@ -194,6 +194,11 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    public Integer findOnlineOrderWaitConfirm() {
+        return orderRepository.findOnlineOrdersWithStatus5();
+    }
+
+    @Override
     public ListResponse<OrderResponse> searchList(int page, int size, String sort, LocalDateTime startDate, LocalDateTime endDate, String search, Integer status, String orderType) {
         Pageable pageable = PageRequest.of(page - 1, size);
 
@@ -216,82 +221,13 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public List<ProductDetailDTO> findQuantityProductDetailsByFilter(String filterType, String filterValue, String orderType) {
-        // Lấy danh sách các OrderDetail từ cơ sở dữ liệu
-        List<OrderDetail> orderDetails = orderDetailRepository.findAll();
-
-        // Lọc và tính toán tổng số lượng sản phẩm theo điều kiện
-        return orderDetails.stream()
-                .filter(od -> {
-                    Order order = od.getOrder();
-                    // Áp dụng các điều kiện bộ lọc
-                    return (order.getStatus() == 3) &&
-                            (orderType == null || order.getOrder_type().equals(orderType)) &&
-                            applyFilters(order, filterType, filterValue);
-                })
-                .collect(Collectors.groupingBy(od -> od.getProductDetail().getId(), Collectors.summingInt(OrderDetail::getQuantity)))
-                .entrySet().stream()
-                .map(entry -> {
-                    Long productDetailId = entry.getKey();
-                    Integer quantity = entry.getValue();
-                    ProductDetail productDetail = orderDetails.stream()
-                            .filter(od -> od.getProductDetail().getId().equals(productDetailId))
-                            .findFirst()
-                            .map(OrderDetail::getProductDetail)
-                            .orElse(null);
-
-                    // Lấy tên size và tên color
-                    String sizeName = productDetail != null ? productDetail.getSize().getName() : null;
-                    String colorName = productDetail != null ? productDetail.getColor().getName() : null;
-
-                    // Kết hợp tên sản phẩm, kích thước và màu sắc
-                    String productName = productDetail != null ? productDetail.getProduct().getName() + " - " + sizeName + " - " + colorName : null;
-
-                    // Trả về ProductDetailDTO với thêm sizeName và colorName
-                    return new ProductDetailDTO(
-                            productName,
-                            quantity
-                    );
-                })
-                .sorted(Comparator.comparingInt(ProductDetailDTO::getQuantity).reversed()) // Sắp xếp theo số lượng giảm dần
-                .collect(Collectors.toList());
-    }
-
-
-    private boolean applyFilters(Order order, String filterType, String filterValue) {
-        switch (filterType.toLowerCase()) {
-            case "day":
-                // Chuyển đổi LocalDateTime thành LocalDate và so sánh
-                LocalDateTime createdAt = order.getCreatedAt();
-                LocalDate filterDate = LocalDate.parse(filterValue);
-                return createdAt.toLocalDate().isEqual(filterDate);  // So sánh ngày
-
-            case "week":
-                // Logic xử lý filter theo tuần
-                return isInSameWeek(order.getCreatedAt(), filterValue);
-
-            case "year":
-                // So sánh năm
-                int filterYear = Integer.parseInt(filterValue);
-                return order.getCreatedAt().getYear() == filterYear;
-
-            default:
-                return true;
-        }
-    }
-
-    private boolean isInSameWeek(LocalDateTime createdAt, String filterValue) {
-        // Thực hiện tính toán tuần hiện tại từ filterValue (ví dụ: tuần bắt đầu từ ngày chủ nhật)
-        LocalDateTime startOfWeek = LocalDateTime.parse(filterValue).with(DayOfWeek.SUNDAY);
-        LocalDateTime endOfWeek = startOfWeek.plusDays(6);
-
-        // So sánh xem createdAt có trong khoảng tuần không
-        return !createdAt.isBefore(startOfWeek) && !createdAt.isAfter(endOfWeek);
-    }
-
-    @Override
     public OrderResponse findOrderOfflineById(Long aLong) {
         Order order = orderRepository.findOrderOffline(aLong);
         return orderMapper.entityToResponse(order);
+    }
+
+    @Override
+    public List<ProductDetailDTO> findQuantityProductDetailsByFilter(LocalDate startDate,LocalDate endDate, String orderType) {
+        return orderRepository.findBestSellingProductsByFilter( startDate,endDate, orderType);
     }
 }

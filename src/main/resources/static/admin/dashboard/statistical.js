@@ -1,7 +1,6 @@
 
 // Biểu đồ cột
 $(document).ready(function () {
-    // Tính toán ngày hiện tại và ngày 7 ngày trước
     const today = moment();
     const last7Days = moment().subtract(7, 'days');
 
@@ -13,7 +12,7 @@ $(document).ready(function () {
             endDate: today.format('YYYY-MM-DD')
         },
         success: function (orderStatistics) {
-            drawChart(orderStatistics); // Vẽ biểu đồ
+            drawChart(orderStatistics);
         },
         error: function (err) {
             console.error("Error:", err);
@@ -22,7 +21,6 @@ $(document).ready(function () {
 
     const $createDateRanger = $('#createDateRanger');
 
-    // Khởi tạo date range picker
     $createDateRanger.daterangepicker({
         startDate: moment().subtract(7, 'days'),
         endDate: moment(),
@@ -31,9 +29,7 @@ $(document).ready(function () {
         }
     });
 
-    // Khi áp dụng date range
     $createDateRanger.on('apply.daterangepicker', function (ev, picker) {
-        // Cập nhật giá trị cho input
         $createDateRanger.val(picker.startDate.format('DD/MM/YYYY') + ' - ' + picker.endDate.format('DD/MM/YYYY'));
     });
 
@@ -159,10 +155,23 @@ $(document).ready(function () {
         }
     });
 });
+//  thống kê số đơn đang chờ xác nhận
+$(document).ready(function () {
+    $.ajax({
+        url: '/admin/statistical/order-wait-confirm',
+        method: 'GET',
+        success: function (response) {
+            $('#orderWaitConfirm').text(response);
+        },
+        error: function (err) {
+            console.error('Error fetching revenue:', err);
+            $('#orderWaitConfirm').text('0');
+        }
+    });
+});
 
 // biểu đồ tròn thống kê doanh thu bán tại quầy và online
 $(document).ready(function () {
-    // Gửi yêu cầu lấy dữ liệu tổng doanh thu theo loại đơn hàng
     $.ajax({
         url: '/admin/statistical/total-by-order-type',
         method: 'GET',
@@ -216,111 +225,45 @@ $(document).ready(function () {
 
 });
 
+// biếu đồ thống kê sản phẩm bán chạy nhất
 $(document).ready(function() {
-    const $timeFilter = $('#time-filter');
-    const $datepickerContainer = $('#datepicker-container');
-    const $weekSelector = $('#week-selector');
-    const $yearSelector = $('#year-selector');
     const $datepicker = $('#datepicker');
-    const $week = $('#week');
-    const $year = $('#year');
-    const $orderTypeSelector = $('#order-type-selector');
     const $container = $('#container');
+    const $orderType = $('#orderType');
 
-    // Hiển thị lựa chọn bộ lọc tương ứng với loại thời gian
-    $timeFilter.on('change', function() {
-        const filterType = $(this).val();
-        showTimeFilterOptions(filterType);
+    $datepicker.daterangepicker({
+        startDate: moment().subtract(7, 'days'),
+        endDate: moment(),
+        locale: {
+            format: 'DD/MM/YYYY'
+        }
     });
 
-    // Khởi tạo datepicker và đặt ngày mặc định là ngày hôm nay
-    $datepicker.datepicker({
-        format: 'yyyy/mm/dd',
-        autoclose: true
-    }).datepicker('setDate', new Date()); // Thiết lập ngày mặc định là ngày hôm nay
+    $orderType.val('');
 
-    // Sự kiện thay đổi cho các bộ lọc
     $datepicker.on('change', function() {
-        loadBestSellingProducts('day'); // Khi thay đổi ngày, tải lại dữ liệu
+        loadBestSellingProducts();
     });
 
-    $week.on('change', function() {
-        loadBestSellingProducts('week'); // Khi thay đổi tuần, tải lại dữ liệu
+    $orderType.on('change', function() {
+        loadBestSellingProducts();
     });
 
-    $year.on('change', function() {
-        loadBestSellingProducts('year'); // Khi thay đổi năm, tải lại dữ liệu
-    });
+    function loadBestSellingProducts() {
+        const startDate = $datepicker.data('daterangepicker').startDate.format('YYYY-MM-DD');
+        const endDate = $datepicker.data('daterangepicker').endDate.format('YYYY-MM-DD');
+        const orderType = $orderType.val() || '';
+        const orderTypeParam = orderType && orderType !== '' ? `&orderType=${orderType}` : '';
 
-    $orderTypeSelector.on('change', function() {
-        loadBestSellingProducts('orderType'); // Khi thay đổi loại đơn hàng, tải lại dữ liệu
-    });
-
-    // Kiểm tra và in ra ngày đã được chọn từ datepicker
-    console.log("Ngày đã chọn: ", $datepicker.val());
-
-    // Hiển thị các bộ lọc tùy theo loại thời gian được chọn
-    function showTimeFilterOptions(filterType) {
-        $datepickerContainer.hide();
-        $weekSelector.hide();
-        $yearSelector.hide();
-        $orderTypeSelector.hide();
-
-        switch (filterType) {
-            case 'day':
-                $datepickerContainer.show();
-                break;
-            case 'week':
-                $weekSelector.show();
-                break;
-            case 'year':
-                $yearSelector.show();
-                break;
-            case 'orderType':
-                $orderTypeSelector.show();
-                break;
-        }
-        loadBestSellingProducts(filterType);
-    }
-
-    // Gọi API và vẽ biểu đồ
-    function loadBestSellingProducts(filterType) {
-        let filterValue = '';
-        let orderType = $('#orderType').val(); // Lấy loại đơn hàng từ lựa chọn
-
-        switch (filterType) {
-            case 'day':
-                filterValue = $datepicker.val(); // Ngày cụ thể
-                break;
-            case 'week':
-                filterValue = $week.val(); // Tuần hiện tại hoặc tuần trước
-                break;
-            case 'year':
-                filterValue = $year.val(); // Năm cụ thể
-                break;
-            case 'orderType':
-                orderType = $('#orderType').val() || ''; // Loại đơn hàng đã chọn
-                break;
-        }
-
-        console.log("Filter Value:", filterValue);
-        console.log("Filter type:", filterType);
-        console.log("order type:", orderType);
-
-        // Gửi yêu cầu AJAX đến API
         $.ajax({
-            url: '/admin/statistical/quantity-best-sale',
+            url: `/admin/statistical/quantity-best-sale?startDate=${startDate}&endDate=${endDate}${orderTypeParam}`,
             method: 'GET',
-            data: {
-                filterType: filterType,
-                filterValue: filterValue,
-                orderType: orderType
-            },
             success: function(response) {
                 drawChart(response);
             },
             error: function(err) {
                 console.error('Error fetching best selling products:', err);
+                $container.html('<p class="text-danger text-center">Không có dữ liệu.</p>');
             }
         });
     }
@@ -329,8 +272,8 @@ $(document).ready(function() {
     function drawChart(data) {
         if (data && data.length > 0) {
             const labels = Object.keys(data); // Mảng các ngày
-            const productNames = labels.map(item => data[item].productName); // Tên sản phẩm kết hợp
-            const quantities = labels.map(item => data[item].quantity); // Số lượng bán
+            const productNames = labels.map(item => data[item].productName);
+            const quantities = labels.map(item => data[item].quantity);
 
             Highcharts.chart($container[0], {
                 chart: {
@@ -366,11 +309,9 @@ $(document).ready(function() {
         }
     }
 
-    // Mặc định chọn 'Ngày' khi load trang
-    $timeFilter.val('day').trigger('change');
+    loadBestSellingProducts();
 });
 
 function formatPrice(amount) {
-    // Chuyển đổi số thành chuỗi và định dạng với dấu phẩy
     return parseFloat(amount).toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",") + ' ₫';
 }
