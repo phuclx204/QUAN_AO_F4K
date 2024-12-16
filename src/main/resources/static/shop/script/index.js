@@ -44,8 +44,8 @@ export {URL, imageBlank}
             $dropdownUser.append(`<li><a class="dropdown-item" href="/authentication/login">Đăng nhập</a></li>`)
         } else {
             $dropdownUser.append(`<li><a class="dropdown-item" href="/shop/account-setting">Trang cá nhân</a></li>
-                            <li><a class="dropdown-item" th:href="@{/shop/cart}">Giỏ hàng</a></li>
-                            <li><a class="dropdown-item" th:href="@{/shop/purchase-history}">Lịch sử mua hàng</a></li>
+                            <li><a class="dropdown-item" href="/shop/cart">Giỏ hàng</a></li>
+                            <li><a class="dropdown-item" href="/shop/purchase-history">Lịch sử mua hàng</a></li>
                             <li>
                                 <hr class="dropdown-divider">
                             </li>
