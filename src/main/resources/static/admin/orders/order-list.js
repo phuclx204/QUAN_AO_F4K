@@ -157,10 +157,15 @@ const {transformData, convert2Vnd} = getCommon();
                 data: null,
                 title: 'Hành động',
                 render: function (data, type, row) {
+                    const htmlBtn = row.order_type === 'offline' ?
+                        `<span data-bs-toggle="tooltip" title="Xuất hoá đơn">
+                          <a href="/generate-pdf/shopping-offline/${row.id}" class="btn btn-warning">Xuất hoá đơn</a>
+                        </span>` : '';
                     return `<td class="table-action">
-                              <span data-bs-toggle="tooltip" title="Chi tiết">
+                              <span data-bs-toggle="tooltip" title="Chi tiết" class="me-2">
                                 <a href="/admin/order-detail/${row.code}" class="btn btn-info">Chi tiết</a>
                               </span>
+                              ${htmlBtn}
                            </td>`;
                 }
             }
