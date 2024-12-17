@@ -91,6 +91,7 @@ function updateOrderStatus(orderId, status) {
     const updateData = {
         status: status,
         code: orderCode,
+        totalPay: 0,
         order_type: 'offline'
     }
     console.log(updateData)
