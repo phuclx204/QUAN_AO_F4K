@@ -81,6 +81,7 @@ public interface OrderRepository extends JpaRepository<Order, Long>,
             + "o.toPhone LIKE %:search% OR :search IS NULL) AND "
             + "(o.order_type LIKE %:orderType% OR :orderType IS NULL) AND "
             + "(o.status = :status OR :status IS NULL) "
+            + " AND (o.status != 100)"
             + "ORDER BY o.id DESC")
     Page<Order> searchOrders(Pageable pageable,
                              @Param("startDate") LocalDateTime startDate,

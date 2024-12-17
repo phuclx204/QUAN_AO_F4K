@@ -71,13 +71,13 @@
                                             <button type="button" class="btn btn-primary btn-change-status"
                                                     th:if="${order.status == 8}"
                                                     th:data-new-status="4">
-                                                <i class="mdi mdi-truck-outline"></i> Chờ Vận Chuyển
+                                                <i class="mdi mdi-truck-outline"></i> Chờ giao hàng
                                             </button>
                                             <!-- Nút Vận Chuyển -->
                                             <button type="button" class="btn btn-primary btn-change-status"
                                                     th:if="${order.status == 4}"
                                                     th:data-new-status="6">
-                                                <i class="mdi mdi-truck-fast-outline"></i> Vận Chuyển
+                                                <i class="mdi mdi-truck-fast-outline"></i> Đang giao hàng
                                             </button>
                                             <!-- Nút Quay Lại -->
                                             <div th:if="${order.status != 3 && order.status != 0 && order.status != 5}">

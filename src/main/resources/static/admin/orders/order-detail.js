@@ -151,9 +151,9 @@ const {getValidate, clearValidation} = validateForm;
     function getStatusLabel(status) {
         const statusMap = {
             5: 'Xác Nhận',
-            8: 'Chờ Vận Chuyển',
+            8: 'Chờ xử lý',
             6: 'Đang giao hàng',
-            4: 'Vận Chuyển',
+            4: 'Chờ giao hàng',
             3: 'Hoàn Thành',
             0: 'Hủy Đơn'
         };

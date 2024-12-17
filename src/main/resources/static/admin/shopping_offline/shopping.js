@@ -453,7 +453,7 @@ function cancelOrder(orderId) {
                 timerProgressBar: true,
             }).then((result) => {
                 if (result.isConfirmed) {
-                    updateOrderStatus(orderId, 0);
+                    updateOrderStatus(orderId, 100);
                 }
             });
         }
