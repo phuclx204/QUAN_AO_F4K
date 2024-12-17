@@ -47,8 +47,8 @@ public class WebSecurityConfig {
     @Autowired
     private AuthenticationProvider authenticationProvider;
 
-    @Autowired
-    private RememberMeServices rememberMeServices;
+//    @Autowired
+//    private RememberMeServices rememberMeServices;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
@@ -110,9 +110,6 @@ public class WebSecurityConfig {
                         .invalidateHttpSession(true)
                         .invalidateHttpSession(true)
                         .logoutSuccessUrl("/authentication/login")
-                )
-                .rememberMe((remember) -> remember
-                        .rememberMeServices(rememberMeServices)
                 );
         ;
         return httpSecurity.build();

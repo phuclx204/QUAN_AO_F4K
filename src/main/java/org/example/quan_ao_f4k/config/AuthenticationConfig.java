@@ -76,12 +76,12 @@ public class AuthenticationConfig {
         return (web) -> web.ignoring().requestMatchers("/static/**");
     }
 
-    @Bean
-    public RememberMeServices rememberMeServices(UserDetailsService userDetailsService) {
-        TokenBasedRememberMeServices.RememberMeTokenAlgorithm encodingAlgorithm = TokenBasedRememberMeServices.RememberMeTokenAlgorithm.SHA256;
-        TokenBasedRememberMeServices rememberMe = new TokenBasedRememberMeServices("springRocks", userDetailsService, encodingAlgorithm);
-        rememberMe.setTokenValiditySeconds(60 * 60 * 60 * 24 * 7);
-        rememberMe.setMatchingAlgorithm(TokenBasedRememberMeServices.RememberMeTokenAlgorithm.MD5);
-        return rememberMe;
-    }
+//    @Bean
+//    public RememberMeServices rememberMeServices(UserDetailsService userDetailsService) {
+//        TokenBasedRememberMeServices.RememberMeTokenAlgorithm encodingAlgorithm = TokenBasedRememberMeServices.RememberMeTokenAlgorithm.SHA256;
+//        TokenBasedRememberMeServices rememberMe = new TokenBasedRememberMeServices("springRocks", userDetailsService, encodingAlgorithm);
+//        rememberMe.setTokenValiditySeconds(60 * 60 * 60 * 24 * 7);
+//        rememberMe.setMatchingAlgorithm(TokenBasedRememberMeServices.RememberMeTokenAlgorithm.MD5);
+//        return rememberMe;
+//    }
 }
