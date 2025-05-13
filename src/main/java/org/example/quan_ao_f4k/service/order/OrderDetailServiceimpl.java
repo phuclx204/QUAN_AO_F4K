@@ -203,7 +203,11 @@ public class OrderDetailServiceimpl implements OrderDetailService {
             ProductDetailResponse productDetail = productDetailService.findById(orderDetail.getProductDetail().getId());
             orderDetailResponse.setProductDetail(productDetail);
 
-            BigDecimal currentPrice = productDetail.getPrice();
+            BigDecimal originalPrice = orderDetail.getPrice();
+
+            orderDetailResponse.setOriginalPrice(originalPrice);
+
+            BigDecimal currentPrice = originalPrice;
             BigDecimal purchasePrice = orderDetailResponse.getDiscountPrice();
             if (purchasePrice != null && purchasePrice.compareTo(currentPrice) < 0) {
                 orderDetailResponse.setPurchasePrice(purchasePrice);

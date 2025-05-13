@@ -172,6 +172,15 @@ $(document).ready(async function () {
                 message: "Số tiền là bắt buộc",
                 type: 'text',
                 feedBackDiv: true
+            },
+            {
+                rule: (value) => {
+                    const cleaned = value.replace(/[.,]/g, '').trim();
+                    return !isNaN(cleaned) && Number(cleaned) <= 10000000;
+                },
+                message: "Số tiền không được vượt quá 10 triệu VND",
+                type: 'text',
+                feedBackDiv: true
             }
         ],
         'createQuantity': [
@@ -231,4 +240,5 @@ $(document).ready(async function () {
         await loadOptionFilter();
     })
 });
+
 

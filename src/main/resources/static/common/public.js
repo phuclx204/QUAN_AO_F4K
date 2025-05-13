@@ -174,6 +174,7 @@ const validateForm = (() => {
             }
 
             for (const el of validationRules[field]) {
+                addEventElement(form, field, input, el);
                 const validTmp = validate(form, field, el);
                 if (!validTmp) {
                     isValid = false;

@@ -826,47 +826,47 @@ inputField.addEventListener("input", () => {
 function confirmOrder(orderId) {
     let isValid = true;
 
-    // Kiểm tra input #name
-    const nameValue = $("#name").val().trim();
-    if (nameValue === "") {
-        isValid = false;
-        $("#nameError").removeClass("d-none").text("Trường bắt buộc!");
-    } else {
-        $("#nameError").addClass("d-none");
-    }
-
-    // Kiểm tra input #phone
-    const phoneValue = $("#phone").val().trim();
-    const phonePattern = /^(\+84|84|0[3|5|7|8|9])([0-9]{8,9})$/;
-
-    if (!phonePattern.test(phoneValue)) {
-        isValid = false;
-        $("#phoneError").removeClass("d-none").text("Số điện thoại không hợp lệ!");
-    } else {
-        $("#phoneError").addClass("d-none");
-    }
-
-
-    // Cập nhật trạng thái kiểm tra ngay khi có thay đổi trong input
-    $("#name, #phone").on("input", function () {
-        const inputId = $(this).attr("id");
-        const errorId = inputId + "Error";
-        const value = $(this).val().trim();
-
-        if (value === "") {
-            $("#" + errorId).removeClass("d-none").text("Trường bắt buộc!");
-        } else if (inputId === "phone") {
-            const phonePattern = /^(\+84|84|0[3|5|7|8|9])([0-9]{8,9})$/;
-
-            if (!phonePattern.test(value)) {
-                $("#" + errorId).removeClass("d-none").text("Số điện thoại không hợp lệ!");
-            } else {
-                $("#" + errorId).addClass("d-none");
-            }
-        } else {
-            $("#" + errorId).addClass("d-none");
-        }
-    });
+    // // Kiểm tra input #name
+    // const nameValue = $("#name").val().trim();
+    // if (nameValue === "") {
+    //     isValid = false;
+    //     $("#nameError").removeClass("d-none").text("Trường bắt buộc!");
+    // } else {
+    //     $("#nameError").addClass("d-none");
+    // }
+    //
+    // // Kiểm tra input #phone
+    // const phoneValue = $("#phone").val().trim();
+    // const phonePattern = /^(\+84|84|0[3|5|7|8|9])([0-9]{8,9})$/;
+    //
+    // if (!phonePattern.test(phoneValue)) {
+    //     isValid = false;
+    //     $("#phoneError").removeClass("d-none").text("Số điện thoại không hợp lệ!");
+    // } else {
+    //     $("#phoneError").addClass("d-none");
+    // }
+    //
+    //
+    // // Cập nhật trạng thái kiểm tra ngay khi có thay đổi trong input
+    // $("#name, #phone").on("input", function () {
+    //     const inputId = $(this).attr("id");
+    //     const errorId = inputId + "Error";
+    //     const value = $(this).val().trim();
+    //
+    //     if (value === "") {
+    //         $("#" + errorId).removeClass("d-none").text("Trường bắt buộc!");
+    //     } else if (inputId === "phone") {
+    //         const phonePattern = /^(\+84|84|0[3|5|7|8|9])([0-9]{8,9})$/;
+    //
+    //         if (!phonePattern.test(value)) {
+    //             $("#" + errorId).removeClass("d-none").text("Số điện thoại không hợp lệ!");
+    //         } else {
+    //             $("#" + errorId).addClass("d-none");
+    //         }
+    //     } else {
+    //         $("#" + errorId).addClass("d-none");
+    //     }
+    // });
 
     const customerAmount = parseInt($("#customerAmount").val().replace(/\D/g, ""), 10) || 0;
     const totalPay = totalAmount

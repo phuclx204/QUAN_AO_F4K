@@ -241,11 +241,11 @@
                                             </td>
                                             <td class="text-start">
                                                 <div th:if="${item.purchasePrice == null}">
-                                                    <span class="order-price text-danger">[[${item.productDetail.price}]]</span>
+                                                    <span class="order-price text-danger">[[${item.originalPrice}]]</span>
                                                 </div>
                                                 <div th:if="${item.purchasePrice != null}">
                                                     <s class="lh-1 me-2"><span
-                                                            class="fw-bolder m-0 product-price-list text-muted order-price">[[${item.productDetail.price}]]</span></s>
+                                                            class="fw-bolder m-0 product-price-list text-muted order-price">[[${item.originalPrice}]]</span></s>
                                                     <span class="order-price text-danger">[[${item.purchasePrice}]]</span>
                                                 </div>
                                             </td>

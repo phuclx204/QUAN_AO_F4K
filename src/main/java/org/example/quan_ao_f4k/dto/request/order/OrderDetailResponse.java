@@ -13,6 +13,7 @@ public class OrderDetailResponse {
     private Long productDetailId;
     private Integer quantity;
     private BigDecimal price;
+    private BigDecimal originalPrice;
 
     private ProductDetailResponse productDetail;
     private OrderResponse order;
